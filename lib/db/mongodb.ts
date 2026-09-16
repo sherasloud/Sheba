@@ -1,14 +1,14 @@
 import { MongoClient, Db, ServerApiVersion } from 'mongodb'
 
-if (!process.env.MONGODB_URI) {
-  throw new Error('Invalid/Missing environment variable: "MONGODB_URI"')
-}
-
-const uri = process.env.MONGODB_URI
+const uri = process.env.MONGODB_URI ?? process.env.MONGODB_CONNECTION_STRING ?? process.env.MONGODB_URL
 let cachedClient: MongoClient | null = null
 let cachedDb: Db | null = null
 
 export async function connectToDatabase() {
+  if (!uri) {
+    throw new Error('MongoDB connection string is not configured')
+  }
+
   if (cachedClient && cachedDb) {
     return { client: cachedClient, db: cachedDb }
   }

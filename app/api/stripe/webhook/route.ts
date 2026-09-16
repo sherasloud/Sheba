@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { stripe } from '@/lib/stripe'
+import { getStripe } from '@/lib/stripe'
 import { db } from '@/lib/db'
 import { appUsers } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
@@ -18,9 +18,10 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    let event
-    try {
-      event = stripe.webhooks.constructEvent(body, signature, webhookSecret)
+  let event
+  try {
+    const stripe = getStripe()
+    event = stripe.webhooks.constructEvent(body, signature, webhookSecret)
     } catch (err) {
       console.error('[v0] Webhook signature verification failed:', err)
       return NextResponse.json(
