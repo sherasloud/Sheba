@@ -1,0 +1,16 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><title>Bidyanondo</title><meta name="description" content="bidyanondo"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="dmca-site-verification" content="bnFqNHhVczZmb01jZEUvTE1oVWp5Zz090"><link rel="icon" type="image/x-icon" href="/favicon.ico"><link rel="preload" href="/assets/css/bootstrap.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'"><link rel="preload" href="/style.min.css?ver=1.003" as="style" onload="this.onload=null;this.rel='stylesheet'"><link rel="preload" href="/responsive.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'"><link rel="preload" href="/t_style.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'"><link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'"><link href="/css/app.0c07205d.css" rel="preload" as="style"><link href="/css/chunk-vendors.59c69654.css" rel="preload" as="style"><link href="/js/app.4b104636.js" rel="preload" as="script"><link href="/js/chunk-vendors.f72cd3b9.js" rel="preload" as="script"><link href="/css/chunk-vendors.59c69654.css" rel="stylesheet"><link href="/css/app.0c07205d.css" rel="stylesheet"></head><body><noscript><link rel="stylesheet" href="/assets/css/bootstrap.min.css"></noscript><noscript><link rel="stylesheet" href="/style.min.css"></noscript><noscript><link rel="stylesheet" href="/responsive.min.css"></noscript><noscript><link rel="stylesheet" href="/t_style.min.css"></noscript><noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"></noscript><div id="app"></div><div id="fb-root"></div><!--<script>window.fbAsyncInit = function() {
+          FB.init({
+            appId : '225814174967151',
+            autoLogAppEvents : true,
+            xfbml            : true,
+            version          : 'v10.0'
+          });
+        };
+
+        (function(d, s, id) {
+        var js, fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) return;
+        js = d.createElement(s); js.id = id;
+        js.src = 'https://connect.facebook.net/en_US/sdk/xfbml.customerchat.js';
+        fjs.parentNode.insertBefore(js, fjs);
+      }(document, 'script', 'facebook-jssdk'));</script><div class="fb-customerchat" attribution="setup_tool" page_id="642444282457399" theme_color="#ed3237"></div>--><script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script><script src="https://images.dmca.com/Badges/DMCABadgeHelper.min.js"></script><script src="/js/chunk-vendors.f72cd3b9.js"></script><script src="/js/app.4b104636.js"></script></body></html>

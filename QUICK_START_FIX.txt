@@ -1,0 +1,183 @@
+╔════════════════════════════════════════════════════════════════════════════╗
+║                  QUICK FIX FOR ACCOUNT CREATION ERROR                      ║
+║                  "অ্যাকাউন্ট তৈরিতে সমস্যা হয়েছে"                       ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+⏱️  TIME REQUIRED: 5 minutes
+
+📋 STEP 1: Get Supabase Credentials (2 minutes)
+════════════════════════════════════════════════════════════════════════════
+
+1. Go to https://supabase.com
+2. Sign in or create account
+3. Create a new project or select existing one
+4. Wait for project to be ready
+5. Click "Settings" (bottom left)
+6. Click "API"
+7. Look for:
+   - "Project URL" ← Copy this
+   - "Anon Key" ← Copy this (public)
+
+Keep these two values ready.
+
+
+🔧 STEP 2: Update Environment Variables (1 minute)
+════════════════════════════════════════════════════════════════════════════
+
+1. Open .env.local file in your code editor
+2. Find these lines at the top:
+   
+   # Supabase Configuration (Required for account creation)
+   NEXT_PUBLIC_SUPABASE_URL=https://your-supabase-url.supabase.co
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your-supabase-anon-key
+
+3. Replace:
+   - "https://your-supabase-url.supabase.co" with your Project URL
+   - "your-supabase-anon-key" with your Anon Key
+
+Example:
+   NEXT_PUBLIC_SUPABASE_URL=https://abcdefg.supabase.co
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIs...
+
+4. Save the file
+
+
+💾 STEP 3: Create Database Table (1 minute)
+════════════════════════════════════════════════════════════════════════════
+
+1. Go back to Supabase web interface
+2. Click "SQL Editor" (left sidebar)
+3. Click "New Query"
+4. Copy and paste this SQL:
+
+───────────────────────────────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS profiles (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  phone VARCHAR(20) UNIQUE NOT NULL,
+  name VARCHAR(100) NOT NULL,
+  pin VARCHAR(10) NOT NULL,
+  balance DECIMAL(15, 2) DEFAULT 0.00,
+  account_type VARCHAR(50) DEFAULT 'personal',
+  is_verified BOOLEAN DEFAULT true,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_profiles_phone ON profiles(phone);
+
+-- Disable RLS for development (enable in production)
+ALTER TABLE profiles DISABLE ROW LEVEL SECURITY;
+───────────────────────────────────────────────────────────────────────────
+
+5. Click "Run" (blue button, top right)
+6. You should see "Success" message
+
+
+▶️  STEP 4: Restart Development Server (1 minute)
+════════════════════════════════════════════════════════════════════════════
+
+If dev server is running:
+1. Stop it: Ctrl+C (or Cmd+C on Mac)
+
+Start it again:
+2. npm run dev
+
+Wait for "ready - started server on..." message
+
+
+✅ STEP 5: Test Account Creation
+════════════════════════════════════════════════════════════════════════════
+
+1. Open app at http://localhost:3000
+2. Click "নতুন অ্যাকাউন্ট তৈরি করুন" (Create New Account)
+3. Enter:
+   - Phone: 01XXXXXXXXX (11 digits)
+   - Name: Your name
+   - PIN: 6 digits (e.g., 123456)
+   - Confirm PIN: same 6 digits
+4. Click "অ্যাকাউন্ট তৈরি করুন" (Create Account)
+
+Expected result:
+✓ "স্বাগতম!" (Welcome) screen appears
+✓ Redirected to home page
+✓ Account is created
+
+
+🔍 IF IT STILL DOESN'T WORK:
+════════════════════════════════════════════════════════════════════════════
+
+1. Open browser DevTools: F12 or Right Click → Inspect
+2. Go to "Console" tab
+3. Attempt account creation again
+4. Look for messages starting with "[v0]"
+5. Copy any error messages
+
+Common errors and fixes:
+
+ERROR: "table does not exist" (42P01)
+FIX: Run the SQL setup again (Step 3)
+
+ERROR: "permission denied" (42501)
+FIX: The RLS is still enabled, disable it:
+  ALTER TABLE profiles DISABLE ROW LEVEL SECURITY;
+
+ERROR: "duplicate key value" (23505)
+FIX: That phone number already exists, use a different one
+
+ERROR: Nothing in console, just silent failure
+FIX: Check .env.local has correct values, restart server
+
+
+🎯 WHAT SHOULD YOU SEE IN CONSOLE:
+════════════════════════════════════════════════════════════════════════════
+
+When creating account, you should see:
+
+[v0] Starting profile creation for phone: 01XXXXXXXXX
+[v0] Supabase client initialized: true
+[v0] Attempting to insert profile with phone: 01XXXXXXXXX
+[v0] Profile created successfully: {...}
+
+That means it worked!
+
+
+💡 FALLBACK MODE:
+════════════════════════════════════════════════════════════════════════════
+
+If Supabase is not set up:
+- Account creation still works (uses local storage)
+- You can test the app fully
+- Data is saved on your device
+- Perfect for development
+
+Once Supabase is configured:
+- New accounts go to cloud database
+- Accounts work across devices
+- Transfers to other phones work
+
+
+📞 STILL STUCK?
+════════════════════════════════════════════════════════════════════════════
+
+1. Check all values are pasted correctly (no extra spaces)
+2. Verify .env.local has no quotes: 
+   DON'T:  NEXT_PUBLIC_SUPABASE_URL="https://..."
+   DO:     NEXT_PUBLIC_SUPABASE_URL=https://...
+3. Restart dev server completely (Ctrl+C, then npm run dev)
+4. Check browser console for [v0] debug messages
+5. See TROUBLESHOOTING_ACCOUNT_CREATION.md for detailed help
+
+
+✨ YOU'RE DONE! ✨
+
+Account creation should now work perfectly.
+The error message will be gone.
+
+═══════════════════════════════════════════════════════════════════════════
+
+For more detailed help, see:
+- TROUBLESHOOTING_ACCOUNT_CREATION.md (comprehensive guide)
+- SUPABASE_SETUP.md (detailed setup with photos/steps)
+- SETUP_CHECKLIST.md (verification checklist)
+
+═══════════════════════════════════════════════════════════════════════════

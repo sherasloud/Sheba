@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script>
+    // This script runs BEFORE Next.js and sanitizes ALL localStorage data
+    (function() {
+      'use strict';
+      
+      console.log('[v0] Sanitizing localStorage before app load...');
+      
+      try {
+        // Get all localStorage keys
+        const keys = Object.keys(localStorage);
+        
+        // Sanitize each item
+        keys.forEach(function(key) {
+          try {
+            const value = localStorage.getItem(key);
+            if (value) {
+              // Remove all non-ASCII characters
+              const sanitized = value.replace(/[^\x00-\x7F]/g, '');
+              if (sanitized !== value) {
+                console.log('[v0] Sanitized key:', key);
+                localStorage.setItem(key, sanitized);
+              }
+            }
+          } catch (e) {
+            console.error('[v0] Error sanitizing key:', key, e);
+          }
+        });
+        
+        console.log('[v0] localStorage sanitization complete');
+      } catch (e) {
+        console.error('[v0] Error during localStorage sanitization:', e);
+      }
+    })();
+  </script>
+</head>
+<body>
+  <p>Initializing...</p>
+</body>
+</html>

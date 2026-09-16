@@ -1,0 +1,655 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Reset all margins and paddings */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  touch-action: manipulation;
+  -ms-touch-action: manipulation;
+}
+
+/* Enhanced mobile optimization for Android and iOS */
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+  background-color: #f5f5f5;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  scroll-behavior: smooth;
+  /* Enhanced mobile support */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  /* Added stronger zoom prevention */
+  touch-action: pan-x pan-y;
+  -ms-touch-action: pan-x pan-y;
+}
+
+/* Disable scrolling on phone and pin pages */
+body {
+  overflow-x: hidden;
+  /* Added support for safe areas on iOS devices with notches */
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+/* Prevent any scrolling on authentication pages */
+.no-scroll {
+  overflow: hidden !important;
+  height: 100vh !important;
+  position: fixed !important;
+}
+
+/* Ensure mobile viewport is properly handled */
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+  background: transparent;
+}
+
+/* Custom scrollbar for other pages */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Enhanced mobile container with better Android/iOS support */
+.mobile-container {
+  width: 100%;
+  max-width: 430px;
+  min-height: 100vh;
+  height: 100%;
+  margin: 0 auto;
+  background: white;
+  position: relative;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  will-change: scroll-position;
+  contain: layout style paint;
+  /* Enhanced mobile support */
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+/* Mobile container styles */
+.mobile-container {
+  max-width: 428px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background: white;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Fix for mobile viewport height issues */
+.mobile-container.full-height {
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Optimized for larger screens */
+@media (min-width: 500px) {
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f5f5f5;
+    min-height: 100vh;
+  }
+
+  .mobile-container {
+    width: 375px;
+    max-width: 100%;
+    min-height: 667px;
+    height: 90vh;
+    max-height: 812px;
+    border-radius: 24px;
+    margin: 20px auto;
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.15);
+    border: 1px solid #e0e0e0;
+    position: relative;
+    overflow: hidden;
+  }
+}
+
+/* Optimized device frame */
+@media (min-width: 500px) {
+  .mobile-frame {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 24px;
+    background: #111;
+    border-top-left-radius: 24px;
+    border-top-right-radius: 24px;
+    z-index: 1000;
+  }
+
+  .mobile-frame:after {
+    content: "";
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 8px;
+    background: #333;
+    border-radius: 4px;
+  }
+
+  .mobile-content-wrapper {
+    height: 100%;
+    padding-top: 24px;
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .mobile-content-wrapper::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Enhanced touch targets for better mobile interaction */
+button,
+.btn,
+a {
+  min-height: 44px;
+  min-width: 44px;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  cursor: pointer;
+  /* Enhanced touch feedback */
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  transition: transform 0.1s ease, background-color 0.2s ease;
+}
+
+button:active,
+.btn:active,
+a:active {
+  transform: scale(0.98);
+}
+
+/* Enhanced input fields with better mobile keyboard support */
+input,
+textarea,
+select {
+  font-size: 16px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  border-radius: 8px;
+  padding: 12px 16px;
+  width: 100%;
+  box-sizing: border-box;
+  will-change: contents;
+  /* Enhanced mobile input support */
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+  /* Stronger zoom prevention on inputs */
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  touch-action: manipulation;
+}
+
+/* Prevent iOS zoom on input focus */
+@media screen and (max-width: 768px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+    transform: translateZ(0);
+  }
+}
+
+/* Remove default link styles */
+a {
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Enhanced safe area support for notched devices */
+.safe-area-top {
+  padding-top: env(safe-area-inset-top);
+  padding-top: constant(safe-area-inset-top); /* iOS 11.0 */
+}
+
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-bottom: constant(safe-area-inset-bottom); /* iOS 11.0 */
+}
+
+.safe-area-left {
+  padding-left: env(safe-area-inset-left);
+  padding-left: constant(safe-area-inset-left); /* iOS 11.0 */
+}
+
+.safe-area-right {
+  padding-right: env(safe-area-inset-right);
+  padding-right: constant(safe-area-inset-right); /* iOS 11.0 */
+}
+
+/* Optimized mobile utilities */
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .touch-manipulation {
+    touch-action: manipulation;
+  }
+
+  .no-tap-highlight {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .mobile-page {
+    min-height: 100vh;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background: white;
+    width: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    contain: layout style paint;
+  }
+
+  .mobile-header {
+    background: #29a9eb;
+    color: white;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    min-height: 60px;
+    flex-shrink: 0;
+    width: 100%;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    will-change: transform;
+  }
+
+  .mobile-content {
+    flex: 1;
+    padding: 16px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    -webkit-overflow-scrolling: touch;
+    contain: layout style paint;
+  }
+
+  .mobile-button {
+    background: #29a9eb;
+    color: white;
+    padding: 16px;
+    border-radius: 8px;
+    border: none;
+    font-size: 16px;
+    font-weight: 500;
+    width: 100%;
+    min-height: 48px;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+  }
+
+  .mobile-button:hover {
+    background: #2196d3;
+  }
+
+  .mobile-button:active {
+    transform: scale(0.98);
+  }
+
+  .mobile-button:disabled {
+    background: #cccccc;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .mobile-input {
+    border: 1px solid #e5e5e5;
+    border-radius: 8px;
+    padding: 16px;
+    font-size: 16px;
+    width: 100%;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+    transition: border-color 0.2s ease;
+  }
+
+  .mobile-input:focus {
+    outline: none;
+    border-color: #29a9eb;
+    box-shadow: 0 0 0 2px rgba(41, 169, 235, 0.2);
+  }
+
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .prevent-zoom {
+    touch-action: manipulation;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+
+  .enable-text-select {
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
+  }
+
+  .smooth-scroll {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+
+  .hardware-accelerated {
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    will-change: transform;
+  }
+}
+
+/* Enhanced iOS height fixes with better support */
+@supports (-webkit-touch-callout: none) {
+  .mobile-container {
+    height: -webkit-fill-available;
+    min-height: -webkit-fill-available;
+  }
+
+  html,
+  body {
+    height: -webkit-fill-available;
+    min-height: -webkit-fill-available;
+  }
+}
+
+/* Enhanced mobile viewport height fixes */
+:root {
+  --app-height: 100vh;
+  --safe-area-inset-top: env(safe-area-inset-top);
+  --safe-area-inset-bottom: env(safe-area-inset-bottom);
+  --safe-area-inset-left: env(safe-area-inset-left);
+  --safe-area-inset-right: env(safe-area-inset-right);
+}
+
+@media screen and (max-width: 768px) {
+  .mobile-container {
+    height: var(--app-height);
+    max-width: 100%;
+    margin: 0;
+    border-radius: 0;
+    box-shadow: none;
+    border: none;
+  }
+}
+
+/* Optimized device frame */
+@media (min-width: 500px) {
+  .mobile-frame {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 24px;
+    background: #111;
+    border-top-left-radius: 24px;
+    border-top-right-radius: 24px;
+    z-index: 1000;
+  }
+
+  .mobile-frame:after {
+    content: "";
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 8px;
+    background: #333;
+    border-radius: 4px;
+  }
+
+  .mobile-content-wrapper {
+    height: 100%;
+    padding-top: 24px;
+    overflow-y: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .mobile-content-wrapper::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Enhanced bottom navigation with better safe area support */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  border-top: 1px solid #f0f0f0;
+  z-index: 100;
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-bottom: constant(safe-area-inset-bottom); /* iOS 11.0 */
+  max-width: 430px;
+  margin: 0 auto;
+  will-change: transform;
+  /* Enhanced mobile support */
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+/* Bottom navigation styles */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+}
+
+@media (min-width: 500px) {
+  .bottom-nav {
+    border-bottom-left-radius: 24px;
+    border-bottom-right-radius: 24px;
+  }
+}
+
+/* Enhanced content spacing for bottom nav with safe area support */
+.has-bottom-nav {
+  padding-bottom: calc(70px + env(safe-area-inset-bottom));
+  padding-bottom: calc(70px + constant(safe-area-inset-bottom)); /* iOS 11.0 */
+}
+
+/* Ensure content doesn't go behind bottom nav */
+.main-content {
+  padding-bottom: calc(80px + env(safe-area-inset-bottom));
+  padding-bottom: calc(80px + constant(safe-area-inset-bottom)); /* iOS 11.0 */
+}
+
+/* Phone number entry specific styles */
+.phone-entry-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  height: 100%;
+  width: 100%;
+  background-color: #29a9eb;
+  color: white;
+  padding: 16px;
+}
+
+.phone-entry-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 20px;
+}
+
+.phone-input {
+  background: white;
+  color: black;
+  border: none;
+  border-radius: 8px;
+  padding: 16px;
+  font-size: 18px;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.phone-button {
+  background: white;
+  color: #29a9eb;
+  border: none;
+  border-radius: 8px;
+  padding: 16px;
+  font-size: 18px;
+  font-weight: 500;
+  width: 100%;
+  margin-top: 24px;
+  cursor: pointer;
+}
+
+/* Enhanced animation performance for mobile */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+  -webkit-animation: fadeIn 0.5s ease-out forwards;
+}
+
+/* Added slide-in animation for real-time notifications */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translate3d(100%, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes slideOut {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    opacity: 0;
+    transform: translate3d(100%, 0, 0);
+  }
+}
+
+.animate-slide-in {
+  animation: slideIn 0.3s ease-out forwards;
+  -webkit-animation: slideIn 0.3s ease-out forwards;
+}
+
+.animate-slide-out {
+  animation: slideOut 0.3s ease-in forwards;
+  -webkit-animation: slideOut 0.3s ease-in forwards;
+}
+
+/* Pulse animation for notification bell */
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+.animate-pulse {
+  animation: pulse 0.5s ease-in-out;
+  -webkit-animation: pulse 0.5s ease-in-out;
+}

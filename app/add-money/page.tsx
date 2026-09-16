@@ -1,0 +1,873 @@
+"use client"
+
+import { useState, useEffect } from "react"
+import { ArrowLeft, Copy, Check } from "lucide-react"
+import { useRouter } from "next/navigation"
+import Image from "next/image"
+import VerificationRequired from "@/components/verification-required"
+import { cardProviders } from "@/lib/data/static-data"
+
+export default function AddMoneyPage() {
+  // SSLCommerz Payment Gateway Information
+  const SSLCOMMERZ_STORE_ID = process.env.NEXT_PUBLIC_SSLCOMMERZ_STORE_ID || "shusto0live"
+  const SSLCOMMERZ_SANDBOX_URL = "https://sandbox.sslcommerz.com/EasyCheckOut"
+  const SSLCOMMERZ_LIVE_URL = "https://securepay.sslcommerz.com/EasyCheckOut"
+
+  const router = useRouter()
+  const [isVerified, setIsVerified] = useState(false)
+  const [selectedMethod, setSelectedMethod] = useState("")
+  const [selectedCardType, setSelectedCardType] = useState("") // New state for selected card type
+  const [step, setStep] = useState(1)
+  const [amount, setAmount] = useState("")
+  const [pin, setPin] = useState("")
+  const [error, setError] = useState("")
+  const [success, setSuccess] = useState(false)
+  const [balance, setBalance] = useState(0)
+  const [cardBalance, setCardBalance] = useState(0)
+  const [isLoading, setIsLoading] = useState(false)
+  const [transactionIdCopied, setTransactionIdCopied] = useState(false)
+  const [transactionId, setTransactionId] = useState("")
+
+  // Bank details
+  const [bankDetails, setBankDetails] = useState({
+    bankName: "",
+    accountNumber: "",
+    routingNumber: "",
+  })
+
+  // Card details
+  const [cardDetails, setCardDetails] = useState({
+    cardNumber: "",
+    expiryDate: "",
+    cvv: "",
+    cardholderName: "",
+  })
+
+  useEffect(() => {
+    // Check verification status
+    const userData = localStorage.getItem("userData")
+    const storedVerified = localStorage.getItem("isVerified")
+
+    if (userData) {
+      const user = JSON.parse(userData)
+      setIsVerified(user.isVerified || false)
+    } else if (storedVerified) {
+      setIsVerified(storedVerified === "true")
+    }
+
+    const fetchBalance = async () => {
+      const currentPhone = localStorage.getItem("phoneNumber")
+      if (currentPhone) {
+        try {
+          const response = await fetch(`/api/balance?phone=${currentPhone}`)
+          const data = await response.json()
+          if (data.balance !== undefined) {
+            setBalance(data.balance)
+            localStorage.setItem("userBalance", data.balance.toString())
+            localStorage.setItem(`userBalance_${currentPhone}`, data.balance.toString())
+          }
+        } catch (error) {
+          console.error("[v0] Failed to fetch balance from API:", error)
+          // Fallback to localStorage
+          const storedBalance = localStorage.getItem("userBalance")
+          if (storedBalance) {
+            setBalance(Number(storedBalance))
+          }
+        }
+      }
+    }
+
+    fetchBalance()
+
+    const storedCardBalance = localStorage.getItem("cardBalance")
+    if (storedCardBalance) {
+      setCardBalance(Number(storedCardBalance))
+    } else {
+      const initialCardBalance = 85000 // Tk85,000 initial card balance
+      setCardBalance(initialCardBalance)
+      localStorage.setItem("cardBalance", initialCardBalance.toString())
+    }
+  }, [])
+
+  const handleMethodSelect = (method: string) => {
+    setSelectedMethod(method)
+    if (method === "card") {
+      setStep(2) // Go to card type selection
+    } else {
+      setStep(3) // Go directly to amount for bank
+    }
+    setError("")
+  }
+
+  const handleCardTypeSelect = (cardType: string) => {
+    console.log("[v0] Card type selected:", cardType)
+    setSelectedCardType(cardType)
+    localStorage.setItem("selectedCardType", cardType)
+    
+    const userAmount = prompt("Enter amount to add (Minimum: 10 Tk):", "")
+    console.log("[v0] User entered amount:", userAmount)
+    
+    if (!userAmount || isNaN(Number(userAmount)) || Number(userAmount) < 10) {
+      setError("Please enter a valid amount (minimum 10 Tk)")
+      return
+    }
+    
+    // Calculate total amount with commission (2% SSLCommerz fee)
+    const userAmountNum = Number(userAmount)
+    const commissionRate = 0.02 // 2% commission
+    const commission = Math.round(userAmountNum * commissionRate * 100) / 100
+    const totalAmount = userAmountNum + commission
+    
+    console.log("[v0] Amount calculation - User: Tk" + userAmountNum + ", Commission (2%): Tk" + commission + ", Total: Tk" + totalAmount)
+    
+    const transactionRef = `SHEBA_${Date.now()}_${Math.random().toString(36).substr(2, 9).toUpperCase()}`
+    console.log("[v0] Transaction ref:", transactionRef)
+    localStorage.setItem("transactionRef", transactionRef)
+    localStorage.setItem("addMoneyAmount", String(userAmountNum)) // Store user's requested amount
+    localStorage.setItem("commissionAmount", String(commission)) // Store commission for later
+    
+    // Create and submit form to SSLCommerz
+    const form = document.createElement("form")
+    form.method = "POST"
+    form.action = "https://pay.sslcommerz.com/gwprocess/v4/api.php"
+    form.style.display = "none"
+    
+    console.log("[v0] Creating form with store_id:", SSLCOMMERZ_STORE_ID)
+    
+    const fields: Record<string, string> = {
+      store_id: SSLCOMMERZ_STORE_ID,
+      store_passwd: "6A0D6039B299110857",
+      total_amount: String(totalAmount), // Send total (user amount + commission)
+      currency: "BDT",
+      tran_id: transactionRef,
+      success_url: `${typeof window !== 'undefined' ? window.location.origin : ''}/api/sslcommerz/success`,
+      fail_url: `${typeof window !== 'undefined' ? window.location.origin : ''}/api/sslcommerz/fail`,
+      cancel_url: `${typeof window !== 'undefined' ? window.location.origin : ''}/add-money`,
+      cus_name: "Customer",
+      cus_email: "customer@sheba.com",
+      cus_phone: "01000000000",
+      cus_add1: "Dhaka",
+      ship_name: "Customer",
+      ship_add1: "Dhaka",
+      shipping_method: "NO",
+      product_name: "Add Money to Sheba",
+      product_category: "Wallet Top-up",
+      product_profile: "general"
+    }
+    
+    console.log("[v0] Form fields:", fields)
+    
+    Object.entries(fields).forEach(([key, value]) => {
+      const input = document.createElement("input")
+      input.type = "hidden"
+      input.name = key
+      input.value = value
+      form.appendChild(input)
+    })
+    
+    document.body.appendChild(form)
+    console.log("[v0] Form appended to body, submitting...")
+    console.log("[v0] Form action:", form.action)
+    console.log("[v0] Form method:", form.method)
+    
+    // Try to submit
+    try {
+      form.submit()
+      console.log("[v0] Form submitted successfully")
+    } catch (err) {
+      console.log("[v0] Form submission error:", err)
+    }
+  }
+
+  const handleAmountNext = () => {
+    if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) {
+      setError("Please enter a valid amount")
+      return
+    }
+
+    if (Number(amount) < 10) {
+      setError("Minimum amount is Tk10")
+      return
+    }
+
+    if (Number(amount) > 50000) {
+      setError("Maximum amount is Tk50,000 per transaction")
+      return
+    }
+
+    // Check card balance for card method
+    if (selectedMethod === "card" && Number(amount) > cardBalance) {
+      setError(`Insufficient card balance. Please try a lower amount`)
+      return
+    }
+
+    setStep(4) // Go to details step
+    setError("")
+  }
+
+  const validateBankDetails = () => {
+    if (!bankDetails.bankName) {
+      setError("Please select a bank")
+      return false
+    }
+    if (!bankDetails.accountNumber || bankDetails.accountNumber.length < 10) {
+      setError("Please enter a valid account number (minimum 10 digits)")
+      return false
+    }
+    if (!/^\d+$/.test(bankDetails.accountNumber)) {
+      setError("Account number should contain only numbers")
+      return false
+    }
+    return true
+  }
+
+  const validateCardNumberLuhn = (cardNumber: string) => {
+    const digits = cardNumber.replace(/\s/g, "")
+    if (!/^\d{16}$/.test(digits)) return false
+
+    let sum = 0
+    let isEven = false
+
+    for (let i = digits.length - 1; i >= 0; i--) {
+      let digit = Number.parseInt(digits[i])
+
+      if (isEven) {
+        digit *= 2
+        if (digit > 9) digit -= 9
+      }
+
+      sum += digit
+      isEven = !isEven
+    }
+
+    return sum % 10 === 0
+  }
+
+  const validateCardDetails = () => {
+    const cleanCardNumber = cardDetails.cardNumber.replace(/\s/g, "")
+
+    if (!cleanCardNumber || cleanCardNumber.length !== 16) {
+      setError("Please enter a valid 16-digit card number")
+      return false
+    }
+
+    if (!validateCardNumberLuhn(cleanCardNumber)) {
+      setError("Invalid card number. Please check and try again")
+      return false
+    }
+
+    if (!cardDetails.expiryDate || !/^\d{2}\/\d{2}$/.test(cardDetails.expiryDate)) {
+      setError("Please enter expiry date in MM/YY format")
+      return false
+    }
+
+    const [month, year] = cardDetails.expiryDate.split("/")
+    const expiryDate = new Date(2000 + Number.parseInt(year), Number.parseInt(month) - 1)
+    const today = new Date()
+    if (expiryDate < today) {
+      setError("Card has expired")
+      return false
+    }
+
+    if (!cardDetails.cvv || cardDetails.cvv.length < 3) {
+      setError("Please enter a valid CVV")
+      return false
+    }
+    if (!cardDetails.cardholderName || cardDetails.cardholderName.length < 2) {
+      setError("Please enter cardholder name")
+      return false
+    }
+    return true
+  }
+
+  const handleDetailsNext = () => {
+    let isValid = false
+
+    if (selectedMethod === "bank") {
+      isValid = validateBankDetails()
+    } else if (selectedMethod === "card") {
+      isValid = validateCardDetails()
+    }
+
+    if (isValid) {
+      setStep(5) // Go to PIN step
+      setError("")
+    }
+  }
+
+  const handleBackStep = () => {
+    if (step === 5) {
+      setStep(4) // From PIN to Details
+    } else if (step === 4) {
+      setStep(3) // From Details to Amount
+    } else if (step === 3) {
+      if (selectedMethod === "card") {
+        setStep(2) // From Amount (Card) to Card Type Selection
+      } else {
+        setStep(1) // From Amount (Bank) to Method Selection
+      }
+    } else if (step === 2) {
+      setStep(1) // From Card Type Selection to Method Selection
+    } else if (step === 1) {
+      router.push("/") // Go back to home if on first step
+    }
+    setError("") // Clear error on back navigation
+  }
+
+  const formatCardNumber = (value: string) => {
+    const v = value.replace(/\s+/g, "").replace(/[^0-9]/gi, "")
+    const matches = v.match(/\d{4,16}/g)
+    const match = (matches && matches[0]) || ""
+    const parts = []
+    for (let i = 0, len = match.length; i < len; i += 4) {
+      parts.push(match.substring(i, i + 4))
+    }
+    if (parts.length) {
+      return parts.join(" ")
+    } else {
+      return v
+    }
+  }
+
+  const formatExpiryDate = (value: string) => {
+    const v = value.replace(/\s+/g, "").replace(/[^0-9]/gi, "")
+    if (v.length >= 2) {
+      return v.substring(0, 2) + "/" + v.substring(2, 4)
+    }
+    return v
+  }
+
+  const handleAddMoney = async () => {
+    if (!pin || pin.length !== 6) {
+      setError("Please enter your 6-digit PIN")
+      return
+    }
+
+    const correctPin = localStorage.getItem("userPIN") || "123456"
+    if (pin !== correctPin) {
+      setError("Incorrect PIN")
+      return
+    }
+
+    if (selectedMethod === "card") {
+      // Check if card has sufficient balance
+      if (Number(amount) > cardBalance) {
+        setError(`Insufficient card balance. Available: Tk${cardBalance.toLocaleString()}`)
+        return
+      }
+
+      // Validate all card details are properly filled
+      if (!validateCardDetails()) {
+        return
+      }
+    }
+
+    if (selectedMethod === "bank") {
+      if (!validateBankDetails()) {
+        return
+      }
+    }
+
+    setIsLoading(true)
+    setError("")
+
+    try {
+      // Simulate processing time
+      await new Promise((resolve) => setTimeout(resolve, 1500))
+
+      const currentPhone = localStorage.getItem("phoneNumber")
+      if (!currentPhone) {
+        setError("Phone number not found. Please log in again.")
+        setIsLoading(false)
+        return
+      }
+
+      const userData = JSON.parse(localStorage.getItem("userData") || "{}")
+
+      // Call the add-money API
+      const response = await fetch("/api/add-money", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          phoneNumber: currentPhone,
+          amount: Number(amount),
+          method: selectedMethod,
+          cardType: selectedCardType,
+          userEmail: userData.email,
+          userName: userData.name || "Customer",
+        }),
+      })
+
+      const result = await response.json()
+
+      if (!result.success) {
+        setError(result.message || "Transaction failed. Please try again.")
+        setIsLoading(false)
+        return
+      }
+
+      console.log("[v0] Add Money successful, new balance:", result.newBalance)
+
+      if (selectedMethod === "card") {
+        const newCardBalance = cardBalance - Number(amount)
+        setCardBalance(newCardBalance)
+        localStorage.setItem("cardBalance", newCardBalance.toString())
+      }
+
+      const newShebaBalance = result.newBalance
+      setBalance(newShebaBalance)
+      localStorage.setItem("userBalance", newShebaBalance.toString())
+      localStorage.setItem(`userBalance_${currentPhone}`, newShebaBalance.toString())
+
+      const newTransactionId = `SHB${Date.now()}${Math.random().toString(36).substring(2, 8).toUpperCase()}`
+      setTransactionId(newTransactionId)
+
+      const transaction = {
+        id: Date.now(),
+        transactionId: newTransactionId,
+        type: selectedMethod === "card" ? "Card to Sheba" : "Bank to Sheba",
+        amount: Number(amount),
+        method: selectedMethod === "card" ? `${selectedCardType} Card` : bankDetails.bankName, // Use selected card type
+        status: "Completed",
+        date: new Date().toLocaleDateString(),
+        time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        fee: 0,
+      }
+
+      const transactions = JSON.parse(localStorage.getItem("transactions") || "[]")
+      transactions.push(transaction)
+      localStorage.setItem("transactions", JSON.stringify(transactions))
+
+      window.dispatchEvent(
+        new StorageEvent("storage", {
+          key: "userBalance",
+          newValue: newShebaBalance.toString(),
+          oldValue: balance.toString(),
+        }),
+      )
+
+      setIsLoading(false)
+      setSuccess(true)
+    } catch (error) {
+      console.error("[v0] Add Money error:", error)
+      setIsLoading(false)
+      setError("Transaction failed. Please try again.")
+    }
+  }
+
+  if (success) {
+    return (
+      <div className="flex flex-col h-screen bg-white">
+        <div className="bg-[#29a9eb] text-white p-4 flex items-center">
+          <button onClick={() => router.push("/")} className="mr-4">
+            <ArrowLeft size={24} />
+          </button>
+          <div className="text-xl font-medium">Add Money</div>
+        </div>
+
+        <div className="flex flex-col items-center justify-center flex-1 p-6">
+          <div className="w-20 h-20 bg-[#29a9eb] rounded-full flex items-center justify-center mb-6">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M20 6L9 17L4 12" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </div>
+
+          <h2 className="text-2xl font-bold mb-2">Success!</h2>
+          <p className="text-gray-600 mb-4">Money added successfully</p>
+
+          <div className="bg-gray-100 w-full rounded-lg p-4 mb-6">
+            <div className="flex justify-between mb-2">
+              <span className="text-gray-600">Amount:</span>
+              <span className="font-bold">Tk{amount}</span>
+            </div>
+            <div className="flex justify-between mb-2">
+              <span className="text-gray-600">Method:</span>
+              <span className="font-bold">
+                {selectedMethod === "card" ? `${selectedCardType} Card` : bankDetails.bankName}
+              </span>
+            </div>
+            <div className="flex justify-between mb-2">
+              <span className="text-gray-600">Sheba Balance:</span>
+              <span className="font-bold">Tk{balance.toLocaleString()}</span>
+            </div>
+            {selectedMethod === "card" && (
+              <div className="flex justify-between mb-2">
+                <span className="text-gray-600">Card Balance:</span>
+                <span className="font-bold">Tk{cardBalance.toLocaleString()}</span>
+              </div>
+            )}
+            <div className="flex justify-between">
+              <span className="text-gray-600">Transaction ID:</span>
+              <span className="font-bold">{Math.random().toString(36).substring(2, 10).toUpperCase()}</span>
+            </div>
+          </div>
+
+          <button onClick={() => router.push("/")} className="bg-[#29a9eb] text-white py-3 px-6 rounded-md w-full">
+            Done
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="flex flex-col h-screen bg-white">
+      <div className="bg-[#29a9eb] text-white p-4 flex items-center">
+        <button onClick={() => router.push("/")} className="mr-4">
+          <ArrowLeft size={24} />
+        </button>
+        <div className="text-xl font-medium">Add Money</div>
+      </div>
+
+      {step === 1 && (
+        <div className="p-6 flex flex-col flex-1">
+          <div className="text-2xl font-bold mb-2">Add Money</div>
+          <div className="text-gray-600 mb-8">Choose a method to add money</div>
+
+          <div className="space-y-4">
+            <button
+              onClick={() => handleMethodSelect("bank")}
+              className="w-full border rounded-lg p-4 flex items-center hover:bg-gray-50 transition-colors"
+            >
+              <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mr-4">
+                <span className="text-green-500 text-xl">🏦</span>
+              </div>
+              <div className="text-left">
+                <h3 className="font-medium">Bank To Sheba</h3>
+                <p className="text-sm text-gray-500">Add money from your bank account</p>
+              </div>
+            </button>
+            <button
+              onClick={() => handleMethodSelect("card")}
+              className="w-full border rounded-lg p-4 flex items-center hover:bg-gray-50 transition-colors"
+            >
+              <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center mr-4">
+                <span className="text-purple-500 text-xl">💳</span>
+              </div>
+              <div className="text-left">
+                <h3 className="font-medium">Card To Sheba</h3>
+                <p className="text-sm text-gray-500">Add money from your credit/debit card</p>
+              </div>
+            </button>
+            <button
+              onClick={() => router.push("/add-money-stripe")}
+              className="w-full border rounded-lg p-4 flex items-center hover:bg-gray-50 transition-colors"
+            >
+              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                <span className="text-blue-500 text-xl">🔐</span>
+              </div>
+              <div className="text-left">
+                <h3 className="font-medium">Stripe Payment</h3>
+                <p className="text-sm text-gray-500">VISA • Mastercard • Amex (Secure)</p>
+              </div>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {step === 2 && selectedMethod === "card" && (
+        <div className="p-6 flex flex-col flex-1">
+          <div className="text-2xl font-bold mb-2">Select Card Type</div>
+          <div className="text-gray-600 mb-6">Choose your card provider</div>
+
+          {selectedCardType && (
+            <div className="mb-6 p-4 bg-blue-50 border border-[#29a9eb] rounded-lg flex items-center justify-center">
+              <Image
+                src={cardProviders.find((p) => p.name === selectedCardType)?.logo || "/placeholder.svg"}
+                alt={selectedCardType}
+                width={60}
+                height={40}
+                className="object-contain mr-3"
+              />
+              <span className="font-medium text-[#29a9eb]">{selectedCardType} Selected</span>
+            </div>
+          )}
+
+          <div className="grid grid-cols-2 gap-4">
+            {cardProviders.map((provider) => (
+              <button
+                key={provider.name}
+                onClick={() => handleCardTypeSelect(provider.name)}
+                className={`flex flex-col items-center justify-center p-4 border rounded-lg transition-colors min-h-[120px] ${
+                  selectedCardType === provider.name ? "border-[#29a9eb] bg-blue-50" : "hover:bg-gray-50"
+                }`}
+              >
+                <Image
+                  src={provider.logo || "/placeholder.svg"}
+                  alt={provider.name}
+                  width={80}
+                  height={50}
+                  className="object-contain mb-2"
+                />
+                <span className="text-sm font-medium">{provider.name}</span>
+              </button>
+            ))}
+          </div>
+
+          <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+            <div className="text-sm text-gray-600">
+              <span className="font-medium">Current Balance:</span> Tk{balance.toLocaleString()}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {step === 3 && (
+        <div className="p-6 flex flex-col flex-1">
+          <div className="text-2xl font-bold mb-2">Enter Amount</div>
+          <div className="text-gray-600 mb-8">
+            {selectedMethod === "card" ? `${selectedCardType} to Sheba` : "Bank to Sheba"}
+          </div>
+
+          <div className="mb-2 flex items-center">
+            <div className="mr-2">Tk</div>
+            <div>Amount (Tk)</div>
+          </div>
+
+          <input
+            type="text"
+            className="border rounded-md p-4 mb-2 text-center text-2xl"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+            placeholder="0"
+          />
+
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+            <div className="text-sm text-blue-800">
+              <div>Your Sheba Balance: Tk{balance.toLocaleString()}</div>
+              {amount && <div>New Sheba Balance: Tk{(balance + Number(amount || 0)).toLocaleString()}</div>}
+            </div>
+          </div>
+
+          {error && <div className="text-red-500 mb-4">{error}</div>}
+
+          <div className="flex space-x-2 mt-auto">
+            <button
+              className="flex-1 border border-gray-300 p-4 rounded-md touch-manipulation"
+              onClick={handleBackStep}
+            >
+              Back
+            </button>
+            <button className="flex-1 mobile-button" onClick={handleAmountNext}>
+              Next
+            </button>
+          </div>
+        </div>
+      )}
+
+      {step === 4 && selectedMethod === "bank" && (
+        <div className="p-6 flex flex-col flex-1">
+          <div className="text-2xl font-bold mb-2">Bank Details</div>
+          <div className="text-gray-600 mb-8">Amount: Tk{amount}</div>
+
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-2">Select Bank</label>
+              <select
+                className="w-full border rounded-md p-3"
+                value={bankDetails.bankName}
+                onChange={(e) => setBankDetails({ ...bankDetails, bankName: e.target.value })}
+              >
+                <option value="">Choose your bank</option>
+                <option value="Sonali Bank Limited">Sonali Bank Limited</option>
+                <option value="Janata Bank Limited">Janata Bank Limited</option>
+                <option value="Agrani Bank Limited">Agrani Bank Limited</option>
+                <option value="Rupali Bank Limited">Rupali Bank Limited</option>
+                <option value="BRAC Bank Limited">BRAC Bank Limited</option>
+                <option value="Dutch-Bangla Bank Limited">Dutch-Bangla Bank Limited</option>
+                <option value="City Bank Limited">City Bank Limited</option>
+                <option value="Eastern Bank Limited">Eastern Bank Limited</option>
+                <option value="Prime Bank Limited">Prime Bank Limited</option>
+                <option value="Southeast Bank Limited">Southeast Bank Limited</option>
+                <option value="Dhaka Bank Limited">Dhaka Bank Limited</option>
+                <option value="AB Bank Limited">AB Bank Limited</option>
+                <option value="Islami Bank Bangladesh Limited">Islami Bank Bangladesh Limited</option>
+                <option value="Al-Arafah Islami Bank Limited">Al-Arafah Islami Bank Limited</option>
+                <option value="Social Islami Bank Limited">Social Islami Bank Limited</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">Account Number</label>
+              <input
+                type="text"
+                className="w-full border rounded-md p-3"
+                value={bankDetails.accountNumber}
+                onChange={(e) => setBankDetails({ ...bankDetails, accountNumber: e.target.value.replace(/\D/g, "") })}
+                placeholder="Enter your account number"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">Routing Number (Optional)</label>
+              <input
+                type="text"
+                className="w-full border rounded-md p-3"
+                value={bankDetails.routingNumber}
+                onChange={(e) => setBankDetails({ ...bankDetails, routingNumber: e.target.value })}
+                placeholder="Enter routing number if required"
+              />
+            </div>
+          </div>
+
+          {error && <div className="text-red-500 mb-4">{error}</div>}
+
+          <div className="flex space-x-2 mt-auto">
+            <button
+              className="flex-1 border border-gray-300 p-4 rounded-md touch-manipulation"
+              onClick={handleBackStep}
+            >
+              Back
+            </button>
+            <button className="flex-1 mobile-button" onClick={handleDetailsNext}>
+              Next
+            </button>
+          </div>
+        </div>
+      )}
+
+      {step === 4 && selectedMethod === "card" && (
+        <div className="p-6 flex flex-col flex-1">
+          <div className="text-2xl font-bold mb-2">Card Details</div>
+          <div className="text-gray-600 mb-8">
+            Amount: Tk{amount} ({selectedCardType})
+          </div>
+
+          {/* Test Card Information */}
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+            <h4 className="font-semibold text-blue-900 mb-3">Test Card Numbers (Sandbox)</h4>
+            <div className="space-y-2 text-sm text-blue-800">
+              <div className="flex justify-between">
+                <span>Visa (Success):</span>
+                <span className="font-mono font-bold">4111111111111111</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Mastercard (Success):</span>
+                <span className="font-mono font-bold">5555555555554444</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Expiry (any future):</span>
+                <span className="font-mono font-bold">12/28 or 12/29</span>
+              </div>
+              <div className="flex justify-between">
+                <span>CVV:</span>
+                <span className="font-mono font-bold">Any 3 digits (e.g., 123)</span>
+              </div>
+              <p className="text-xs italic mt-3">These are sandbox test cards - no real money is charged</p>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-2">Card Number</label>
+              <input
+                type="text"
+                className="w-full border rounded-md p-3"
+                value={cardDetails.cardNumber}
+                onChange={(e) => setCardDetails({ ...cardDetails, cardNumber: formatCardNumber(e.target.value) })}
+                placeholder="1234 5678 9012 3456"
+                maxLength={19}
+              />
+            </div>
+
+            <div className="flex space-x-4">
+              <div className="flex-1">
+                <label className="block text-sm font-medium mb-2">Expiry Date</label>
+                <input
+                  type="text"
+                  className="w-full border rounded-md p-3"
+                  value={cardDetails.expiryDate}
+                  onChange={(e) => setCardDetails({ ...cardDetails, expiryDate: formatExpiryDate(e.target.value) })}
+                  placeholder="MM/YY"
+                  maxLength={5}
+                />
+              </div>
+              <div className="flex-1">
+                <label className="block text-sm font-medium mb-2">CVV</label>
+                <input
+                  type="text"
+                  className="w-full border rounded-md p-3"
+                  value={cardDetails.cvv}
+                  onChange={(e) => setCardDetails({ ...cardDetails, cvv: e.target.value.replace(/\D/g, "") })}
+                  placeholder="123"
+                  maxLength={3}
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">Cardholder Name</label>
+              <input
+                type="text"
+                className="w-full border rounded-md p-3"
+                value={cardDetails.cardholderName}
+                onChange={(e) => setCardDetails({ ...cardDetails, cardholderName: e.target.value })}
+                placeholder="Enter name as on card"
+              />
+            </div>
+          </div>
+
+          {error && <div className="text-red-500 mb-4">{error}</div>}
+
+          <div className="flex space-x-2 mt-auto">
+            <button
+              className="flex-1 border border-gray-300 p-4 rounded-md touch-manipulation"
+              onClick={handleBackStep}
+            >
+              Back
+            </button>
+            <button className="flex-1 mobile-button" onClick={handleDetailsNext}>
+              Next
+            </button>
+          </div>
+        </div>
+      )}
+
+      {step === 5 && (
+        <div className="p-6 flex flex-col flex-1">
+          <div className="text-2xl font-bold mb-2">Enter PIN</div>
+          <div className="text-gray-600 mb-1">Amount: Tk{amount}</div>
+          <div className="text-gray-600 mb-8">
+            {selectedMethod === "card" ? `From: ${selectedCardType} Card` : `From: ${bankDetails.bankName}`}
+          </div>
+
+          {selectedMethod === "card" && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4">
+              <div className="text-sm text-red-800">
+                <div>⚠️ Tk{amount} will be deducted from your card</div>
+              </div>
+            </div>
+          )}
+
+          <div className="mb-2 flex items-center">
+            <div className="mr-2">🔒</div>
+            <div>6-Digit PIN</div>
+          </div>
+
+          <input
+            type="password"
+            className="border rounded-md p-4 mb-2 text-center"
+            value={pin}
+            onChange={(e) => setPin(e.target.value)}
+            maxLength={6}
+            placeholder="••••••"
+          />
+
+          {error && <div className="text-red-500 mb-4">{error}</div>}
+
+          <div className="flex space-x-2 mt-auto">
+            <button
+              className="flex-1 border border-gray-300 p-4 rounded-md touch-manipulation"
+              onClick={handleBackStep}
+            >
+              Back
+            </button>
+            <button className="flex-1 mobile-button" onClick={handleAddMoney} disabled={isLoading}>
+              {isLoading ? "Processing..." : "Add Money"}
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}

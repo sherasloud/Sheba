@@ -1,0 +1,44 @@
+================================================================================
+                    SHEBA ACCOUNT CREATION ERROR - QUICK FIX
+================================================================================
+
+PROBLEM: Error when creating account - "আকাউন্ট তৈরি করতে সমস্যা হয়েছে"
+
+SOLUTION: Add Supabase configuration to .env.local
+
+STEPS:
+------
+
+1. Go to https://supabase.com
+
+2. Create new project or login
+
+3. Copy these values from Project Settings → API:
+   - Project URL (looks like: https://xxxx.supabase.co)
+   - Anon Key (starts with: eyJh...)
+
+4. Open .env.local file and update:
+   
+   NEXT_PUBLIC_SUPABASE_URL=your-project-url-here
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
+
+5. Create the database tables (SQL in SUPABASE_SETUP.md)
+
+6. Restart the dev server:
+   npm run dev
+
+7. Try creating account again ✅
+
+================================================================================
+
+FILES CHANGED:
+- /lib/supabase/data-service.ts ................. Better error logging
+- /app/onboarding/page.tsx .................... Improved error messages  
+- /.env.local ............................. Added Supabase config
+- /.env.example ............................ Added Supabase template
+
+DOCUMENTATION:
+- Read SUPABASE_SETUP.md for complete setup guide
+- Read ACCOUNT_CREATION_FIX.md for detailed explanation
+
+================================================================================

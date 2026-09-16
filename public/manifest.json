@@ -1,0 +1,59 @@
+{
+  "name": "Sheba - Mobile Money Transfer",
+  "short_name": "Sheba",
+  "description": "Fast and secure mobile money transfer application",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#29a9eb",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "/images/sheba-cloud-logo-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/images/sheba-cloud-logo-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["finance", "utilities"],
+  "lang": "en",
+  "dir": "ltr",
+  "prefer_related_applications": false,
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  },
+  "display_override": ["window-controls-overlay", "standalone"],
+  "shortcuts": [
+    {
+      "name": "Send Money",
+      "short_name": "Send",
+      "description": "Quick money transfer",
+      "url": "/send-money",
+      "icons": [{ "src": "/images/sheba-cloud-logo-192.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Recharge",
+      "short_name": "Recharge",
+      "description": "Mobile recharge",
+      "url": "/recharge",
+      "icons": [{ "src": "/images/sheba-cloud-logo-192.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Add Money",
+      "short_name": "Add Money",
+      "description": "Add money to wallet",
+      "url": "/add-money",
+      "icons": [{ "src": "/images/sheba-cloud-logo-192.png", "sizes": "96x96" }]
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script>
+    // Override btoa BEFORE any other code runs to handle Unicode characters
+    (function() {
+      const originalBtoa = window.btoa;
+      
+      window.btoa = function(str) {
+        try {
+          // Try original btoa first
+          return originalBtoa(str);
+        } catch (e) {
+          // If it fails (Unicode characters), use TextEncoder
+          try {
+            const encoder = new TextEncoder();
+            const bytes = encoder.encode(str);
+            let binary = '';
+            for (let i = 0; i < bytes.length; i++) {
+              binary += String.fromCharCode(bytes[i]);
+            }
+            return originalBtoa(binary);
+          } catch (encodeError) {
+            // If all else fails, remove non-ASCII characters
+            const asciiStr = str.replace(/[^\x00-\x7F]/g, '');
+            return originalBtoa(asciiStr);
+          }
+        }
+      };
+      
+      console.log('[v0] btoa override installed successfully');
+    })();
+  </script>
+</head>
+<body>
+   This file is loaded before Next.js to fix btoa errors 
+</body>
+</html>
