@@ -222,71 +222,49 @@ export default function ShebaToCardPage() {
   }
 
   if (success) {
-    const transactionId = `TRF${Date.now()}`
     return (
       <div className="flex flex-col h-screen bg-white">
         <div className="bg-[#29a9eb] text-white p-4 flex items-center">
           <button onClick={() => router.push("/")} className="mr-4">
             <ArrowLeft size={24} />
           </button>
-          <div className="text-xl font-medium">Transfer to Card</div>
+          <div className="text-xl font-medium">Sheba to Card</div>
         </div>
 
-        <div className="flex flex-col items-center justify-center flex-1 bg-gradient-to-b from-white to-gray-50 px-6 py-8 overflow-y-auto">
-          {/* Large Blue Checkmark Circle */}
-          <div className="w-24 h-24 bg-[#1E88E5] rounded-full flex items-center justify-center mb-8 shadow-lg flex-shrink-0">
-            <svg width="56" height="56" viewBox="0 0 24 24" fill="none">
-              <path d="M20 6L9 17L4 12" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+        <div className="flex flex-col items-center justify-center flex-1 p-6">
+          <div className="w-20 h-20 bg-[#29a9eb] rounded-full flex items-center justify-center mb-6">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M20 6L9 17L4 12" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </div>
 
-          {/* Title */}
-          <h2 className="text-3xl font-bold text-[#1E88E5] mb-2 text-center">Send Money</h2>
-          
-          {/* Bengali Success Message */}
-          <p className="text-lg font-semibold text-[#1E88E5] mb-2 text-center">সফল হয়েছে !</p>
+          <h2 className="text-2xl font-bold mb-2">Transfer Successful!</h2>
+          <p className="text-gray-600 mb-4">Money transferred to your card</p>
 
-          {/* Card Number */}
-          <p className="text-gray-700 text-center mb-6 font-medium">কার্ড নম্বর</p>
-          <p className="text-gray-900 text-xl font-bold mb-8 text-center">{selectedCard || 'XXXX-XXXX-XXXX-1234'}</p>
-
-          {/* Transaction Details */}
-          <div className="w-full space-y-4 mb-8">
-            <div className="flex justify-between items-center text-gray-800">
-              <span className="text-base font-medium">পরিমাণ:</span>
-              <span className="text-2xl font-bold text-[#1E88E5]">৳ {Number(amount).toLocaleString()}</span>
+          <div className="bg-gray-100 w-full rounded-lg p-4 mb-6">
+            <div className="flex justify-between mb-2">
+              <span className="text-gray-600">Amount:</span>
+              <span className="font-bold">Tk{Number(amount).toLocaleString()}</span>
             </div>
-            
-            <div className="flex justify-between items-center text-gray-700">
-              <span className="text-sm">তারিখ:</span>
-              <div className="text-right">
-                <div className="text-lg font-bold text-[#1E88E5]">{new Date().toLocaleDateString('en-BD', { day: '2-digit', month: '2-digit', year: '2-digit' }).split('/').join('.')}</div>
-                <div className="text-lg font-bold text-[#1E88E5]">{new Date().toLocaleTimeString('en-BD', { hour: '2-digit', minute: '2-digit', hour12: true })}</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Transaction ID */}
-          <p className="text-[#1E88E5] text-center font-bold mb-2">Transaction ID:</p>
-          <p className="text-gray-900 font-bold text-center mb-8 text-lg">{transactionId}</p>
-
-          {/* Details Box */}
-          <div className="bg-gray-100 w-full rounded-lg p-4 mb-8 space-y-3">
-            <div className="flex justify-between text-sm">
-              <span className="text-gray-600">কার্ড:</span>
+            <div className="flex justify-between mb-2">
+              <span className="text-gray-600">Card:</span>
               <span className="font-bold">{selectedCard}</span>
             </div>
-            <div className="flex justify-between text-sm border-t pt-3">
-              <span className="text-gray-600">নতুন ব্যালেন্স:</span>
-              <span className="font-bold text-green-600">৳ {balance.toLocaleString()}</span>
+            <div className="flex justify-between mb-2">
+              <span className="text-gray-600">Your New Balance:</span>
+              <span className="font-bold">Tk{balance.toLocaleString()}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-600">Transaction ID:</span>
+              <span className="font-bold">{Math.random().toString(36).substring(2, 10).toUpperCase()}</span>
             </div>
           </div>
 
           <button
             onClick={() => router.push("/")}
-            className="bg-[#1E88E5] text-white font-bold py-3 px-6 rounded-lg w-full hover:bg-[#1565C0] transition flex-shrink-0"
+            className="bg-[#29a9eb] text-white py-3 px-6 rounded-md w-full text-center"
           >
-            সম্পন্ন
+            Done
           </button>
         </div>
       </div>

@@ -11,27 +11,37 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Validate Bangladesh phone number format
-    const formattedPhone = phoneNumber.startsWith('+880')
-      ? phoneNumber
-      : '+880' + phoneNumber.slice(1)
+    // Validate and format Bangladesh phone number
+    const cleanPhone = phoneNumber.replace(/\D/g, '')
+    let formattedPhone = ''
 
-    console.log('[v0] Sending OTP to:', formattedPhone)
+    if (cleanPhone.startsWith('88')) {
+      formattedPhone = '+' + cleanPhone
+    } else if (cleanPhone.startsWith('01')) {
+      formattedPhone = '+880' + cleanPhone.substring(1)
+    } else {
+      return NextResponse.json(
+        { success: false, message: 'Invalid Bangladesh phone number' },
+        { status: 400 }
+      )
+    }
 
-    // Note: Firebase handles OTP sending on client side
-    // This endpoint just validates the phone number
-    // Actual OTP flow: client calls FirebaseAuth.signInWithPhoneNumber()
+    console.log('[v0] OTP request for phone:', formattedPhone)
+
+    // NOTE: Firebase OTP is handled on the client-side using Firebase SDK
+    // The backend only validates the phone number and prepares the response
+    // Client will use: firebase.auth().signInWithPhoneNumber(phoneNumber, appVerifier)
 
     return NextResponse.json({
       success: true,
-      message: 'OTP will be sent to your phone',
+      message: 'Phone number validated. Proceed with Firebase OTP on client.',
       phoneNumber: formattedPhone,
-      sessionInfo: 'Client-side OTP verification with Firebase',
+      status: 'ready_for_otp'
     })
   } catch (error: any) {
-    console.error('[v0] Phone auth error:', error.message)
+    console.error('[v0] OTP send error:', error.message)
     return NextResponse.json(
-      { success: false, message: error.message },
+      { success: false, message: 'Error: ' + error.message },
       { status: 500 }
     )
   }

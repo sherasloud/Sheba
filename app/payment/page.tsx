@@ -8,35 +8,13 @@ import VerificationRequired from "@/components/verification-required"
 import {
   getProfileByPhone,
   sendMoney as supabaseSendMoney,
+  verifyPin,
   subscribeToBalanceUpdates,
   recordTransaction,
 } from "@/lib/supabase/data-service"
 import { ErrorBoundary } from "@/components/error-boundary"
 
 function PaymentContent() {
-  // Play notification sound
-  const playNotificationSound = () => {
-    try {
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
-      const oscillator = audioContext.createOscillator()
-      const gainNode = audioContext.createGain()
-      
-      oscillator.connect(gainNode)
-      gainNode.connect(audioContext.destination)
-      
-      oscillator.frequency.value = 800
-      oscillator.type = 'sine'
-      
-      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime)
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5)
-      
-      oscillator.start(audioContext.currentTime)
-      oscillator.stop(audioContext.currentTime + 0.5)
-    } catch (err) {
-      console.error('[v0] Sound not available')
-    }
-  }
-
   const [phoneNumber, setPhoneNumber] = useState("")
   const [step, setStep] = useState(1)
   const [amount, setAmount] = useState("")
@@ -124,26 +102,16 @@ function PaymentContent() {
         return
       }
 
-      // Check if recipient exists in Neon database
+      // Check if recipient exists
       try {
-        const response = await fetch('/api/user-profile', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ phone: phoneNumber }),
-        })
-        
-        if (response.ok) {
-          const data = await response.json()
-          if (data.user?.fullName) {
-            setRecipientName(data.user.fullName)
-          } else {
-            setRecipientName(`ব্যবহারকারী ${phoneNumber.slice(-4)}`)
-          }
+        const recipientProfile = await getProfileByPhone(phoneNumber)
+        if (recipientProfile) {
+          setRecipientName(recipientProfile.name)
         } else {
-          setRecipientName(`ব্যবহারকারী ${phoneNumber.slice(-4)}`)
+          setRecipientName(`User ${phoneNumber.slice(-4)}`)
         }
       } catch {
-        setRecipientName(`ব্যবহারকারী ${phoneNumber.slice(-4)}`)
+        setRecipientName(`User ${phoneNumber.slice(-4)}`)
       }
 
       setStep(2)
@@ -182,55 +150,47 @@ function PaymentContent() {
     setError("")
 
     try {
-      // Verify PIN from Neon database via API
-      try {
-        const trimmedPhone = senderPhone.trim()
-        console.log("[v0] PIN verification request:", { phone: trimmedPhone, pin: pin ? "provided" : "missing" })
-        
-        const pinResponse = await fetch('/api/verify-pin', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ phone: trimmedPhone, pin }),
-        })
-
-        const pinData = await pinResponse.json()
-        console.log("[v0] PIN verification response:", { 
-          status: pinResponse.status, 
-          verified: pinData.verified,
-          message: pinData.message,
-          success: pinData.success
-        })
-
-        if (!pinData.verified || !pinResponse.ok) {
-          setError(pinData.message || "ভুল পিন। আবার চেষ্টা করুন।")
-          setIsProcessing(false)
-          return
-        }
-      } catch (error) {
-        console.error('[v0] Error verifying PIN:', error)
-        setError("পিন যাচাইকরণ ব্যর্থ হয়েছে। আবার চেষ্টা করুন।")
+      // Verify PIN first
+      const isPinValid = await verifyPin(senderPhone, pin)
+      if (!isPinValid) {
+        setError("ভুল পিন। আবার চেষ্টা করুন।")
         setIsProcessing(false)
         return
       }
 
-      // Payment via Neon database API
-      const paymentResponse = await fetch('/api/payment', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          senderPhone,
-          recipientPhone: phoneNumber,
-          amount: Number(amount),
-        }),
-      })
-
-      const result = await paymentResponse.json()
-      console.log('[v0] Payment result:', result)
+      // Payment via Supabase
+      const result = await supabaseSendMoney(
+        senderPhone,
+        phoneNumber,
+        Number(amount),
+        `PAY${Date.now()}`
+      )
 
       if (result.success) {
-        const txnId = result.transaction?.id || `PAY${Date.now()}`
+        const txnId = result.transaction?.reference || `PAY${Date.now()}`
         setTransactionId(txnId)
+
+        // Record transaction in database
+        await recordTransaction(
+          senderPhone,
+          phoneNumber,
+          Number(amount),
+          "payment",
+          txnId
+        )
+
         await loadBalance()
+
+        window.dispatchEvent(
+          new CustomEvent("newTransaction", {
+            detail: {
+              type: "payment",
+              amount: Number(amount),
+              to: phoneNumber,
+            },
+          })
+        )
+
         setSuccess(true)
       } else {
         setError(result.error || "লেনদেন ব্যর্থ হয়েছে। আবার চেষ্টা করুন।")
@@ -243,11 +203,8 @@ function PaymentContent() {
   }
 
   if (success) {
-    // Play sound immediately
-    playNotificationSound()
-
     return (
-      <div className="mobile-page bg-white">
+      <div className="mobile-page">
         <div className="mobile-header">
           <Link href="/" className="mr-4 touch-manipulation">
             <ArrowLeft size={24} />
@@ -255,64 +212,53 @@ function PaymentContent() {
           <div className="text-lg font-medium">Payment</div>
         </div>
 
-        <div className="mobile-content flex flex-col items-center justify-center bg-gradient-to-b from-white to-gray-50 min-h-screen px-6 py-8">
-          {/* Large Blue Checkmark Circle */}
-          <div className="w-24 h-24 bg-[#1E88E5] rounded-full flex items-center justify-center mb-8 shadow-lg">
-            <svg width="56" height="56" viewBox="0 0 24 24" fill="none">
-              <path d="M20 6L9 17L4 12" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+        <div className="mobile-content flex flex-col items-center justify-center">
+          <div className="w-16 h-16 bg-[#29a9eb] rounded-full flex items-center justify-center mb-6">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+              <path
+                d="M20 6L9 17L4 12"
+                stroke="white"
+                strokeWidth="3"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
             </svg>
           </div>
 
-          {/* Title */}
-          <h2 className="text-3xl font-bold text-[#1E88E5] mb-2 text-center">Payment</h2>
-          
-          {/* Bengali Success Message */}
-          <p className="text-lg font-semibold text-[#1E88E5] mb-2 text-center">সফল হয়েছে !</p>
+          <h2 className="text-xl font-bold mb-2">সফল!</h2>
+          <p className="text-gray-600 mb-4 text-center">পেমেন্ট সফলভাবে সম্পন্ন হয়েছে</p>
 
-          {/* Recipient Number */}
-          <p className="text-gray-700 text-center mb-6 font-medium">প্রাপকের নম্বর</p>
-          <p className="text-gray-900 text-xl font-bold mb-8 text-center">{phoneNumber}</p>
-
-          {/* Transaction Details */}
-          <div className="w-full space-y-4 mb-8">
-            <div className="flex justify-between items-center text-gray-800">
-              <span className="text-base font-medium">পরিমাণ:</span>
-              <span className="text-2xl font-bold text-[#1E88E5]">৳ {Number(amount).toLocaleString()}</span>
+          <div className="bg-gray-100 w-full rounded-lg p-4 mb-6">
+            <div className="flex justify-between mb-2 text-sm">
+              <span className="text-gray-600">পরিমাণ:</span>
+              <span className="font-bold">৳ {Number(amount).toLocaleString()}</span>
             </div>
-            
-            <div className="flex justify-between items-center text-gray-700">
-              <span className="text-sm">তারিখ:</span>
-              <div className="text-right">
-                <div className="text-lg font-bold text-[#1E88E5]">{new Date().toLocaleDateString('en-BD', { day: '2-digit', month: '2-digit', year: '2-digit' }).split('/').join('.')}</div>
-                <div className="text-lg font-bold text-[#1E88E5]">{new Date().toLocaleTimeString('en-BD', { hour: '2-digit', minute: '2-digit', hour12: true })}</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Transaction ID */}
-          <p className="text-[#1E88E5] text-center font-bold mb-2">Transaction ID:</p>
-          <p className="text-gray-900 font-bold text-center mb-8 text-lg">{transactionId}</p>
-
-          {/* Details Box */}
-          <div className="bg-gray-100 w-full rounded-lg p-4 mb-8 space-y-3">
-            <div className="flex justify-between text-sm">
+            <div className="flex justify-between mb-2 text-sm">
               <span className="text-gray-600">প্রাপক:</span>
               <span className="font-bold">{recipientName || phoneNumber}</span>
             </div>
+            <div className="flex justify-between mb-2 text-sm">
+              <span className="text-gray-600">ফোন:</span>
+              <span className="font-bold">{phoneNumber}</span>
+            </div>
             {reference && (
-              <div className="flex justify-between text-sm">
+              <div className="flex justify-between mb-2 text-sm">
                 <span className="text-gray-600">রেফারেন্স:</span>
                 <span className="font-bold">{reference}</span>
               </div>
             )}
-            <div className="flex justify-between text-sm border-t pt-3">
+            <div className="flex justify-between mb-2 text-sm">
               <span className="text-gray-600">নতুন ব্যালেন্স:</span>
               <span className="font-bold text-green-600">৳ {balance.toLocaleString()}</span>
             </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-gray-600">Transaction ID:</span>
+              <span className="font-bold text-xs">{transactionId}</span>
+            </div>
           </div>
 
-          <Link href="/inbox" className="mobile-button w-full bg-[#1E88E5] text-white font-bold py-3 rounded-lg hover:bg-[#1565C0] transition">
-            লেনদেনের ইতিহাস দেখুন
+          <Link href="/" className="mobile-button">
+            হোম এ ফিরে যান
           </Link>
         </div>
       </div>

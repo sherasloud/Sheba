@@ -9,9 +9,12 @@ import {
   KeyboardAvoidingView,
   Platform,
   ActivityIndicator,
+  Alert,
 } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import Ionicons from 'react-native-vector-icons/Ionicons'
+import { auth } from '../config/firebase'
+import { PhoneAuthProvider, signInWithPhoneNumber } from 'firebase/auth'
 
 export default function LoginScreen() {
   const navigation = useNavigation()
@@ -39,14 +42,24 @@ export default function LoginScreen() {
 
     setIsLoading(true)
     try {
-      // Simulate API call
-      setTimeout(() => {
-        console.log('[v0] Phone number verified:', phoneNumber)
-        navigation.navigate('OTP', { phoneNumber })
-        setIsLoading(false)
-      }, 1500)
-    } catch (err) {
-      setError('Something went wrong. Please try again.')
+      // Format phone number with +880 prefix
+      const formattedPhone = '+880' + phoneNumber.substring(1)
+      console.log('[v0] Sending OTP to:', formattedPhone)
+
+      // Send OTP via Firebase
+      const verificationId = await signInWithPhoneNumber(auth, formattedPhone)
+      
+      console.log('[v0] Verification ID received:', verificationId.verificationId)
+      
+      // Navigate to OTP screen with verification ID
+      navigation.navigate('OTP', {
+        phoneNumber: formattedPhone,
+        verificationId: verificationId.verificationId,
+      })
+    } catch (err: any) {
+      console.error('[v0] Firebase error:', err.message)
+      setError(err.message || 'Failed to send OTP. Please try again.')
+    } finally {
       setIsLoading(false)
     }
   }
