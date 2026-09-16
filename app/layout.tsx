@@ -57,7 +57,26 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   // Main layout component for Sheba mobile app
   return (
-    <html lang="en" className="bg-white text-gray-900">
+    <html lang="en" className="bg-white text-gray-900" style={{ orientation: "portrait" }}>
+      <head>
+        <style>{`
+          html, body {
+            orientation: portrait-primary !important;
+            max-width: 100vw;
+            overflow-x: hidden;
+          }
+          @media (orientation: landscape) {
+            html, body {
+              transform: rotate(90deg);
+              transform-origin: left top;
+              width: 100vh;
+              height: 100vw;
+              position: fixed;
+              overflow: hidden;
+            }
+          }
+        `}</style>
+      </head>
       <body className={`${inter.className} antialiased bg-white min-h-screen`}>
         <main className="flex-1">
           {children}
