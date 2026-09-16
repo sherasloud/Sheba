@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { ArrowLeft, Search, User, Building, Briefcase, Check, X, Clock } from "lucide-react"
-import { createClient } from "@/lib/supabase/client"
+import { isAdminPhone } from "@/lib/account-manager"
 
 interface UserData {
   phoneNumber: string
@@ -40,51 +40,78 @@ export default function AdminDashboardPage() {
   const unsubscribeRef = useRef<(() => void) | null>(null)
 
   useEffect(() => {
-    const userRole = localStorage.getItem("userRole")
-    const userPhone = localStorage.getItem("userPhone")
+    const userPhone = localStorage.getItem("phoneNumber")
 
-    if (userRole !== "admin" && userPhone !== "01709783145" && userPhone !== "01930314459") {
-      router.replace("/login")
+    if (!userPhone || !isAdminPhone(userPhone)) {
+      router.replace("/")
       return
     }
 
-    setAdminPhone(userPhone || "")
+    setAdminPhone(userPhone)
 
-    const storedName = localStorage.getItem("userName")
+    const storedName = localStorage.getItem(`userName_${userPhone}`)
     if (storedName) {
       setUserName(storedName)
     }
 
     loadAllUsers()
     loadVerificationRequests()
+
+    // Auto-refresh users every 5 seconds
+    const interval = setInterval(() => {
+      loadAllUsers()
+    }, 5000)
+
+    return () => clearInterval(interval)
   }, [router])
 
-  const loadAllUsers = () => {
-    const allUsers: UserData[] = []
-
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i)
-      if (key && key.startsWith("user_")) {
-        try {
-          const userData = JSON.parse(localStorage.getItem(key) || "{}")
-          if (userData.phoneNumber) {
-            const accountType = localStorage.getItem(`accountType_${userData.phoneNumber}`) || "regular"
-            allUsers.push({
-              phoneNumber: userData.phoneNumber,
-              fullName: userData.fullName || "Unknown User",
-              balance: userData.balance || 0,
-              accountType: accountType as "regular" | "business" | "state",
-              isVerified: userData.isVerified || false,
-            })
-          }
-        } catch (error) {
-          console.error("[v0] Error loading user:", error)
-        }
+  const loadAllUsers = async () => {
+    try {
+      const userPhone = localStorage.getItem("phoneNumber")
+      if (!userPhone) {
+        console.error('[v0] No admin phone found')
+        return
       }
-    }
 
-    setUsers(allUsers)
-    setFilteredUsers(allUsers)
+      console.log('[v0] Loading users for admin:', userPhone)
+
+      const response = await fetch('/api/admin/get-all-users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ adminPhone: userPhone }),
+        cache: 'no-store',
+      })
+
+      if (!response.ok) {
+        console.error('[v0] API response not OK:', response.status)
+        throw new Error(`Failed to fetch users: ${response.status}`)
+      }
+
+      const data = await response.json()
+      console.log('[v0] API response:', data)
+
+      if (data.success && data.users && Array.isArray(data.users)) {
+        const allUsers: UserData[] = data.users.map((user: any) => ({
+          phoneNumber: user.phoneNumber || "",
+          fullName: user.fullName || "Unknown User",
+          balance: typeof user.balance === 'number' ? user.balance : Number(user.balance) || 0,
+          accountType: (user.accountType || "personal") as "regular" | "business" | "state",
+          isVerified: user.isVerified || false,
+        }))
+        
+        setUsers(allUsers)
+        setFilteredUsers(allUsers)
+        console.log('[v0] Loaded users from Neon:', allUsers.length, 'users')
+      } else {
+        console.error('[v0] Invalid response format:', data)
+        setUsers([])
+        setFilteredUsers([])
+      }
+    } catch (error) {
+      console.error('[v0] Error loading users from Neon:', error)
+      setUsers([])
+      setFilteredUsers([])
+    }
   }
 
   const handleSearch = (query: string) => {

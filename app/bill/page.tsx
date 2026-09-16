@@ -3,84 +3,11 @@
 import { useState, useEffect } from "react"
 import { ArrowLeft, Zap, Droplets, Flame, Wifi, CheckCircle, AlertTriangle, Search } from "lucide-react"
 import { useRouter } from "next/navigation"
-import VerificationRequired from "@/components/verification-required"
 
-const billProviders = {
-  electricity: [
-    {
-      name: "DESCO",
-      fullName: "Dhaka Electric Supply Company",
-      icon: "/images/desco-logo.png",
-      color: "bg-blue-500",
-      isImage: true,
-    },
-    {
-      name: "DPDC",
-      fullName: "Dhaka Power Distribution Company",
-      icon: "/images/dpdc-logo.webp",
-      color: "bg-blue-600",
-      isImage: true,
-    },
-    {
-      name: "REB",
-      fullName: "Rural Electrification Board",
-      icon: "/images/reb-logo.jpeg",
-      color: "bg-purple-600",
-      isImage: true,
-    },
-    {
-      name: "BPDB",
-      fullName: "Bangladesh Power Development Board",
-      icon: "/images/bpdb-logo.jpeg",
-      color: "bg-blue-700",
-      isImage: true,
-    },
-    { name: "WZPDCL", fullName: "West Zone Power Distribution Company", icon: "⚡", color: "bg-purple-500" },
-    { name: "NESCO", fullName: "Northern Electricity Supply Company", icon: "⚡", color: "bg-orange-500" },
-  ],
-  water: [
-    { name: "DWASA", fullName: "Dhaka Water Supply and Sewerage Authority", icon: "💧", color: "bg-blue-600" },
-    { name: "CWASA", fullName: "Chittagong Water Supply and Sewerage Authority", icon: "💧", color: "bg-cyan-500" },
-    { name: "KWASA", fullName: "Khulna Water Supply and Sewerage Authority", icon: "💧", color: "bg-teal-500" },
-    { name: "RAJWASA", fullName: "Rajshahi Water Supply and Sewerage Authority", icon: "💧", color: "bg-blue-400" },
-  ],
-  gas: [
-    {
-      name: "Titas Gas",
-      fullName: "Titas Gas Transmission & Distribution Company",
-      icon: "🔥",
-      color: "bg-orange-600",
-    },
-    {
-      name: "Jalalabad Gas",
-      fullName: "Jalalabad Gas Transmission & Distribution System",
-      icon: "🔥",
-      color: "bg-red-600",
-    },
-    { name: "Bakhrabad Gas", fullName: "Bakhrabad Gas Distribution Company", icon: "🔥", color: "bg-yellow-600" },
-    { name: "Karnaphuli Gas", fullName: "Karnaphuli Gas Distribution Company", icon: "🔥", color: "bg-orange-500" },
-    { name: "Paschimanchal Gas", fullName: "Paschimanchal Gas Company", icon: "🔥", color: "bg-red-500" },
-  ],
-  internet: [
-    { name: "BTCL", fullName: "Bangladesh Telecommunications Company Limited", icon: "📡", color: "bg-green-600" },
-    { name: "Link3", fullName: "Link3 Technologies", icon: "🌐", color: "bg-blue-500" },
-    { name: "Carnival", fullName: "Carnival Internet", icon: "🎭", color: "bg-purple-500" },
-    { name: "Amber IT", fullName: "Amber IT Limited", icon: "🟠", color: "bg-amber-500" },
-    { name: "Dot Internet", fullName: "Dot Internet Limited", icon: "🔴", color: "bg-red-500" },
-    { name: "Fiber@Home", fullName: "Fiber@Home Limited", icon: "🏠", color: "bg-green-500" },
-  ],
-  mobile: [
-    { name: "Grameenphone", fullName: "Grameenphone Postpaid", icon: "📱", color: "bg-blue-500" },
-    { name: "Robi", fullName: "Robi Postpaid", icon: "📱", color: "bg-red-500" },
-    { name: "Banglalink", fullName: "Banglalink Postpaid", icon: "📱", color: "bg-orange-500" },
-    { name: "Airtel", fullName: "Airtel Postpaid", icon: "📱", color: "bg-red-600" },
-    { name: "Teletalk", fullName: "Teletalk Postpaid", icon: "📱", color: "bg-green-500" },
-  ],
-}
+const billProviders: { [key: string]: any[] } = {}
 
 export default function BillPage() {
   const router = useRouter()
-  const [isVerified, setIsVerified] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState("")
   const [selectedProvider, setSelectedProvider] = useState<any>(null)
   const [step, setStep] = useState(1)
@@ -90,6 +17,7 @@ export default function BillPage() {
     amount: "",
     dueDate: "",
     billMonth: "",
+    providerNumber: "",
   })
   const [pin, setPin] = useState("")
   const [error, setError] = useState("")
@@ -98,25 +26,35 @@ export default function BillPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [billInfo, setBillInfo] = useState<any>(null)
   const [searchQuery, setSearchQuery] = useState("")
+  const [providers, setProviders] = useState<{ [key: string]: any[] }>({})
 
   useEffect(() => {
-    // Check verification status
-    const userData = localStorage.getItem("userData")
-    const storedVerified = localStorage.getItem("isVerified")
-
-    if (userData) {
-      const user = JSON.parse(userData)
-      setIsVerified(user.isVerified || false)
-    } else if (storedVerified) {
-      setIsVerified(storedVerified === "true")
-    }
-
     // Load current balance
     const storedBalance = localStorage.getItem("userBalance")
     if (storedBalance) {
       setBalance(Number(storedBalance))
     }
+    
+    // Load bill providers from database
+    loadBillProviders()
   }, [])
+
+  const loadBillProviders = async () => {
+    try {
+      const response = await fetch('/api/bill-providers')
+      if (response.ok) {
+        const data = await response.json()
+        const grouped: { [key: string]: any[] } = {}
+        data.providers?.forEach((p: any) => {
+          if (!grouped[p.category]) grouped[p.category] = []
+          grouped[p.category].push(p)
+        })
+        setProviders(grouped)
+      }
+    } catch (error) {
+      console.error("[v0] Failed to load bill providers:", error)
+    }
+  }
 
   const handleCategorySelect = (category: string) => {
     setSelectedCategory(category)
@@ -132,7 +70,17 @@ export default function BillPage() {
 
   const handleBillInquiry = () => {
     if (!billDetails.accountNumber) {
-      setError("Please enter your account/customer number")
+      setError("অনুগ্রহ করে অ্যাকাউন্ট নম্বর লিখুন")
+      return
+    }
+
+    if (billDetails.accountNumber.length < 5) {
+      setError("অ্যাকাউন্ট নম্বর কমপক্ষে ৫ অক্ষর হতে হবে")
+      return
+    }
+    
+    if (!billDetails.providerNumber) {
+      setError("অনুগ্রহ করে প্রদানকারীর নম্বর লিখুন")
       return
     }
 
@@ -204,6 +152,7 @@ export default function BillPage() {
         category: selectedCategory,
         accountNumber: billDetails.accountNumber,
         billMonth: billDetails.billMonth,
+        providerNumber: billDetails.providerNumber,
       },
     }
 
@@ -214,19 +163,15 @@ export default function BillPage() {
     setSuccess(true)
   }
 
-  const filteredProviders = selectedCategory
-    ? billProviders[selectedCategory as keyof typeof billProviders].filter(
+  const filteredProviders = selectedCategory && providers[selectedCategory]
+    ? providers[selectedCategory].filter(
         (provider) =>
           provider.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          provider.fullName.toLowerCase().includes(searchQuery.toLowerCase()),
+          (provider.fullName && provider.fullName.toLowerCase().includes(searchQuery.toLowerCase())),
       )
     : []
 
-  // Show verification required screen for unverified users
-  if (!isVerified) {
-    return <VerificationRequired title="Bill Payment" />
-  }
-
+  // Success screen
   if (success) {
     return (
       <div className="flex flex-col h-screen bg-white">
@@ -434,21 +379,25 @@ export default function BillPage() {
 
       {step === 3 && (
         <div className="p-6 flex flex-col flex-1">
-          <div className="text-2xl font-bold mb-2">Bill Details</div>
-          <div className="text-gray-600 mb-6">Provider: {selectedProvider.name}</div>
+          <div className="text-2xl font-bold mb-2">বিল বিস্তারিত</div>
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+            <p className="text-sm text-blue-900"><strong>প্রদানকারী:</strong> {selectedProvider.name}</p>
+            <p className="text-sm text-blue-900"><strong>বিভাগ:</strong> {selectedCategory === "electricity" ? "বিদ্যুৎ" : selectedCategory === "water" ? "পানি" : selectedCategory === "gas" ? "গ্যাস" : selectedCategory === "internet" ? "ইন্টারনেট" : "মোবাইল"}</p>
+            <p className="text-sm text-blue-900"><strong>প্রদানকারীর নম্বর:</strong> {selectedProvider?.number}</p>
+          </div>
 
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium mb-2">
                 {selectedCategory === "electricity"
-                  ? "Customer/Account Number"
+                  ? "গ্রাহক/অ্যাকাউন্ট নম্বর"
                   : selectedCategory === "water"
-                    ? "Customer Number"
+                    ? "গ্রাহক নম্বর"
                     : selectedCategory === "gas"
-                      ? "Account Number"
+                      ? "অ্যাকাউন্ট নম্বর"
                       : selectedCategory === "internet"
-                        ? "Customer ID"
-                        : "Mobile Number"}
+                        ? "গ্রাহক আইডি"
+                        : "মোবাইল নম্বর"}
               </label>
               <input
                 type="text"
@@ -459,11 +408,23 @@ export default function BillPage() {
                   selectedCategory === "mobile"
                     ? "01XXXXXXXXX"
                     : selectedCategory === "electricity"
-                      ? "Enter your meter number"
-                      : "Enter your account number"
+                      ? "আপনার মিটার নম্বর লিখুন"
+                      : "আপনার অ্যাকাউন্ট নম্বর লিখুন"
                 }
                 maxLength={selectedCategory === "mobile" ? 11 : undefined}
               />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2">প্রদানকারীর নম্বর / ড্যাশবোর্ড অ্যাক্সেস নম্বর</label>
+              <input
+                type="tel"
+                className="w-full border rounded-md p-3"
+                value={billDetails.providerNumber || ""}
+                onChange={(e) => setBillDetails({ ...billDetails, providerNumber: e.target.value })}
+                placeholder={`যেমন: ${selectedProvider?.number || "09666123456"}`}
+              />
+              <p className="text-xs text-gray-500 mt-1">প্রদানকারীর নম্বর লিখুন যা আপনার ড্যাশবোর্ড অ্যাক্সেস এর জন্য প্রয়োজন</p>
             </div>
 
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">

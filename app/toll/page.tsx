@@ -35,9 +35,14 @@ export default function TollPage() {
     <div className="flex flex-col h-screen bg-white">
       {/* Header */}
       <div className="bg-[#29a9eb] text-white p-4 flex items-center gap-3">
-        <Link href="/home">
+        <Link href="/">
           <ArrowLeft size={24} className="cursor-pointer" />
         </Link>
+        <img
+          src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Untitled%20design-13-EGLDGz2iHEJJ3hD65CAOcuSQ4uBiGr.png"
+          alt="Toll"
+          className="w-8 h-8 object-contain"
+        />
         <h1 className="text-xl font-bold">Pay Toll</h1>
       </div>
 

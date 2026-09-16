@@ -11,12 +11,34 @@ import {
   updateBalance,
   subscribeToBalanceUpdates,
   recordTransaction,
-  verifyPin,
   supabaseSendMoney
 } from "@/lib/supabase/data-service"
 import { ErrorBoundary } from "@/components/error-boundary"
 
 function SendMoneyContent() {
+  // Play notification sound
+  const playNotificationSound = () => {
+    try {
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
+      const oscillator = audioContext.createOscillator()
+      const gainNode = audioContext.createGain()
+      
+      oscillator.connect(gainNode)
+      gainNode.connect(audioContext.destination)
+      
+      oscillator.frequency.value = 800
+      oscillator.type = 'sine'
+      
+      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime)
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5)
+      
+      oscillator.start(audioContext.currentTime)
+      oscillator.stop(audioContext.currentTime + 0.5)
+    } catch (err) {
+      console.error('[v0] Sound not available')
+    }
+  }
+
   const [phoneNumber, setPhoneNumber] = useState("")
   const [step, setStep] = useState(1)
   const [amount, setAmount] = useState("")
@@ -42,23 +64,28 @@ function SendMoneyContent() {
     if (!currentPhone) return
 
     try {
-      // ALWAYS fetch balance from Supabase - single source of truth
-      const profile = await getProfileByPhone(currentPhone)
-      
-      if (profile) {
-        const bal = Number(profile.balance) || 0
-        setBalance(bal)
-        // Update cache
-        localStorage.setItem(`userBalance_${currentPhone}`, bal.toString())
-        localStorage.setItem("userBalance", bal.toString())
+      // Fetch balance from Neon database
+      const response = await fetch('/api/user-profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: currentPhone }),
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        if (data.user) {
+          const bal = Number(data.user.balance) || 0
+          setBalance(bal)
+          localStorage.setItem(`userBalance_${currentPhone}`, bal.toString())
+          localStorage.setItem("userBalance", bal.toString())
+        } else {
+          setBalance(0)
+        }
       } else {
-        // No profile in Supabase = 0 balance (DO NOT use localStorage)
         setBalance(0)
-        localStorage.setItem(`userBalance_${currentPhone}`, "0")
-        localStorage.setItem("userBalance", "0")
       }
-    } catch {
-      // On error, set to 0 (DO NOT use corrupted localStorage)
+    } catch (error) {
+      console.error('[v0] Error fetching balance from Neon:', error)
       setBalance(0)
     }
   }
@@ -111,27 +138,29 @@ function SendMoneyContent() {
         return
       }
 
-      // Check if recipient exists, if so get their name and verification status
+      // Check if recipient exists in Neon database
       try {
-        const recipientProfile = await getProfileByPhone(phoneNumber)
-        if (recipientProfile) {
-          setRecipientName(recipientProfile.name)
-        } else {
-          setRecipientName(`User ${phoneNumber.slice(-4)}`)
-        }
+        const response = await fetch('/api/user-profile', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone: phoneNumber }),
+        })
         
-        // Fetch verification status from API for accurate data
-        const response = await fetch(`/api/verification-status?phone=${encodeURIComponent(phoneNumber)}`)
-        const result = await response.json()
-        
-        if (response.ok && result.success && result.data) {
-          setRecipientVerified(result.data.isVerified === true)
+        if (response.ok) {
+          const data = await response.json()
+          if (data.user?.fullName) {
+            setRecipientName(data.user.fullName)
+            console.log('[v0] Recipient name from Neon:', data.user.fullName)
+          } else {
+            setRecipientName(`ব্যবহারকারী ${phoneNumber.slice(-4)}`)
+          }
         } else {
-          setRecipientVerified(false)
+          setRecipientName(`ব্যবহারকারী ${phoneNumber.slice(-4)}`)
         }
+        setRecipientVerified(true)
       } catch (error) {
-        console.error("[v0] Error fetching recipient verification:", error)
-        setRecipientName(`User ${phoneNumber.slice(-4)}`)
+        console.error("[v0] Error fetching recipient:", error)
+        setRecipientName(`ব্যবহারকারী ${phoneNumber.slice(-4)}`)
         setRecipientVerified(false)
       }
 
@@ -142,18 +171,33 @@ function SendMoneyContent() {
         return
       }
 
-      // Refresh balance from Supabase before checking
+      // Refresh balance from Neon before checking
       await loadBalance()
 
-      // Calculate commission if State account (5 BDT per 1000 BDT)
-      const senderProfile = await getProfileByPhone(senderPhone)
+      // Fetch sender profile from Neon to check account type and calculate commission
       let totalDebit = Number(amount)
-      
-      if (senderProfile?.account_type === "state") {
-        const commission = Math.ceil(Number(amount) / 1000) * 5
-        totalDebit = Number(amount) + commission
+      try {
+        const response = await fetch('/api/user-profile', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone: senderPhone }),
+        })
+        
+        if (response.ok) {
+          const data = await response.json()
+          const senderProfile = data.user
+          
+          // Calculate commission if State account (5 BDT per 1000 BDT)
+          if (senderProfile?.accountType === "state") {
+            const commission = Math.ceil(Number(amount) / 1000) * 5
+            totalDebit = Number(amount) + commission
+          }
+        }
+      } catch (error) {
+        console.error('[v0] Error fetching sender profile:', error)
       }
 
+      // Check if sufficient balance
       if (totalDebit > balance) {
         setError(`অপর্যাপ্ত ব্যালেন্স! প্রয়োজন: ৳ ${totalDebit.toLocaleString()}, আপনার ব্যালেন্স: ৳ ${balance.toLocaleString()}`)
         return
@@ -179,21 +223,51 @@ function SendMoneyContent() {
     setError("")
 
     try {
-      // Verify PIN first
-      const isPinValid = await verifyPin(senderPhone, pin)
-      if (!isPinValid) {
-        setError("ভুল পিন। আবার চেষ্টা করুন।")
+      // Verify PIN from Neon database via API
+      try {
+        const trimmedPhone = senderPhone.trim()
+        console.log("[v0] PIN verification request:", { phone: trimmedPhone, pin: pin ? "provided" : "missing" })
+        
+        const pinResponse = await fetch('/api/verify-pin', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone: trimmedPhone, pin }),
+        })
+
+        const pinData = await pinResponse.json()
+        console.log("[v0] PIN verification response:", { 
+          status: pinResponse.status, 
+          verified: pinData.verified,
+          message: pinData.message,
+          success: pinData.success
+        })
+
+        if (!pinData.verified || !pinResponse.ok) {
+          setError(pinData.message || "ভুল পিন। আবার চেষ্টা করুন।")
+          setIsTransferring(false)
+          return
+        }
+      } catch (error) {
+        console.error('[v0] Error verifying PIN:', error)
+        setError("পিন যাচাইকরণ ব্যর্থ হয়েছে। আবার চেষ্টা করুন।")
         setIsTransferring(false)
         return
       }
 
-      // Send money via Supabase
-      const result = await supabaseSendMoney(
-        senderPhone,
-        phoneNumber,
-        Number(amount),
-        `TXN${Date.now()}`
-      )
+      // Send money via Neon database API
+      console.log("[v0] Initiating transaction:", { senderPhone, phoneNumber, amount })
+      const txnResponse = await fetch('/api/send-money', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          senderPhone,
+          receiverPhone: phoneNumber,
+          amount: Number(amount),
+        }),
+      })
+
+      const result = await txnResponse.json()
+      console.log("[v0] Transaction result:", result)
 
       if (result.success) {
         const txnId = result.transaction?.reference || `TXN${Date.now()}`
@@ -232,6 +306,9 @@ function SendMoneyContent() {
   }
 
   if (success) {
+    // Play sound immediately
+    playNotificationSound()
+
     return (
       <div className="mobile-page">
         <div className="mobile-header">
@@ -277,8 +354,8 @@ function SendMoneyContent() {
             </div>
           </div>
 
-          <Link href="/" className="mobile-button">
-            হোম এ ফিরে যান
+          <Link href="/inbox" className="mobile-button">
+            লেনদেনের ইতিহাস দেখুন
           </Link>
         </div>
       </div>

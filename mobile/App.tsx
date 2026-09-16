@@ -7,16 +7,15 @@ import * as SecureStore from 'expo-secure-store';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
-// Import Firebase config to initialize it
-import './src/config/firebase'
-
-import LoginScreen from './src/screens/auth/LoginScreen';
-import OTPScreen from './src/screens/auth/OTPScreen';
-import PINLockScreen from './src/screens/auth/PINLockScreen';
-import HomeScreen from './src/screens/home/HomeScreen';
-import VerificationScreen from './src/screens/verification/VerificationScreen';
-import AddMoneyScreen from './src/screens/money/AddMoneyScreen';
-import SendMoneyScreen from './src/screens/money/SendMoneyScreen';
+import LoginScreen from './screens/Auth/LoginScreen';
+import OTPVerificationScreen from './screens/Auth/OTPVerificationScreen';
+import PINLockScreen from './screens/PINLock/PINLockScreen';
+import HomeScreen from './screens/Home/HomeScreen';
+import VerificationScreen from './screens/Verification/VerificationScreen';
+import AddMoneyScreen from './screens/AddMoney/AddMoneyScreen';
+import SendMoneyScreen from './screens/SendMoney/SendMoneyScreen';
+import SettingsScreen from './screens/Settings/SettingsScreen';
+import TransactionHistoryScreen from './screens/TransactionHistory/TransactionHistoryScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();

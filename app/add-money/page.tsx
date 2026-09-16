@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { ArrowLeft } from "lucide-react"
+import { ArrowLeft, Copy, Check } from "lucide-react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 import VerificationRequired from "@/components/verification-required"
@@ -25,6 +25,8 @@ export default function AddMoneyPage() {
   const [balance, setBalance] = useState(0)
   const [cardBalance, setCardBalance] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
+  const [transactionIdCopied, setTransactionIdCopied] = useState(false)
+  const [transactionId, setTransactionId] = useState("")
 
   // Bank details
   const [bankDetails, setBankDetails] = useState({
@@ -417,9 +419,12 @@ export default function AddMoneyPage() {
       localStorage.setItem("userBalance", newShebaBalance.toString())
       localStorage.setItem(`userBalance_${currentPhone}`, newShebaBalance.toString())
 
+      const newTransactionId = `SHB${Date.now()}${Math.random().toString(36).substring(2, 8).toUpperCase()}`
+      setTransactionId(newTransactionId)
+
       const transaction = {
         id: Date.now(),
-        transactionId: `SHB${Date.now()}${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
+        transactionId: newTransactionId,
         type: selectedMethod === "card" ? "Card to Sheba" : "Bank to Sheba",
         amount: Number(amount),
         method: selectedMethod === "card" ? `${selectedCardType} Card` : bankDetails.bankName, // Use selected card type
@@ -508,7 +513,7 @@ export default function AddMoneyPage() {
   return (
     <div className="flex flex-col h-screen bg-white">
       <div className="bg-[#29a9eb] text-white p-4 flex items-center">
-        <button onClick={() => router.push("/home")} className="mr-4">
+        <button onClick={() => router.push("/")} className="mr-4">
           <ArrowLeft size={24} />
         </button>
         <div className="text-xl font-medium">Add Money</div>
@@ -542,6 +547,18 @@ export default function AddMoneyPage() {
               <div className="text-left">
                 <h3 className="font-medium">Card To Sheba</h3>
                 <p className="text-sm text-gray-500">Add money from your credit/debit card</p>
+              </div>
+            </button>
+            <button
+              onClick={() => router.push("/add-money-stripe")}
+              className="w-full border rounded-lg p-4 flex items-center hover:bg-gray-50 transition-colors"
+            >
+              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                <span className="text-blue-500 text-xl">🔐</span>
+              </div>
+              <div className="text-left">
+                <h3 className="font-medium">Stripe Payment</h3>
+                <p className="text-sm text-gray-500">VISA • Mastercard • Amex (Secure)</p>
               </div>
             </button>
           </div>

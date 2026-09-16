@@ -1,112 +1,60 @@
-# Firebase Phone OTP - সম্পূর্ণ Setup Guide
+## Firebase Phone OTP Integration - সম্পূর্ণ Setup
 
-## What's Been Setup:
+### যা তৈরি হয়েছে:
 
-✅ **Backend:**
-- `/lib/firebase-admin.ts` - Firebase Admin SDK initialization
-- `/app/api/firebase-otp/send/route.ts` - OTP send endpoint
+**1. Backend APIs:**
+- `/app/api/firebase/send-otp/route.ts` - OTP send করে Firebase দিয়ে
+- `/app/api/firebase/verify-otp/route.ts` - OTP verify করে এবং auth token generate করে
 
-✅ **React Native App:**
-- `/mobile/src/services/firebase.ts` - Firebase client initialization
-- `/mobile/src/screens/auth/FirebasePhoneOTPScreen.tsx` - Complete OTP UI
+**2. React Native App:**
+- `/mobile/src/config/firebase.ts` - Firebase initialization
+- `/mobile/src/screens/auth/FirebasePhoneAuthScreen.tsx` - সম্পূর্ণ OTP UI (বাংলায়)
 
-✅ **Environment Variables:**
-- `.env.local` has all Firebase credentials
+**3. Configuration:**
+- `/mobile/package.json` - Firebase dependency যোগ করা
+- `.env.local` - Firebase credentials সহ
 
-## How It Works:
+---
 
-### Step 1: User enters phone number
-```
-User Input: 01709783145 or +880191425540
-```
+### কীভাবে কাজ করবে:
 
-### Step 2: Frontend sends to Backend
-```
-POST /api/firebase-otp/send
-Body: { phoneNumber: "01709783145" }
-```
+1. **User app খোলে** → `FirebasePhoneAuthScreen` দেখবে
+2. **ফোন নম্বর লিখে "OTP পাঠান" ক্লিক করে**
+3. **Firebase real SMS পাঠায়** ফোনে (10K/month free)
+4. **User OTP app এ লিখে "যাচাই করুন" ক্লিক করে**
+5. **Firebase verify করে এবং session তৈরি করে**
+6. **User PIN setup স্ক্রিনে যায়**
 
-### Step 3: Backend validates and returns
-```
-Response: {
-  success: true,
-  phoneNumber: "+8801709783145",
-  customToken: "eyJhbGc..."
-}
-```
+---
 
-### Step 4: Frontend calls Firebase signInWithPhoneNumber
-```typescript
-const confirmation = await signInWithPhoneNumber(auth, "+8801709783145")
-```
+### Next Steps:
 
-### Step 5: Firebase sends real OTP to user's phone
-
-### Step 6: User enters OTP
-```
-User Input: 123456
-```
-
-### Step 7: Frontend confirms OTP
-```typescript
-const userCredential = await confirmation.confirm("123456")
-```
-
-### Step 8: User authenticated ✓
-
-## Testing:
-
-### For Development (Test Phone Numbers):
-1. Firebase Console → Authentication → Sign-in method → Phone
-2. Add test phone number: +8801709783145
-3. Test OTP: 123456
-
-### For Production:
-1. User's real phone will receive real OTP
-2. 10,000 SMS/month = FREE on Firebase
-
-## Environment Variables Already Set:
-```
-FIREBASE_PROJECT_ID=sheba-1fc71
-FIREBASE_CLIENT_EMAIL=firebase-adminsdk-fbsvc@sheba-1fc71.iam.gserviceaccount.com
-FIREBASE_PRIVATE_KEY=...
-NEXT_PUBLIC_FIREBASE_API_KEY=...
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=sheba-1fc71.firebaseapp.com
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=sheba-1fc71
-```
-
-## Next Steps:
-
-1. **Install Firebase packages in React Native app:**
+**১. npm dependencies install করুন:**
 ```bash
 cd mobile
-npm install firebase @react-native-async-storage/async-storage
-npx expo install firebase @react-native-async-storage/async-storage
+npm install
 ```
 
-2. **Update App.tsx to use FirebasePhoneOTPScreen:**
-```typescript
-import FirebasePhoneOTPScreen from './src/screens/auth/FirebasePhoneOTPScreen'
+**২. Firebase Console এ test phone number যোগ করুন (optional):**
+- Settings → Phone numbers for testing
+- Number: +880XXXXXXXXX
+- OTP code: 123456 (যেকোনো 6 digit)
 
-// In Stack.Navigator
-<Stack.Screen name="Login" component={FirebasePhoneOTPScreen} />
+**३. App run করুন:**
+```bash
+npm start
+npm run android
 ```
 
-3. **Test on Expo:**
-- Use test phone number: +8801709783145
-- Test OTP code: 123456
-- Should authenticate and go to PIN setup
+**४. Test করুন:**
+- +880 prefix সহ বাংলাদেশ নম্বর লিখুন
+- Real SMS পাবেন বা test number এর OTP use করুন
 
-4. **For Production:**
-- Users get real OTP on their phones
-- Costs 10,000 free SMS/month from Firebase
+---
 
-## Features:
+### Production এ:
+- প্রথম 10,000 SMS/month FREE
+- এর পরে প্রতি SMS = ~$0.15
+- কোন setup খরচ নেই
 
-✅ Real OTP sent to user's phone (10K/month FREE)
-✅ Bangladesh phone number support (+880)
-✅ Automatic phone number formatting
-✅ Error handling and validation
-✅ Loading states
-✅ Secure Firebase authentication
-✅ Persistent authentication with AsyncStorage
+**সবকিছু ready! 🎉**

@@ -96,7 +96,8 @@ export default function LoginPage() {
             name: account.name
           })
           
-          router.push("/")
+          // Redirect to PIN page instead of home
+          router.push("/pin")
         } else {
           setError("Account not found. Please try again.")
         }

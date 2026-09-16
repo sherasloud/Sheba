@@ -12,15 +12,11 @@ import {
 } from 'react-native'
 import { useNavigation, useRoute } from '@react-navigation/native'
 import Ionicons from 'react-native-vector-icons/Ionicons'
-import { auth } from '../config/firebase'
-import { PhoneAuthProvider, signInWithCredential } from 'firebase/auth'
-import { useAuthStore } from '../../store/authStore'
 
 export default function OTPScreen() {
   const navigation = useNavigation()
   const route = useRoute()
-  const { phoneNumber, verificationId } = route.params || {}
-  const { setAuthenticated, setPhoneNumber } = useAuthStore()
+  const { phoneNumber } = route.params || {}
   
   const [otp, setOtp] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -63,48 +59,30 @@ export default function OTPScreen() {
       return
     }
 
-    if (!verificationId) {
-      setError('Verification ID not found. Please try again.')
-      return
-    }
-
     setIsLoading(true)
     try {
-      console.log('[v0] Verifying OTP:', otp)
-      
-      // Create credential with OTP
-      const credential = PhoneAuthProvider.credential(verificationId, otp)
-      
-      // Sign in with credential
-      const userCredential = await signInWithCredential(auth, credential)
-      
-      console.log('[v0] OTP verified successfully for:', userCredential.user.phoneNumber)
-      
-      // Update auth store
-      setAuthenticated(true)
-      setPhoneNumber(phoneNumber)
-      
-      // Navigate to PIN setup
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'PINSetup' }],
-      })
-    } catch (err: any) {
-      console.error('[v0] OTP verification error:', err.message)
-      setError(err.message || 'Invalid OTP. Please try again.')
-    } finally {
+      // Simulate API call
+      setTimeout(() => {
+        console.log('[v0] OTP verified:', otp)
+        // Navigate to PIN setup or home
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'PINSetup' }],
+        })
+        setIsLoading(false)
+      }, 1500)
+    } catch (err) {
+      setError('Invalid OTP. Please try again.')
       setIsLoading(false)
     }
   }
 
-  const handleResendOTP = async () => {
+  const handleResendOTP = () => {
     setTimeLeft(120)
     setCanResend(false)
     setOtp('')
     setError('')
-    console.log('[v0] OTP resend requested for:', phoneNumber)
-    // Navigate back to phone entry screen to start over
-    navigation.goBack()
+    console.log('[v0] OTP resent to:', phoneNumber)
   }
 
   const formatTime = (seconds: number) => {

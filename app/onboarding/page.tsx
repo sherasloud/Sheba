@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { ArrowLeft, User, Phone, Lock, CheckCircle } from "lucide-react"
-import { createAccount, setCurrentUser, getAccountByPhone, isAdminPhone } from "@/lib/account-manager"
+import { setCurrentUser, isAdminPhone, getAccountByPhone } from "@/lib/account-manager"
 
 export default function OnboardingPage() {
   const router = useRouter()
@@ -18,6 +18,16 @@ export default function OnboardingPage() {
   const [confirmPin, setConfirmPin] = useState("")
   const [accountType, setAccountType] = useState("personal")
   const [isAdmin, setIsAdmin] = useState(false)
+
+  // Skip phone step if coming from OTP
+  useEffect(() => {
+    const storedPhone = sessionStorage.getItem("phoneNumber") || localStorage.getItem("phoneNumber")
+    if (storedPhone) {
+      setPhoneNumber(storedPhone)
+      // Skip phone step and go directly to name step (OTP already verified this is a new user)
+      setStep(2)
+    }
+  }, [])
 
   // Helper function to save account data to storage
   const saveAccountData = (phoneNumber: string, fullName: string) => {
@@ -40,31 +50,7 @@ export default function OnboardingPage() {
     localStorage.setItem("pinVerifiedTime", Date.now().toString())
   }
 
-  // Fallback function to create account locally if Supabase fails
-  const createLocalAccount = (phone: string, name: string, pin: string): boolean => {
-    try {
-      console.log("[v0] Creating account in local storage for phone:", phone)
-      
-      // Validate inputs
-      if (!phone || !name || !pin) {
-        console.error("[v0] Missing required fields for account creation")
-        return false
-      }
-      
-      // Create account using account manager
-      const newAccount = createAccount(phone.trim(), name.trim(), pin)
-      
-      console.log("[v0] Account created successfully via account manager:", newAccount)
-      
-      // Set as current user
-      setCurrentUser(phone.trim())
-      
-      return true
-    } catch (err) {
-      console.error("[v0] Error creating account:", err)
-      return false
-    }
-  }
+
 
   useEffect(() => {
     // Get phone number from session if available
@@ -116,13 +102,13 @@ export default function OnboardingPage() {
       return
     }
     setError("")
-    // For regular users, skip account type selection and go directly to PIN
-    // For admin, show account type selection
+    // For regular users, go to PIN setup (step 3)
+    // For admin, show account type selection first
     if (isAdmin) {
       setStep(3) // Show account type selection for admin
     } else {
       setAccountType("personal") // Auto-set personal for regular users
-      setStep(4) // Skip to PIN
+      setStep(3) // Go to PIN setup
     }
   }
 
@@ -132,7 +118,7 @@ export default function OnboardingPage() {
       return
     }
     setError("")
-    setStep(4)
+    setStep(4) // Go to confirm PIN page
   }
 
   const handleConfirmPinSubmit = async () => {
@@ -145,47 +131,50 @@ export default function OnboardingPage() {
     setError("")
 
     try {
-      // Create account using local account manager
       console.log("[v0] Creating account with phone:", phoneNumber, "name:", fullName)
       
-      // Check if account already exists
-      const existingAccount = getAccountByPhone(phoneNumber)
-      if (existingAccount) {
-        console.error("[v0] Account already exists for phone:", phoneNumber)
-        setError("এই নম্বরে আগে থেকে অ্যাকাউন্ট আছে। লগইন করুন।")
-        setIsLoading(false)
-        return
-      }
-      
-      // Create new account
-      const newAccount = createAccount(phoneNumber, fullName.trim(), pin)
+      // Create account directly in Neon database
+      const response = await fetch('/api/create-neon-account', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          phone: phoneNumber,
+          name: fullName.trim(),
+          pin,
+          accountType: accountType, // State, Personal, Business, Institution
+        }),
+      })
 
-      console.log("[v0] Account created:", newAccount)
+      const result = await response.json()
 
-      if (newAccount) {
-        // Account created successfully
-        console.log("[v0] Account created successfully with phone:", phoneNumber)
+      if (response.ok && result.success) {
+        console.log("[v0] Account created successfully in Neon:", phoneNumber)
         
-        // Save account data to localStorage
+        // Save to localStorage as backup
         saveAccountData(phoneNumber, fullName)
-        
-        // Set current user
         setCurrentUser(phoneNumber)
         
         // Show success and redirect
-        setStep(5)
+        setStep(6)
         setTimeout(() => {
-          router.replace("/")
-        }, 2000)
+          router.push("/")
+        }, 1500)
       } else {
-        console.error("[v0] Account creation returned null")
-        setError("অ্যাকাউন্ট তৈরিতে সমস্যা হয়েছে। আবার চেষ্টা করুন।")
+        console.error("[v0] Account creation failed:", result.error)
+        setError(result.error || "অ্যাকাউন্ট তৈরিতে সমস্যা হয়েছে।")
       }
     } catch (err) {
       console.error("[v0] Registration error:", err)
       const errorMsg = err instanceof Error ? err.message : String(err)
       console.error("[v0] Error details:", errorMsg)
-      setError("অ্যাকাউন্ট তৈরিতে সমস্যা হয়েছে। আবার চেষ্টা করুন।")
+      console.error("[v0] Full error object:", err)
+      
+      // Show more specific error message
+      if (errorMsg.includes("already exists")) {
+        setError("এই নম্বরে আগে থেকে অ্যাকাউন্ট আছে। লগইন করুন।")
+      } else {
+        setError("অ্যাকাউন্ট তৈরিতে সমস্যা হয়েছে। আবার চেষ্টা করুন।")
+      }
     } finally {
       setIsLoading(false)
     }
@@ -203,7 +192,7 @@ export default function OnboardingPage() {
   const handleAccountTypeSubmit = () => {
     if (accountType) {
       setError("")
-      setStep(4)
+      setStep(4) // Go to PIN setup after account type
     } else {
       setError("অ্যাকাউন্টের ধরন নির্বাচন করুন")
     }
@@ -414,16 +403,21 @@ export default function OnboardingPage() {
             <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6">
               <CheckCircle className="w-10 h-10 text-green-500" />
             </div>
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">স্বাগতম!</h2>
-            <p className="text-gray-500 text-center mb-2">
-              {fullName}, আপনার অ্যাকাউন্ট সফলভাবে তৈরি হয়েছে।
-            </p>
-            <p className="text-gray-400 text-sm">হোম পেজে নিয়ে যাওয়া হচ্ছে...</p>
-            <div className="mt-6">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#1FBFFF]"></div>
-            </div>
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">অ্যাকাউন্ট তৈরি সফল!</h2>
+            <p className="text-gray-600 text-center mb-8">এখন লগইন করুন</p>
+            <button
+              onClick={() => {
+                router.push("/pin")
+              }}
+              className="w-32 py-3 bg-[#1FBFFF] text-white rounded-full font-medium"
+            >
+              লগইন করুন
+            </button>
           </div>
         )}
+
+        {/* Step 6: Auto redirect to home */}
+        {step === 6 && null}
       </div>
     </div>
   )

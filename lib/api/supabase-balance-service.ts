@@ -1,54 +1,59 @@
-import { createClient } from "@/lib/supabase/server"
+import { getCollection } from "@/lib/db/mongodb"
 
 export async function getUserBalance(phoneNumber: string): Promise<number> {
-  const supabase = await createClient()
-
-  const { data, error } = await supabase
-    .from("user_balances")
-    .select("balance")
-    .eq("phone_number", phoneNumber)
-    .single()
-
-  if (error) {
+  try {
+    const collection = await getCollection("user_balances")
+    const record = await collection.findOne({ phone_number: phoneNumber })
+    
+    if (!record) {
+      console.log("[v0] No balance record found for:", phoneNumber)
+      return 0
+    }
+    
+    return Number(record.balance) || 0
+  } catch (error) {
     console.error("[v0] Error fetching balance:", error)
     return 0
   }
-
-  return data?.balance || 0
 }
 
 export async function updateUserBalance(phoneNumber: string, newBalance: number): Promise<boolean> {
-  const supabase = await createClient()
-
-  // Try to update existing record
-  const { error: updateError } = await supabase
-    .from("user_balances")
-    .update({ balance: newBalance, updated_at: new Date().toISOString() })
-    .eq("phone_number", phoneNumber)
-
-  if (updateError) {
-    // If update fails, try to insert new record
-    const { error: insertError } = await supabase
-      .from("user_balances")
-      .insert({ phone_number: phoneNumber, balance: newBalance })
-
-    if (insertError) {
-      console.error("[v0] Error updating balance:", insertError)
-      return false
-    }
+  try {
+    const collection = await getCollection("user_balances")
+    
+    const result = await collection.updateOne(
+      { phone_number: phoneNumber },
+      {
+        $set: {
+          phone_number: phoneNumber,
+          balance: newBalance,
+          updated_at: new Date(),
+        }
+      },
+      { upsert: true }
+    )
+    
+    console.log("[v0] Updated balance for", phoneNumber, "to", newBalance)
+    return true
+  } catch (error) {
+    console.error("[v0] Error updating balance:", error)
+    return false
   }
-
-  return true
 }
 
 export async function deductBalance(phoneNumber: string, amount: number): Promise<boolean> {
-  const currentBalance = await getUserBalance(phoneNumber)
-  const newBalance = currentBalance - amount
+  try {
+    const currentBalance = await getUserBalance(phoneNumber)
+    const newBalance = currentBalance - amount
 
-  if (newBalance < 0) {
-    console.error("[v0] Insufficient balance")
+    if (newBalance < 0) {
+      console.error("[v0] Insufficient balance")
+      return false
+    }
+
+    return await updateUserBalance(phoneNumber, newBalance)
+  } catch (error) {
+    console.error("[v0] Error deducting balance:", error)
     return false
   }
-
-  return await updateUserBalance(phoneNumber, newBalance)
 }
