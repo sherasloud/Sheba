@@ -8,8 +8,6 @@ import { useEffect, useState, useCallback, useRef } from "react"
 import { getUserBalance } from "@/lib/data/static-data"
 import { getCurrentUserAccount, getCurrentUser } from "@/lib/account-manager"
 import { VerifiedBadge } from "@/components/verified-badge"
-import BottomNavigation from "@/components/bottom-navigation"
-
 
 export default function AppPage() {
   const router = useRouter()
@@ -21,10 +19,14 @@ export default function AppPage() {
   const [isVerified, setIsVerified] = useState(false)
   const [phoneNumber, setPhoneNumber] = useState("")
   const [showIntro, setShowIntro] = useState(false)
-  const [isShebaProvider, setIsShebaProvider] = useState(false)
-  const [shebaTransactions, setShebaTransactions] = useState<any[]>([])
-  const [hasError, setHasError] = useState(false)
-  const [profilePic, setProfilePic] = useState<string | null>(null)
+
+  // Check PIN verification on mount
+  useEffect(() => {
+    const pinVerified = localStorage.getItem("pinVerified")
+    if (pinVerified !== "true") {
+      router.push("/pin-lock")
+    }
+  }, [router])
 
   const allBanners = [
     {
@@ -135,33 +137,24 @@ export default function AppPage() {
     }, 1500)
   }
 
-  const getLatestBalance = useCallback(async () => {
+  const getLatestBalance = useCallback(() => {
     try {
+      // First, try to get from account manager (most accurate)
+      const currentUser = getCurrentUser()
+      if (currentUser) {
+        const account = getCurrentUserAccount()
+        if (account) {
+          console.log(`[v0] Balance from account manager for ${currentUser.phone}: ${account.balance}`)
+          return account.balance
+        }
+      }
+      
+      // Fallback to localStorage
       const currentPhone = localStorage.getItem("phoneNumber")
       if (!currentPhone) return 0
 
-      // Fetch from Neon database via API - no caching
-      const response = await fetch('/api/user-profile', {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Cache-Control': 'no-cache, no-store, must-revalidate',
-        },
-        cache: 'no-store',
-        body: JSON.stringify({ phone: currentPhone }),
-      })
-
-      if (!response.ok) throw new Error('Failed to fetch profile')
-      
-      const data = await response.json()
-      if (data.success && data.user) {
-        console.log(`[v0] Balance from Neon for ${currentPhone}: ${data.user.balance}`)
-        return data.user.balance
-      }
-
-      // Fallback to localStorage
       const balance = getUserBalance(currentPhone)
-      console.log(`[v0] Fallback balance from localStorage for ${currentPhone}: ${balance}`)
+      console.log(`[v0] Latest balance loaded for ${currentPhone}: ${balance}`)
       return balance
     } catch (err) {
       console.error("[v0] Error getting balance:", err)
@@ -173,22 +166,10 @@ export default function AppPage() {
     const userData = localStorage.getItem("userData")
     const storedPhone = localStorage.getItem("phoneNumber")
 
-    // Load user name immediately (don't wait for balance)
-    const storedName = localStorage.getItem('userName')
-    const storedPhoto = localStorage.getItem('selectedPhoto')
-    
-    if (storedPhone) setPhoneNumber(storedPhone)
-    if (storedName && storedName !== "User") {
-      setUserName(storedName)
-    }
-    if (storedPhoto) {
-      setSelectedPhoto(storedPhoto)
-    }
-
-    // Then load balance
     if (userData && storedPhone) {
-      const currentBalance = await getLatestBalance()
+      const currentBalance = getLatestBalance()
       setBalance(currentBalance)
+      console.log("[v0] Balance refreshed:", currentBalance)
       
       // Fetch verification status from API instead of localStorage
       try {
@@ -197,14 +178,31 @@ export default function AppPage() {
         
         if (response.ok && result.success && result.data) {
           const isFullyVerified = result.data.isVerified === true
+          console.log("[v0] Home page verification status:", isFullyVerified)
           setIsVerified(isFullyVerified)
         } else {
+          console.log("[v0] Verification API failed, defaulting to unverified")
           setIsVerified(false)
         }
       } catch (error) {
         console.error("[v0] Error fetching verification status:", error)
         setIsVerified(false)
       }
+    }
+
+    const storedName = localStorage.getItem(`userName_${storedPhone}`)
+    const storedPhoto = localStorage.getItem(`userPhoto_${storedPhone}`)
+
+    if (storedPhone) setPhoneNumber(storedPhone)
+    if (storedName) {
+      setUserName(storedName)
+    } else {
+      setUserName("User")
+    }
+    if (storedPhoto) {
+      setSelectedPhoto(storedPhoto)
+    } else {
+      setSelectedPhoto("")
     }
   }, [getLatestBalance])
 
@@ -237,149 +235,47 @@ export default function AppPage() {
     refreshUserData()
   }
 
-  // Load user name immediately on mount
   useEffect(() => {
-    const name = localStorage.getItem('userName')
-    if (name && name !== 'User') {
-      setUserName(name)
-    }
-  }, [])
+    console.log("[v0] Home page authentication check starting")
 
-  useEffect(() => {
-    const initializeHome = async () => {
-      try {
-        console.log("[v0] Home page authentication check starting")
+    // This ensures PIN expires when app/browser is closed
+    const phone = sessionStorage.getItem("phoneNumber") || localStorage.getItem("phoneNumber")
+    const pinVerified = sessionStorage.getItem("appPinVerified")
+    const pinVerifiedTime = sessionStorage.getItem("pinVerifiedTime")
 
-        // This ensures PIN expires when app/browser is closed
-        const phone = sessionStorage.getItem("phoneNumber") || localStorage.getItem("phoneNumber")
-        const pinVerified = sessionStorage.getItem("appPinVerified")
-        const pinVerifiedTime = sessionStorage.getItem("pinVerifiedTime")
+    console.log("[v0] Auth values:", { phone, pinVerified, pinVerifiedTime })
 
-        console.log("[v0] Auth values:", { phone, pinVerified, pinVerifiedTime })
-
-        if (!phone) {
-          console.log("[v0] No phone number, redirecting to /enter-phone")
-          router.replace("/enter-phone")
-          return
-        }
-
-        console.log("[v0] Authentication passed, loading home page")
-
-      // Fetch balance from Neon database - no caching
-      let currentBalance = 0
-      try {
-        const response = await fetch('/api/user-profile', {
-          method: 'POST',
-          headers: { 
-            'Content-Type': 'application/json',
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-          },
-          cache: 'no-store',
-          body: JSON.stringify({ phone }),
-        })
-        const data = await response.json()
-        // Check if we have a valid user response
-        if (data.success && data.user) {
-          currentBalance = Number(data.user.balance) || 0
-          console.log(`[v0] Balance fetched from Neon for ${phone}: ${currentBalance}`)
-        } else {
-          // Fallback to localStorage
-          currentBalance = getUserBalance(phone)
-          console.log(`[v0] No Neon user found, using localStorage balance: ${currentBalance}`)
-        }
-      } catch (err) {
-        console.warn("[v0] Error fetching balance from Neon (non-blocking):", err)
-        currentBalance = getUserBalance(phone)
-      }
-
-      const userData = {
-        phoneNumber: phone,
-        balance: currentBalance,
-        accountNumber: phone === "01709783145" ? "ADMIN001" : phone === "01930314459" ? "ADMIN002" : `USER${Date.now()}`,
-        createdAt: new Date().toISOString(),
-        fullName: localStorage.getItem(`userName_${phone}`) || "User",
-      }
-
-      localStorage.setItem("userData", JSON.stringify(userData))
-      localStorage.setItem("isLoggedIn", "true")
-
-      if (!localStorage.getItem(`userName_${phone}`)) {
-        localStorage.setItem(`userName_${phone}`, "User")
-      }
-
-      setBalance(currentBalance)
-      setPhoneNumber(phone)
-      
-      // Load profile pic from localStorage
-      const savedPic = localStorage.getItem(`profilePic_${phone}`)
-      if (savedPic) {
-        setProfilePic(savedPic)
-      }
-
-      // Fetch real name from database
-      try {
-        const userResponse = await fetch('/api/user', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ phone: phone.trim() }),
-        })
-        if (userResponse.ok) {
-          const userData = await userResponse.json()
-          setUserName(userData.fullName || "User")
-          console.log(`[v0] Real name loaded: ${userData.fullName}`)
-        } else {
-          setUserName("User")
-        }
-      } catch (err) {
-        console.warn("[v0] Error fetching real name, using default:", err)
-        setUserName("User")
-      }
-      
-      setIsLoading(false)
-      console.log(`[v0] User setup complete with balance: ${currentBalance}`)
-
-      // Check if this is a Sheba provider (optional - don't block on error)
-      if (phone && phone.trim()) {
-        try {
-          const shebaResponse = await fetch('/api/sheba/get', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ phone: phone.trim() }),
-          })
-          if (shebaResponse.ok) {
-            const shebaData = await shebaResponse.json()
-            if (shebaData.provider && shebaData.provider.isVerified) {
-              setIsShebaProvider(true)
-              setBalance(Number(shebaData.provider.balance) || 0)
-              
-              // Load Sheba transactions
-              try {
-                const txnResponse = await fetch('/api/sheba/transactions', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ providerId: shebaData.provider.id }),
-                })
-                if (txnResponse.ok) {
-                  const txnData = await txnResponse.json()
-                  setShebaTransactions(Array.isArray(txnData.transactions) ? txnData.transactions : [])
-                }
-              } catch (txnErr) {
-                console.warn('[v0] Could not fetch transactions:', txnErr)
-              }
-            }
-          }
-        } catch (err) {
-          console.warn('[v0] Error checking Sheba provider (non-blocking):', err)
-        }
-      }
-      } catch (err) {
-        console.error('[v0] Critical error in initializeHome:', err)
-        setHasError(true)
-        setIsLoading(false)
-      }
+    if (!phone) {
+      console.log("[v0] No phone number, redirecting to /enter-phone")
+      router.replace("/enter-phone")
+      return
     }
 
-    initializeHome()
+    console.log("[v0] Authentication passed, loading home page")
+
+    const currentBalance = getUserBalance(phone)
+    console.log(`[v0] Balance loaded for ${phone}: ${currentBalance}`)
+
+    const userData = {
+      phoneNumber: phone,
+      balance: currentBalance,
+      accountNumber: phone === "01709783145" ? "ADMIN001" : phone === "01930314459" ? "ADMIN002" : `USER${Date.now()}`,
+      createdAt: new Date().toISOString(),
+      fullName: localStorage.getItem(`userName_${phone}`) || "User",
+    }
+
+    localStorage.setItem("userData", JSON.stringify(userData))
+    localStorage.setItem("isLoggedIn", "true")
+
+    if (!localStorage.getItem(`userName_${phone}`)) {
+      localStorage.setItem(`userName_${phone}`, "User")
+    }
+
+    setBalance(currentBalance)
+    setUserName(localStorage.getItem(`userName_${phone}`) || "User")
+    setPhoneNumber(phone)
+    setIsLoading(false)
+    console.log(`[v0] User setup complete with balance: ${currentBalance}`)
 
     window.addEventListener("storage", handleStorageChange)
     window.addEventListener("focus", handleFocus)
@@ -418,25 +314,6 @@ export default function AppPage() {
     console.log("[v0] Balance visibility toggled to:", !showBalance)
   }
 
-  if (hasError) {
-    return (
-      <div className="mobile-page items-center justify-center bg-red-50">
-        <div className="text-center">
-          <p className="text-red-600 font-semibold">Something went wrong</p>
-          <button
-            onClick={() => {
-              setHasError(false)
-              window.location.reload()
-            }}
-            className="mt-4 px-4 py-2 bg-red-600 text-white rounded"
-          >
-            Reload
-          </button>
-        </div>
-      </div>
-    )
-  }
-
   if (isLoading) {
     return (
       <div className="mobile-page items-center justify-center bg-[#3498DB]">
@@ -453,7 +330,6 @@ export default function AppPage() {
     isRestricted = true,
     isExternal = false,
     iconSize = "normal",
-    requiresBalance = false,
   }: {
     href: string
     icon: React.ReactNode
@@ -461,8 +337,8 @@ export default function AppPage() {
     isRestricted?: boolean
     isExternal?: boolean
     iconSize?: "normal" | "extra-large" | "super-large"
-    requiresBalance?: boolean
   }) => {
+    // All buttons are accessible to everyone (verified and unverified)
     const linkProps = isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {}
 
     return (
@@ -527,13 +403,13 @@ export default function AppPage() {
           ) : (
             <div className="flex items-center space-x-3 flex-1">
               <div
-                className="w-9 h-9 bg-gradient-to-br from-[#1FBFFF] to-[#1fa5eb] rounded-full flex items-center justify-center overflow-hidden cursor-pointer flex-shrink-0"
+                className="w-9 h-9 bg-gray-300 rounded-full flex items-center justify-center overflow-hidden cursor-pointer flex-shrink-0"
                 onClick={handleProfileClick}
               >
-                {profilePic || selectedPhoto ? (
-                  <img src={profilePic || selectedPhoto || "/placeholder.svg"} alt="Profile" className="w-full h-full object-cover" />
+                {selectedPhoto ? (
+                  <img src={selectedPhoto || "/placeholder.svg"} alt="Profile" className="w-full h-full object-cover" />
                 ) : (
-                  <div className="text-white text-xs font-bold">
+                  <div className="text-gray-600 text-xs font-bold">
                     {userName
                       .split(" ")
                       .map((n) => n[0])
@@ -587,38 +463,6 @@ export default function AppPage() {
           </div>
         </div>
 
-        {/* Sheba Provider Transactions */}
-        {isShebaProvider && (
-          <div className="mb-4 bg-blue-50 rounded-lg p-4">
-            <div className="flex justify-between items-center mb-3">
-              <h3 className="text-sm font-bold text-gray-900">Recent Transactions</h3>
-              <button
-                onClick={() => router.push('/sheba/withdraw')}
-                className="text-xs bg-green-600 text-white px-3 py-1 rounded-full hover:bg-green-700 transition"
-              >
-                Withdraw
-              </button>
-            </div>
-            {shebaTransactions.length > 0 ? (
-              <div className="space-y-2 max-h-48 overflow-y-auto">
-                {shebaTransactions.slice(0, 5).map((txn: any) => (
-                  <div key={txn.id} className="flex justify-between items-center p-2 bg-white rounded border border-gray-200">
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs font-medium text-gray-900 truncate">Shusto Paid</p>
-                      <p className="text-xs text-gray-500">{new Date(txn.createdAt).toLocaleDateString('bn-BD')}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm font-bold text-green-600">+৳{Number(txn.amount).toLocaleString('bn-BD')}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-xs text-gray-500 text-center py-4">No transactions yet</p>
-            )}
-          </div>
-        )}
-
         <div className="grid grid-cols-3 gap-x-2 gap-y-5 mb-4">
           <FeatureButton
             href="/send-money"
@@ -631,7 +475,6 @@ export default function AppPage() {
             }
             title="Send Money"
             iconSize="extra-large"
-            requiresBalance={true}
           />
           <FeatureButton
             href="/recharge"
@@ -660,7 +503,6 @@ export default function AppPage() {
             }
             title="Cashout"
             iconSize="extra-large"
-            requiresBalance={true}
           />
 
           <FeatureButton
@@ -676,6 +518,12 @@ export default function AppPage() {
             iconSize="extra-large"
           />
 
+          <FeatureButton
+            href="/transfer"
+            icon={<ArrowLeft size={32} className="rotate-45 text-red-500" />}
+            title="Transfer"
+            iconSize="extra-large"
+          />
           <FeatureButton
             href="/monthly-budget"
             icon={
@@ -749,19 +597,6 @@ export default function AppPage() {
             iconSize="extra-large"
           />
           <FeatureButton
-            href="/toll"
-            icon={
-              <img
-                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Untitled%20design-13-EGLDGz2iHEJJ3hD65CAOcuSQ4uBiGr.png"
-                alt="Toll"
-                className="w-14 h-14 object-contain"
-              />
-            }
-            title="Toll"
-            iconSize="extra-large"
-            requiresBalance={true}
-          />
-          <FeatureButton
             href="/remittance"
             icon={
               <img
@@ -783,7 +618,7 @@ export default function AppPage() {
               />
             }
             title="Savings"
-            iconSize="extra-large"
+            iconSize="super-large"
           />
           <FeatureButton
             href="/debenture"
@@ -795,7 +630,7 @@ export default function AppPage() {
               />
             }
             title="Debenture"
-            iconSize="extra-large"
+            iconSize="super-large"
           />
           <FeatureButton
             href="/donate"
@@ -817,7 +652,6 @@ export default function AppPage() {
           />
         </div>
       </div>
-      <BottomNavigation />
     </div>
   )
 }

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { ArrowLeft, Plus, Trash2, Edit2, Check, X, ChevronDown, ChevronUp, AlertCircle } from "lucide-react"
 import Link from "next/link"
+import VerificationRequired from "@/components/verification-required"
 
 // Define types for our budget data
 type BudgetCategory = {
@@ -22,7 +23,7 @@ type Transaction = {
 }
 
 export default function MonthlyBudgetPage() {
-
+  const [isVerified, setIsVerified] = useState(false)
   const [categories, setCategories] = useState<BudgetCategory[]>([])
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [newCategory, setNewCategory] = useState("")
@@ -49,72 +50,18 @@ export default function MonthlyBudgetPage() {
     "bg-teal-500",
   ]
 
-  // Budget management functions
-  const addCategory = () => {
-    if (!newCategory || !newAmount) {
-      setError("Please fill in all fields")
-      return
-    }
-    const newCat: BudgetCategory = {
-      id: Date.now().toString(),
-      name: newCategory,
-      budgeted: Number(newAmount),
-      spent: 0,
-      color: colors[categories.length % colors.length],
-    }
-    setCategories([...categories, newCat])
-    setNewCategory("")
-    setNewAmount("")
-    setShowAddCategory(false)
-    setError("")
-  }
-
-  const updateCategory = (id: string) => {
-    if (!editName || !editAmount) {
-      setError("Please fill in all fields")
-      return
-    }
-    setCategories(
-      categories.map((cat) =>
-        cat.id === id
-          ? { ...cat, name: editName, budgeted: Number(editAmount) }
-          : cat
-      )
-    )
-    setEditingCategory(null)
-    setError("")
-  }
-
-  const deleteCategory = (id: string) => {
-    setCategories(categories.filter((cat) => cat.id !== id))
-  }
-
-  const getCategoryTransactions = (categoryId: string): Transaction[] => {
-    return transactions.filter((t) => t.categoryId === categoryId)
-  }
-
-  const formatDate = (dateString: string): string => {
-    const date = new Date(dateString)
-    return date.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    })
-  }
-
-  const deleteTransaction = (transaction: Transaction) => {
-    setTransactions(transactions.filter((t) => t.id !== transaction.id))
-    // Update the category's spent amount
-    setCategories(
-      categories.map((cat) =>
-        cat.id === transaction.categoryId
-          ? { ...cat, spent: Math.max(0, cat.spent - transaction.amount) }
-          : cat
-      )
-    )
-  }
-
   useEffect(() => {
+    // Check verification status
+    const userData = localStorage.getItem("userData")
+    const storedVerified = localStorage.getItem("isVerified")
+
+    if (userData) {
+      const user = JSON.parse(userData)
+      setIsVerified(user.isVerified || false)
+    } else if (storedVerified) {
+      setIsVerified(storedVerified === "true")
+    }
+
     // Set current month
     const date = new Date()
     const monthNames = [
@@ -172,6 +119,96 @@ export default function MonthlyBudgetPage() {
   useEffect(() => {
     localStorage.setItem("budgetTransactions", JSON.stringify(transactions))
   }, [transactions])
+
+  // Show verification required screen for unverified users
+  if (!isVerified) {
+    return <VerificationRequired title="Monthly Budget" />
+  }
+
+  const addCategory = () => {
+    if (!newCategory.trim()) {
+      setError("Please enter a category name")
+      return
+    }
+
+    if (!newAmount.trim() || isNaN(Number(newAmount))) {
+      setError("Please enter a valid amount")
+      return
+    }
+
+    const amount = Number(newAmount)
+    if (amount <= 0) {
+      setError("Amount must be greater than 0")
+      return
+    }
+
+    const newCat: BudgetCategory = {
+      id: Date.now().toString(),
+      name: newCategory,
+      budgeted: amount,
+      spent: 0,
+      color: colors[Math.floor(Math.random() * colors.length)],
+    }
+
+    setCategories([...categories, newCat])
+    setNewCategory("")
+    setNewAmount("")
+    setShowAddCategory(false)
+    setError("")
+  }
+
+  const updateCategory = (id: string) => {
+    if (!editName.trim()) {
+      setError("Please enter a category name")
+      return
+    }
+
+    if (!editAmount.trim() || isNaN(Number(editAmount))) {
+      setError("Please enter a valid amount")
+      return
+    }
+
+    const amount = Number(editAmount)
+    if (amount <= 0) {
+      setError("Amount must be greater than 0")
+      return
+    }
+
+    setCategories(categories.map((cat) => (cat.id === id ? { ...cat, name: editName, budgeted: amount } : cat)))
+
+    setEditingCategory(null)
+    setError("")
+  }
+
+  const deleteCategory = (id: string) => {
+    setCategories(categories.filter((cat) => cat.id !== id))
+    setTransactions(transactions.filter((t) => t.categoryId !== id))
+  }
+
+  const deleteTransaction = (transaction: Transaction) => {
+    setTransactions(transactions.filter((t) => t.id !== transaction.id))
+    setCategories(
+      categories.map((cat) =>
+        cat.id === transaction.categoryId ? { ...cat, spent: cat.spent - transaction.amount } : cat,
+      ),
+    )
+  }
+
+  const getCategoryTransactions = (categoryId: string) => {
+    return transactions
+      .filter((t) => t.categoryId === categoryId)
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+  }
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString)
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    })
+  }
 
   return (
     <div className="flex flex-col h-screen bg-white max-w-md mx-auto">

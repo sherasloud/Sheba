@@ -8,7 +8,7 @@ export default function DebenturePage() {
     <div className="min-h-screen bg-gradient-to-b from-[#29a9eb] to-[#1e88c7] flex flex-col">
       {/* Header */}
       <div className="p-4 flex items-center">
-        <Link href="/" className="text-white">
+        <Link href="/home" className="text-white">
           <ArrowLeft size={24} />
         </Link>
       </div>

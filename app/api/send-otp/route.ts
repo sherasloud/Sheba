@@ -1,88 +1,111 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/client'
-import { sendOTP } from '@/lib/services/sms'
-import crypto from 'crypto'
+import * as admin from 'firebase-admin'
+
+// Initialize Firebase Admin SDK
+let firebaseApp: admin.app.App | null = null
+
+function initializeFirebase() {
+  if (firebaseApp) return firebaseApp
+
+  try {
+    const privateKeyString = process.env.FIREBASE_PRIVATE_KEY
+    
+    if (!privateKeyString) {
+      console.error('[v0] FIREBASE_PRIVATE_KEY not set')
+      throw new Error('Firebase private key not configured')
+    }
+
+    // Parse private key - handle both escaped and unescaped formats
+    let privateKey = privateKeyString
+    if (privateKey.startsWith('"') && privateKey.endsWith('"')) {
+      privateKey = privateKey.slice(1, -1)
+    }
+    privateKey = privateKey.replace(/\\n/g, '\n')
+
+    const serviceAccountConfig = {
+      projectId: process.env.FIREBASE_PROJECT_ID || 'sheba-1fc71',
+      clientEmail: process.env.FIREBASE_CLIENT_EMAIL || 'firebase-adminsdk-fbsvc@sheba-1fc71.iam.gserviceaccount.com',
+      privateKey: privateKey,
+    }
+
+    if (admin.apps.length === 0) {
+      firebaseApp = admin.initializeApp({
+        credential: admin.credential.cert(serviceAccountConfig as admin.ServiceAccount),
+      })
+      console.log('[v0] Firebase Admin SDK initialized')
+    } else {
+      firebaseApp = admin.app()
+    }
+
+    return firebaseApp
+  } catch (error: any) {
+    console.error('[v0] Firebase initialization failed:', error.message)
+    throw error
+  }
+}
 
 export async function POST(request: NextRequest) {
   try {
-    const { phone } = await request.json()
+    const { phone, phoneNumber } = await request.json()
+    const targetPhone = phone || phoneNumber
 
-    // Validate phone number
-    if (!phone || phone.length < 10) {
+    if (!targetPhone) {
       return NextResponse.json(
-        { success: false, message: 'Invalid phone number' },
+        { success: false, message: 'ফোন নম্বর প্রয়োজন' },
         { status: 400 }
       )
     }
 
-    // Generate 6-digit OTP
-    const otp = Math.floor(100000 + Math.random() * 900000).toString()
-    console.log('[v0] Generated OTP:', otp, 'for phone:', phone)
+    console.log('[v0] OTP request for phone:', targetPhone)
 
-    // Store OTP in database with 5-minute expiry
-    const supabase = createClient()
-    const expiresAt = new Date(Date.now() + 5 * 60 * 1000).toISOString()
-
-    // If Supabase is not available, just store in session storage on client
-    if (!supabase) {
-      console.warn('[v0] Supabase not configured, skipping OTP database storage')
-      // Client will handle OTP via temporary storage
-    } else {
-      const { data: otpData, error: otpError } = await supabase
-        .from('otp_sessions')
-        .upsert(
-          {
-            phone: phone,
-            otp: otp,
-            expires_at: expiresAt,
-            attempts: 0,
-            created_at: new Date().toISOString(),
-          },
-          { onConflict: 'phone' }
-        )
-        .select()
-        .single()
-
-      if (otpError) {
-        console.error('[v0] Database error:', otpError.message)
-        return NextResponse.json(
-          { success: false, message: 'Failed to generate OTP' },
-          { status: 500 }
-        )
+    // Format phone number properly
+    let formattedPhone = targetPhone
+    if (!formattedPhone.startsWith('+')) {
+      if (formattedPhone.startsWith('0')) {
+        formattedPhone = '+880' + formattedPhone.substring(1)
+      } else if (formattedPhone.startsWith('880')) {
+        formattedPhone = '+' + formattedPhone
       }
     }
 
-    // Send OTP via SMS
-    try {
-      const result = await sendOTP(phone, otp)
-      console.log('[v0] SMS sent result:', result)
+    console.log('[v0] Formatted phone:', formattedPhone)
 
-      if (!result.success) {
-        return NextResponse.json(
-          { success: false, message: result.message || 'Failed to send OTP' },
-          { status: 500 }
-        )
-      }
-    } catch (smsError) {
-      console.error('[v0] SMS sending error:', smsError)
+    // Initialize Firebase Admin
+    initializeFirebase()
+    const auth = admin.auth()
+
+    // For real phone authentication:
+    // The frontend will use Firebase SDK to handle the OTP flow
+    // We prepare the backend to verify the token later
+    
+    // Create a custom claim token for this phone number
+    try {
+      const customToken = await auth.createCustomToken(formattedPhone, {
+        phoneNumber: formattedPhone,
+        timestamp: Date.now(),
+      })
+
+      console.log('[v0] Created custom token for:', formattedPhone)
+
+      return NextResponse.json({
+        success: true,
+        message: 'OTP পাঠানোর প্রস্তুতি সম্পন্ন',
+        phoneNumber: formattedPhone,
+        customToken: customToken,
+        status: 'ready_for_otp',
+        instructions: 'ক্লায়েন্ট সাইডে Firebase OTP verification চালু করুন',
+      })
+    } catch (tokenError: any) {
+      console.error('[v0] Token creation error:', tokenError.message)
       return NextResponse.json(
-        { success: false, message: 'Failed to send OTP to phone' },
+        { success: false, message: 'টোকেন তৈরিতে ব্যর্থ: ' + tokenError.message },
         { status: 500 }
       )
     }
-
-    return NextResponse.json({
-      success: true,
-      message: 'OTP sent successfully',
-      data: {
-        phone: phone,
-        expiresIn: 300, // 5 minutes in seconds
-      },
-    })
   } catch (error: any) {
-    console.error('[v0] Error in send-otp:', error.message)
+    console.error('[v0] Send OTP error:', error.message)
     return NextResponse.json(
-      { success: false, message: 'An error occurred' },
+      { success: false, message: 'সার্ভার ত্রুটি: ' + error.message },
       { status: 500 }
     )
   }

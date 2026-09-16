@@ -8,7 +8,6 @@ export default function DonateAmountPage() {
   const router = useRouter()
   const [selectedCharity, setSelectedCharity] = useState<any>(null)
   const [amount, setAmount] = useState("")
-  const [charityNumber, setCharityNumber] = useState("")
 
   useEffect(() => {
     const stored = localStorage.getItem("selectedCharity")
@@ -24,12 +23,7 @@ export default function DonateAmountPage() {
 
   const handleContinue = () => {
     if (!amount) {
-      alert("অনুগ্রহ করে পরিমাণ লিখুন")
-      return
-    }
-    
-    if (!charityNumber) {
-      alert("অনুগ্রহ করে সংস্থার নম্বর লিখুন")
+      alert("Please enter an amount")
       return
     }
 
@@ -38,7 +32,6 @@ export default function DonateAmountPage() {
       "donationDetails",
       JSON.stringify({
         charity: selectedCharity.name,
-        charityNumber: charityNumber,
         amount: Number.parseFloat(amount),
         type: "donation",
       }),
@@ -84,21 +77,29 @@ export default function DonateAmountPage() {
       </div>
 
       <div className="p-6">
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-          <p className="text-sm text-blue-900"><strong>সংস্থা:</strong> {selectedCharity.name}</p>
-          {selectedCharity.number && (
-            <p className="text-sm text-blue-900 mt-2"><strong>যোগাযোগ নম্বর / অ্যাকাউন্ট:</strong> {selectedCharity.number}</p>
-          )}
+        <div className="bg-gray-50 rounded-lg p-4 mb-6">
+          <div className="flex items-center">
+            <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+              <img
+                src={selectedCharity.logo || "/placeholder.svg"}
+                alt={selectedCharity.name}
+                className="w-12 h-12 rounded-full object-contain"
+              />
+            </div>
+            <div>
+              <h2 className="text-xl font-bold text-gray-900">{selectedCharity.name}</h2>
+            </div>
+          </div>
         </div>
 
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">দান এর পরিমাণ (টাকা)</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Donation Amount (Tk)</label>
             <input
               type="number"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              placeholder="পরিমাণ লিখুন"
+              placeholder="Enter amount"
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#29a9eb]"
               autoFocus
             />
@@ -111,21 +112,9 @@ export default function DonateAmountPage() {
                 onClick={() => setAmount(preset.toString())}
                 className="py-2 px-4 border border-gray-300 rounded-lg text-center hover:bg-gray-50"
               >
-                {preset} টাকা
+                Tk{preset}
               </button>
             ))}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-2">সংস্থার যোগাযোগ নম্বর / অ্যাকাউন্ট</label>
-            <input
-              type="tel"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#29a9eb]"
-              value={charityNumber}
-              onChange={(e) => setCharityNumber(e.target.value)}
-              placeholder={`যেমন: ${selectedCharity?.number || "09666123456"}`}
-            />
-            <p className="text-xs text-gray-500 mt-1">সংস্থার নম্বর লিখুন যা অ্যাকাউন্ট যাচাইয়ের জন্য প্রয়োজন</p>
           </div>
         </div>
 

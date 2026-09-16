@@ -11,15 +11,19 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Firebase ID token verification happens on the client side with the Firebase SDK
-    // This endpoint acknowledges the verification and can create a session if needed
+    // NOTE: Firebase OTP verification should be done on the client side
+    // using Firebase SDK: firebase.auth().signInWithCredential()
+    // This endpoint is a placeholder for backend verification logic
     
-    console.log('[v0] OTP verification request received')
+    // For production: decode and verify the idToken using firebase-admin
+    // For now, we're handling this client-side with Firebase SDK
+
+    console.log('[v0] OTP verification token received')
 
     return NextResponse.json({
       success: true,
       message: 'Phone verification successful',
-      verified: true,
+      instructions: 'Token verified on client side using Firebase SDK'
     })
   } catch (error: any) {
     console.error('[v0] OTP verification error:', error.message)

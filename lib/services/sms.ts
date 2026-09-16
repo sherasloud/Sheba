@@ -69,72 +69,54 @@ export async function sendOTP(phoneNumber: string, otp: string): Promise<SMSResu
 }
 
 /**
- * Verify OTP from database or demo OTP
+ * Verify OTP from database
  */
 export async function verifyOTP(
   phoneNumber: string,
   otp: string
 ): Promise<{ success: boolean; message: string }> {
   try {
-    // For demo purposes - allow any 6-digit OTP that matches the last 6 digits of phone
-    // In production, verify against database
-    
-    // DEMO: Accept OTP "123456" or "111111" for any phone number
-    const demoOTPs = ['123456', '111111', '000000']
-    if (demoOTPs.includes(otp)) {
-      console.log('[v0] Demo OTP verified for phone:', phoneNumber)
-      return { success: true, message: 'OTP verified successfully' }
+    const { createClient } = await import('@/lib/supabase/client')
+    const supabase = createClient()
+
+    // Get OTP from database
+    const { data: otpData, error } = await supabase
+      .from('otp_sessions')
+      .select('*')
+      .eq('phone', phoneNumber)
+      .single()
+
+    if (error || !otpData) {
+      return { success: false, message: 'OTP not found or expired' }
     }
 
-    // Try to verify from Supabase if available
-    try {
-      const { createClient } = await import('@/lib/supabase/client')
-      const supabase = createClient()
+    // Check if OTP is expired
+    if (new Date(otpData.expires_at) < new Date()) {
+      return { success: false, message: 'OTP expired' }
+    }
 
-      // Get OTP from database
-      const { data: otpData, error } = await supabase
+    // Check if OTP matches
+    if (otpData.otp !== otp) {
+      // Increment attempts
+      await supabase
         .from('otp_sessions')
-        .select('*')
+        .update({ attempts: otpData.attempts + 1 })
         .eq('phone', phoneNumber)
-        .single()
 
-      if (error || !otpData) {
-        // OTP not found in database
-        return { success: false, message: 'OTP expire hয়ে গেছে বা invalid' }
+      // Block after 3 attempts
+      if (otpData.attempts >= 2) {
+        return { success: false, message: 'Too many attempts. Please try again later.' }
       }
 
-      // Check if OTP is expired
-      if (new Date(otpData.expires_at) < new Date()) {
-        return { success: false, message: 'OTP নির্ধারিত সময় শেষ হয়ে গেছে' }
-      }
-
-      // Check if OTP matches
-      if (otpData.otp !== otp) {
-        // Increment attempts
-        await supabase
-          .from('otp_sessions')
-          .update({ attempts: otpData.attempts + 1 })
-          .eq('phone', phoneNumber)
-
-        // Block after 3 attempts
-        if (otpData.attempts >= 2) {
-          return { success: false, message: 'অনেক চেষ্টা করেছেন। পরে চেষ্টা করুন।' }
-        }
-
-        return { success: false, message: 'ভুল OTP' }
-      }
-
-      // OTP verified - delete it
-      await supabase.from('otp_sessions').delete().eq('phone', phoneNumber)
-
-      return { success: true, message: 'OTP যাচাইকরণ সফল' }
-    } catch (supabaseError: any) {
-      // If Supabase fails, reject OTP (don't fallback to success)
-      console.log('[v0] Supabase error during OTP verification:', supabaseError.message)
-      return { success: false, message: 'OTP verification service unavailable' }
+      return { success: false, message: 'Invalid OTP' }
     }
+
+    // OTP verified - delete it
+    await supabase.from('otp_sessions').delete().eq('phone', phoneNumber)
+
+    return { success: true, message: 'OTP verified successfully' }
   } catch (error: any) {
     console.error('[v0] Error verifying OTP:', error.message)
-    return { success: false, message: 'যাচাইকরণ ব্যর্থ হয়েছে' }
+    return { success: false, message: 'Verification failed' }
   }
 }
