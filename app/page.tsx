@@ -3,7 +3,7 @@
 import type React from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { CheckCircle, ArrowLeft, Bot } from "lucide-react"
+import { CheckCircle, ArrowLeft, Bot, Bell } from "lucide-react"
 import { useEffect, useState, useCallback, useRef } from "react"
 import { getUserBalance } from "@/lib/data/static-data"
 import { getCurrentUserAccount, getCurrentUser } from "@/lib/account-manager"
@@ -491,102 +491,40 @@ export default function AppPage() {
 
   return (
     <div
-      className="flex flex-col h-screen max-w-sm mx-auto relative overflow-hidden"
-      style={{
-        backgroundColor: "#1A2B47",
-        backgroundImage: 'url("/images/sheba.png")',
-        backgroundRepeat: "no-repeat",
-        backgroundPosition: "center",
-        backgroundSize: "contain",
-      }}
+      className="flex min-h-screen w-full max-w-[430px] mx-auto flex-col relative overflow-hidden bg-white text-[#142033] shadow-sm"
+      style={{ paddingBottom: "calc(78px + env(safe-area-inset-bottom))" }}
     >
-      <div className="safe-area-top"></div>
+      <div className="h-7 bg-white" />
 
-      <div
-        className="pb-4 pt-3 px-4"
-        style={{
-          backgroundColor: "#3498DB",
-        }}
-      >
-        <div className="text-white text-center mb-3">
-          <div
-            className="flex items-center justify-center cursor-pointer select-none active:opacity-80 transition-opacity"
-            onClick={toggleBalance}
-          >
-            <h1 className="text-2xl font-bold">সেবা</h1>
+      <header className="bg-white px-6 pb-3 pt-2">
+        <div className="flex items-center justify-between">
+          <div className="w-10" />
+          <img src="/images/seba-logo-splash.png" alt="সেবা" className="h-12 w-auto object-contain" />
+          <button type="button" aria-label="Notifications" className="relative flex h-11 w-11 items-center justify-center text-[#142033]">
+            <Bell size={38} strokeWidth={1.8} />
+            <span className="absolute right-0 top-0 h-4 w-4 rounded-full bg-[#ef4b55]" />
+          </button>
+        </div>
+
+        <div className="mt-5 flex items-center gap-4">
+          <button type="button" onClick={handleProfileClick} className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#36a9e1] text-2xl font-semibold text-white">
+            {profilePic || selectedPhoto ? <img src={profilePic || selectedPhoto || "/placeholder.svg"} alt="Profile" className="h-full w-full object-cover" /> : userName.slice(0, 2).toUpperCase()}
+          </button>
+          <div className="min-w-0">
+            <p className="truncate text-[30px] font-normal text-[#485163]">Hi {userName},</p>
+            <button type="button" onClick={toggleBalance} className="mt-4 text-[30px] tracking-[0.35em] text-[#142033]" aria-label="Toggle balance">
+              {showBalance ? `${formatBalance(balance)} ৳` : "•••••• ৳"}
+            </button>
           </div>
         </div>
+      </header>
 
-        <div className="bg-white text-black rounded-full flex items-center justify-between p-2 transition-all duration-300">
-          {showBalance ? (
-            <div className="flex-1 text-center">
-              <div className="text-sm font-medium">
-                {formatBalance(balance)} <span className="text-xs text-gray-500">৳</span>
-              </div>
-            </div>
-          ) : (
-            <div className="flex items-center space-x-3 flex-1">
-              <div
-                className="w-9 h-9 bg-gradient-to-br from-[#1FBFFF] to-[#1fa5eb] rounded-full flex items-center justify-center overflow-hidden cursor-pointer flex-shrink-0"
-                onClick={handleProfileClick}
-              >
-                {profilePic || selectedPhoto ? (
-                  <img src={profilePic || selectedPhoto || "/placeholder.svg"} alt="Profile" className="w-full h-full object-cover" />
-                ) : (
-                  <div className="text-white text-xs font-bold">
-                    {userName
-                      .split(" ")
-                      .map((n) => n[0])
-                      .join("")
-                      .toUpperCase()}
-                  </div>
-                )}
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center space-x-2">
-                  <div className="font-medium text-sm truncate">{userName}</div>
-                  <VerifiedBadge isVerified={isVerified} size="sm" />
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-
-      <div className="bg-white rounded-t-3xl -mt-3 flex-1 pt-4 px-4 pb-16 overflow-y-auto">
-        <div
-          className="mb-3 relative overflow-hidden rounded-xl shadow-md select-none"
-          onTouchStart={onTouchStart}
-          onTouchMove={onTouchMove}
-          onTouchEnd={onTouchEnd}
-        >
-          <Link href={allBanners[currentBannerIndex].link} className="block">
-            <img
-              key={`banner-${currentBannerIndex}-${Date.now()}`}
-              src={allBanners[currentBannerIndex].image || "/placeholder.svg"}
-              alt={allBanners[currentBannerIndex].alt}
-              className="w-full h-32 object-cover rounded-xl transition-all duration-500"
-              style={{ objectPosition: "center center", objectFit: "cover" }}
-              draggable={false}
-            />
+      <main className="flex-1 overflow-y-auto bg-white px-5 pb-8 pt-5">
+        <div className="relative mb-9 overflow-hidden rounded-[22px] shadow-[0_8px_22px_rgba(30,64,88,0.12)] select-none" onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}>
+          <Link href="/financial-awareness" className="block">
+            <img src="/images/home-reference-banner.jpg" alt="কাজে লাগবে ভাই" className="h-40 w-full object-cover" draggable={false} />
           </Link>
-
-          <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-1">
-            {allBanners.map((_, index) => (
-              <div
-                key={index}
-                className={`w-2 h-2 rounded-full transition-all duration-500 cursor-pointer ${
-                  index === currentBannerIndex ? "bg-white shadow-lg scale-125" : "bg-white/50"
-                }`}
-                onClick={() => {
-                  setCurrentBannerIndex(index)
-                  resetAutoRotation()
-                }}
-              />
-            ))}
-          </div>
         </div>
-
         {/* Sheba Provider Transactions */}
         {isShebaProvider && (
           <div className="mb-4 bg-blue-50 rounded-lg p-4">
@@ -619,7 +557,7 @@ export default function AppPage() {
           </div>
         )}
 
-        <div className="grid grid-cols-3 gap-x-2 gap-y-5 mb-4">
+        <div className="grid grid-cols-3 gap-x-2 gap-y-14 mb-4">
           <FeatureButton
             href="/send-money"
             icon={
@@ -816,7 +754,7 @@ export default function AppPage() {
             iconSize="extra-large"
           />
         </div>
-      </div>
+      </main>
       <BottomNavigation />
     </div>
   )
