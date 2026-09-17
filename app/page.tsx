@@ -560,7 +560,7 @@ export default function AppPage() {
           </div>
         )}
 
-        <div className="grid grid-cols-3 gap-x-2 gap-y-10 px-4 pb-4">
+        <div className="grid grid-cols-3 gap-x-2 gap-y-12 px-4 pb-4">
           <FeatureButton
             href="/send-money"
             icon={
