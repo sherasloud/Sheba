@@ -19,8 +19,8 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
-  title: "Sheba - Mobile Money Transfer",
-  description: "Fast and secure mobile money transfer application",
+  title: "সেবা | Sheba",
+  description: "সেবা — সহজ, নিরাপদ ও দ্রুত মোবাইল মানি অ্যাপ",
   icons: {
     icon: [
       { url: "/images/sheba-cloud-icon.jpeg", sizes: "192x192", type: "image/jpeg" },
