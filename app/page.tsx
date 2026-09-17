@@ -481,7 +481,7 @@ export default function AppPage() {
         >
           {icon}
         </div>
-        <div className="text-center text-[17px] font-semibold leading-tight text-[#000000] opacity-100">{title}</div>
+        <div className="text-center text-[15px] font-semibold leading-tight text-[#000000] opacity-100">{title}</div>
       </Link>
     )
   }
