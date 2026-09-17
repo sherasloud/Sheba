@@ -493,7 +493,7 @@ export default function AppPage() {
     >
       <div className="h-4 bg-white" />
 
-      <header className="bg-white px-5 pb-1 pt-1">
+      <header className="bg-white px-5 pb-10 pt-1">
         <div className="flex items-center justify-between">
           <div className="w-10" />
           <img src="/images/sheba-headline-logo.jpeg" alt="সেবা" className="h-11 w-auto object-contain" />
