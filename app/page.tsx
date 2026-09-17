@@ -513,14 +513,14 @@ export default function AppPage() {
   </button>
   <div className="min-w-0">
   <p className="flex h-14 items-center truncate text-2xl font-normal text-[#485163]">Hi {userName},</p>
-  <button type="button" onClick={toggleBalance} className="absolute left-0 right-0 top-[3.5rem] whitespace-nowrap text-center text-[clamp(1.15rem,7vw,2.25rem)] font-normal tracking-normal text-[#142033]" aria-label="Toggle balance">
+  <button type="button" onClick={toggleBalance} className="absolute left-0 right-0 top-[3.75rem] whitespace-nowrap text-center text-[clamp(1.15rem,7vw,2.25rem)] font-normal tracking-normal text-[#142033]" aria-label="Toggle balance">
   {showBalance ? `${formatBalance(balance)} ৳` : "•••••• ৳"}
   </button>
   </div>
   </div>
       </header>
 
-      <main className="flex-1 overflow-y-auto bg-white px-4 pb-40 pt-6">
+      <main className="flex-1 overflow-y-auto bg-white px-4 pb-40 pt-8">
         <div className="relative mb-9 overflow-hidden rounded-[22px] shadow-[0_8px_22px_rgba(30,64,88,0.12)] select-none" onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}>
           <Link href={allBanners[currentBannerIndex].link} className="block">
             <img
