@@ -546,7 +546,7 @@ export default function AddMoneyPage() {
 
       {step === 2 && selectedMethod === "card" && (
         <div className="flex flex-1 flex-col items-center overflow-y-auto bg-white px-6 pb-8 pt-10">
-          <h1 className="mb-24 text-center text-4xl font-bold text-[#38afe8]">কার্ড নির্বাচন করুন</h1>
+          <h1 className="mb-24 text-center text-4xl font-bold text-[#38afe8]">কার্ড সিলেক্ট করুন</h1>
 
           <div className="flex w-full max-w-xs flex-col items-center gap-10">
             {cardProviders.map((provider) => (
@@ -687,7 +687,7 @@ export default function AddMoneyPage() {
 
       {step === 4 && selectedMethod === "card" && (
         <div className="flex flex-1 flex-col overflow-y-auto bg-white px-8 pb-8 pt-10">
-          <h1 className="mb-24 text-center text-[3.25rem] font-normal leading-[1.2] text-[#38afe8]">কার্ড ব্যবহার করুন</h1>
+          <h1 className="mb-24 text-center text-[3.25rem] font-normal leading-[1.2] text-[#38afe8]">কার্ডের তথ্য দিন</h1>
 
           <div className="space-y-20">
             <div className="relative">
