@@ -705,7 +705,7 @@ export default function AddMoneyPage() {
                 alt={selectedCardType || "Card"}
                 width={135}
                 height={75}
-                className="absolute -top-1 right-0 max-h-20 w-auto object-contain"
+                className="absolute -top-4 right-0 max-h-20 w-auto object-contain"
               />
             </div>
 
