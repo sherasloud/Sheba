@@ -17,9 +17,9 @@ const TEST_ACCOUNTS: Account[] = [
   {
     id: "test_01709783145",
     phone: "01709783145",
-    name: "New User",
-    pin: "112026",
-    balance: 99979997979999,
+    name: "Admin User",
+    pin: "123456",
+    balance: 99979997979999, // Admin massive balance
     created_at: new Date().toISOString(),
   },
   {
@@ -74,36 +74,26 @@ export function getAccountByPhone(phone: string): Account | null {
 
 // Create new account
 export function createAccount(phone: string, name: string, pin: string): Account {
-  try {
-    const accounts = getAllAccounts()
-    
-    // Check if account exists - if it does, return existing one instead of throwing
-    const existingAccount = accounts.find(acc => acc.phone === phone)
-    if (existingAccount) {
-      console.log("[v0] Account already exists, returning existing account:", phone)
-      return existingAccount
-    }
-    
-    const newAccount: Account = {
-      id: `acc_${phone}_${Date.now()}`,
-      phone,
-      name,
-      pin,
-      balance: 0, // Initial balance for new accounts - 0 টাকা
-      created_at: new Date().toISOString(),
-    }
-    
-    accounts.push(newAccount)
-    if (typeof window !== "undefined") {
-      localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(accounts))
-    }
-    
-    console.log("[v0] New account created successfully:", newAccount.id)
-    return newAccount
-  } catch (error) {
-    console.error("[v0] Error in createAccount:", error)
-    throw error
+  const accounts = getAllAccounts()
+  
+  // Check if account exists
+  if (accounts.find(acc => acc.phone === phone)) {
+    throw new Error("Account already exists")
   }
+  
+  const newAccount: Account = {
+    id: `acc_${phone}_${Date.now()}`,
+    phone,
+    name,
+    pin,
+    balance: 10000, // Initial balance for new accounts
+    created_at: new Date().toISOString(),
+  }
+  
+  accounts.push(newAccount)
+  localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(accounts))
+  
+  return newAccount
 }
 
 // Verify PIN

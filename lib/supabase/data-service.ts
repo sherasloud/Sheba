@@ -9,8 +9,7 @@ export interface Profile {
   pin: string
   balance: number
   account_type: string
-  is_nid_verified?: boolean
-  face_verified?: boolean
+  is_verified: boolean
   created_at: string
   updated_at: string
 }
@@ -35,16 +34,6 @@ export interface OTPSession {
   created_at: string
 }
 
-export interface VerificationRequest {
-  id: string
-  phone: string
-  nid_number: string
-  status: "pending" | "approved" | "rejected"
-  submitted_at: string
-  reviewed_at?: string
-  reviewed_by?: string
-}
-
 // Initialize tables if they don't exist (for first-time setup)
 export async function initializeTables() {
   const supabase = createClient()
@@ -65,56 +54,21 @@ export function isAdminPhone(phone: string): boolean {
   return phone === "01709783145"
 }
 
-// Get user profile by phone number - from Neon database
+// Get user profile by phone number
 export async function getProfileByPhone(phone: string): Promise<Profile | null> {
-  try {
-    console.log('[v0] getProfileByPhone: Looking up', phone)
-    
-    // Try to fetch from Neon API instead of Supabase
-    const response = await fetch('/api/get-profile', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ phone }),
-    })
-    
-    const result = await response.json()
-    
-    if (!response.ok || !result.success) {
-      console.log('[v0] getProfileByPhone: User not found', phone)
-      return null
-    }
-    
-    console.log('[v0] getProfileByPhone: Found user:', {
-      phone: result.user.phoneNumber,
-      accountType: result.user.accountType,
-      account_type: result.user.account_type,
-    })
-    
-    // Use account_type from response, fallback to accountType
-    const accountType = (result.user.account_type || result.user.accountType || 'personal')?.toLowerCase()
-    
-    console.log('[v0] getProfileByPhone: Final account_type:', accountType)
-    
-    // Convert Neon user to Profile interface
-    const profile = {
-      id: result.user.id,
-      phone: result.user.phoneNumber,
-      name: result.user.fullName,
-      pin: result.user.pin || '',
-      balance: Number(result.user.balance || 0),
-      account_type: accountType,
-      is_nid_verified: result.user.isNIDVerified || false,
-      face_verified: result.user.faceVerified || false,
-      created_at: result.user.createdAt?.toISOString() || new Date().toISOString(),
-      updated_at: result.user.updatedAt?.toISOString() || new Date().toISOString(),
-    }
-    
-    console.log('[v0] getProfileByPhone: Returning profile:', profile)
-    return profile
-  } catch (error) {
-    console.error('[v0] getProfileByPhone: Error', error)
+  const supabase = createClient()
+  
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("phone", phone)
+    .single()
+  
+  if (error) {
     return null
   }
+  
+  return data
 }
 
 // Create new user profile
@@ -670,68 +624,4 @@ export function isOTPVerified(phone: string): boolean {
 export function clearOTPSession(phone: string): void {
   localStorage.removeItem(`otp_${phone}`)
   localStorage.removeItem(`verified_${phone}`)
-}
-
-// Subscribe to verification request updates
-export function subscribeToVerificationRequests(
-  callback: (requests: VerificationRequest[]) => void
-): (() => void) | null {
-  const supabase = createClient()
-
-  const channel = supabase
-    .channel("verification_requests:all")
-    .on(
-      "postgres_changes",
-      {
-        event: "*",
-        schema: "public",
-        table: "verification_requests",
-      },
-      () => {
-        // Refetch all verification requests
-        getVerificationRequests().then(callback)
-      }
-    )
-    .subscribe()
-
-  return () => {
-    supabase.removeChannel(channel)
-  }
-}
-
-// Get all verification requests (for admin)
-export async function getVerificationRequests(): Promise<VerificationRequest[]> {
-  const supabase = createClient()
-
-  const { data, error } = await supabase
-    .from("verification_requests")
-    .select("*")
-    .order("submitted_at", { ascending: false })
-
-  if (error) {
-    console.error("[v0] Error fetching verification requests:", error.message)
-    return []
-  }
-
-  return data || []
-}
-
-// Get verification requests by phone
-export async function getVerificationRequestsByPhone(
-  phone: string
-): Promise<VerificationRequest[]> {
-  const supabase = createClient()
-
-  const { data, error } = await supabase
-    .from("verification_requests")
-    .select("*")
-    .eq("phone", phone)
-    .order("submitted_at", { ascending: false })
-
-  if (error) {
-    console.error("[v0] Error fetching verification requests:", error.message)
-    return []
-  }
-
-  return data || []
 }

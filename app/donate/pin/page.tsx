@@ -83,68 +83,70 @@ export default function DonatePinPage() {
         <div className="text-xl font-medium">Enter PIN</div>
       </div>
 
-      <div className="flex-1 flex flex-col justify-between px-4 py-4">
-        <div className="text-center">
-          <h2 className="text-lg font-bold mb-1">Confirm Donation</h2>
-          <p className="text-gray-600 text-xs mb-4">Enter your 6-digit PIN</p>
+      <div className="flex-1 flex flex-col justify-center p-6">
+        <div className="text-center mb-8">
+          <h2 className="text-2xl font-bold mb-2">Confirm Donation</h2>
+          <p className="text-gray-600">Enter your 6-digit PIN to complete the donation</p>
+        </div>
 
-          <div className="bg-gray-50 rounded-lg p-3 mb-4">
-            <div className="flex items-center mb-3">
-              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-3">
-                <img
-                  src={donationDetails.charity?.logo || "/placeholder.svg"}
-                  alt={donationDetails.charity?.name}
-                  className="w-8 h-8 rounded-full object-contain"
-                />
-              </div>
-              <div className="text-left">
-                <h3 className="text-sm font-bold">{donationDetails.charity?.name}</h3>
-                <p className="text-xs text-gray-600">{donationDetails.charity?.category}</p>
-              </div>
+        <div className="bg-gray-50 rounded-lg p-4 mb-8">
+          <div className="flex items-center mb-4">
+            <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+              <img
+                src={donationDetails.charity?.logo || "/placeholder.svg"}
+                alt={donationDetails.charity?.name}
+                className="w-10 h-10 rounded-full object-contain"
+              />
             </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-gray-600">Amount:</span>
-              <span className="font-bold text-[#29a9eb]">Tk{donationDetails.amount?.toLocaleString()}</span>
+            <div>
+              <h3 className="font-bold">{donationDetails.charity?.name}</h3>
+              <p className="text-sm text-gray-600">{donationDetails.charity?.category}</p>
             </div>
           </div>
+          <div className="flex justify-between">
+            <span className="text-gray-600">Donation Amount:</span>
+            <span className="font-bold text-[#29a9eb]">Tk{donationDetails.amount?.toLocaleString()}</span>
+          </div>
+        </div>
 
-          <div className="flex justify-center mb-3">
-            <div className="flex gap-2">
+        <div className="mb-8">
+          <div className="flex justify-center mb-6">
+            <div className="flex space-x-3">
               {[...Array(6)].map((_, index) => (
                 <div
                   key={index}
-                  className={`w-3 h-3 rounded-full border-2 ${
+                  className={`w-4 h-4 rounded-full border-2 ${
                     index < pin.length ? "bg-[#29a9eb] border-[#29a9eb]" : "border-gray-300"
                   }`}
                 />
               ))}
             </div>
           </div>
-        </div>
 
-        <div className="grid grid-cols-3 gap-3 max-w-xs mx-auto">
-          {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((digit) => (
+          <div className="grid grid-cols-3 gap-4 max-w-xs mx-auto">
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((digit) => (
+              <button
+                key={digit}
+                onClick={() => handlePinInput(digit.toString())}
+                className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center text-2xl font-bold hover:bg-gray-200 transition-colors"
+              >
+                {digit}
+              </button>
+            ))}
+            <div></div>
             <button
-              key={digit}
-              onClick={() => handlePinInput(digit.toString())}
-              className="w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center text-xl font-bold hover:bg-gray-200 transition-colors active:bg-gray-300"
+              onClick={() => handlePinInput("0")}
+              className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center text-2xl font-bold hover:bg-gray-200 transition-colors"
             >
-              {digit}
+              0
             </button>
-          ))}
-          <div></div>
-          <button
-            onClick={() => handlePinInput("0")}
-            className="w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center text-xl font-bold hover:bg-gray-200 transition-colors active:bg-gray-300"
-          >
-            0
-          </button>
-          <button
-            onClick={handleBackspace}
-            className="w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors active:bg-gray-300"
-          >
-            <ArrowLeft size={20} />
-          </button>
+            <button
+              onClick={handleBackspace}
+              className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center hover:bg-gray-200 transition-colors"
+            >
+              <ArrowLeft size={24} />
+            </button>
+          </div>
         </div>
       </div>
     </div>

@@ -1,101 +1,83 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
+import { ArrowLeft, CheckCircle, AlertTriangle, Camera, Upload } from "lucide-react"
+import Link from "next/link"
 import { useRouter } from "next/navigation"
 
 export default function VerificationPage() {
-  const [step, setStep] = useState(1) // 1: NID input, 2: Facial verification
+  const router = useRouter()
   const [nidNumber, setNidNumber] = useState("")
+  const [phone, setPhone] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
+  const [success, setSuccess] = useState(false)
+  const [isVerified, setIsVerified] = useState(false)
+  const [step, setStep] = useState(1) // 1: NID input, 2: Video KYC
   const [videoReady, setVideoReady] = useState(false)
   const [faceDetected, setFaceDetected] = useState(false)
-  const [hasPermission, setHasPermission] = useState<boolean | null>(null)
-  const [cameraError, setCameraError] = useState("")
-
-  const videoRef = useRef<HTMLVideoElement>(null)
-  const canvasRef = useRef<HTMLCanvasElement>(null)
-  const router = useRouter()
-
-  // Start camera
-  const startCamera = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "user" },
-        audio: false,
-      })
-
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream
-        setVideoReady(true)
-        setHasPermission(true)
-        console.log("[v0] Camera started successfully")
-      }
-    } catch (err) {
-      setHasPermission(false)
-      setCameraError("Camera access denied. Please allow camera permissions.")
-      console.error("[v0] Camera error:", err)
-    }
-  }
 
   useEffect(() => {
-    if (step === 2) {
-      startCamera()
-      // Simulate face detection (in production, use ml5.js or TensorFlow.js)
-      const detectionInterval = setInterval(() => {
-        if (videoRef.current && videoRef.current.readyState === videoRef.current.HAVE_ENOUGH_DATA) {
-          // Simulate face detection by checking if video is playing
-          console.log("[v0] Face detection: video ready, setting faceDetected to true")
-          setFaceDetected(true)
+    // Get phone from localStorage
+    const userData = localStorage.getItem("userData")
+    if (userData) {
+      try {
+        const user = JSON.parse(userData)
+        const userPhone = user.phoneNumber || user.phone
+        setPhone(userPhone)
+
+        // Check if already verified
+        if (userPhone) {
+          fetchVerificationStatus(userPhone)
         }
-      }, 500)
-      return () => clearInterval(detectionInterval)
+      } catch (error) {
+        console.error("[v0] Error parsing user data:", error)
+      }
     }
-  }, [step])
+  }, [])
 
-  // Also detect when video is playing
-  useEffect(() => {
-    if (videoReady) {
-      // When video is ready, also set face detected after a short delay
-      const timer = setTimeout(() => {
-        console.log("[v0] Video ready, setting faceDetected to true")
-        setFaceDetected(true)
-      }, 1000)
-      return () => clearTimeout(timer)
+  const fetchVerificationStatus = async (userPhone: string) => {
+    try {
+      const response = await fetch(`/api/verification-status?phone=${encodeURIComponent(userPhone)}`)
+      const result = await response.json()
+
+      if (result.success && result.data.isVerified) {
+        setIsVerified(true)
+        setNidNumber(result.data.nidNumber || "")
+      }
+    } catch (error) {
+      console.error("[v0] Error fetching verification status:", error)
     }
-  }, [videoReady])
-
-  // NID validation
-  const validateNID = (nid: string) => {
-    return /^\d{10,17}$/.test(nid.trim())
   }
 
-  // Handle NID submission
+  const validateNID = (nid: string): boolean => {
+    const nidRegex = /^\d{10,17}$/
+    return nidRegex.test(nid.trim())
+  }
+
   const handleNIDSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError("")
+    setSuccess(false)
 
-    if (!nidNumber) {
-      setError("Please enter your NID number")
-      return
-    }
-
+    // Validate NID format
     if (!validateNID(nidNumber)) {
-      setError("Invalid NID format. Please enter a 10-17 digit number")
+      setError("Invalid NID format. NID should be 10-17 digits.")
       return
     }
 
-    // Move to facial verification step
+    if (!phone) {
+      setError("Phone number not found. Please log in again.")
+      return
+    }
+
+    // Move to video KYC step
     setStep(2)
   }
 
-  // Handle verification complete
   const handleVerificationComplete = async () => {
-    console.log("[v0] handleVerificationComplete started, faceDetected:", faceDetected)
-    
     if (!faceDetected) {
-      console.log("[v0] Face not detected - button should be disabled")
-      setError("Please ensure your face is detected before verifying")
+      setError("Please complete the video KYC and ensure your face is detected.")
       return
     }
 
@@ -103,181 +85,465 @@ export default function VerificationPage() {
     setError("")
 
     try {
-      // Get phone number from localStorage
-      const phoneNumber = localStorage.getItem("phoneNumber") || localStorage.getItem("currentUser")
-      console.log("[v0] Phone number from localStorage:", phoneNumber)
-
-      if (!phoneNumber) {
-        console.log("[v0] Phone number not found")
-        setError("Phone number not found. Please log in again.")
-        setIsLoading(false)
-        return
-      }
-
-      // Save verification request
-      console.log("[v0] Sending verification request to API")
       const response = await fetch("/api/verify-nid", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
           nidNumber: nidNumber.trim(),
-          phone: phoneNumber,
-          faceVerified: true,
+          phone,
+          faceVerified: faceDetected,
         }),
       })
 
-      console.log("[v0] API response status:", response.status)
       const result = await response.json()
-      console.log("[v0] API response:", result)
 
       if (result.success) {
-        // Store verification request info
-        sessionStorage.setItem("verificationRequestId", result.data.requestId)
-        sessionStorage.setItem("verificationStatus", result.data.status)
-        sessionStorage.setItem("verificationSubmittedAt", result.data.submittedAt)
-        sessionStorage.setItem("nidNumber", nidNumber.trim())
-        console.log("[v0] Verification data stored, redirecting to processing page")
-
-        // Show success modal
-        setError("")
-        alert(result.message)
-        
-        // Redirect to verification processing page
+        setSuccess(true)
+        setIsVerified(true)
+        // Redirect to settings after 2 seconds
         setTimeout(() => {
-          console.log("[v0] Redirecting to /verification-processing")
-          router.push("/verification-processing")
-        }, 1500)
+          router.push("/settings")
+        }, 2000)
       } else {
-        console.log("[v0] API returned error:", result.message)
-        setError(result.message || "Verification failed")
+        setError(result.message || "Verification failed. Please try again.")
       }
-    } catch (err) {
-      console.error("[v0] Verification error:", err)
-      setError("An error occurred during verification")
+    } catch (error) {
+      console.error("[v0] Error verifying NID:", error)
+      setError("An error occurred. Please try again.")
     } finally {
       setIsLoading(false)
     }
   }
 
-  // Step 1: NID Input
-  if (step === 1) {
+  // If in step 2 (Video KYC), show video component
+  if (step === 2 && !isVerified) {
+    return <VideoKYCComponent 
+      nidNumber={nidNumber}
+      onFaceDetected={setFaceDetected}
+      onComplete={handleVerificationComplete}
+      onBack={() => {
+        setStep(1)
+        setFaceDetected(false)
+        setError("")
+      }}
+      isLoading={isLoading}
+      error={error}
+      videoReady={videoReady}
+      setVideoReady={setVideoReady}
+    />
+  }
+
+  // If already verified, show success screen
+  if (isVerified && success) {
     return (
-      <div className="min-h-screen w-full bg-gradient-to-br from-blue-600 to-blue-800 flex flex-col items-center justify-center p-6">
-        <div className="w-full max-w-md">
-          <h1 className="text-4xl font-light text-white text-center mb-4">
-            NID Verification
-          </h1>
+      <div className="flex flex-col h-screen bg-white">
+        <div className="bg-[#29a9eb] text-white p-4 flex items-center justify-center">
+          <div className="text-xl font-medium">Verification Complete</div>
+        </div>
 
-          <form onSubmit={handleNIDSubmit} className="space-y-6">
-            <div>
-              <input
-                type="text"
-                value={nidNumber}
-                onChange={(e) => setNidNumber(e.target.value.replace(/\D/g, ""))}
-                placeholder="Enter your NID (10-17 digits)"
-                className="w-full px-4 py-3 rounded-lg border-2 border-white/30 bg-white/10 text-white placeholder-white/50 text-center text-lg font-mono focus:outline-none focus:border-white"
-                maxLength={17}
-              />
+        <div className="flex flex-col items-center justify-center flex-1 p-6">
+          <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mb-6">
+            <CheckCircle size={40} className="text-white" />
+          </div>
+
+          <h2 className="text-2xl font-bold mb-2 text-center">NID Verified!</h2>
+          <p className="text-gray-600 mb-4 text-center">
+            Your NID has been verified successfully. You will be redirected to settings shortly.
+          </p>
+
+          <div className="bg-green-50 border border-green-200 rounded-lg p-6 mb-6 w-full max-w-md">
+            <h3 className="font-bold text-green-800 mb-3">Verification Details:</h3>
+            <div className="space-y-2 text-green-700 text-sm">
+              <div>NID Number: {nidNumber}</div>
+              <div>Status: Verified ✓</div>
+              <div>Date: {new Date().toLocaleDateString()}</div>
             </div>
+          </div>
 
-            {error && <p className="text-red-200 text-sm text-center">{error}</p>}
-
-            <button
-              type="submit"
-              className="w-full px-6 py-4 bg-white text-blue-600 text-lg font-semibold rounded-full hover:bg-white/90 transition-all shadow-lg"
-            >
-              Continue to Facial Verification
-            </button>
-          </form>
+          <Link
+            href="/settings"
+            className="bg-[#29a9eb] text-white py-3 px-6 rounded-md w-full max-w-md text-center block font-medium"
+          >
+            Back to Settings
+          </Link>
         </div>
       </div>
     )
   }
 
-  // Step 2: Facial Verification - Clean Minimal Design (EXACTLY like mockup)
+  // If already verified, show already verified screen
+  if (isVerified) {
+    return (
+      <div className="flex flex-col h-screen bg-white">
+        <div className="bg-[#29a9eb] text-white p-4 flex items-center">
+          <Link href="/settings" className="mr-4">
+            <ArrowLeft size={24} />
+          </Link>
+          <div className="text-xl font-medium">NID Verification</div>
+        </div>
+
+        <div className="flex flex-col items-center justify-center flex-1 p-6">
+          <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mb-6">
+            <CheckCircle size={40} className="text-white" />
+          </div>
+
+          <h2 className="text-2xl font-bold mb-2 text-center">Already Verified</h2>
+          <p className="text-gray-600 mb-4 text-center">Your NID has already been verified.</p>
+
+          <div className="bg-green-50 border border-green-200 rounded-lg p-6 mb-6 w-full max-w-md">
+            <h3 className="font-bold text-green-800 mb-3">Your NID:</h3>
+            <div className="space-y-2 text-green-700 text-sm">
+              <div>{nidNumber}</div>
+              <div>Status: Verified ✓</div>
+            </div>
+          </div>
+
+          <Link
+            href="/settings"
+            className="bg-[#29a9eb] text-white py-3 px-6 rounded-md w-full max-w-md text-center block font-medium"
+          >
+            Back to Settings
+          </Link>
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <div className="min-h-screen w-full bg-white flex flex-col items-center justify-between py-12">
-      {/* Top Section - Title & Instruction */}
-      <div className="w-full text-center">
-        {/* Main Title */}
-        <h1 className="text-7xl font-light text-[#29a9eb] tracking-widest mb-4">
-          Facial Verify
-        </h1>
-        
-        {/* Instruction Text */}
-        <p className="text-3xl font-light text-[#29a9eb] mb-12">
-          task show korbe
-        </p>
+    <div className="flex flex-col h-screen bg-white">
+      <div className="bg-[#29a9eb] text-white p-4 flex items-center">
+        <Link href="/settings" className="mr-4">
+          <ArrowLeft size={24} />
+        </Link>
+        <div className="text-xl font-medium">NID Verification</div>
       </div>
 
-      {/* Middle Section - Large Blue Circle Camera */}
-      <div className="flex-1 flex items-center justify-center px-6 mb-12">
-        <div className="relative w-80 h-80">
-          {/* Blue Circle Container */}
-          <div className="absolute inset-0 bg-[#29a9eb] rounded-full overflow-hidden shadow-xl">
+      <div className="flex flex-col flex-1 overflow-hidden">
+        <div className="flex-1 overflow-y-auto p-6 pb-4">
+          <div className="mb-6">
+            <h2 className="text-2xl font-bold mb-2">Verify Your NID</h2>
+            <p className="text-gray-600">
+              Enter your National ID (NID) number to verify your account. This will unlock additional features.
+            </p>
+          </div>
+
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+            <h3 className="font-bold text-blue-800 mb-2">NID Information</h3>
+            <div className="text-blue-700 text-sm space-y-1">
+              <div>• Bangladesh National ID (NID)</div>
+              <div>• 10-17 digit number</div>
+              <div>• Issued by the Election Commission</div>
+              <div>• Required for account verification</div>
+            </div>
+          </div>
+
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+              <div className="flex items-center">
+                <AlertTriangle size={20} className="text-red-600 mr-2" />
+                <p className="text-red-800 text-sm">{error}</p>
+              </div>
+            </div>
+          )}
+
+          <form onSubmit={handleNIDSubmit} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-2">NID Number</label>
+              <input
+                type="text"
+                inputMode="numeric"
+                placeholder="Enter your 10-17 digit NID number"
+                value={nidNumber}
+                onChange={(e) => setNidNumber(e.target.value.replace(/\D/g, ""))}
+                className="w-full px-4 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#29a9eb]"
+                maxLength={17}
+                disabled={isLoading}
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                {nidNumber.length > 0 && `${nidNumber.length}/17 digits`}
+              </p>
+            </div>
+
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+              <h3 className="font-bold text-yellow-800 mb-2">How to find your NID number:</h3>
+              <ul className="text-yellow-700 text-sm space-y-1">
+                <li>• Check your physical NID card</li>
+                <li>• Look at your NID certificate</li>
+                <li>• Check official government documents</li>
+              </ul>
+            </div>
+
+            <button
+              type="submit"
+              disabled={isLoading || nidNumber.length === 0}
+              className="bg-[#29a9eb] text-white p-4 rounded-md w-full font-medium disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+            >
+              Next: Video Verification
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Video KYC Component - Client-side face detection
+interface VideoKYCProps {
+  nidNumber: string
+  onFaceDetected: (detected: boolean) => void
+  onComplete: () => void
+  onBack: () => void
+  isLoading: boolean
+  error: string
+  videoReady: boolean
+  setVideoReady: (ready: boolean) => void
+}
+
+function VideoKYCComponent({
+  nidNumber,
+  onFaceDetected,
+  onComplete,
+  onBack,
+  isLoading,
+  error,
+  videoReady,
+  setVideoReady,
+}: VideoKYCProps) {
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const streamRef = useRef<MediaStream | null>(null)
+  const [hasPermission, setHasPermission] = useState<boolean | null>(null)
+  const [faceDetectedLocal, setFaceDetectedLocal] = useState(false)
+  const [cameraError, setCameraError] = useState("")
+  const [isScanning, setIsScanning] = useState(true)
+
+  useEffect(() => {
+    startCamera()
+    return () => {
+      stopCamera()
+    }
+  }, [])
+
+  const startCamera = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: "user",
+          width: { ideal: 640 },
+          height: { ideal: 480 },
+        },
+      })
+
+      streamRef.current = stream
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream
+        await videoRef.current.play()
+        setHasPermission(true)
+        setCameraError("")
+        setVideoReady(true)
+
+        // Start face detection
+        setTimeout(() => {
+          detectFace()
+        }, 500)
+      }
+    } catch (err) {
+      console.error("[v0] Camera access error:", err)
+      setHasPermission(false)
+      setCameraError("Camera access is required. Please allow camera permission.")
+    }
+  }
+
+  const stopCamera = () => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => track.stop())
+      streamRef.current = null
+    }
+  }
+
+  const detectFace = () => {
+    if (!videoRef.current || !canvasRef.current || !isScanning) return
+
+    const video = videoRef.current
+    const canvas = canvasRef.current
+    const context = canvas.getContext("2d")
+
+    if (!context) return
+
+    const detect = () => {
+      if (!isScanning) return
+
+      if (video.readyState === video.HAVE_ENOUGH_DATA) {
+        canvas.width = video.videoWidth
+        canvas.height = video.videoHeight
+        context.drawImage(video, 0, 0, canvas.width, canvas.height)
+
+        const imageData = context.getImageData(0, 0, canvas.width, canvas.height)
+        const faceDetectedResult = detectFaceInImage(imageData)
+
+        if (faceDetectedResult) {
+          setFaceDetectedLocal(true)
+          onFaceDetected(true)
+        } else {
+          setFaceDetectedLocal(false)
+          onFaceDetected(false)
+        }
+      }
+
+      if (isScanning) {
+        requestAnimationFrame(detect)
+      }
+    }
+
+    detect()
+  }
+
+  const detectFaceInImage = (imageData: ImageData): boolean => {
+    try {
+      const data = imageData.data
+      const width = imageData.width
+      const height = imageData.height
+
+      // Simple face detection: look for skin tone regions
+      let skinPixels = 0
+      const totalPixels = width * height
+
+      for (let i = 0; i < data.length; i += 4) {
+        const r = data[i]
+        const g = data[i + 1]
+        const b = data[i + 2]
+
+        // Basic skin tone detection (HSV approach simplified)
+        const rg = r - g
+        const rb = r - b
+
+        if (rg > 95 && rb > 40 && r > 95 && g > 40 && b > 20) {
+          skinPixels++
+        }
+      }
+
+      // If more than 5% of image is detected as skin tone, assume face is present
+      const skinPercentage = skinPixels / totalPixels
+      return skinPercentage > 0.05
+    } catch (error) {
+      console.error("[v0] Face detection error:", error)
+      return false
+    }
+  }
+
+  if (hasPermission === false) {
+    return (
+      <div className="flex flex-col h-screen bg-white">
+        <div className="bg-[#29a9eb] text-white p-4 flex items-center">
+          <button onClick={onBack} className="mr-4">
+            <ArrowLeft size={24} />
+          </button>
+          <div className="text-xl font-medium">Video Verification</div>
+        </div>
+
+        <div className="flex flex-col items-center justify-center flex-1 p-6">
+          <Camera size={64} className="text-gray-400 mb-4" />
+          <h2 className="text-xl font-bold mb-2">Camera Permission Required</h2>
+          <p className="text-gray-600 text-center mb-6">{cameraError}</p>
+          <button
+            onClick={startCamera}
+            className="bg-[#29a9eb] text-white py-3 px-6 rounded-md w-full max-w-sm"
+          >
+            Allow Camera Access
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="flex flex-col h-screen bg-white">
+      <div className="bg-[#29a9eb] text-white p-4 flex items-center">
+        <button onClick={onBack} className="mr-4">
+          <ArrowLeft size={24} />
+        </button>
+        <div className="text-xl font-medium">Video Verification (KYC)</div>
+      </div>
+
+      <div className="flex flex-col flex-1 overflow-hidden">
+        <div className="flex-1 overflow-y-auto p-6 pb-4">
+          <div className="mb-6">
+            <h2 className="text-2xl font-bold mb-2">Live Face Verification</h2>
+            <p className="text-gray-600">
+              Please position your face in front of the camera. Your face must be clearly visible for verification.
+            </p>
+          </div>
+
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+              <div className="flex items-center">
+                <AlertTriangle size={20} className="text-red-600 mr-2" />
+                <p className="text-red-800 text-sm">{error}</p>
+              </div>
+            </div>
+          )}
+
+          <div className="bg-gray-900 rounded-lg overflow-hidden mb-6 aspect-video">
             <video
               ref={videoRef}
               className="w-full h-full object-cover"
-              autoPlay
               playsInline
               muted
             />
             <canvas ref={canvasRef} className="hidden" />
+
+            {videoReady && (
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <div className="w-48 h-48 border-4 border-green-500 rounded-full opacity-50"></div>
+              </div>
+            )}
           </div>
 
-          {/* Face Detection Ring */}
-          {videoReady && faceDetected && (
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div className="w-96 h-96 border-4 border-green-400 rounded-full animate-pulse"></div>
+          {faceDetectedLocal && (
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+              <div className="flex items-center">
+                <CheckCircle size={20} className="text-green-600 mr-2" />
+                <p className="text-green-800 font-medium">Face detected successfully!</p>
+              </div>
             </div>
           )}
-        </div>
-      </div>
 
-      {/* Bottom Section - Verify Button */}
-      <div className="w-full flex justify-center px-6 pb-8">
-        <button
-          onClick={handleVerificationComplete}
-          disabled={!faceDetected || isLoading}
-          className={`w-full max-w-xs py-4 rounded-full font-semibold text-lg transition-all shadow-md ${
-            isLoading
-              ? "bg-gray-300 text-gray-500 cursor-wait"
-              : !faceDetected
-              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-              : "bg-[#29a9eb] text-white hover:bg-[#2191d4] active:scale-95"
-          }`}
-        >
-          {isLoading ? "Verifying..." : "Verify Now"}
-        </button>
-      </div>
+          {!faceDetectedLocal && videoReady && (
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+              <div className="flex items-center">
+                <AlertTriangle size={20} className="text-yellow-600 mr-2" />
+                <p className="text-yellow-800">Waiting for face detection... Make sure your face is visible</p>
+              </div>
+            </div>
+          )}
 
-      {/* Camera Permission Modal */}
-      {hasPermission === false && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
-          <div className="bg-white rounded-lg p-6 max-w-sm mx-4">
-            <h3 className="text-lg font-bold text-red-600 mb-2">Camera Permission</h3>
-            <p className="text-gray-700 mb-4">{cameraError}</p>
-            <button
-              onClick={startCamera}
-              className="w-full bg-[#29a9eb] text-white py-2 px-4 rounded-lg font-semibold hover:bg-[#2191d4]"
-            >
-              Allow Camera
-            </button>
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+            <h3 className="font-bold text-blue-800 mb-2">Verification Info:</h3>
+            <div className="text-blue-700 text-sm space-y-1">
+              <div>NID Number: {nidNumber}</div>
+              <div>Face Status: {faceDetectedLocal ? "✓ Detected" : "⏳ Detecting..."}</div>
+            </div>
           </div>
         </div>
-      )}
 
-      {/* Start Camera Overlay */}
-      {!videoReady && hasPermission !== false && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-40">
+        <div className="p-6 border-t border-gray-200 bg-gray-50">
           <button
-            onClick={startCamera}
-            className="px-8 py-3 bg-[#29a9eb] text-white rounded-full font-semibold hover:bg-[#2191d4] shadow-lg"
+            onClick={onComplete}
+            disabled={!faceDetectedLocal || isLoading}
+            className="bg-[#29a9eb] text-white p-4 rounded-md w-full font-medium disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
           >
-            Start Camera
+            {isLoading ? "Verifying..." : "Complete Verification"}
+          </button>
+          <button
+            onClick={onBack}
+            className="bg-gray-300 text-gray-800 p-3 rounded-md w-full font-medium mt-2 transition-colors hover:bg-gray-400"
+          >
+            Back
           </button>
         </div>
-      )}
+      </div>
     </div>
   )
 }
