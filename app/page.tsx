@@ -503,17 +503,17 @@ export default function AppPage() {
           </button>
         </div>
 
-        <div className="mt-4 flex items-center gap-4 px-9">
-          <button type="button" onClick={handleProfileClick} className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#36a9e1] text-lg font-semibold text-white">
-            {profilePic || selectedPhoto ? <img src={profilePic || selectedPhoto || "/placeholder.svg"} alt="Profile" className="h-full w-full object-cover" /> : userName.slice(0, 2).toUpperCase()}
-          </button>
-          <div className="min-w-0">
-            <p className="truncate text-2xl font-normal text-[#485163]">Hi {userName},</p>
-            <button type="button" onClick={toggleBalance} className="mt-2 text-2xl tracking-[0.3em] text-[#142033]" aria-label="Toggle balance">
-              {showBalance ? `${formatBalance(balance)} ৳` : "•••••• ৳"}
-            </button>
-          </div>
-        </div>
+  <div className="relative mt-4 flex items-start gap-4 px-9">
+  <button type="button" onClick={handleProfileClick} className="-translate-y-1 flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#36a9e1] text-lg font-semibold text-white">
+  {profilePic || selectedPhoto ? <img src={profilePic || selectedPhoto || "/placeholder.svg"} alt="Profile" className="h-full w-full object-cover" /> : userName.slice(0, 2).toUpperCase()}
+  </button>
+  <div className="min-w-0">
+  <p className="flex h-14 items-center truncate text-2xl font-normal text-[#485163]">Hi {userName},</p>
+  <button type="button" onClick={toggleBalance} className="absolute left-[8.5rem] top-[4.25rem] text-2xl tracking-[0.3em] text-[#142033]" aria-label="Toggle balance">
+  {showBalance ? `${formatBalance(balance)} ৳` : "•••••• ৳"}
+  </button>
+  </div>
+  </div>
       </header>
 
       <main className="flex-1 overflow-y-auto bg-white px-4 pb-40 pt-4">
