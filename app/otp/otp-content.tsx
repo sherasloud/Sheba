@@ -151,20 +151,20 @@ export default function OTPContent() {
           {error && <p className="mt-4 text-center text-sm text-red-500">{error}</p>}
 
           <div className="mt-5 text-center">
-            <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full border-2 border-[#5c5be5] text-xs text-[#8d929d]">
+            <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full border-2 border-[#38afe8] text-xs text-[#8d929d]">
               {timeLeft > 0 ? formatTime(timeLeft) : "00:00"}
             </div>
             {timeLeft > 0 ? (
               <p className="text-sm text-[#8d929d]">Resend code</p>
             ) : (
-              <button onClick={resendOTP} className="text-sm font-medium text-[#5c5be5] underline">Resend code</button>
+              <button onClick={resendOTP} className="text-sm font-medium text-[#38afe8] underline">Resend code</button>
             )}
           </div>
 
           <button
             onClick={() => verifyOTP(otp.join(""))}
             disabled={otp.some((digit) => digit === "") || isLoading}
-            className="mt-auto w-full rounded-xl bg-[#5c5be5] px-6 py-4 text-base font-semibold text-white transition hover:bg-[#4c4bd0] disabled:cursor-not-allowed disabled:opacity-50"
+            className="mt-auto w-full rounded-xl bg-[#38afe8] px-6 py-4 text-base font-semibold text-white transition hover:bg-[#249bd4] disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isLoading ? "Verifying..." : "Verify code"}
           </button>
