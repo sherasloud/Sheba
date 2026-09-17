@@ -481,7 +481,7 @@ export default function AppPage() {
         >
           {icon}
         </div>
-        <div className="text-center text-base font-normal leading-tight text-black">{title}</div>
+        <div className="text-center text-sm font-normal leading-tight text-black">{title}</div>
       </Link>
     )
   }
