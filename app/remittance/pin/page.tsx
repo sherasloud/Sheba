@@ -89,43 +89,62 @@ export default function RemittancePinPage() {
         <div className="text-xl font-medium">Enter PIN</div>
       </div>
 
-      <div className="flex-1 flex flex-col justify-between px-4 py-6">
-        <div className="text-center">
-          <div className="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
-            <span className="text-xl">🔐</span>
+      <div className="p-4 overflow-y-auto pb-20">
+        <div className="text-center mb-8">
+          <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span className="text-2xl">🔐</span>
           </div>
-          <h2 className="text-lg font-bold mb-1">Secure Your Transfer</h2>
-          <p className="text-gray-600 text-xs mb-4">Enter your 6-digit PIN to confirm</p>
-          <p className="text-xs text-gray-600 mb-1">Total Amount</p>
-          <p className="text-2xl font-bold text-blue-600">Tk{total}</p>
+          <h2 className="text-xl font-bold mb-2">Secure Your Transfer</h2>
+          <p className="text-gray-600 text-sm">Enter your 6-digit PIN to confirm the transfer</p>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-3 text-center">Enter Your PIN</label>
-          <div className="flex justify-center gap-2 mb-3">
-            {pin.map((digit, index) => (
-              <input
-                key={index}
-                id={`pin-${index}`}
-                type="password"
-                value={digit}
-                onChange={(e) => handlePinChange(index, e.target.value)}
-                onKeyDown={(e) => handleKeyDown(index, e)}
-                className="w-11 h-11 text-center text-xl font-bold border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
-                maxLength={1}
-              />
-            ))}
+        <div className="bg-gray-50 rounded-lg p-4 mb-6">
+          <div className="text-center">
+            <p className="text-sm text-gray-600 mb-1">Total Amount</p>
+            <p className="text-2xl font-bold text-blue-600">Tk{total}</p>
           </div>
-          {error && <p className="text-red-500 text-xs text-center">{error}</p>}
         </div>
 
-        <button
-          onClick={handleSubmit}
-          disabled={isLoading || pin.join("").length !== 6}
-          className="w-full bg-[#29a9eb] text-white py-4 rounded-lg font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {isLoading ? "Processing Transfer..." : "Confirm Transfer"}
-        </button>
+        <div className="space-y-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-3 text-center">Enter Your PIN</label>
+            <div className="flex justify-center space-x-3">
+              {pin.map((digit, index) => (
+                <input
+                  key={index}
+                  id={`pin-${index}`}
+                  type="password"
+                  value={digit}
+                  onChange={(e) => handlePinChange(index, e.target.value)}
+                  onKeyDown={(e) => handleKeyDown(index, e)}
+                  className="w-12 h-12 text-center text-xl font-bold border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
+                  maxLength={1}
+                />
+              ))}
+            </div>
+            {error && <p className="text-red-500 text-sm text-center mt-2">{error}</p>}
+          </div>
+
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+            <p className="text-sm text-yellow-700 text-center">
+              <strong>Demo PIN:</strong> 123456
+            </p>
+          </div>
+
+          <button
+            onClick={handleSubmit}
+            disabled={isLoading || pin.join("").length !== 6}
+            className="w-full bg-[#29a9eb] text-white py-4 rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isLoading ? "Processing Transfer..." : "Confirm Transfer"}
+          </button>
+
+          <div className="text-center">
+            <Link href="/forgot-pin" className="text-blue-600 text-sm">
+              Forgot PIN?
+            </Link>
+          </div>
+        </div>
       </div>
     </div>
   )

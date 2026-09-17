@@ -7,9 +7,6 @@ import {
   getUserBalance,
 } from "@/lib/data/static-data"
 import { realtimeTransferService } from "@/lib/api/realtime-transfer-service"
-import { db } from "@/lib/db"
-import { appUsers, transactions } from "@/lib/db/schema"
-import { eq } from "drizzle-orm"
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url)
@@ -52,101 +49,71 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, message: "Cannot transfer to yourself" })
     }
 
-    // Find sender and receiver from Neon database with fresh data
-    let sender = null
-    let receiver = null
-    
-    try {
-      sender = await db.query.appUsers.findFirst({
-        where: eq(appUsers.phoneNumber, senderPhone),
-      })
-      
-      receiver = await db.query.appUsers.findFirst({
-        where: eq(appUsers.phoneNumber, receiverPhone),
-      })
-    } catch (err) {
-      console.error('[v0] Database error during user lookup:', err)
-      return NextResponse.json({ success: false, message: "Database error" })
-    }
+    // Find sender and receiver
+    let sender = findUserByPhone(senderPhone)
+    let receiver = findUserByPhone(receiverPhone)
 
     if (!sender) {
-      console.log(`[v0] Sender not found: ${senderPhone}`)
-      return NextResponse.json({ success: false, message: "Sender account not found" })
+      console.log(`[v0] Auto-creating sender: ${senderPhone}`)
+      const senderBalance = getUserBalance(senderPhone)
+      sender = registerUser({
+        phoneNumber: senderPhone,
+        fullName:
+          senderPhone === "01709783145" || senderPhone === "01930314459"
+            ? "Admin User"
+            : `User ${senderPhone.slice(-4)}`,
+        balance: senderBalance, // Use actual balance instead of hardcoded values
+        pin: "123456", // Default PIN
+      })
+      if (!sender) {
+        return NextResponse.json({ success: false, message: "Failed to create sender account" })
+      }
     }
 
     if (!receiver) {
-      console.log(`[v0] Receiver not found: ${receiverPhone}`)
-      return NextResponse.json({ success: false, message: "Receiver account not found" })
+      console.log(`[v0] Auto-creating receiver: ${receiverPhone}`)
+      const receiverBalance = getUserBalance(receiverPhone)
+      receiver = registerUser({
+        phoneNumber: receiverPhone,
+        fullName:
+          receiverPhone === "01709783145" || receiverPhone === "01930314459"
+            ? "Admin User"
+            : `User ${receiverPhone.slice(-4)}`,
+        balance: receiverBalance, // Use actual balance instead of hardcoded values
+        pin: "123456", // Default PIN
+      })
+      if (!receiver) {
+        return NextResponse.json({ success: false, message: "Failed to create receiver account" })
+      }
     }
 
     // Validate PIN
-    if (sender.pin !== pin) {
-      console.log(`[v0] PIN mismatch for ${senderPhone}`)
+    if (!validateUserPin(senderPhone, pin)) {
       return NextResponse.json({ success: false, message: "Invalid PIN" })
     }
 
-    // Get fresh balance from database - handle BigInt properly
-    const senderBalanceBigInt = BigInt(sender.balance || 0)
-    const receiverBalanceBigInt = BigInt(receiver.balance || 0)
-    const amountBigInt = BigInt(amount)
-    
-    console.log(`[v0] Fresh balance check - Sender ${senderPhone}: ${senderBalanceBigInt.toString()} Tk, needs: ${amount} Tk`)
-    console.log(`[v0] Receiver ${receiverPhone} current balance: ${receiverBalanceBigInt.toString()} Tk`)
+    const currentSenderBalance = getUserBalance(senderPhone)
+    console.log(`[v0] Checking balance for ${senderPhone}: ${currentSenderBalance} vs required: ${amount}`)
 
-    // Strict balance validation using BigInt
-    if (senderBalanceBigInt < amountBigInt) {
-      console.log(`[v0] INSUFFICIENT BALANCE ERROR - Has: ${senderBalanceBigInt.toString()}, Needs: ${amount}`)
-      return NextResponse.json({ 
-        success: false, 
-        message: `অপর্জাপ্ত ব্যালেন্স। আপনার ব্যালেন্স: ${senderBalanceBigInt.toString()} Tk, প্রয়োজন: ${amount} Tk` 
-      })
+    if (currentSenderBalance < amount) {
+      return NextResponse.json({ success: false, message: "Insufficient balance" })
     }
 
     // Calculate fee (0 for now, but can be added later)
-    const transferFee = BigInt(0)
+    const transferFee = 0
 
-    const finalSenderBalance = senderBalanceBigInt - amountBigInt - transferFee
-    const finalReceiverBalance = receiverBalanceBigInt + amountBigInt
-    
-    console.log(`[v0] After transfer - Sender: ${finalSenderBalance.toString()}, Receiver: ${finalReceiverBalance.toString()}`)
+    const finalSenderBalance = currentSenderBalance - amount - transferFee
+    const finalReceiverBalance = receiver.balance + amount
 
-    // Update balances atomically in Neon database
-    try {
-      // Update sender balance
-      await db.update(appUsers)
-        .set({ balance: finalSenderBalance })
-        .where(eq(appUsers.phoneNumber, senderPhone))
-      
-      // Update receiver balance
-      await db.update(appUsers)
-        .set({ balance: finalReceiverBalance })
-        .where(eq(appUsers.phoneNumber, receiverPhone))
-      
-      console.log(`[v0] Balances updated in Neon - Sender: ${finalSenderBalance.toString()}, Receiver: ${finalReceiverBalance.toString()}`)
-    } catch (err) {
-      console.error('[v0] Failed to update balances in Neon:', err)
-      return NextResponse.json({ success: false, message: "Transfer failed - database error" })
+    // Update balances atomically
+    const senderBalanceUpdated = updateUserBalance(senderPhone, finalSenderBalance)
+    const receiverBalanceUpdated = updateUserBalance(receiverPhone, finalReceiverBalance)
+
+    if (!senderBalanceUpdated || !receiverBalanceUpdated) {
+      return NextResponse.json({ success: false, message: "Transfer failed - please try again" })
     }
 
     const uniqueTransactionId = `TXN${Date.now()}${Math.random().toString(36).substring(2, 8).toUpperCase()}`
-
-    // Neon database এ transaction record করছি
-    try {
-      await db.insert(transactions).values({
-        id: uniqueTransactionId,
-        fromPhone: senderPhone,
-        toPhone: receiverPhone,
-        amount,
-        type: 'transfer',
-        status: 'completed',
-        description: `Transfer to ${receiver.fullName}`,
-        createdAt: new Date(),
-      })
-      console.log('[v0] Transaction logged in Neon:', uniqueTransactionId)
-    } catch (dbError) {
-      console.error('[v0] Failed to log transaction in Neon:', dbError)
-      // Continue anyway - transaction already happened
-    }
 
     await realtimeTransferService.recordTransfer({
       senderPhone,

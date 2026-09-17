@@ -8,35 +8,13 @@ import VerificationRequired from "@/components/verification-required"
 import {
   getProfileByPhone,
   sendMoney as supabaseSendMoney,
+  verifyPin,
   subscribeToBalanceUpdates,
   recordTransaction,
 } from "@/lib/supabase/data-service"
 import { ErrorBoundary } from "@/components/error-boundary"
 
 function PaymentContent() {
-  // Play notification sound
-  const playNotificationSound = () => {
-    try {
-      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
-      const oscillator = audioContext.createOscillator()
-      const gainNode = audioContext.createGain()
-      
-      oscillator.connect(gainNode)
-      gainNode.connect(audioContext.destination)
-      
-      oscillator.frequency.value = 800
-      oscillator.type = 'sine'
-      
-      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime)
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5)
-      
-      oscillator.start(audioContext.currentTime)
-      oscillator.stop(audioContext.currentTime + 0.5)
-    } catch (err) {
-      console.error('[v0] Sound not available')
-    }
-  }
-
   const [phoneNumber, setPhoneNumber] = useState("")
   const [step, setStep] = useState(1)
   const [amount, setAmount] = useState("")
@@ -124,26 +102,16 @@ function PaymentContent() {
         return
       }
 
-      // Check if recipient exists in Neon database
+      // Check if recipient exists
       try {
-        const response = await fetch('/api/user-profile', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ phone: phoneNumber }),
-        })
-        
-        if (response.ok) {
-          const data = await response.json()
-          if (data.user?.fullName) {
-            setRecipientName(data.user.fullName)
-          } else {
-            setRecipientName(`ব্যবহারকারী ${phoneNumber.slice(-4)}`)
-          }
+        const recipientProfile = await getProfileByPhone(phoneNumber)
+        if (recipientProfile) {
+          setRecipientName(recipientProfile.name)
         } else {
-          setRecipientName(`ব্যবহারকারী ${phoneNumber.slice(-4)}`)
+          setRecipientName(`User ${phoneNumber.slice(-4)}`)
         }
       } catch {
-        setRecipientName(`ব্যবহারকারী ${phoneNumber.slice(-4)}`)
+        setRecipientName(`User ${phoneNumber.slice(-4)}`)
       }
 
       setStep(2)
@@ -182,55 +150,47 @@ function PaymentContent() {
     setError("")
 
     try {
-      // Verify PIN from Neon database via API
-      try {
-        const trimmedPhone = senderPhone.trim()
-        console.log("[v0] PIN verification request:", { phone: trimmedPhone, pin: pin ? "provided" : "missing" })
-        
-        const pinResponse = await fetch('/api/verify-pin', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ phone: trimmedPhone, pin }),
-        })
-
-        const pinData = await pinResponse.json()
-        console.log("[v0] PIN verification response:", { 
-          status: pinResponse.status, 
-          verified: pinData.verified,
-          message: pinData.message,
-          success: pinData.success
-        })
-
-        if (!pinData.verified || !pinResponse.ok) {
-          setError(pinData.message || "ভুল পিন। আবার চেষ্টা করুন।")
-          setIsProcessing(false)
-          return
-        }
-      } catch (error) {
-        console.error('[v0] Error verifying PIN:', error)
-        setError("পিন যাচাইকরণ ব্যর্থ হয়েছে। আবার চেষ্টা করুন।")
+      // Verify PIN first
+      const isPinValid = await verifyPin(senderPhone, pin)
+      if (!isPinValid) {
+        setError("ভুল পিন। আবার চেষ্টা করুন।")
         setIsProcessing(false)
         return
       }
 
-      // Payment via Neon database API
-      const paymentResponse = await fetch('/api/payment', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          senderPhone,
-          recipientPhone: phoneNumber,
-          amount: Number(amount),
-        }),
-      })
-
-      const result = await paymentResponse.json()
-      console.log('[v0] Payment result:', result)
+      // Payment via Supabase
+      const result = await supabaseSendMoney(
+        senderPhone,
+        phoneNumber,
+        Number(amount),
+        `PAY${Date.now()}`
+      )
 
       if (result.success) {
-        const txnId = result.transaction?.id || `PAY${Date.now()}`
+        const txnId = result.transaction?.reference || `PAY${Date.now()}`
         setTransactionId(txnId)
+
+        // Record transaction in database
+        await recordTransaction(
+          senderPhone,
+          phoneNumber,
+          Number(amount),
+          "payment",
+          txnId
+        )
+
         await loadBalance()
+
+        window.dispatchEvent(
+          new CustomEvent("newTransaction", {
+            detail: {
+              type: "payment",
+              amount: Number(amount),
+              to: phoneNumber,
+            },
+          })
+        )
+
         setSuccess(true)
       } else {
         setError(result.error || "লেনদেন ব্যর্থ হয়েছে। আবার চেষ্টা করুন।")
@@ -242,12 +202,13 @@ function PaymentContent() {
     }
   }
 
-  if (success) {
-    // Play sound immediately
-    playNotificationSound()
+  if (!isVerified) {
+    return <VerificationRequired title="Payment" />
+  }
 
+  if (success) {
     return (
-      <div className="mobile-page bg-white">
+      <div className="mobile-page">
         <div className="mobile-header">
           <Link href="/" className="mr-4 touch-manipulation">
             <ArrowLeft size={24} />
@@ -255,64 +216,53 @@ function PaymentContent() {
           <div className="text-lg font-medium">Payment</div>
         </div>
 
-        <div className="mobile-content flex flex-col items-center justify-center bg-gradient-to-b from-white to-gray-50 min-h-screen px-6 py-8">
-          {/* Large Blue Checkmark Circle */}
-          <div className="w-24 h-24 bg-[#1E88E5] rounded-full flex items-center justify-center mb-8 shadow-lg">
-            <svg width="56" height="56" viewBox="0 0 24 24" fill="none">
-              <path d="M20 6L9 17L4 12" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+        <div className="mobile-content flex flex-col items-center justify-center">
+          <div className="w-16 h-16 bg-[#29a9eb] rounded-full flex items-center justify-center mb-6">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+              <path
+                d="M20 6L9 17L4 12"
+                stroke="white"
+                strokeWidth="3"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
             </svg>
           </div>
 
-          {/* Title */}
-          <h2 className="text-3xl font-bold text-[#1E88E5] mb-2 text-center">Payment</h2>
-          
-          {/* Bengali Success Message */}
-          <p className="text-lg font-semibold text-[#1E88E5] mb-2 text-center">সফল হয়েছে !</p>
+          <h2 className="text-xl font-bold mb-2">সফল!</h2>
+          <p className="text-gray-600 mb-4 text-center">পেমেন্ট সফলভাবে সম্পন্ন হয়েছে</p>
 
-          {/* Recipient Number */}
-          <p className="text-gray-700 text-center mb-6 font-medium">প্রাপকের নম্বর</p>
-          <p className="text-gray-900 text-xl font-bold mb-8 text-center">{phoneNumber}</p>
-
-          {/* Transaction Details */}
-          <div className="w-full space-y-4 mb-8">
-            <div className="flex justify-between items-center text-gray-800">
-              <span className="text-base font-medium">পরিমাণ:</span>
-              <span className="text-2xl font-bold text-[#1E88E5]">৳ {Number(amount).toLocaleString()}</span>
+          <div className="bg-gray-100 w-full rounded-lg p-4 mb-6">
+            <div className="flex justify-between mb-2 text-sm">
+              <span className="text-gray-600">পরিমাণ:</span>
+              <span className="font-bold">৳ {Number(amount).toLocaleString()}</span>
             </div>
-            
-            <div className="flex justify-between items-center text-gray-700">
-              <span className="text-sm">তারিখ:</span>
-              <div className="text-right">
-                <div className="text-lg font-bold text-[#1E88E5]">{new Date().toLocaleDateString('en-BD', { day: '2-digit', month: '2-digit', year: '2-digit' }).split('/').join('.')}</div>
-                <div className="text-lg font-bold text-[#1E88E5]">{new Date().toLocaleTimeString('en-BD', { hour: '2-digit', minute: '2-digit', hour12: true })}</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Transaction ID */}
-          <p className="text-[#1E88E5] text-center font-bold mb-2">Transaction ID:</p>
-          <p className="text-gray-900 font-bold text-center mb-8 text-lg">{transactionId}</p>
-
-          {/* Details Box */}
-          <div className="bg-gray-100 w-full rounded-lg p-4 mb-8 space-y-3">
-            <div className="flex justify-between text-sm">
+            <div className="flex justify-between mb-2 text-sm">
               <span className="text-gray-600">প্রাপক:</span>
               <span className="font-bold">{recipientName || phoneNumber}</span>
             </div>
+            <div className="flex justify-between mb-2 text-sm">
+              <span className="text-gray-600">ফোন:</span>
+              <span className="font-bold">{phoneNumber}</span>
+            </div>
             {reference && (
-              <div className="flex justify-between text-sm">
+              <div className="flex justify-between mb-2 text-sm">
                 <span className="text-gray-600">রেফারেন্স:</span>
                 <span className="font-bold">{reference}</span>
               </div>
             )}
-            <div className="flex justify-between text-sm border-t pt-3">
+            <div className="flex justify-between mb-2 text-sm">
               <span className="text-gray-600">নতুন ব্যালেন্স:</span>
               <span className="font-bold text-green-600">৳ {balance.toLocaleString()}</span>
             </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-gray-600">Transaction ID:</span>
+              <span className="font-bold text-xs">{transactionId}</span>
+            </div>
           </div>
 
-          <Link href="/inbox" className="mobile-button w-full bg-[#1E88E5] text-white font-bold py-3 rounded-lg hover:bg-[#1565C0] transition">
-            লেনদেনের ইতিহাস দেখুন
+          <Link href="/" className="mobile-button">
+            হোম এ ফিরে যান
           </Link>
         </div>
       </div>
@@ -329,238 +279,190 @@ function PaymentContent() {
       </div>
 
       {step === 1 && (
-        <div className="mobile-content bg-white flex flex-col items-center justify-start px-0 pt-2">
-          {/* Header */}
-          <div className="text-center mb-3 pt-2">
-            <p className="text-base font-bold text-sky-500">Number দিন</p>
+        <div className="mobile-content">
+          <div className="text-xl font-bold mb-2">পেমেন্ট করুন</div>
+          <div className="text-gray-600 mb-6 text-sm">
+            মার্চেন্ট বা ব্যক্তিগত নম্বরে পেমেন্ট করুন
           </div>
 
-          {/* Phone Display Dots */}
-          <div className="text-center mb-6">
-            <div className="flex justify-center gap-3">
-              {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => (
-                <div
-                  key={i}
-                  className="w-7 h-7 rounded bg-sky-500 flex items-center justify-center text-white font-bold text-xs transition-all"
-                >
-                  {phoneNumber[i] ? phoneNumber[i] : ''}
-                </div>
-              ))}
-            </div>
+          <div className="mb-2 flex items-center">
+            <div className="mr-2">📞</div>
+            <div className="text-sm font-medium">প্রাপকের ফোন নম্বর</div>
           </div>
 
-          {/* Number Keypad Grid */}
-          <div className="flex flex-col items-center justify-center gap-4">
-            {/* Rows 1-3 (1-9) */}
-            <div className="grid grid-cols-3 gap-3">
-              {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
-                <button
-                  key={num}
-                  onClick={() => phoneNumber.length < 11 && setPhoneNumber(phoneNumber + num.toString())}
-                  className="w-16 h-16 rounded-2xl text-3xl font-bold text-sky-500 bg-gray-100 hover:bg-gray-200 active:scale-90 transition-all disabled:opacity-50"
-                  disabled={phoneNumber.length >= 11}
-                >
-                  {num}
-                </button>
-              ))}
-            </div>
+          <input
+            type="tel"
+            placeholder="01XXXXXXXXX"
+            className="mobile-input mb-4"
+            value={phoneNumber}
+            onChange={(e) =>
+              setPhoneNumber(e.target.value.replace(/\D/g, "").slice(0, 11))
+            }
+            maxLength={11}
+          />
 
-            {/* Row with 0 and Delete - centered 0 */}
-            <div className="flex gap-3 justify-center items-center w-fit">
-              <div className="w-16"></div>
-              <button
-                onClick={() => phoneNumber.length < 11 && setPhoneNumber(phoneNumber + '0')}
-                className="w-16 h-16 rounded-2xl text-3xl font-bold text-sky-500 bg-gray-100 hover:bg-gray-200 active:scale-90 transition-all disabled:opacity-50 mb-3"
-                disabled={phoneNumber.length >= 11}
-              >
-                0
-              </button>
-              <button
-                onClick={() => setPhoneNumber(phoneNumber.slice(0, -1))}
-                className="w-16 h-16 rounded-2xl text-3xl font-bold text-sky-500 bg-gray-100 hover:bg-gray-200 active:scale-90 transition-all"
-              >
-                ⌫
-              </button>
-            </div>
-          </div>
+          {error && <div className="text-red-500 mb-4 text-sm">{error}</div>}
 
-          {/* Error Message */}
-          {error && <div className="text-red-500 mb-4 text-sm text-center">{error}</div>}
-
-          {/* Continue Button */}
-          <button 
-            className="w-4/5 mx-auto py-3 mb-4 bg-[#1FBFFF] text-white rounded-full font-bold text-base hover:bg-blue-500 active:scale-95 transition-all disabled:opacity-50"
-            onClick={handleNextStep}
-            disabled={phoneNumber.length !== 11}
-          >
-            সামনে যান
-          </button>
-
-          {/* Delete Button */}
-          <button 
-            className="w-4/5 mx-auto py-2 bg-gray-300 text-gray-700 rounded-full font-medium text-sm hover:bg-gray-400 active:scale-95 transition-all mb-4"
-            onClick={() => setPhoneNumber(phoneNumber.slice(0, -1))}
-          >
-            মুছে ফেলুন
+          <button className="mobile-button mt-auto" onClick={handleNextStep}>
+            পরবর্তী
           </button>
         </div>
       )}
 
       {step === 2 && (
-        <div className="mobile-content bg-white flex flex-col items-center justify-center">
-          {/* Header with decorative lines */}
-          <div className="text-center mb-8 pt-6">
-            <p className="text-4xl font-bold text-sky-500">Amount দিন</p>
+        <div className="mobile-content">
+          <div className="text-xl font-bold mb-2">পরিমাণ দিন</div>
+          <div className="text-gray-600 mb-2 text-sm">
+            প্রাপক: {recipientName || phoneNumber}
           </div>
-
-          {/* Recipient info */}
-          <div className="text-center mb-4">
-            <p className="text-gray-600 text-sm">প্রাপক: <span className="font-bold text-sky-500">{recipientName || phoneNumber}</span></p>
-          </div>
-
           {fromQR && (
             <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-4">
-              <div className="text-sm text-green-800 flex items-center">
-                <span className="mr-2">✅</span>
-                <span>QR কোড থেকে স্ক্যান করা হয়েছে</span>
+              <div className="text-sm text-green-800">
+                <div className="flex items-center">
+                  <span className="mr-2">QR</span>
+                  <span>QR কোড থেকে স্ক্যান করা হয়েছে</span>
+                </div>
               </div>
             </div>
           )}
 
-          {/* Display current amount */}
-          {amount && (
-            <div className="text-center mb-6 py-4 bg-sky-50 rounded-lg">
-              <p className="text-gray-600 text-xs mb-1">Amount</p>
-              <p className="text-4xl font-bold text-sky-500">৳ {Number(amount).toLocaleString()}</p>
-            </div>
-          )}
-
-          {/* Number Keypad */}
-          <div className="flex-1 flex flex-col items-center justify-center gap-2 py-4">
-            <div className="grid grid-cols-3 gap-2 w-fit">
-              {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
-                <button
-                  key={num}
-                  onClick={() => setAmount(amount + num.toString())}
-                  className="w-16 h-16 rounded-xl text-3xl font-bold text-sky-500 bg-gray-100 hover:bg-gray-200 active:scale-90 transition-all"
-                >
-                  {num}
-                </button>
-              ))}
-            </div>
-
-            {/* Zero button */}
-            <button
-              onClick={() => setAmount(amount + '0')}
-              className="w-16 h-16 rounded-xl text-3xl font-bold text-sky-500 bg-gray-100 hover:bg-gray-200 active:scale-90 transition-all"
-            >
-              0
-            </button>
+          <div className="mb-2 flex items-center">
+            <div className="mr-2">৳</div>
+            <div className="text-sm font-medium">পেমেন্ট পরিমাণ (৳)</div>
           </div>
 
-          {error && <div className="text-red-500 mb-4 text-sm text-center">{error}</div>}
+          <input
+            type="text"
+            className="mobile-input text-center text-xl mb-4"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value.replace(/\D/g, ""))}
+            placeholder="0"
+          />
 
-          <div className="w-full flex justify-center">
-            <div className="flex gap-3 mt-6 mb-4 w-full max-w-xs">
-              <button 
-                className="flex-1 py-3 px-4 bg-gray-300 text-gray-700 rounded-full font-medium hover:bg-gray-400 active:scale-95 transition-all"
-                onClick={() => setStep(1)}
+          <div className="mb-2 flex items-center">
+            <div className="mr-2">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
               >
-                ফিরে যান
-              </button>
-              <button 
-                className={`flex-1 py-4 px-4 rounded-full font-bold text-white active:scale-95 transition-all ${
-                  amount && Number(amount) > 0
-                    ? 'bg-sky-500 hover:bg-sky-600'
-                    : 'bg-gray-400 cursor-not-allowed'
-                }`}
-                onClick={() => setStep(3)}
-                disabled={!amount || Number(amount) === 0}
-              >
-                পরবর্তী
-              </button>
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+                <line x1="16" y1="13" x2="8" y2="13" />
+                <line x1="16" y1="17" x2="8" y2="17" />
+              </svg>
             </div>
+            <div className="text-sm font-medium">রেফারেন্স (ঐচ্ছিক)</div>
+          </div>
+
+          <input
+            type="text"
+            className="mobile-input mb-4"
+            value={reference}
+            onChange={(e) => setReference(e.target.value)}
+            placeholder="Invoice / Order ID"
+          />
+
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+            <div className="text-sm text-blue-800">
+              <div className="flex justify-between items-center">
+                <span>আপনার ব্যালেন্স:</span>
+                <span className="font-bold">৳ {balance.toLocaleString()}</span>
+              </div>
+              {amount && Number(amount) > 0 && (
+                <div className="flex justify-between items-center mt-1 pt-1 border-t border-blue-200">
+                  <span>পেমেন্টের পর:</span>
+                  <span className="font-bold text-green-600">
+                    ৳ {(balance - Number(amount)).toLocaleString()}
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {error && <div className="text-red-500 mb-4 text-sm">{error}</div>}
+
+          <div className="flex gap-2 mt-auto">
+            <button
+              className="flex-1 border border-gray-300 p-4 rounded-md touch-manipulation bg-transparent"
+              onClick={handleBackStep}
+            >
+              পিছনে
+            </button>
+            <button className="flex-1 mobile-button" onClick={handleNextStep}>
+              পরবর্তী
+            </button>
           </div>
         </div>
       )}
 
       {step === 3 && (
-        <div className="mobile-content bg-white flex flex-col items-center justify-center">
-          {/* Header */}
-          <div className="text-center mb-8 pt-6">
-            <p className="text-4xl font-bold text-sky-500">PIN দিন</p>
+        <div className="mobile-content">
+          <div className="text-xl font-bold mb-2">পিন দিন</div>
+          <div className="text-gray-600 mb-1 text-sm">
+            পরিমাণ: ৳ {Number(amount).toLocaleString()}
+          </div>
+          <div className="text-gray-600 mb-1 text-sm">
+            প্রাপক: {recipientName || phoneNumber}
+          </div>
+          <div className="text-gray-600 mb-1 text-sm">ফোন: {phoneNumber}</div>
+          {reference && (
+            <div className="text-gray-600 mb-1 text-sm">
+              রেফারেন্স: {reference}
+            </div>
+          )}
+          <div className="h-4" />
+
+          <div className="mb-2 flex items-center">
+            <div className="mr-2">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg>
+            </div>
+            <div className="text-sm font-medium">৬ সংখ্যার পিন</div>
           </div>
 
-          {/* PIN Display Dots */}
-          <div className="text-center mb-8">
-            <div className="flex justify-center gap-3">
-              {[0, 1, 2, 3, 4, 5].map((i) => (
-                <div
-                  key={i}
-                  className="w-10 h-10 rounded-lg bg-[#1FBFFF] flex items-center justify-center text-white font-bold text-lg transition-all"
-                >
-                  {pin[i] ? '•' : ''}
-                </div>
-              ))}
-            </div>
-          </div>
+          <input
+            type="password"
+            className="mobile-input text-center mb-4"
+            value={pin}
+            onChange={(e) =>
+              setPin(e.target.value.replace(/\D/g, "").slice(0, 6))
+            }
+            maxLength={6}
+            placeholder="------"
+            disabled={isProcessing}
+          />
 
-          {/* Number Keypad Grid */}
-          <div className="flex-1 flex flex-col items-center justify-center gap-2 py-8">
-            {/* Rows 1-3 (1-9) */}
-            <div className="grid grid-cols-3 gap-2 w-fit">
-              {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
-                <button
-                  key={num}
-                  onClick={() => pin.length < 6 && setPin(pin + num.toString())}
-                  className="w-20 h-20 rounded-2xl text-4xl font-bold text-[#1FBFFF] bg-gray-100 hover:bg-gray-200 active:scale-90 transition-all disabled:opacity-50"
-                  disabled={pin.length >= 6}
-                >
-                  {num}
-                </button>
-              ))}
-            </div>
+          {error && <div className="text-red-500 mb-4 text-sm">{error}</div>}
 
-            {/* Zero Button */}
+          <div className="flex gap-2 mt-auto">
             <button
-              onClick={() => pin.length < 6 && setPin(pin + '0')}
-              className="w-20 h-20 rounded-2xl text-4xl font-bold text-[#1FBFFF] bg-gray-100 hover:bg-gray-200 active:scale-90 transition-all disabled:opacity-50"
-              disabled={pin.length >= 6}
+              className="flex-1 border border-gray-300 p-4 rounded-md touch-manipulation bg-transparent"
+              onClick={handleBackStep}
+              disabled={isProcessing}
             >
-              0
+              পিছনে
+            </button>
+            <button
+              className="flex-1 mobile-button"
+              onClick={handlePayment}
+              disabled={isProcessing}
+            >
+              {isProcessing ? "প্রক্রিয়াকরণ..." : "পেমেন্ট করুন"}
             </button>
           </div>
-
-          {/* Action Buttons */}
-          {error && <div className="text-red-500 mb-4 text-sm text-center">{error}</div>}
-
-          <div className="flex gap-3 mt-6 mb-4 w-full max-w-md px-4">
-            <button 
-              className="flex-1 py-3 px-4 bg-gray-300 text-gray-700 rounded-full font-medium hover:bg-gray-400 active:scale-95 transition-all"
-              onClick={() => setStep(2)}
-            >
-              ফিরে যান
-            </button>
-            <button 
-              className={`flex-1 py-4 px-4 rounded-full font-bold text-white active:scale-95 transition-all ${
-                pin.length === 6
-                  ? 'bg-sky-500 hover:bg-sky-600'
-                  : 'bg-gray-400 cursor-not-allowed'
-              }`}
-              onClick={handleNextStep}
-              disabled={pin.length !== 6 || isProcessing}
-            >
-              {isProcessing ? "প্রক্রিয়াকরণ..." : "সম্পূর্ণ করি"}
-            </button>
-          </div>
-
-          {/* Delete Button */}
-          <button 
-            className="w-4/5 mx-auto py-3 bg-gray-300 text-gray-700 rounded-full font-medium hover:bg-gray-400 active:scale-95 transition-all mb-4"
-            onClick={() => setPin(pin.slice(0, -1))}
-          >
-            মুছে ফেলুন
-          </button>
         </div>
       )}
     </div>

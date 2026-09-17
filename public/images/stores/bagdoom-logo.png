@@ -1,0 +1,2190 @@
+
+<!DOCTYPE html>
+
+
+    <html lang="en">
+
+<head>
+
+    <meta name="csrf-token" content="5p98jcq3WpoH9GIjxDnarWOSJaDatn0lihlIcl84">
+    <meta name="app-url" content="//bagdoom.com/">
+    <meta name="file-base-url" content="//bagdoom.com/public/">
+
+    <title>Bagdoom Online Shopping | Best Online Shop in Bangladesh</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="index, follow">
+    <meta name="description" content="" />
+    <meta name="keywords" content="">
+
+    
+                    <!-- Schema.org markup for Google+ -->
+        <meta itemprop="name" content="">
+        <meta itemprop="description" content="">
+        <meta itemprop="image" content="https://bagdoom.com/public/assets/img/placeholder.jpg">
+
+        <!-- Twitter Card data -->
+        <meta name="twitter:card" content="product">
+        <meta name="twitter:site" content="@publisher_handle">
+        <meta name="twitter:title" content="">
+        <meta name="twitter:description" content="">
+        <meta name="twitter:creator" content="@author_handle">
+        <meta name="twitter:image" content="https://bagdoom.com/public/assets/img/placeholder.jpg">
+
+        <!-- Open Graph data -->
+        <meta property="og:title" content="" />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://bagdoom.com" />
+        <meta property="og:image" content="https://bagdoom.com/public/assets/img/placeholder.jpg" />
+        <meta property="og:description" content="" />
+        <meta property="og:site_name" content="Bagdoom.com" />
+        <meta property="fb:app_id" content="">
+    
+    <!-- Favicon -->
+        <link rel="icon" href="https://bagdoom.com/public/uploads/all/GsGn2VBeF3DPFrWd8HrWDGAxV7gkmTxCBuJM5mBy.svg">
+    <link rel="apple-touch-icon" href="https://bagdoom.com/public/uploads/all/GsGn2VBeF3DPFrWd8HrWDGAxV7gkmTxCBuJM5mBy.svg">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="https://bagdoom.com/public/assets/css/vendors.css?v=10.8.0">
+        <link rel="stylesheet" href="https://bagdoom.com/public/assets/css/aiz-core.css?v=7525">
+    <link rel="stylesheet" href="https://bagdoom.com/public/assets/css/custom-style.css?v=10.8.0">
+        <link rel="stylesheet" href="https://bagdoom.com/public/assets/css/thecore.css">
+    
+    <script>
+        var AIZ = AIZ || {};
+        AIZ.local = {
+            nothing_selected: 'Nothing selected',
+            nothing_found: 'Nothing found',
+            choose_file: 'Choose File',
+            file_selected: 'File selected',
+            files_selected: 'Files selected',
+            add_more_files: 'Add more files',
+            adding_more_files: 'Adding more files',
+            drop_files_here_paste_or: 'Drop files here, paste or',
+            browse: 'Browse',
+            upload_complete: 'Upload complete',
+            upload_paused: 'Upload paused',
+            resume_upload: 'Resume upload',
+            pause_upload: 'Pause upload',
+            retry_upload: 'Retry upload',
+            cancel_upload: 'Cancel upload',
+            uploading: 'Uploading',
+            processing: 'Processing',
+            complete: 'Complete',
+            file: 'File',
+            files: 'Files',
+        }
+    </script>
+
+    <style>
+        :root{
+            --blue: #3490f3;
+            --hov-blue: #2e7fd6;
+            --soft-blue: rgba(0, 123, 255, 0.15);
+            --secondary-base: #2596be;
+            --hov-secondary-base: #2596be;
+            --soft-secondary-base: rgba(37,150,190,0.15);
+            --gray: #9d9da6;
+            --gray-dark: #8d8d8d;
+            --secondary: #919199;
+            --soft-secondary: rgba(145, 145, 153, 0.15);
+            --success: #85b567;
+            --soft-success: rgba(133, 181, 103, 0.15);
+            --warning: #f3af3d;
+            --soft-warning: rgba(243, 175, 61, 0.15);
+            --light: #f5f5f5;
+            --soft-light: #dfdfe6;
+            --soft-white: #b5b5bf;
+            --dark: #292933;
+            --soft-dark: #1b1b28;
+            --primary: #2596be;
+            --hov-primary: #2596be;
+            --soft-primary: rgba(37,150,190,0.15);
+        }
+        body{
+            font-family: 'Nunito', sans-serif, sans-serif;
+            font-weight: 400;
+        }
+
+        .pagination .page-link,
+        .page-item.disabled .page-link {
+            min-width: 32px;
+            min-height: 32px;
+            line-height: 32px;
+            text-align: center;
+            padding: 0;
+            border: 1px solid var(--soft-light);
+            font-size: 0.875rem;
+            border-radius: 0 !important;
+            color: var(--dark);
+        }
+        .pagination .page-item {
+            margin: 0 5px;
+        }
+
+        .form-control:focus {
+            border-width: 2px !important;
+        }
+        .iti__flag-container {
+            padding: 2px;
+        }
+        .modal-content {
+            border: 0 !important;
+            border-radius: 0 !important;
+        }
+
+        .tagify.tagify--focus{
+            border-width: 2px;
+            border-color: var(--primary);
+        }
+
+        #map{
+            width: 100%;
+            height: 250px;
+        }
+        #edit_map{
+            width: 100%;
+            height: 250px;
+        }
+
+        .pac-container { z-index: 100000; }
+
+        .home-category-banner::after {
+            content: "View All";
+        }
+    </style>
+
+
+
+
+</head>
+<body>
+    <!-- aiz-main-wrapper -->
+    <div class="aiz-main-wrapper d-flex flex-column bg-white aiz-thecore">
+                <!-- Header -->
+        <!-- Top Bar Banner -->
+ 
+    	<header
+    class=" sticky-top  z-1020 top-background-color-visibility stikcy-header-visibility"
+    style="background-color: #ffffff">
+    <!-- Search Bar -->
+    <div class="position-relative logo-bar-area border-bottom border-md-nonea z-1025">
+        <div class="container">
+            <div class="d-flex align-items-center">
+                <!-- top menu sidebar button -->
+                <button type="button" class="btn d-lg-none mr-3 mr-sm-4 p-0 active" data-toggle="class-toggle"
+                    data-target=".aiz-top-menu-sidebar">
+                    <svg id="Component_43_1" data-name="Component 43 – 1" xmlns="http://www.w3.org/2000/svg" width="16"
+                        height="16" viewBox="0 0 16 16">
+                        <rect id="Rectangle_19062" data-name="Rectangle 19062" width="16" height="2"
+                            transform="translate(0 7)" fill="#919199" />
+                        <rect id="Rectangle_19063" data-name="Rectangle 19063" width="16" height="2" fill="#919199" />
+                        <rect id="Rectangle_19064" data-name="Rectangle 19064" width="16" height="2"
+                            transform="translate(0 14)" fill="#919199" />
+                    </svg>
+
+                </button>
+                <!-- Header Logo -->
+                <div class="col-auto pl-0 pr-3 d-flex align-items-center">
+                    <a class="d-block py-20px mr-3 ml-0" href="https://bagdoom.com">
+                                                                        <img id="header-logo-preview" src="https://bagdoom.com/public/uploads/all/PdQMqVEcneC13CdtaEzwI7UmF42iZvPQSq5MfeTC.svg" alt="Bagdoom.com"
+                            class="mw-100 h-30px h-md-40px" height="40">
+                                            </a>
+                </div>
+                <!-- Search field -->
+                <div class="flex-grow-1 front-header-search d-flex align-items-center bg-white mx-xl-5">
+                    <div class="position-relative flex-grow-1 px-3 px-lg-0">
+                        <form action="https://bagdoom.com/search" method="GET" class="stop-propagation">
+                            <div class="d-flex position-relative align-items-center">
+                                <div class="d-lg-none" data-toggle="class-toggle" data-target=".front-header-search">
+                                    <button class="btn px-2" type="button" onclick="showOptions()"><i
+                                            class="la la-2x la-long-arrow-left"></i></button>
+                                </div>
+                                <div class="search-input-box">
+                                    <input type="text"
+                                        class="border border-soft-light form-control fs-14 hov-animate-outline"
+                                        id="search" name="keyword"                                         placeholder="I am shopping for..." autocomplete="off">
+
+                                    <svg id="Group_723" data-name="Group 723" xmlns="http://www.w3.org/2000/svg"
+                                        width="20.001" height="20" viewBox="0 0 20.001 20">
+                                        <path id="Path_3090" data-name="Path 3090"
+                                            d="M9.847,17.839a7.993,7.993,0,1,1,7.993-7.993A8,8,0,0,1,9.847,17.839Zm0-14.387a6.394,6.394,0,1,0,6.394,6.394A6.4,6.4,0,0,0,9.847,3.453Z"
+                                            transform="translate(-1.854 -1.854)" fill="#b5b5bf" />
+                                        <path id="Path_3091" data-name="Path 3091"
+                                            d="M24.4,25.2a.8.8,0,0,1-.565-.234l-6.15-6.15a.8.8,0,0,1,1.13-1.13l6.15,6.15A.8.8,0,0,1,24.4,25.2Z"
+                                            transform="translate(-5.2 -5.2)" fill="#b5b5bf" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </form>
+                        <div class="typed-search-box stop-propagation document-click-d-none d-none bg-white rounded shadow-lg position-absolute left-0 top-100 w-100"
+                            style="min-height: 200px">
+                            <div class="search-preloader absolute-top-center">
+                                <div class="dot-loader">
+                                    <div></div>
+                                    <div></div>
+                                    <div></div>
+                                </div>
+                            </div>
+                            <div class="search-nothing d-none p-3 text-center fs-16">
+
+                            </div>
+                            <div id="search-content" class="text-left">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Search box -->
+                <div class="d-none d-lg-none ml-3 mr-0">
+                    <div class="nav-search-box">
+                        <a href="#" class="nav-box-link">
+                            <i class="la la-search la-flip-horizontal d-inline-block nav-box-icon"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="col-1 mt-2 ml-auto text-right">
+                    <ul class="list-inline mb-0 h-100 d-flex justify-content-end align-items-center">
+                        <!-- Helpline -->
+                        <li class="list-inline-item">
+                            <div class="d-flex align-items-center">
+                                <!-- New Links -->
+                                                                <!-- Search Icon for small device -->
+                                <div class="d-lg-none">
+                                    <a class="p-2 d-block text-reset" href="javascript:void(0);" data-toggle="class-toggle"
+                                        data-target=".front-header-search" onclick="hideOptions()">
+                                        <i class="las la-search la-flip-horizontal la-2x"></i>
+                                    </a>
+                                </div>
+                                <!-- Gear Icon Dropdown Toggle -->
+                                <div class="dropdown ml-2 mb-1 z-1045 py-1">
+                                    <button class="btn btn-link p-0 silder-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" class="top-text-color-visibility" style="color: #000000;">
+
+                                            <line x1="2" y1="4" x2="14" y2="4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                            <circle cx="8" cy="4" r="1.5" fill="none" stroke="currentColor" stroke-width="1.5" />
+
+                                            <line x1="2" y1="8" x2="14" y2="8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                            <circle cx="4" cy="8" r="1.5" fill="none" stroke="currentColor" stroke-width="1.5" />
+
+                                            <line x1="2" y1="12" x2="14" y2="12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                                            <circle cx="12" cy="12" r="1.5" fill="none" stroke="currentColor" stroke-width="1.5" />
+                                        </svg>
+                                    </button>
+
+                                    <!-- Dropdown Menu -->
+                                    <div class="dropdown-menu dropdown-menu-right py-0" style="min-width: 200px;">
+                                        <!-- Language Switcher -->
+                                                                                <div class="dropdown-submenu px-2 py-2 mt-1 ml-2 border-bottom border-soft-light lang-visibility hover-bg-light"
+                                            style="min-height: 40px;">
+                                            <div class="form-control form-control-sm border-0 bg-transparent p-0 w-100 cursor-pointer hover-text-primary h-100 d-flex align-items-center justify-content-between"
+                                                onclick="toggleChildDropdown(this, event)">
+                                                <span>English</span>
+                                                <i class="la la-angle-right"></i>
+                                            </div>
+
+                                            <!-- Language Child Dropdown -->
+                                            <div class="dropdown-menu dropdown-menu-right py-0 header-drop child-dropdown"
+                                                style="min-width: 200px; left: 100%; top: 1px!important; margin-top: -1px;">
+                                                                                                <div class="px-2 py-1 border-bottom border-soft-light hover-bg-light">
+                                                    <a href="javascript:void(0)" class="d-block text-dark"
+                                                        data-flag="en"
+                                                        onclick="changeLanguage('en')">
+                                                        <img src="https://bagdoom.com/public/assets/img/placeholder.jpg"
+                                                            data-src="https://bagdoom.com/public/assets/img/flags/en.png"
+                                                            class="mr-1 lazyload" alt="English" height="11">
+                                                        English
+                                                    </a>
+                                                </div>
+                                                                                                <div class="px-2 py-1 border-bottom border-soft-light hover-bg-light">
+                                                    <a href="javascript:void(0)" class="d-block text-dark"
+                                                        data-flag="bd"
+                                                        onclick="changeLanguage('bd')">
+                                                        <img src="https://bagdoom.com/public/assets/img/placeholder.jpg"
+                                                            data-src="https://bagdoom.com/public/assets/img/flags/bd.png"
+                                                            class="mr-1 lazyload" alt="Bangla" height="11">
+                                                        Bangla
+                                                    </a>
+                                                </div>
+                                                                                            </div>
+                                        </div>
+                                                                                <!-- Currency Switcher -->
+                                                                                <!-- Become a Seller Links -->
+                                                                                <div>
+                                            <a href="https://bagdoom.com/shops/create"
+                                                class="dropdown-item fs-13 py-2 px-3 hover-bg-light hover-text-primary border-bottom border-soft-light d-flex align-items-center"
+                                                style="min-height: 40px;">
+                                                Become A Seller
+                                            </a>
+                                            <a href="https://bagdoom.com/seller/login"
+                                                class="dropdown-item fs-13 py-2 px-3 hover-bg-light hover-text-primary border-bottom border-soft-light d-flex align-items-center"
+                                                style="min-height: 40px;">
+                                                Seller Login
+                                            </a>
+                                                                                    </div>
+                                                                                <!-- Become a Seller Links -->
+                                        <div id="admin-helpline-preview" style="display: block;">
+                                            <div class="helpline-container">
+                                                <a class="dropdown-item fs-13 py-2 px-3 hover-bg-light hover-text-primary border-bottom border-soft-light d-flex align-items-center"
+                                                    style="min-height: 40px; color: grey;">
+                                                    <span class="helpline-label">Helpline:</span>&nbsp;
+                                                    <span class="helpline-number-preview">+8801317-000000</span>
+                                                </a>
+                                            </div>
+                                        </div>
+                                                                            </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="d-none d-xl-block ml-auto mr-0">
+                                        <!--Login & Registration -->
+                    <span class="d-flex align-items-center nav-user-info ml-3">
+                        <!-- Image -->
+                        <span
+                            class="size-40px rounded-circle overflow-hidden border d-flex align-items-center justify-content-center nav-user-img top-text-color-visibility" style="color: #000000">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="19.902" height="20.012"
+                                viewBox="0 0 19.902 20.012">
+                                <path id="fe2df171891038b33e9624c27e96e367"
+                                    d="M15.71,12.71a6,6,0,1,0-7.42,0,10,10,0,0,0-6.22,8.18,1.006,1.006,0,1,0,2,.22,8,8,0,0,1,15.9,0,1,1,0,0,0,1,.89h.11a1,1,0,0,0,.88-1.1,10,10,0,0,0-6.25-8.19ZM12,12a4,4,0,1,1,4-4A4,4,0,0,1,12,12Z"
+                                    transform="translate(-2.064 -1.995)" fill="currentColor" />
+                            </svg>
+                        </span>
+                        <a href="https://bagdoom.com/users/login"
+                            class="opacity-60 hov-opacity-100 fs-12 d-inline-block border-right border-soft-light border-width-2 pr-2 ml-3 top-text-color-visibility" style="color: #000000">Login</a>
+                        <a href="https://bagdoom.com/users/registration"
+                            class="opacity-60 hov-opacity-100 fs-12 d-inline-block py-2 pl-2 top-text-color-visibility" style="color: #000000">Registration</a>
+                    </span>
+                                    </div>
+            </div>
+        </div>
+
+        <!-- Loged in user Menus -->
+        <div class="hover-user-top-menu position-absolute top-100 left-0 right-0 z-3">
+            <div class="container">
+                <div class="position-static float-right">
+                    <div class="aiz-user-top-menu bg-white rounded-0 border-top shadow-sm" style="width:220px;">
+                        <ul class="list-unstyled no-scrollbar mb-0 text-left">
+                                                        <li class="user-top-nav-element border border-top-0" data-id="1">
+                                <a href="https://bagdoom.com/dashboard"
+                                    class="text-truncate text-dark px-4 fs-14 d-flex align-items-center hov-column-gap-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+                                        <path id="Path_2916" data-name="Path 2916"
+                                            d="M15.3,5.4,9.561.481A2,2,0,0,0,8.26,0H7.74a2,2,0,0,0-1.3.481L.7,5.4A2,2,0,0,0,0,6.92V14a2,2,0,0,0,2,2H14a2,2,0,0,0,2-2V6.92A2,2,0,0,0,15.3,5.4M10,15H6V9A1,1,0,0,1,7,8H9a1,1,0,0,1,1,1Zm5-1a1,1,0,0,1-1,1H11V9A2,2,0,0,0,9,7H7A2,2,0,0,0,5,9v6H2a1,1,0,0,1-1-1V6.92a1,1,0,0,1,.349-.76l5.74-4.92A1,1,0,0,1,7.74,1h.52a1,1,0,0,1,.651.24l5.74,4.92A1,1,0,0,1,15,6.92Z"
+                                            fill="#b5b5c0" />
+                                    </svg>
+                                    <span
+                                        class="user-top-menu-name has-transition ml-3">Dashboard</span>
+                                </a>
+                            </li>
+                            
+                                                        <li class="user-top-nav-element border border-top-0" data-id="1">
+                                <a href="https://bagdoom.com/logout"
+                                    class="text-truncate px-4 fs-14 d-flex align-items-center hov-column-gap-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="15.999"
+                                        viewBox="0 0 16 15.999">
+                                        <g id="Group_25503" data-name="Group 25503" transform="translate(-24.002 -377)">
+                                            <g id="Group_25265" data-name="Group 25265"
+                                                transform="translate(-216.534 -160)">
+                                                <path id="Subtraction_192" data-name="Subtraction 192"
+                                                    d="M12052.535,2920a8,8,0,0,1-4.569-14.567l.721.72a7,7,0,1,0,7.7,0l.721-.72a8,8,0,0,1-4.567,14.567Z"
+                                                    transform="translate(-11803.999 -2367)" fill="#d43533" />
+                                            </g>
+                                            <rect id="Rectangle_19022" data-name="Rectangle 19022" width="1" height="8"
+                                                rx="0.5" transform="translate(31.5 377)" fill="#d43533" />
+                                        </g>
+                                    </svg>
+                                    <span class="user-top-menu-name has-transition ml-3 text-dark">Logout</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Menu Bar -->
+    <div class="d-none d-lg-block position-relative h-50px bottom-background-color-visibility border-bottom" style="background-color: #ffffff;box-shadow: 0 8px 8px rgba(0, 0, 0, 0.05);">
+        <div class="container h-100">
+            <div class="d-flex h-100">
+                <!-- Categoty Menu Button -->
+                <div class="d-xl-block all-category has-transition bg-black-10 rounded-1 mt-1 mb-1 mr-2" id="category-menu-bar">
+                    <div class="h-100"
+                        style="padding-top: .7rem !important; padding-left: .7rem !important; width:40px; cursor: pointer;">
+                        <div class="d-flex align-items-center justify-content-between bottom-text-color-visibility" style="color: #000000">
+                            <i class="las la-bars has-transition" id="category-menu-bar-icon"
+                                style="font-size: 1.2rem !important"></i>
+                        </div>
+                    </div>
+                </div>
+                <!-- Header Menus -->
+                <div class="ml-xl-4 w-100 overflow-hidden">
+                    <div class="d-flex align-items-center justify-content-center justify-content-xl-start h-100">
+                        <ul class="list-inline mb-0 pl-0 hor-swipe c-scrollbar-light">
+                                                                                    <li class="list-inline-item mr-0 animate-underline-white">
+                                <a href="https://bagdoom.com/"
+                                    class="fs-13 px-3 py-3 d-inline-block fw-700 header_menu_links hov-bg-black-10 bottom-text-color-visibility " style="color: #000000">
+                                    Home
+                                </a>
+                            </li>
+                                                        <li class="list-inline-item mr-0 animate-underline-white">
+                                <a href="https://bagdoom.com/"
+                                    class="fs-13 px-3 py-3 d-inline-block fw-700 header_menu_links hov-bg-black-10 bottom-text-color-visibility " style="color: #000000">
+                                    Flash Sale
+                                </a>
+                            </li>
+                                                        <li class="list-inline-item mr-0 animate-underline-white">
+                                <a href="https://bagdoom.com/"
+                                    class="fs-13 px-3 py-3 d-inline-block fw-700 header_menu_links hov-bg-black-10 bottom-text-color-visibility " style="color: #000000">
+                                    Blogs
+                                </a>
+                            </li>
+                                                        <li class="list-inline-item mr-0 animate-underline-white">
+                                <a href="https://bagdoom.com/"
+                                    class="fs-13 px-3 py-3 d-inline-block fw-700 header_menu_links hov-bg-black-10 bottom-text-color-visibility " style="color: #000000">
+                                    All Brands
+                                </a>
+                            </li>
+                                                        <li class="list-inline-item mr-0 animate-underline-white">
+                                <a href="https://bagdoom.com/"
+                                    class="fs-13 px-3 py-3 d-inline-block fw-700 header_menu_links hov-bg-black-10 bottom-text-color-visibility " style="color: #000000">
+                                    All categories
+                                </a>
+                            </li>
+                                                                                </ul>
+                    </div>
+                </div>
+                <!-- Cart -->
+                <div class="d-none d-xl-block align-self-stretch ml-5 has-transition"
+                    data-hover="dropdown">
+                    <div class="nav-cart-box dropdown h-100" id="cart_items" style="width: max-content;">
+                        <!-- Cart button with cart count -->
+<a href="javascript:void(0)" class="d-flex align-items-center  h-100" data-toggle="dropdown" data-display="static"
+    title="Cart">
+      
+        <span class="mr-1">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                class="bottom-text-color-visibility"
+                style="color: #000000"
+                role="img" aria-hidden="true">
+                <path fill="currentColor" d="M17 6V5a5 5 0 0 0-10 0v1H4v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6h-3zM9 5a3 3 0 0 1 6 0v1H9V5z"/>
+                <rect x="9" y="10" width="6" height="2" fill="#fff" rx="0.3"/>
+            </svg>
+        </span>
+        <span class="d-none d-xl-block ml-1 fs-14 fw-700 bottom-text-color-visibility"
+            style="color: #000000">Cart</span>
+        <span class="nav-box-text d-none d-xl-block ml-1 fw-700 bottom-text-color-visibility"
+            style="color: #000000">
+            (<span class="cart-count">0</span>)
+        </span>      
+    </a>
+
+<!-- Cart Items -->
+<div class="dropdown-menu dropdown-menu-right dropdown-menu-lg p-0 stop-propagation rounded-0">
+            <div class="text-center p-3">
+            <i class="las la-frown la-3x opacity-60 mb-3"></i>
+            <h3 class="h6 fw-700">Your Cart is empty</h3>
+        </div>
+    </div>                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Categoty Menus -->
+        <div class="hover-category-menu position-absolute w-100 top-100 left-0 right-0 z-3 d-none"
+            id="click-category-menu">
+            <div class="container">
+                <div class="d-flex position-relative">
+                    <div class="position-static">
+                        <div class="aiz-category-menu bg-white rounded-0 border-top" id="category-sidebar" style="width:270px;">
+    <ul class="list-unstyled categories no-scrollbar mb-0 text-left">
+                                <li class="category-nav-element border border-top-0" data-id="1">
+                <a href="https://bagdoom.com/category/womens-and-girls-fashion"
+                    class="text-truncate text-dark px-4 fs-14 d-block hov-column-gap-1">
+                    <img class="cat-image lazyload mr-2 opacity-60" src="https://bagdoom.com/public/assets/img/placeholder.jpg"
+                        data-src="https://bagdoom.com/public/uploads/all/4H9eVZmSTt0km3IRhzhmUcwKloqLGBctfxFQRMFW.png" width="16" alt="Women&#039;s &amp; Girls&#039; Fashion"
+                        onerror="this.onerror=null;this.src='https://bagdoom.com/public/assets/img/placeholder.jpg';">
+                    <span class="cat-name has-transition">Women&#039;s &amp; Girls&#039; Fashion</span>
+                </a>
+                
+                <div class="sub-cat-menu c-scrollbar-light border p-4 shadow-none">
+                    <div class="c-preloader text-center absolute-center">
+                        <i class="las la-spinner la-spin la-3x opacity-70"></i>
+                    </div>
+                </div>
+
+            </li>
+                                <li class="category-nav-element border border-top-0" data-id="2">
+                <a href="https://bagdoom.com/category/health-and-beauty"
+                    class="text-truncate text-dark px-4 fs-14 d-block hov-column-gap-1">
+                    <img class="cat-image lazyload mr-2 opacity-60" src="https://bagdoom.com/public/assets/img/placeholder.jpg"
+                        data-src="https://bagdoom.com/public/uploads/all/Frs1ItHpEBlesTMZbOWbz7DnXAtdJ2yBZdtUq4Xz.png" width="16" alt="Health &amp; Beauty"
+                        onerror="this.onerror=null;this.src='https://bagdoom.com/public/assets/img/placeholder.jpg';">
+                    <span class="cat-name has-transition">Health &amp; Beauty</span>
+                </a>
+                
+                <div class="sub-cat-menu c-scrollbar-light border p-4 shadow-none">
+                    <div class="c-preloader text-center absolute-center">
+                        <i class="las la-spinner la-spin la-3x opacity-70"></i>
+                    </div>
+                </div>
+
+            </li>
+                                <li class="category-nav-element border border-top-0" data-id="3">
+                <a href="https://bagdoom.com/category/watches-bags-jewellery"
+                    class="text-truncate text-dark px-4 fs-14 d-block hov-column-gap-1">
+                    <img class="cat-image lazyload mr-2 opacity-60" src="https://bagdoom.com/public/assets/img/placeholder.jpg"
+                        data-src="https://bagdoom.com/public/uploads/all/YRaPWaOnTf9UlAMB8amRPzWzU9hbxiauBLUoS8Tg.png" width="16" alt="Watches, Bags, Jewellery"
+                        onerror="this.onerror=null;this.src='https://bagdoom.com/public/assets/img/placeholder.jpg';">
+                    <span class="cat-name has-transition">Watches, Bags, Jewellery</span>
+                </a>
+                
+                <div class="sub-cat-menu c-scrollbar-light border p-4 shadow-none">
+                    <div class="c-preloader text-center absolute-center">
+                        <i class="las la-spinner la-spin la-3x opacity-70"></i>
+                    </div>
+                </div>
+
+            </li>
+                                <li class="category-nav-element border border-top-0" data-id="4">
+                <a href="https://bagdoom.com/category/mens--boys-fashion-pydk0"
+                    class="text-truncate text-dark px-4 fs-14 d-block hov-column-gap-1">
+                    <img class="cat-image lazyload mr-2 opacity-60" src="https://bagdoom.com/public/assets/img/placeholder.jpg"
+                        data-src="https://bagdoom.com/public/uploads/all/qrVAj3f9P5BXLQiW1CQfsR4w7EXQZUl9tAO41VlU.png" width="16" alt="Men&#039;s &amp; Boys&#039; Fashion"
+                        onerror="this.onerror=null;this.src='https://bagdoom.com/public/assets/img/placeholder.jpg';">
+                    <span class="cat-name has-transition">Men&#039;s &amp; Boys&#039; Fashion</span>
+                </a>
+                
+                <div class="sub-cat-menu c-scrollbar-light border p-4 shadow-none">
+                    <div class="c-preloader text-center absolute-center">
+                        <i class="las la-spinner la-spin la-3x opacity-70"></i>
+                    </div>
+                </div>
+
+            </li>
+                                <li class="category-nav-element border border-top-0" data-id="5">
+                <a href="https://bagdoom.com/category/mother--baby"
+                    class="text-truncate text-dark px-4 fs-14 d-block hov-column-gap-1">
+                    <img class="cat-image lazyload mr-2 opacity-60" src="https://bagdoom.com/public/assets/img/placeholder.jpg"
+                        data-src="https://bagdoom.com/public/uploads/all/LHwSPVsGrUrmZeQwkqDNJY7TjdlVx11xrCSCkvUn.png" width="16" alt="Mother &amp; Baby"
+                        onerror="this.onerror=null;this.src='https://bagdoom.com/public/assets/img/placeholder.jpg';">
+                    <span class="cat-name has-transition">Mother &amp; Baby</span>
+                </a>
+                
+                <div class="sub-cat-menu c-scrollbar-light border p-4 shadow-none">
+                    <div class="c-preloader text-center absolute-center">
+                        <i class="las la-spinner la-spin la-3x opacity-70"></i>
+                    </div>
+                </div>
+
+            </li>
+                                <li class="category-nav-element border border-top-0" data-id="6">
+                <a href="https://bagdoom.com/category/electronics-devices"
+                    class="text-truncate text-dark px-4 fs-14 d-block hov-column-gap-1">
+                    <img class="cat-image lazyload mr-2 opacity-60" src="https://bagdoom.com/public/assets/img/placeholder.jpg"
+                        data-src="https://bagdoom.com/public/uploads/all/HEijlCqf1UQecHyQL2n7YgX3WSuz0wVx4PCnE9Rg.png" width="16" alt="Electronics Devices"
+                        onerror="this.onerror=null;this.src='https://bagdoom.com/public/assets/img/placeholder.jpg';">
+                    <span class="cat-name has-transition">Electronics Devices</span>
+                </a>
+                
+                <div class="sub-cat-menu c-scrollbar-light border p-4 shadow-none">
+                    <div class="c-preloader text-center absolute-center">
+                        <i class="las la-spinner la-spin la-3x opacity-70"></i>
+                    </div>
+                </div>
+
+            </li>
+                                <li class="category-nav-element border border-top-0" data-id="7">
+                <a href="https://bagdoom.com/category/tv-home-appliances"
+                    class="text-truncate text-dark px-4 fs-14 d-block hov-column-gap-1">
+                    <img class="cat-image lazyload mr-2 opacity-60" src="https://bagdoom.com/public/assets/img/placeholder.jpg"
+                        data-src="https://bagdoom.com/public/uploads/all/mQy6Zrm9FkpRLV9h1XIfGvFrw4B0DwsiqfUwiaxq.png" width="16" alt="TV &amp; Home Appliances"
+                        onerror="this.onerror=null;this.src='https://bagdoom.com/public/assets/img/placeholder.jpg';">
+                    <span class="cat-name has-transition">TV &amp; Home Appliances</span>
+                </a>
+                
+                <div class="sub-cat-menu c-scrollbar-light border p-4 shadow-none">
+                    <div class="c-preloader text-center absolute-center">
+                        <i class="las la-spinner la-spin la-3x opacity-70"></i>
+                    </div>
+                </div>
+
+            </li>
+                                <li class="category-nav-element border border-top-0" data-id="8">
+                <a href="https://bagdoom.com/category/electronic-accessories"
+                    class="text-truncate text-dark px-4 fs-14 d-block hov-column-gap-1">
+                    <img class="cat-image lazyload mr-2 opacity-60" src="https://bagdoom.com/public/assets/img/placeholder.jpg"
+                        data-src="https://bagdoom.com/public/uploads/all/njuXssxPsZYhGA1tf2untIljWJFCjHW4hPCVCyb5.png" width="16" alt="Electronic Accessories"
+                        onerror="this.onerror=null;this.src='https://bagdoom.com/public/assets/img/placeholder.jpg';">
+                    <span class="cat-name has-transition">Electronic Accessories</span>
+                </a>
+                
+                <div class="sub-cat-menu c-scrollbar-light border p-4 shadow-none">
+                    <div class="c-preloader text-center absolute-center">
+                        <i class="las la-spinner la-spin la-3x opacity-70"></i>
+                    </div>
+                </div>
+
+            </li>
+                                <li class="category-nav-element border border-top-0" data-id="9">
+                <a href="https://bagdoom.com/category/groceries"
+                    class="text-truncate text-dark px-4 fs-14 d-block hov-column-gap-1">
+                    <img class="cat-image lazyload mr-2 opacity-60" src="https://bagdoom.com/public/assets/img/placeholder.jpg"
+                        data-src="https://bagdoom.com/public/uploads/all/7XJz4GpKofpV898bmD2AJAajAUx9PZ2fBApH1YXF.png" width="16" alt="Groceries"
+                        onerror="this.onerror=null;this.src='https://bagdoom.com/public/assets/img/placeholder.jpg';">
+                    <span class="cat-name has-transition">Groceries</span>
+                </a>
+                
+                <div class="sub-cat-menu c-scrollbar-light border p-4 shadow-none">
+                    <div class="c-preloader text-center absolute-center">
+                        <i class="las la-spinner la-spin la-3x opacity-70"></i>
+                    </div>
+                </div>
+
+            </li>
+                                <li class="category-nav-element border border-top-0" data-id="10">
+                <a href="https://bagdoom.com/category/home-lifestyle"
+                    class="text-truncate text-dark px-4 fs-14 d-block hov-column-gap-1">
+                    <img class="cat-image lazyload mr-2 opacity-60" src="https://bagdoom.com/public/assets/img/placeholder.jpg"
+                        data-src="https://bagdoom.com/public/uploads/all/MRQqlvP1My1pnyA0IBMNipZNSiQO5Ua84NlFkqPn.png" width="16" alt="Home &amp; Lifestyle"
+                        onerror="this.onerror=null;this.src='https://bagdoom.com/public/assets/img/placeholder.jpg';">
+                    <span class="cat-name has-transition">Home &amp; Lifestyle</span>
+                </a>
+                
+                <div class="sub-cat-menu c-scrollbar-light border p-4 shadow-none">
+                    <div class="c-preloader text-center absolute-center">
+                        <i class="las la-spinner la-spin la-3x opacity-70"></i>
+                    </div>
+                </div>
+
+            </li>
+            </ul>
+</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header><!-- Top Menu Sidebar -->
+<div class="aiz-top-menu-sidebar collapse-sidebar-wrap sidebar-xl sidebar-left d-lg-none z-1035">
+    <div class="overlay overlay-fixed dark c-pointer" data-toggle="class-toggle" data-target=".aiz-top-menu-sidebar"
+        data-same=".hide-top-menu-bar"></div>
+    <div class="collapse-sidebar c-scrollbar-light text-left">
+        <button type="button" class="btn btn-sm p-4 hide-top-menu-bar" data-toggle="class-toggle"
+            data-target=".aiz-top-menu-sidebar">
+            <i class="las la-times la-2x text-primary"></i>
+        </button>
+                    <!--Login & Registration -->
+            <span class="d-flex align-items-center nav-user-info pl-4">
+                <!-- Image -->
+                <span
+                    class="size-40px rounded-circle overflow-hidden border d-flex align-items-center justify-content-center nav-user-img">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="19.902" height="20.012" viewBox="0 0 19.902 20.012">
+                        <path id="fe2df171891038b33e9624c27e96e367"
+                            d="M15.71,12.71a6,6,0,1,0-7.42,0,10,10,0,0,0-6.22,8.18,1.006,1.006,0,1,0,2,.22,8,8,0,0,1,15.9,0,1,1,0,0,0,1,.89h.11a1,1,0,0,0,.88-1.1,10,10,0,0,0-6.25-8.19ZM12,12a4,4,0,1,1,4-4A4,4,0,0,1,12,12Z"
+                            transform="translate(-2.064 -1.995)" fill="#91919b" />
+                    </svg>
+                </span>
+
+                <a href="https://bagdoom.com/users/login"
+                    class="text-reset opacity-60 hov-opacity-100 hov-text-primary fs-12 d-inline-block border-right border-soft-light border-width-2 pr-2 ml-3">Login</a>
+                <a href="https://bagdoom.com/users/registration"
+                    class="text-reset opacity-60 hov-opacity-100 hov-text-primary fs-12 d-inline-block py-2 pl-2">Registration</a>
+            </span>
+            
+                <hr>
+        <ul class="mb-0 pl-3 pb-3 h-100">
+                                                <li class="mr-0">
+                        <a href="https://bagdoom.com/"
+                            class="fs-13 px-3 py-3 w-100 d-inline-block fw-700 text-dark header_menu_links
+                                    ">
+                            Home
+                        </a>
+                    </li>
+                                    <li class="mr-0">
+                        <a href="https://bagdoom.com/"
+                            class="fs-13 px-3 py-3 w-100 d-inline-block fw-700 text-dark header_menu_links
+                                    ">
+                            Flash Sale
+                        </a>
+                    </li>
+                                    <li class="mr-0">
+                        <a href="https://bagdoom.com/"
+                            class="fs-13 px-3 py-3 w-100 d-inline-block fw-700 text-dark header_menu_links
+                                    ">
+                            Blogs
+                        </a>
+                    </li>
+                                    <li class="mr-0">
+                        <a href="https://bagdoom.com/"
+                            class="fs-13 px-3 py-3 w-100 d-inline-block fw-700 text-dark header_menu_links
+                                    ">
+                            All Brands
+                        </a>
+                    </li>
+                                    <li class="mr-0">
+                        <a href="https://bagdoom.com/"
+                            class="fs-13 px-3 py-3 w-100 d-inline-block fw-700 text-dark header_menu_links
+                                    ">
+                            All categories
+                        </a>
+                    </li>
+                                                </ul>
+        <br>
+        <br>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="order_details" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+        <div class="modal-content">
+            <div id="order-details-modal-body">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+        <section class="text-center py-6">
+	<div class="container">
+		<div class="row">
+			<div class="col-lg-6 mx-auto">
+				<img src="https://bagdoom.com/public/assets/img/404.svg" class="mw-100 mx-auto mb-5" height="300">
+			    <h1 class="fw-700">Page Not Found!</h1>
+			    <p class="fs-16 opacity-60">The page you are looking for has not been found on our server.</p>
+			</div>
+		</div>
+    </div>
+</section>
+
+        <!-- footer -->
+        <!-- Last Viewed Products  -->
+
+<!-- footer Description -->
+    <section class="bg-light border-top border-bottom mt-auto">
+        <div class="container py-32px">
+            <h1 class="fs-18 fw-700 text-gray-dark mb-3"></h1>
+                        
+            <div class="footer-desc-container">
+                <p class="footer-text-control fs-13 text-gray-dark text-justify mb-0">
+                        Bagdoom is an online shopping platform offering lifestyle products of local and international brands together.
+                </p>
+                <div class="text-control-btn mt-2 d-xl-none">
+                    
+                    <a class="text-primary cursor-pointer toggle-btn" id="toggle-btn" >
+                        Read More
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+<!-- footer top Bar -->
+<section class="bg-light border-top mt-auto">
+    <div class="container px-xs-0">
+        <div class="row no-gutters border-left border-soft-light">
+            <!-- Terms & conditions -->
+            <div class="col-lg-3 col-6 policy-file">
+                <a class="text-reset h-100  border-right border-bottom border-soft-light text-center p-2 p-md-4 d-block hov-ls-1" href="https://bagdoom.com/terms">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="26.004" height="32" viewBox="0 0 26.004 32">
+                        <path id="Union_8" data-name="Union 8" d="M-14508,18932v-.01a6.01,6.01,0,0,1-5.975-5.492h-.021v-14h1v13.5h0a4.961,4.961,0,0,0,4.908,4.994h.091v0h14v1Zm17-4v-1a2,2,0,0,0,2-2h1a3,3,0,0,1-2.927,3Zm-16,0a3,3,0,0,1-3-3h1a2,2,0,0,0,2,2h16v1Zm18-3v-16.994h-4v-1h3.6l-5.6-5.6v3.6h-.01a2.01,2.01,0,0,0,2,2v1a3.009,3.009,0,0,1-3-3h.01v-4h.6l0,0H-14507a2,2,0,0,0-2,2v22h-1v-22a3,3,0,0,1,3-3v0h12l0,0,7,7-.01.01V18925Zm-16-4.992v-1h12v1Zm0-4.006v-1h12v1Zm0-4v-1h12v1Z" transform="translate(14513.998 -18900.002)" fill="#919199"/>
+                    </svg>
+                    <h4 class="text-dark fs-14 fw-700 mt-3">Terms &amp; conditions</h4>
+                </a>
+            </div>
+
+            <!-- Return Policy -->
+            <div class="col-lg-3 col-6 policy-file">
+                <a class="text-reset h-100  border-right border-bottom border-soft-light text-center p-2 p-md-4 d-block hov-ls-1" href="https://bagdoom.com/return-policy">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32.001" height="23.971" viewBox="0 0 32.001 23.971">
+                        <path id="Union_7" data-name="Union 7" d="M-14490,18922.967a6.972,6.972,0,0,0,4.949-2.051,6.944,6.944,0,0,0,2.052-4.943,7.008,7.008,0,0,0-7-7v0h-22.1l7.295,7.295-.707.707-7.779-7.779-.708-.707.708-.7,7.774-7.779.712.707-7.261,7.258H-14490v0a8.01,8.01,0,0,1,8,8,8.008,8.008,0,0,1-8,8Z" transform="translate(14514.001 -18900)" fill="#919199"/>
+                    </svg>
+                    <h4 class="text-dark fs-14 fw-700 mt-3">return policy</h4>
+                </a>
+            </div>
+
+            <!-- Support Policy -->
+            <div class="col-lg-3 col-6 policy-file">
+                <a class="text-reset h-100  border-right border-bottom border-soft-light text-center p-2 p-md-4 d-block hov-ls-1" href="https://bagdoom.com/support-policy">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32.002" height="32.002" viewBox="0 0 32.002 32.002">
+                        <g id="Group_24198" data-name="Group 24198" transform="translate(-1113.999 -2398)">
+                        <path id="Subtraction_14" data-name="Subtraction 14" d="M-14508,18916h0l-1,0a12.911,12.911,0,0,1,3.806-9.187A12.916,12.916,0,0,1-14496,18903a12.912,12.912,0,0,1,9.193,3.811A12.9,12.9,0,0,1-14483,18916l-1,0a11.918,11.918,0,0,0-3.516-8.484A11.919,11.919,0,0,0-14496,18904a11.921,11.921,0,0,0-8.486,3.516A11.913,11.913,0,0,0-14508,18916Z" transform="translate(15626 -16505)" fill="#919199"/>
+                        <path id="Subtraction_15" data-name="Subtraction 15" d="M-14510,18912h-1a3,3,0,0,1-3-3v-6a3,3,0,0,1,3-3h1a2,2,0,0,1,2,2v8A2,2,0,0,1-14510,18912Zm-1-11a2,2,0,0,0-2,2v6a2,2,0,0,0,2,2h1a1,1,0,0,0,1-1v-8a1,1,0,0,0-1-1Z" transform="translate(15628 -16489)" fill="#919199"/>
+                        <path id="Subtraction_19" data-name="Subtraction 19" d="M4,12H3A3,3,0,0,1,0,9V3A3,3,0,0,1,3,0H4A2,2,0,0,1,6,2v8A2,2,0,0,1,4,12ZM3,1A2,2,0,0,0,1,3V9a2,2,0,0,0,2,2H4a1,1,0,0,0,1-1V2A1,1,0,0,0,4,1Z" transform="translate(1146.002 2423) rotate(180)" fill="#919199"/>
+                        <path id="Subtraction_17" data-name="Subtraction 17" d="M-14512,18908a2,2,0,0,1-2-2v-4a2,2,0,0,1,2-2,2,2,0,0,1,2,2v4A2,2,0,0,1-14512,18908Zm0-7a1,1,0,0,0-1,1v4a1,1,0,0,0,1,1,1,1,0,0,0,1-1v-4A1,1,0,0,0-14512,18901Z" transform="translate(20034 16940.002) rotate(90)" fill="#919199"/>
+                        <rect id="Rectangle_18418" data-name="Rectangle 18418" width="1" height="4.001" transform="translate(1137.502 2427.502) rotate(90)" fill="#919199"/>
+                        <path id="Intersection_1" data-name="Intersection 1" d="M-14508.5,18910a4.508,4.508,0,0,0,4.5-4.5h1a5.508,5.508,0,0,1-5.5,5.5Z" transform="translate(15646.004 -16482.5)" fill="#919199"/>
+                        </g>
+                    </svg>
+                    <h4 class="text-dark fs-14 fw-700 mt-3">Support Policy</h4>
+                </a>
+            </div>
+
+            <!-- Privacy Policy -->
+            <div class="col-lg-3 col-6 policy-file">
+                <a class="text-reset h-100 border-right border-bottom border-soft-light text-center p-2 p-md-4 d-block hov-ls-1" href="https://bagdoom.com/privacy-policy">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+                        <g id="Group_24236" data-name="Group 24236" transform="translate(-1454.002 -2430.002)">
+                        <path id="Subtraction_11" data-name="Subtraction 11" d="M-14498,18932a15.894,15.894,0,0,1-11.312-4.687A15.909,15.909,0,0,1-14514,18916a15.884,15.884,0,0,1,4.685-11.309A15.9,15.9,0,0,1-14498,18900a15.909,15.909,0,0,1,11.316,4.688A15.885,15.885,0,0,1-14482,18916a15.9,15.9,0,0,1-4.687,11.316A15.909,15.909,0,0,1-14498,18932Zm0-31a14.9,14.9,0,0,0-10.605,4.393A14.9,14.9,0,0,0-14513,18916a14.9,14.9,0,0,0,4.395,10.607A14.9,14.9,0,0,0-14498,18931a14.9,14.9,0,0,0,10.607-4.393A14.9,14.9,0,0,0-14483,18916a14.9,14.9,0,0,0-4.393-10.607A14.9,14.9,0,0,0-14498,18901Z" transform="translate(15968 -16470)" fill="#919199"/>
+                        <g id="Group_24196" data-name="Group 24196" transform="translate(0 -1)">
+                            <rect id="Rectangle_18406" data-name="Rectangle 18406" width="2" height="10" transform="translate(1469 2440)" fill="#919199"/>
+                            <rect id="Rectangle_18407" data-name="Rectangle 18407" width="2" height="2" transform="translate(1469 2452)" fill="#919199"/>
+                        </g>
+                        </g>
+                    </svg>
+                    <h4 class="text-dark fs-14 fw-700 mt-3">privacy policy</h4>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- footer subscription & icons -->
+<section class="py-3 text-light footer-widget border-bottom" style="border-color: #3d3d46 !important; background-color: #212129 !important;">
+    <div class="container">
+        <!-- footer logo -->
+        <div class="mt-3 mb-4">
+            <a href="https://bagdoom.com" class="d-block">
+                                    <img class="lazyload h-45px" src="https://bagdoom.com/public/assets/img/placeholder-rect.jpg" data-src="https://bagdoom.com/public/uploads/all/seaTRiasSkueRvTvBprIXoCTprnXQhzht9sgInVD.svg" alt="Bagdoom.com" height="45">
+                            </a>
+        </div>
+        <div class="row">
+            <!-- about & subscription -->
+            
+            <div class="col-xl-6 col-lg-7">
+                <div class="mb-4 text-secondary text-justify">
+                    
+                </div>
+                            </div>
+
+            <div class="col d-none d-lg-block"></div>
+
+            <!-- Follow & Apps -->
+            <div class="col-xxl-3 col-xl-4 col-lg-4">
+                <!-- Social -->
+                
+                <!-- Apps link -->
+                
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-lg-3 text-light footer-widget" style="background-color: #212129 !important;">
+    <!-- footer widgets ========== [Accordion Fotter widgets are bellow from this]-->
+    <div class="container d-none d-lg-block">
+        <div class="row">
+            <!-- Quick links -->
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="text-center text-sm-left mt-4">
+                    <h4 class="fs-14 text-secondary text-uppercase fw-700 mb-3">
+                        Facebook
+                    </h4>
+                    <ul class="list-unstyled">
+                                                                                                            <li class="mb-2">
+                                <a href="https://www.facebook.com/myBagdoom/" class="fs-13 text-soft-light animate-underline-white">
+                                    
+                                </a>
+                            </li>
+                                                                        </ul>
+                </div>
+            </div>
+
+            <!-- Contacts -->
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="text-center text-sm-left mt-4">
+                    <h4 class="fs-14 text-secondary text-uppercase fw-700 mb-3">Contacts</h4>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <p  class="fs-13 text-secondary mb-1">Address</p>
+                            <p  class="fs-13 text-soft-light">Dhaka, Bangladesh</p>
+                        </li>
+                        <li class="mb-2">
+                            <p  class="fs-13 text-secondary mb-1">Phone</p>
+                            <p  class="fs-13 text-soft-light">+8801317-000000</p>
+                        </li>
+                        <li class="mb-2">
+                            <p  class="fs-13 text-secondary mb-1">Email</p>
+                            <p  class="">
+                                <a href="mailto:info@bagdoom.com" class="fs-13 text-soft-light hov-text-primary">info@bagdoom.com</a>
+                            </p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- My Account -->
+            <div class="col-lg-3 col-md-6 col-sm-6">
+                <div class="text-center text-sm-left mt-4">
+                    <h4 class="fs-14 text-secondary text-uppercase fw-700 mb-3">My Account</h4>
+                    <ul class="list-unstyled">
+                                                    <li class="mb-2">
+                                <a class="fs-13 text-soft-light animate-underline-white" href="https://bagdoom.com/users/login">
+                                    Login
+                                </a>
+                            </li>
+                                                <li class="mb-2">
+                            <a class="fs-13 text-soft-light animate-underline-white" href="https://bagdoom.com/purchase_history">
+                                Order History
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a class="fs-13 text-soft-light animate-underline-white" href="https://bagdoom.com/wishlists">
+                                My Wishlist
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a class="fs-13 text-soft-light animate-underline-white" href="https://bagdoom.com/track-your-order">
+                                Track Order
+                            </a>
+                        </li>
+                                            </ul>
+                </div>
+            </div>
+
+            <!-- Seller & Delivery Boy -->
+                        <div class="col-lg-3 col-md-4 col-sm-6">
+                <div class="text-center text-sm-left mt-4">
+                    <!-- Seller -->
+                                            <h4 class="fs-14 text-secondary text-uppercase fw-700 mb-3">Seller Zone</h4>
+                        <ul class="list-unstyled">
+                            <li class="mb-2">
+                                <p class="fs-13 text-soft-light mb-0">
+                                    Become A Seller
+                                    <a href="https://bagdoom.com/shops/create" class="fs-13 fw-700 text-secondary-base ml-2">Apply Now</a>
+                                    
+                                </p>
+                            </li>
+                                                            <li class="mb-2">
+                                    <a class="fs-13 text-soft-light animate-underline-white" href="https://bagdoom.com/seller/login">
+                                        Login to Seller Panel
+                                    </a>
+                                </li>
+                                                                                </ul>
+                    
+                    <!-- Delivery Boy -->
+                                    </div>
+            </div>
+                    </div>
+    </div>
+
+    <!-- Accordion Fotter widgets -->
+    <div class="d-lg-none bg-transparent">
+        <!-- Quick links -->
+        <div class="aiz-accordion-wrap bg-black">
+            <div class="aiz-accordion-heading container bg-black">
+                <button class="aiz-accordion fs-14 text-white bg-transparent">Facebook</button>
+            </div>
+            <div class="aiz-accordion-panel bg-transparent" style="background-color: #212129 !important;">
+                <div class="container">
+                    <ul class="list-unstyled mt-3">
+                                                    							                            <li class="mb-2 pb-2 ">
+                                <a href="https://www.facebook.com/myBagdoom/" class="fs-13 text-soft-light text-sm-secondary animate-underline-white">
+                                    
+                                </a>
+                            </li>
+                                                                        </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contacts -->
+        <div class="aiz-accordion-wrap bg-black">
+            <div class="aiz-accordion-heading container bg-black">
+                <button class="aiz-accordion fs-14 text-white bg-transparent">Contacts</button>
+            </div>
+            <div class="aiz-accordion-panel bg-transparent" style="background-color: #212129 !important;">
+                <div class="container">
+                    <ul class="list-unstyled mt-3">
+                        <li class="mb-2">
+                            <p  class="fs-13 text-secondary mb-1">Address</p>
+                            <p  class="fs-13 text-soft-light">Dhaka, Bangladesh</p>
+                        </li>
+                        <li class="mb-2">
+                            <p  class="fs-13 text-secondary mb-1">Phone</p>
+                            <p  class="fs-13 text-soft-light">+8801317-000000</p>
+                        </li>
+                        <li class="mb-2">
+                            <p  class="fs-13 text-secondary mb-1">Email</p>
+                            <p  class="">
+                                <a href="mailto:info@bagdoom.com" class="fs-13 text-soft-light hov-text-primary">info@bagdoom.com</a>
+                            </p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- My Account -->
+        <div class="aiz-accordion-wrap bg-black">
+            <div class="aiz-accordion-heading container bg-black">
+                <button class="aiz-accordion fs-14 text-white bg-transparent">My Account</button>
+            </div>
+            <div class="aiz-accordion-panel bg-transparent" style="background-color: #212129 !important;">
+                <div class="container">
+                    <ul class="list-unstyled mt-3">
+                                                    <li class="mb-2 pb-2 ">
+                                <a class="fs-13 text-soft-light text-sm-secondary animate-underline-white" href="https://bagdoom.com/users/login">
+                                    Login
+                                </a>
+                            </li>
+                                                <li class="mb-2 pb-2 ">
+                            <a class="fs-13 text-soft-light text-sm-secondary animate-underline-white" href="https://bagdoom.com/purchase_history">
+                                Order History
+                            </a>
+                        </li>
+                        <li class="mb-2 pb-2 ">
+                            <a class="fs-13 text-soft-light text-sm-secondary animate-underline-white" href="https://bagdoom.com/wishlists">
+                                My Wishlist
+                            </a>
+                        </li>
+                        <li class="mb-2 pb-2 ">
+                            <a class="fs-13 text-soft-light text-sm-secondary animate-underline-white" href="https://bagdoom.com/track-your-order">
+                                Track Order
+                            </a>
+                        </li>
+                                            </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seller -->
+                <div class="aiz-accordion-wrap bg-black">
+            <div class="aiz-accordion-heading container bg-black">
+                <button class="aiz-accordion fs-14 text-white bg-transparent">Seller Zone</button>
+            </div>
+            <div class="aiz-accordion-panel bg-transparent" style="background-color: #212129 !important;">
+                <div class="container">
+                    <ul class="list-unstyled mt-3">
+                        <li class="mb-2 pb-2 ">
+                            <p class="fs-13 text-soft-light text-sm-secondary mb-0">
+                                Become A Seller
+                                <a href="https://bagdoom.com/shops/create" class="fs-13 fw-700 text-secondary-base ml-2">Apply Now</a>
+                            </p>
+                        </li>
+                                                    <li class="mb-2 pb-2 ">
+                                <a class="fs-13 text-soft-light text-sm-secondary animate-underline-white" href="https://bagdoom.com/seller/login">
+                                    Login to Seller Panel
+                                </a>
+                            </li>
+                                                                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Delivery Boy -->
+            </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="pt-3 pb-7 pb-xl-3 bg-black text-soft-light">
+    <div class="container">
+        <div class="row align-items-center py-3">
+            <!-- Copyright -->
+            <div class="col-lg-6 order-1 order-lg-0">
+                <div class="text-center text-lg-left fs-14" current-verison="10.8.0">
+                    <p>                                © 2026. All rights reserved.&nbsp;Subsidiary of <a href="https://ekhanei.com" target="_blank">Ekhanei.com</a></p><p>Developed &amp; Maintaining by <a href="https://veotech.io" target="_blank">VEOTECH.io</a>
+                            </p>
+                </div>
+            </div>
+
+            <!-- Payment Method Images -->
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                <div class="text-center text-lg-right">
+                    <ul class="list-inline mb-0">
+                                            </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- Mobile bottom nav -->
+<div class="aiz-mobile-bottom-nav d-xl-none fixed-bottom border-top border-sm-bottom border-sm-left border-sm-right mx-auto mb-sm-2" style="background-color: rgb(255 255 255 / 90%)!important;">
+    <div class="row align-items-center gutters-5">
+        <!-- Home -->
+        <div class="col">
+            <a href="https://bagdoom.com" class="text-secondary d-block text-center pb-2 pt-3 ">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+                    <g id="Group_24768" data-name="Group 24768" transform="translate(3495.144 -602)">
+                      <path id="Path_2916" data-name="Path 2916" d="M15.3,5.4,9.561.481A2,2,0,0,0,8.26,0H7.74a2,2,0,0,0-1.3.481L.7,5.4A2,2,0,0,0,0,6.92V14a2,2,0,0,0,2,2H14a2,2,0,0,0,2-2V6.92A2,2,0,0,0,15.3,5.4M10,15H6V9A1,1,0,0,1,7,8H9a1,1,0,0,1,1,1Zm5-1a1,1,0,0,1-1,1H11V9A2,2,0,0,0,9,7H7A2,2,0,0,0,5,9v6H2a1,1,0,0,1-1-1V6.92a1,1,0,0,1,.349-.76l5.74-4.92A1,1,0,0,1,7.74,1h.52a1,1,0,0,1,.651.24l5.74,4.92A1,1,0,0,1,15,6.92Z" transform="translate(-3495.144 602)" fill="#b5b5bf"/>
+                    </g>
+                </svg>
+                <span class="d-block mt-1 fs-10 fw-600 text-reset ">Home</span>
+            </a>
+        </div>
+
+        <!-- Categories -->
+        <div class="col">
+            <a href="https://bagdoom.com/categories" class="text-secondary d-block text-center pb-2 pt-3 ">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+                    <g id="Group_25497" data-name="Group 25497" transform="translate(3373.432 -602)">
+                      <path id="Path_2917" data-name="Path 2917" d="M126.713,0h-5V5a2,2,0,0,0,2,2h3a2,2,0,0,0,2-2V2a2,2,0,0,0-2-2m1,5a1,1,0,0,1-1,1h-3a1,1,0,0,1-1-1V1h4a1,1,0,0,1,1,1Z" transform="translate(-3495.144 602)" fill="#91919c"/>
+                      <path id="Path_2918" data-name="Path 2918" d="M144.713,18h-3a2,2,0,0,0-2,2v3a2,2,0,0,0,2,2h5V20a2,2,0,0,0-2-2m1,6h-4a1,1,0,0,1-1-1V20a1,1,0,0,1,1-1h3a1,1,0,0,1,1,1Z" transform="translate(-3504.144 593)" fill="#91919c"/>
+                      <path id="Path_2919" data-name="Path 2919" d="M143.213,0a3.5,3.5,0,1,0,3.5,3.5,3.5,3.5,0,0,0-3.5-3.5m0,6a2.5,2.5,0,1,1,2.5-2.5,2.5,2.5,0,0,1-2.5,2.5" transform="translate(-3504.144 602)" fill="#91919c"/>
+                      <path id="Path_2920" data-name="Path 2920" d="M125.213,18a3.5,3.5,0,1,0,3.5,3.5,3.5,3.5,0,0,0-3.5-3.5m0,6a2.5,2.5,0,1,1,2.5-2.5,2.5,2.5,0,0,1-2.5,2.5" transform="translate(-3495.144 593)" fill="#91919c"/>
+                    </g>
+                </svg>
+                <span class="d-block mt-1 fs-10 fw-600 text-reset ">Categories</span>
+            </a>
+        </div>
+
+        
+
+        
+        <!-- Account -->
+        <div class="col">
+                            <a href="https://bagdoom.com/users/login" class="text-secondary d-block text-center pb-2 pt-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+                        <g id="Group_8094" data-name="Group 8094" transform="translate(3176 -602)">
+                          <path id="Path_2924" data-name="Path 2924" d="M331.144,0a4,4,0,1,0,4,4,4,4,0,0,0-4-4m0,7a3,3,0,1,1,3-3,3,3,0,0,1-3,3" transform="translate(-3499.144 602)" fill="#b5b5bf"/>
+                          <path id="Path_2925" data-name="Path 2925" d="M332.144,20h-10a3,3,0,0,0,0,6h10a3,3,0,0,0,0-6m0,5h-10a2,2,0,0,1,0-4h10a2,2,0,0,1,0,4" transform="translate(-3495.144 592)" fill="#b5b5bf"/>
+                        </g>
+                    </svg>
+                    <span class="d-block mt-1 fs-10 fw-600 text-reset">My Account</span>
+                </a>
+                    </div>
+
+    </div>
+</div>
+
+
+    </div>
+
+    
+    <div class="aiz-refresh">
+        <div class="aiz-refresh-content"><div></div><div></div><div></div></div>
+    </div>
+
+
+    
+    <!-- cookies agreement -->
+    
+    <div class="aiz-custom-alert bottom-left" id="aiz-custom-sale-alert">
+            </div>
+
+    <!-- website popup -->
+    
+    
+
+
+
+
+
+
+    <script>
+    function confirm_modal(delete_url)
+    {
+        jQuery('#confirm-delete').modal('show', {backdrop: 'static'});
+        document.getElementById('delete_link').setAttribute('href' , delete_url);
+    }
+</script>
+
+<div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                
+                <h4 class="modal-title" id="myModalLabel">Confirmation</h4>
+            </div>
+
+            <div class="modal-body">
+                <p>Delete confirmation message</p>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary rounded-0" data-dismiss="modal">Cancel</button>
+                <a id="delete_link" class="btn btn-danger btn-ok rounded-0">Delete</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Login Modal -->
+<div class="modal fade" id="login_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-zoom" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title fw-600">Login</h6>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span aria-hidden="true"></span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="p-3">
+                    <form class="form-default" role="form" action="https://bagdoom.com/users/login/cart" method="POST">
+                        <input type="hidden" name="_token" value="5p98jcq3WpoH9GIjxDnarWOSJaDatn0lihlIcl84" autocomplete="off">
+                                                    <!-- Phone -->
+                            <div class="form-group phone-form-group mb-1">
+                                <input type="tel" id="phone-code"
+                                    class="form-control"
+                                    value="" placeholder="" name="phone" autocomplete="off">
+                            </div>
+                            <!-- Country Code -->
+                            <input type="hidden" name="country_code" value="">
+                            <!-- Email -->
+                            <div class="form-group email-form-group mb-1 d-none">
+                                <input type="email"
+                                    class="form-control "
+                                    value="" placeholder="Email" name="email"
+                                    id="email" autocomplete="off">
+                                                            </div>
+                            <!-- Use Email Instead -->
+                            <div class="form-group text-right">
+                                <button class="btn btn-link p-0 text-primary" type="button"
+                                    onclick="toggleEmailPhone(this)"><i>*Use Email Instead</i></button>
+                            </div>
+                        
+                        <!-- Password -->
+                        <div class="form-group">
+                            <input type="password" name="password" class="form-control rounded-2"
+                                placeholder="Password">
+                        </div>
+
+                        <!-- Remember Me & Forgot password -->
+                        <div class="row mb-2">
+                            <div class="col-6">
+                                <label class="aiz-checkbox">
+                                    <input type="checkbox" name="remember" >
+                                    <span class=opacity-60>Remember Me</span>
+                                    <span class="aiz-square-check"></span>
+                                </label>
+                            </div>
+                            <div class="col-6 text-right">
+                                <a href="https://bagdoom.com/password/reset"
+                                    class="text-reset opacity-60 hov-opacity-100 fs-14">Forgot password?</a>
+                            </div>
+                        </div>
+
+                        <!-- Login Button -->
+                        <div class="mb-5">
+                            <button type="submit"
+                                class="btn btn-primary btn-block fw-600 rounded-2">Login</button>
+                        </div>
+                    </form>
+
+                    <!-- Register Now -->
+                    <div class="text-center mb-3">
+                        <p class="text-muted mb-0">Dont have an account?</p>
+                        <a href="https://bagdoom.com/users/registration">Register Now</a>
+                        
+                    </div>
+                    
+                    <!-- Social Login -->
+                                    </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Bid Modal -->
+<div class="modal fade" id="bid_for_product" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Bid For Product <small id="min_bid_amount"></small> </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                </button>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" action="https://bagdoom.com/auction_product_bids" method="POST" enctype="multipart/form-data">
+                    <input type="hidden" name="_token" value="5p98jcq3WpoH9GIjxDnarWOSJaDatn0lihlIcl84" autocomplete="off">                    <input type="hidden" name="product_id" id="bid_product_id" value="">
+                    <div class="form-group">
+                        <label class="form-label">
+                            Place Bid Price
+                            <span class="text-danger">*</span>
+                        </label>
+                        <div class="form-group">
+                            <input type="number" step="0.01" class="form-control form-control-sm" name="amount" id="bid_amount" min="" placeholder="Enter Amount" required>
+                            <small class="text-danger" id="gst_applicable_alert"> </small>
+                        </div>
+                        
+                    </div>
+                    
+                    <div class="form-group text-right">
+                        <button type="submit" class="btn btn-sm btn-primary transition-3d-hover mr-1">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <script>
+    function account_delete_confirm_modal(delete_url)
+    {
+        jQuery('#account_delete_confirm').modal('show', {backdrop: 'static'});
+        document.getElementById('account_delete_link').setAttribute('href' , delete_url);
+    }
+</script>
+
+<div class="modal fade" id="account_delete_confirm" tabindex="-1" role="dialog" aria-labelledby="account_delete_confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+            <div class="modal-header d-block py-4">
+                <div class="d-flex justify-content-center">
+                    <span class="avatar avatar-md mb-2 mt-2">
+                                                    <img src="https://bagdoom.com/public/assets/img/avatar-place.png" class="image rounded-circle m-auto"
+                                onerror="this.onerror=null;this.src='https://bagdoom.com/public/assets/img/avatar-place.png';" alt="Avatar">
+                                            </span>
+                </div>
+                <h4 class="modal-title text-center fw-700" id="account_delete_confirmModalLabel" style="color: #ff9819;">Delete Your Account</h4>
+                <p class="fs-16 fw-600 text-center" style="color: #8d8d8d;">Warning: You cannot undo this action</p>
+            </div>
+
+            <div class="modal-body pt-3 pb-5 px-xl-5">
+                <p class="text-danger mt-3 fw-800"><i>Note:&nbsp;Don&#039;t Click to any button or don&#039;t do any action during account Deletion, it may takes some times.</i></p>
+                <p class="fs-14 fw-700" style="color: #8d8d8d;">Deleting Account Means:</p>
+                <div class="row bg-soft-warning py-2 mb-2 ml-0 mr-0 border-left border-width-2 border-danger">
+                    <div class="col-1">
+                        <img src="https://bagdoom.com/public/assets/img/warning.png" class="h-20px" alt="warning">
+                    </div>
+                    <div class="col">
+                        <p class="fw-600 mb-0">If you create any classified ptoducts, after deleting your account, those products will no longer in our system</p>
+                    </div>
+                </div>
+                <div class="row bg-soft-warning py-3 ml-0 mr-0 border-left border-width-2 border-danger">
+                    <div class="col-1">
+                        <img src="https://bagdoom.com/public/assets/img/warning.png" class="h-20px" alt="warning">
+                    </div>
+                    <div class="col">
+                        <p class="fw-600 mb-0">After deleting your account, wallet balance will no longer in our system</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary rounded-0 w-150px" data-dismiss="modal">Cancel</button>
+                <a id="account_delete_link" class="btn btn-danger rounded-0 w-150px">Delete Account</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <div class="modal fade" id="addToCart">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-zoom product-modal" id="modal-size" role="document">
+            <div class="modal-content position-relative">
+                <div class="c-preloader text-center p-3">
+                    <i class="las la-spinner la-spin la-3x"></i>
+                </div>
+                <button type="button" class="close absolute-top-right btn-icon close z-1 btn-circle hov-text-blue bg-light hov-bg-gray has-transition mr-3 mt-3 d-flex justify-content-center align-items-center" data-dismiss="modal" aria-label="Close" style="background: #ededf2; width: calc(2rem + 2px); height: calc(2rem + 2px);">
+                     <i class="la la-close fs-20 text-gray hov-text-blue has-transition"></i>
+                </button>
+                <div id="addToCart-modal-body">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Offcanvas -->
+    <div id="rightOffcanvas"
+        class="position-fixed top-0 fullscreen bg-white py-20px z-1045 right-offcanvas-md">
+    </div>
+    <!-- Overlay -->
+    <div id="rightOffcanvasOverlay" class="position-fixed top-0 left-0 h-100 w-100"></div>
+
+
+    
+    <div id="videoModal" class="video-modal">
+        <div class="modal-video-wrapper">
+            <video id="popupVideo" style="width: 100%; height: 100%" controls disablePictureInPicture></video>
+            <span id="closeModalBtn" class="close-modal">✖</span>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="https://bagdoom.com/public/assets/js/vendors.js?v=10.8.0"></script>
+    <script src="https://bagdoom.com/public/assets/js/aiz-core.js?v=6667"></script>
+
+    
+            <script type="text/javascript">
+            (function () {
+                var options = {
+                    whatsapp: "",
+                    call_to_action: "Message us",
+                    position: "right", // Position may be 'right' or 'left'
+                };
+                var proto = document.location.protocol, host = "getbutton.io", url = proto + "//static." + host;
+                var s = document.createElement('script'); s.type = 'text/javascript'; s.async = true; s.src = url + '/widget-send-button/js/init.js';
+                s.onload = function () { WhWidgetSendButton.init(host, proto, options); };
+                var x = document.getElementsByTagName('script')[0]; x.parentNode.insertBefore(s, x);
+            })();
+        </script>
+    
+    <style>
+        .sc-q8c6tt-3 {
+            bottom: 54px !important;
+        }
+
+        a[aria-label="Go to GetButton.io website"] {
+            display: none !important;
+        }
+        
+    </style>
+            <script>
+            document.querySelector('.otp-alert-link')?.addEventListener('click', function () {
+
+                fetch("https://bagdoom.com/otp-alert-seen", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": "5p98jcq3WpoH9GIjxDnarWOSJaDatn0lihlIcl84"
+                    },
+                    body: JSON.stringify({})
+                });
+
+            });
+        </script>
+    
+    <script>
+            </script>
+
+    <script>
+        window.POPUP_DURATION = 0;
+        let currentIdx = 0;
+        let cardIds = [];
+        let timer;
+
+        $(document).ready(function () {
+
+            $('.card-wrapper:visible').each(function () {
+                cardIds.push($(this).attr('id'));
+            });
+            startTimer();
+        });
+
+    </script>
+
+    <!-- Smooth Alert Transitions JavaScript -->
+    <script>
+        
+        $(document).ready(function() {
+            // Handle auto-hide alerts
+            $('.aiz-custom-alert .custom-alert-box[data-auto_hide]').each(function() {
+                const $alert = $(this);
+                const seconds = parseInt($alert.attr('data-auto_hide'), 10) || 0;
+                if (seconds > 0) {                    
+                    setTimeout(() => {
+                        smoothlyRemoveElement($alert);
+                    }, seconds * 1000);
+                }
+            });
+
+            // Handle cookie alert accept button
+            $('.aiz-custom-alert').on('click', '.aiz-cookie-accept, .aiz-cookie-accept-club-point', function(e) {
+                e.preventDefault();
+                const $parent = $(this).closest('.aiz-cookie-alert');
+                if ($parent.length) {
+                    smoothlyRemoveElement($parent);
+                }
+            });
+
+            // Handle custom alert box close button
+            $('.aiz-custom-alert').on('click', '[data-parent=".custom-alert-box"]', function(e) {
+                e.preventDefault();
+                const $box = $(this).closest('.custom-alert-box');
+                if ($box.length) {
+                    smoothlyRemoveElement($box);
+                }
+            });
+        });
+    </script>
+
+    <script>
+        
+        $(document).ready(function() {
+            $('.category-nav-element').each(function(i, el) {
+
+                $(el).on('mouseover', function(){
+                    if(!$(el).find('.sub-cat-menu').hasClass('loaded')){
+                        $.post('https://bagdoom.com/category/nav-element-list', {
+                            _token: AIZ.data.csrf,
+                            id:$(el).data('id'
+                            )}, function(data){
+                            $(el).find('.sub-cat-menu').addClass('loaded').html(data);
+                        });
+                    }
+                });
+            });
+
+            if ($('#lang-change').length > 0) {
+                $('#lang-change .dropdown-menu a').each(function() {
+                    $(this).on('click', function(e){
+                        e.preventDefault();
+                        var $this = $(this);
+                        var locale = $this.data('flag');
+                        $.post('https://bagdoom.com/language',{_token: AIZ.data.csrf, locale:locale}, function(data){
+                            location.reload();
+                        });
+
+                    });
+                });
+            }
+
+            if ($('#currency-change').length > 0) {
+                $('#currency-change .dropdown-menu a').each(function() {
+                    $(this).on('click', function(e){
+                        e.preventDefault();
+                        var $this = $(this);
+                        var currency_code = $this.data('currency');
+                        $.post('https://bagdoom.com/currency',{_token: AIZ.data.csrf, currency_code:currency_code}, function(data){
+                            location.reload();
+                        });
+
+                    });
+                });
+            }
+        });
+
+        $('#search').on('keyup', function(){
+            search();
+        });
+
+        $('#search').on('focus', function(){
+            search();
+        });
+
+        function search(){
+            var searchKey = $('#search').val();
+            if(searchKey.length > 0){
+                $('body').addClass("typed-search-box-shown");
+
+                $('.typed-search-box').removeClass('d-none');
+                $('.search-preloader').removeClass('d-none');
+                $.post('https://bagdoom.com/ajax-search', { _token: AIZ.data.csrf, search:searchKey}, function(data){
+                    if(data == '0'){
+                        // $('.typed-search-box').addClass('d-none');
+                        $('#search-content').html(null);
+                        $('.typed-search-box .search-nothing').removeClass('d-none').html('Sorry, nothing found for <strong>"'+searchKey+'"</strong>');
+                        $('.search-preloader').addClass('d-none');
+
+                    }
+                    else{
+                        $('.typed-search-box .search-nothing').addClass('d-none').html(null);
+                        $('#search-content').html(data);
+                        $('.search-preloader').addClass('d-none');
+                    }
+                });
+            }
+            else {
+                $('.typed-search-box').addClass('d-none');
+                $('body').removeClass("typed-search-box-shown");
+            }
+        }
+
+        $(".aiz-user-top-menu").on("mouseover", function (event) {
+            $(".hover-user-top-menu").addClass('active');
+        })
+        .on("mouseout", function (event) {
+            $(".hover-user-top-menu").removeClass('active');
+        });
+
+        $(document).on("click", function(event){
+            var $trigger = $("#category-menu-bar");
+            if($trigger !== event.target && !$trigger.has(event.target).length){
+                $("#click-category-menu").slideUp("fast");;
+                $("#category-menu-bar-icon").removeClass('show');
+            }
+        });
+
+        function updateNavCart(view,count){
+            $('.cart-count').html(count);
+            $('#cart_items').html(view);
+        }
+
+        function removeFromCart(key){
+            $.post('https://bagdoom.com/cart/removeFromCart', {
+                _token  : AIZ.data.csrf,
+                id      :  key
+            }, function(data){
+                updateNavCart(data.nav_cart_view,data.cart_count);
+                $('#cart-details').html(data.cart_view);
+                AIZ.plugins.notify('danger', "Item has been removed from cart");
+                $('#cart_items_sidenav').html(parseInt($('#cart_items_sidenav').html())-1);
+            });
+        }
+
+        function showLoginModal() {
+            $('#login_modal').modal();
+        }
+
+        function addToCompare(id){
+            $.post('https://bagdoom.com/compare/addToCompare', {_token: AIZ.data.csrf, id:id}, function(data){
+                $('#compare').html(data);
+                AIZ.plugins.notify('success', "Item has been added to compare list");
+                $('#compare_items_sidenav').html(parseInt($('#compare_items_sidenav').html())+1);
+            });
+        }
+
+        function addToWishList(id){
+                            AIZ.plugins.notify('warning', "Please login first");
+                    }
+
+        function showAddToCartModal(id){
+            if(!$('#modal-size').hasClass('modal-lg')){
+                $('#modal-size').addClass('modal-lg');
+            }
+            $('#addToCart-modal-body').html(null);
+                $('#addToCart').modal();
+            $('.c-preloader').show();
+            $.post('https://bagdoom.com/cart/show-cart-modal', {_token: AIZ.data.csrf, id:id}, function(data){
+                $('.c-preloader').hide();
+                $('#addToCart-modal-body').html(data);
+                AIZ.plugins.slickCarousel();
+                AIZ.plugins.zoom();
+                AIZ.extra.plusMinus();
+                getVariantPrice();
+            });
+        }
+
+           // Right Offcanvas JS Start
+        const rightOffcanvas = document.getElementById('rightOffcanvas');
+        const overlay = document.getElementById('rightOffcanvasOverlay');
+
+        // Open function
+        function showAddToCartRightCanvas(id) {
+            const $social_chat = $('.sc-q8c6tt-3');
+            if ($social_chat.length) {
+                $social_chat.addClass('d-none');
+            }
+            rightOffcanvas.classList.add('active');
+            overlay.classList.add('active');
+            document.body.classList.add('body-no-scroll');
+            rightOffcanvas.innerHTML = '<div class="h-100 w-100 d-flex justify-content-center align-items-center"><div class="footable-loader" style="height: 100vh !important;"><span class="fooicon fooicon-loader"></span></div> </div>';
+
+            $.ajax({
+                url: 'https://bagdoom.com/cart/show-variant-canvas',
+                type: 'POST',
+                data: {
+                    _token: AIZ.data.csrf,
+                    id: id
+                },
+                success: function (data) {
+                    rightOffcanvas.innerHTML = data;
+                    AIZ.plugins.slickCarousel();
+                    AIZ.plugins.zoom();
+                    AIZ.extra.plusMinus();
+                    getVariantPrice();
+                },
+                error: function () {
+                    rightOffcanvas.innerHTML =
+                        '<p class="text-danger">Failed to load stock data</p>';
+                }
+            });
+        }
+
+            // Close function
+            function closeRightcanvas() {
+                rightOffcanvas.classList.remove('active');
+                overlay.classList.remove('active');
+                document.body.classList.remove('body-no-scroll');
+                const $social_chat = $('.sc-q8c6tt-3');
+                if ($social_chat.length) {
+                    $social_chat.removeClass('d-none');
+                }
+            }
+            function closeOffcanvas() {
+                closeRightcanvas();
+            }
+
+            if (overlay) {
+                overlay.addEventListener('click', closeRightcanvas);
+            }
+            // Optional: close with ESC key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') closeRightcanvas();
+            });
+        // Right Offcanvas JS End
+
+        function showReviewImageModal(imageUrl, imagesJson) {
+            try {
+                var images = JSON.parse(imagesJson);
+                var currentIndex = images.indexOf(imageUrl);
+
+                $('#modalReviewImage').attr('src', imageUrl);
+                $('#reviewImageModal').modal('show');
+
+                $('#prevImageBtn').off('click').on('click', function() {
+                    currentIndex = (currentIndex - 1 + images.length) % images.length;
+                    $('#modalReviewImage').attr('src', images[currentIndex]);
+                });
+
+                $('#nextImageBtn').off('click').on('click', function() {
+                    currentIndex = (currentIndex + 1) % images.length;
+                    $('#modalReviewImage').attr('src', images[currentIndex]);
+                });
+            } catch (error) {
+                console.error("Error parsing JSON:", error);
+            }
+        }
+
+        $('#option-choice-form input').on('change', function(){
+            getVariantPrice();
+        });
+
+        $(document).on('change click', '#option-choice-form input', function () {
+            getVariantPrice();
+        });
+
+        
+        function getVariantPrice(){
+            if($('#option-choice-form input[name=quantity]').val() > 0 && checkAddToCartValidity()){
+                $.ajax({
+                    type:"POST",
+                    url: 'https://bagdoom.com/product/variant-price',
+                    data: $('#option-choice-form').serializeArray(),
+                    success: function(data){
+                        
+                        
+                        const responseImage = data.image || null;
+
+                        if (responseImage) {
+                         const thumbEl = document.querySelector('.thumb-slider');
+                            const mainEl = document.querySelector('.main-slider');
+                            const thumbSwiper = thumbEl && thumbEl.swiper ? thumbEl.swiper : null;
+                            const mainSwiper = mainEl && mainEl.swiper ? mainEl.swiper : null;
+
+                            let found = false;
+                            $('.thumb-slider .swiper-slide').each(function (index) {
+                                const slideImage = $(this).data('variation-image');
+                                if (String(slideImage) === String(responseImage)) {
+                                    found = true;
+                                    if (thumbSwiper && typeof thumbSwiper.slideTo === 'function') {
+                                        thumbSwiper.slideTo(index);
+                                    }
+                                    if (mainSwiper && typeof mainSwiper.slideTo === 'function') {
+                                        mainSwiper.slideTo(index);
+                                    }
+                                    $(this).trigger('click');
+                                    return false;
+                                }
+                            });
+
+                            // if nothing matched, reset to first slide once
+                            if (!found) {
+                                if (thumbSwiper && typeof thumbSwiper.slideTo === 'function') thumbSwiper.slideTo(0);
+                                if (mainSwiper && typeof mainSwiper.slideTo === 'function') mainSwiper.slideTo(0);
+                            }
+
+                        }
+
+                        $('#option-choice-form #chosen_price_div').removeClass('d-none');
+                        $('#option-choice-form #chosen_price_div #chosen_price').html(data.price);
+                        $('#variant_sku_section #variant_sku').html(data.sku);
+                        $('#option-choice-form #selected_variant').html(data.variation);
+                        $('#available-quantity').html(data.quantity);
+                        $('.input-number').prop('max', data.max_limit);
+                        if(parseInt(data.in_stock) == 0 && data.digital  == 0){
+                           $('.buy-now').addClass('d-none');
+                           $('.add-to-cart').addClass('d-none');
+                           $('.out-of-stock').removeClass('d-none');
+                        }
+                        else{
+                           $('.buy-now').removeClass('d-none');
+                           $('.add-to-cart').removeClass('d-none');
+                           $('.out-of-stock').addClass('d-none');
+                        }
+
+                        AIZ.extra.plusMinus();
+                    }
+                });
+                $('#add_to_cart_count').text('(' + String($('#option-choice-form input[name=quantity]').val()).padStart(2, '0') + ')');
+            }
+        }
+
+        function checkAddToCartValidity(){
+            var names = {};
+            $('#option-choice-form input:radio').each(function() { // find unique names
+                names[$(this).attr('name')] = true;
+            });
+            var count = 0;
+            $.each(names, function() { // then count them
+                count++;
+            });
+
+            if($('#option-choice-form input:radio:checked').length == count){
+                return true;
+            }
+
+            return false;
+        }
+
+        function addToCart(){
+            
+            if(checkAddToCartValidity()) {
+                animateAddToCartButton('#added_to_cart_btn', 'loading');
+                $('#addToCart').modal();
+                $('.c-preloader').show();
+                $.ajax({
+                    type:"POST",
+                    url: 'https://bagdoom.com/cart/addtocart',
+                    data: $('#option-choice-form').serializeArray(),
+                    success: function(data){
+                        animateAddToCartButton('#added_to_cart_btn', 'success');
+                       $('#addToCart-modal-body').html(null);
+                       $('.c-preloader').hide();
+                       $('#modal-size').removeClass('modal-lg');
+                       $('#addToCart-modal-body').html(data.modal_view);
+                       AIZ.extra.plusMinus();
+                       AIZ.plugins.slickCarousel();
+                       updateNavCart(data.nav_cart_view,data.cart_count);
+                    }
+                });
+
+                if ("0" == 1){
+                    // Facebook Pixel AddToCart Event
+                    fbq('track', 'AddToCart', {content_type: 'product'});
+                    // Facebook Pixel AddToCart Event
+                }
+            }
+            else{
+                animateAddToCartButton('#added_to_cart_btn', 'reset');
+                AIZ.plugins.notify('warning', "Please choose all the options");
+            }
+        }
+
+        function addToCartSingleProduct(productId = null){
+            
+            if(!productId){
+                AIZ.plugins.notify('warning', "Product not found");
+                return false;
+            }
+
+            var formData = {
+                id: productId,
+                quantity: 1,
+                _token: '5p98jcq3WpoH9GIjxDnarWOSJaDatn0lihlIcl84'
+            };
+
+            if(checkAddToCartValidity()) {
+                $('.c-preloader').show();
+                $('#addToCart-modal-body').html('<div class="text-center p-5"><div class="c-preloader"></div></div>');
+                $('#modal-size').removeClass('modal-lg');
+                $('#addToCart').modal('show'); 
+
+                $.ajax({
+                    type: "POST",
+                    url: 'https://bagdoom.com/cart/addtocart',
+                    data: formData,
+                    success: function(data){
+                        $('#addToCart .c-preloader').hide(); 
+
+                        if (data && data.modal_view) {
+                            $('#addToCart-modal-body').html(data.modal_view);
+
+                            try {
+                                AIZ.extra.plusMinus();
+                                AIZ.plugins.slickCarousel();
+                                if (typeof updateNavCart === 'function') {
+                                    updateNavCart(data.nav_cart_view, data.cart_count);
+                                }
+                            } catch (e) {
+                                console.warn("JS init error:", e);
+                            }
+
+                            $('#addToCart .modal-body').scrollTop(0);
+                        } else {
+                            $('#addToCart-modal-body').html('<div class="text-center p-5 text-danger">Product details not available.</div>');
+                        }
+                    },
+                    error: function() {
+                        AIZ.plugins.notify('danger', "Something went wrong!");
+                        $('.c-preloader').hide();
+                    }
+                });
+
+                if ("0" == 1){
+                    fbq('track', 'AddToCart', {content_type: 'product'});
+                }
+            }
+            else{
+                AIZ.plugins.notify('warning', "Please choose all the options");
+            }
+        }
+
+        function buyNow(){
+            
+            if(checkAddToCartValidity()) {
+                $('#addToCart-modal-body').html(null);
+                $('#addToCart').modal();
+                $('.c-preloader').show();
+                $.ajax({
+                    type:"POST",
+                    url: 'https://bagdoom.com/cart/addtocart',
+                    data: $('#option-choice-form').serializeArray(),
+                    success: function(data){
+                        if(data.status == 1){
+                            $('#addToCart-modal-body').html(data.modal_view);
+                            updateNavCart(data.nav_cart_view,data.cart_count);
+                            window.location.replace("https://bagdoom.com/cart");
+                        }
+                        else{
+                            $('#addToCart-modal-body').html(null);
+                            $('.c-preloader').hide();
+                            $('#modal-size').removeClass('modal-lg');
+                            $('#addToCart-modal-body').html(data.modal_view);
+                        }
+                    }
+               });
+            }
+            else{
+                AIZ.plugins.notify('warning', "Please choose all the options");
+            }
+        }
+
+        function bid_single_modal(bid_product_id, min_bid_amount, gst_rate = null){
+                            $('#login_modal').modal('show');
+                    }
+
+        function clickToSlide(btn,id){
+            $('#'+id+' .aiz-carousel').find('.'+btn).trigger('click');
+            $('#'+id+' .slide-arrow').removeClass('link-disable');
+            var arrow = btn=='slick-prev' ? 'arrow-prev' : 'arrow-next';
+            if ($('#'+id+' .aiz-carousel').find('.'+btn).hasClass('slick-disabled')) {
+                $('#'+id).find('.'+arrow).addClass('link-disable');
+            }
+        }
+
+        function goToView(params) {
+            document.getElementById(params).scrollIntoView({behavior: "smooth", block: "center"});
+        }
+
+        function copyCouponCode(code){
+            navigator.clipboard.writeText(code);
+            AIZ.plugins.notify('success', "Coupon Code Copied");
+        }
+
+        $(document).ready(function(){
+            $('.cart-animate').animate({margin : 0}, "slow");
+
+            $({deg: 0}).animate({deg: 360}, {
+                duration: 2000,
+                step: function(now) {
+                    $('.cart-rotate').css({
+                        transform: 'rotate(' + now + 'deg)'
+                    });
+                }
+            });
+
+            setTimeout(function(){
+                $('.cart-ok').css({ fill: '#d43533' });
+            }, 2000);
+
+        });
+
+        function nonLinkableNotificationRead(){
+            $.get('https://bagdoom.com/non-linkable-notification-read',function(data){
+                $('.unread-notification-count').html(data);
+            });
+        }
+
+        function animateAddToCartButton(btnSelector, state = 'loading') {
+            const $btn = $(btnSelector);
+
+            if (!$btn.length) return;
+
+            // store original text once
+            if (!$btn.data('original-html')) {
+                $btn.data('original-html', $btn.html());
+            }
+
+            if (state === 'loading') {
+                $btn
+                    .addClass('adding')
+                    .prop('disabled', true)
+                    .html('<span class="spinner-border spinner-border-sm mr-2"></span>');
+            }
+
+            if (state === 'success') {
+                $btn
+                    .removeClass('adding')
+                    .addClass('added-success')
+                    .html('<i class="las la-check"></i>');
+
+                setTimeout(() => {
+                    $btn
+                        .removeClass('added-success')
+                        .prop('disabled', false)
+                        .html($btn.data('original-html'));
+                }, 1500);
+            }
+
+            if (state === 'reset') {
+                $btn
+                    .removeClass('adding added-success')
+                    .prop('disabled', false)
+                    .html($btn.data('original-html'));
+            }
+        }
+
+    </script>
+
+
+
+    <script type="text/javascript">
+        if ($('input[name=country_code]').length > 0){
+            // Country Code
+            var isPhoneShown = true,
+                countryData = window.intlTelInputGlobals.getCountryData(),
+                input = document.querySelector("#phone-code");
+
+            for (var i = 0; i < countryData.length; i++) {
+                var country = countryData[i];
+                if (country.iso2 == 'bd') {
+                    country.dialCode = '88';
+                }
+            }
+
+            var iti = intlTelInput(input, {
+                separateDialCode: true,
+                utilsScript: "https://bagdoom.com/public/assets/js/intlTelutils.js?1590403638580",
+                onlyCountries: ["BD"],
+                customPlaceholder: function(selectedCountryPlaceholder, selectedCountryData) {
+                    if (selectedCountryData.iso2 == 'bd') {
+                        return "01xxxxxxxxx";
+                    }
+                    return selectedCountryPlaceholder;
+                }
+            });
+
+            var country = iti.getSelectedCountryData();
+            $('input[name=country_code]').val(country.dialCode);
+
+            input.addEventListener("countrychange", function(e) {
+                // var currentMask = e.currentTarget.placeholder;
+                var country = iti.getSelectedCountryData();
+                $('input[name=country_code]').val(country.dialCode);
+
+            });
+
+            function toggleEmailPhone(el) {
+                if (isPhoneShown) {
+                    $('.phone-form-group').addClass('d-none');
+                    $('.email-form-group').removeClass('d-none');
+                    $('input[name=phone]').val(null);
+                    isPhoneShown = false;
+                    $(el).html('*Use Phone Number Instead');
+                } else {
+                    $('.phone-form-group').removeClass('d-none');
+                    $('.email-form-group').addClass('d-none');
+                    $('input[name=email]').val(null);
+                    isPhoneShown = true;
+                    $(el).html('<i>*Use Email Instead</i>');
+                }
+            }
+        }
+    </script>
+
+    <script>
+        var acc = document.getElementsByClassName("aiz-accordion-heading");
+        var i;
+        for (i = 0; i < acc.length; i++) {
+            acc[i].addEventListener("click", function() {
+                this.classList.toggle("active");
+                var panel = this.nextElementSibling;
+                if (panel.style.maxHeight) {
+                    panel.style.maxHeight = null;
+                } else {
+                    panel.style.maxHeight = panel.scrollHeight + "px";
+                }
+            });
+        }
+    </script>
+
+    <script>
+        function showFloatingButtons() {
+            document.querySelector('.floating-buttons-section').classList.toggle('show');;
+        }
+    </script>
+
+    
+            <script>
+            // Language switcher
+            function changeLanguage(code) {
+                $.post('https://bagdoom.com/language', {
+                    _token: '5p98jcq3WpoH9GIjxDnarWOSJaDatn0lihlIcl84',
+                    locale: code
+                }, function () {
+                    location.reload();
+                });
+            }
+
+            // Currency switcher
+            function changeCurrency(code) {
+                $.post('https://bagdoom.com/currency', {
+                    _token: '5p98jcq3WpoH9GIjxDnarWOSJaDatn0lihlIcl84',
+                    currency_code: code
+                }, function () {
+                    location.reload();
+                });
+            }
+        </script>
+    
+    <script>
+    function fixSlickVisibility() {
+        $('.slick-slide').css('visibility', 'visible');
+        $('.slick-track').css('opacity', '1');
+    }
+
+    // Call after fullscreen exit
+    $(window).on('resize', function() {
+        setTimeout(function() {
+            $('.product-gallery').slick('setPosition');
+            $('.product-gallery-thumb').slick('setPosition');
+            fixSlickVisibility();
+        }, 300);
+    });
+    </script>
+    
+   <script>
+    $(document).ready(function() {
+        $('.set-session').on('click', function(e) {
+            const $target = $(e.currentTarget);
+            const parent = $target.data('parent');
+            if (parent && !$target.closest('.aiz-custom-alert').length) {
+                e.preventDefault();
+                $target.closest(parent).fadeOut(600);
+            }
+        });
+    });
+    </script>
+
+        <script type="text/javascript">
+        function show_order_details(order_id) {
+            $('#order-details-modal-body').html(null);
+
+            if (!$('#modal-size').hasClass('modal-lg')) {
+                $('#modal-size').addClass('modal-lg');
+            }
+
+            $.post('https://bagdoom.com/admin/orders/details', {
+                _token: AIZ.data.csrf,
+                order_id: order_id
+            }, function (data) {
+                $('#order-details-modal-body').html(data);
+                $('#order_details').modal();
+                $('.c-preloader').hide();
+                AIZ.plugins.bootstrapSelect('refresh');
+            });
+        }
+    </script>
+
+    
+</body>
+</html>

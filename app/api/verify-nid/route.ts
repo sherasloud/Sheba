@@ -9,24 +9,8 @@ function isValidNID(nid: string): boolean {
 
 export async function POST(request: NextRequest) {
   try {
-    // Handle both FormData (from modal) and JSON (from verification page)
-    const contentType = request.headers.get("content-type") || ""
-    let nidNumber: string = ""
-    let phone: string = ""
-    let faceImage: File | null = null
-
-    if (contentType.includes("multipart/form-data")) {
-      // FormData from modal
-      const formData = await request.formData()
-      nidNumber = formData.get("nidNumber") as string
-      phone = formData.get("phone") as string
-      faceImage = formData.get("faceImage") as File
-    } else {
-      // JSON from verification page
-      const body = await request.json()
-      nidNumber = body.nidNumber
-      phone = body.phone
-    }
+    const body = await request.json()
+    const { nidNumber, phone, faceVerified } = body
 
     // Validate inputs
     if (!nidNumber || !phone) {
@@ -44,71 +28,50 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // For FormData, face image is required
-    if (contentType.includes("multipart/form-data") && !faceImage) {
+    // Validate face verification
+    if (!faceVerified) {
       return NextResponse.json(
-        { success: false, message: "Face image is required for verification." },
+        { success: false, message: "Face verification is required. Please complete video KYC." },
         { status: 400 }
       )
     }
 
-    console.log("[v0] Verify-NID API: NID =", nidNumber, "Phone =", phone, "Has Face Image =", !!faceImage)
-
     const supabase = await createClient()
-    const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
 
-    // Try to create verification request in Supabase
-    let verificationRequest: any = null
-    try {
-      const { data: dbRequest, error: requestError } = await supabase
-        .from("verification_requests")
-        .insert({
-          phone: phone,
-          nid_number: nidNumber.trim(),
-          status: "pending",
-          submitted_at: new Date().toISOString(),
-        })
-        .select()
-        .single()
-
-      if (requestError) {
-        console.warn("[v0] Supabase error, falling back to localStorage:", requestError.message)
-        throw requestError
-      }
-
-      verificationRequest = dbRequest
-    } catch (dbError: any) {
-      console.log("[v0] Database unavailable, using localStorage fallback")
-      // Fallback: store in localStorage
-      verificationRequest = {
-        id: requestId,
-        phone: phone,
+    // Update user profile with NID info and face verification
+    const { data, error } = await supabase
+      .from("profiles")
+      .update({
         nid_number: nidNumber.trim(),
-        status: "pending",
-        submitted_at: new Date().toISOString(),
-      }
+        is_nid_verified: true,
+        nid_verified_at: new Date().toISOString(),
+        face_verified: true,
+        face_verified_at: new Date().toISOString(),
+      })
+      .eq("phone", phone)
+      .select()
+      .single()
 
-      // Store in localStorage for demo purposes
-      try {
-        // Note: This runs on server, so localStorage won't work. 
-        // We'll pass it back and let client store it
-      } catch (e) {
-        // localStorage not available on server
-      }
+    if (error) {
+      console.error("[v0] Database error:", error)
+      return NextResponse.json(
+        { success: false, message: "Failed to verify NID. Please try again." },
+        { status: 500 }
+      )
     }
 
     return NextResponse.json({
       success: true,
-      message: "Verification request submitted successfully! Please wait for admin approval.",
+      message: "NID and face verified successfully!",
       data: {
-        requestId: verificationRequest.id,
-        nidNumber: verificationRequest.nid_number,
-        status: verificationRequest.status,
-        submittedAt: verificationRequest.submitted_at,
+        nidNumber: data.nid_number,
+        isVerified: data.is_nid_verified,
+        faceVerified: data.face_verified,
+        verifiedAt: data.nid_verified_at,
       },
     })
-  } catch (error: any) {
-    console.error("[v0] Error in verify-nid:", error.message || error)
+  } catch (error) {
+    console.error("[v0] Error in verify-nid:", error)
     return NextResponse.json(
       { success: false, message: "An error occurred. Please try again." },
       { status: 500 }

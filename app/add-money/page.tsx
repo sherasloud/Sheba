@@ -1,18 +1,15 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { ArrowLeft, Copy, Check } from "lucide-react"
+import { ArrowLeft } from "lucide-react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 import VerificationRequired from "@/components/verification-required"
 import { cardProviders } from "@/lib/data/static-data"
 
-export default function AddMoneyPage() {
-  // SSLCommerz Payment Gateway Information
-  const SSLCOMMERZ_STORE_ID = process.env.NEXT_PUBLIC_SSLCOMMERZ_STORE_ID || "shusto0live"
-  const SSLCOMMERZ_SANDBOX_URL = "https://sandbox.sslcommerz.com/EasyCheckOut"
-  const SSLCOMMERZ_LIVE_URL = "https://securepay.sslcommerz.com/EasyCheckOut"
+const SSLCOMMERZ_SANDBOX_URL = "https://sandbox.sslcommerz.com/EasyCheckOut/testcde5c2957680c3ba6a68ebfbdfea223af80"
 
+export default function AddMoneyPage() {
   const router = useRouter()
   const [isVerified, setIsVerified] = useState(false)
   const [selectedMethod, setSelectedMethod] = useState("")
@@ -25,8 +22,6 @@ export default function AddMoneyPage() {
   const [balance, setBalance] = useState(0)
   const [cardBalance, setCardBalance] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
-  const [transactionIdCopied, setTransactionIdCopied] = useState(false)
-  const [transactionId, setTransactionId] = useState("")
 
   // Bank details
   const [bankDetails, setBankDetails] = useState({
@@ -100,83 +95,11 @@ export default function AddMoneyPage() {
   }
 
   const handleCardTypeSelect = (cardType: string) => {
-    console.log("[v0] Card type selected:", cardType)
     setSelectedCardType(cardType)
+    // Store selected card type for reference
     localStorage.setItem("selectedCardType", cardType)
-    
-    const userAmount = prompt("Enter amount to add (Minimum: 10 Tk):", "")
-    console.log("[v0] User entered amount:", userAmount)
-    
-    if (!userAmount || isNaN(Number(userAmount)) || Number(userAmount) < 10) {
-      setError("Please enter a valid amount (minimum 10 Tk)")
-      return
-    }
-    
-    // Calculate total amount with commission (2% SSLCommerz fee)
-    const userAmountNum = Number(userAmount)
-    const commissionRate = 0.02 // 2% commission
-    const commission = Math.round(userAmountNum * commissionRate * 100) / 100
-    const totalAmount = userAmountNum + commission
-    
-    console.log("[v0] Amount calculation - User: Tk" + userAmountNum + ", Commission (2%): Tk" + commission + ", Total: Tk" + totalAmount)
-    
-    const transactionRef = `SHEBA_${Date.now()}_${Math.random().toString(36).substr(2, 9).toUpperCase()}`
-    console.log("[v0] Transaction ref:", transactionRef)
-    localStorage.setItem("transactionRef", transactionRef)
-    localStorage.setItem("addMoneyAmount", String(userAmountNum)) // Store user's requested amount
-    localStorage.setItem("commissionAmount", String(commission)) // Store commission for later
-    
-    // Create and submit form to SSLCommerz
-    const form = document.createElement("form")
-    form.method = "POST"
-    form.action = "https://pay.sslcommerz.com/gwprocess/v4/api.php"
-    form.style.display = "none"
-    
-    console.log("[v0] Creating form with store_id:", SSLCOMMERZ_STORE_ID)
-    
-    const fields: Record<string, string> = {
-      store_id: SSLCOMMERZ_STORE_ID,
-      store_passwd: "6A0D6039B299110857",
-      total_amount: String(totalAmount), // Send total (user amount + commission)
-      currency: "BDT",
-      tran_id: transactionRef,
-      success_url: `${typeof window !== 'undefined' ? window.location.origin : ''}/api/sslcommerz/success`,
-      fail_url: `${typeof window !== 'undefined' ? window.location.origin : ''}/api/sslcommerz/fail`,
-      cancel_url: `${typeof window !== 'undefined' ? window.location.origin : ''}/add-money`,
-      cus_name: "Customer",
-      cus_email: "customer@sheba.com",
-      cus_phone: "01000000000",
-      cus_add1: "Dhaka",
-      ship_name: "Customer",
-      ship_add1: "Dhaka",
-      shipping_method: "NO",
-      product_name: "Add Money to Sheba",
-      product_category: "Wallet Top-up",
-      product_profile: "general"
-    }
-    
-    console.log("[v0] Form fields:", fields)
-    
-    Object.entries(fields).forEach(([key, value]) => {
-      const input = document.createElement("input")
-      input.type = "hidden"
-      input.name = key
-      input.value = value
-      form.appendChild(input)
-    })
-    
-    document.body.appendChild(form)
-    console.log("[v0] Form appended to body, submitting...")
-    console.log("[v0] Form action:", form.action)
-    console.log("[v0] Form method:", form.method)
-    
-    // Try to submit
-    try {
-      form.submit()
-      console.log("[v0] Form submitted successfully")
-    } catch (err) {
-      console.log("[v0] Form submission error:", err)
-    }
+    // Redirect to SSLCommerz sandbox
+    window.location.href = SSLCOMMERZ_SANDBOX_URL
   }
 
   const handleAmountNext = () => {
@@ -419,12 +342,9 @@ export default function AddMoneyPage() {
       localStorage.setItem("userBalance", newShebaBalance.toString())
       localStorage.setItem(`userBalance_${currentPhone}`, newShebaBalance.toString())
 
-      const newTransactionId = `SHB${Date.now()}${Math.random().toString(36).substring(2, 8).toUpperCase()}`
-      setTransactionId(newTransactionId)
-
       const transaction = {
         id: Date.now(),
-        transactionId: newTransactionId,
+        transactionId: `SHB${Date.now()}${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
         type: selectedMethod === "card" ? "Card to Sheba" : "Bank to Sheba",
         amount: Number(amount),
         method: selectedMethod === "card" ? `${selectedCardType} Card` : bankDetails.bankName, // Use selected card type
@@ -453,6 +373,11 @@ export default function AddMoneyPage() {
       setIsLoading(false)
       setError("Transaction failed. Please try again.")
     }
+  }
+
+  // Show verification required screen for unverified users
+  if (!isVerified) {
+    return <VerificationRequired title="Add Money" />
   }
 
   if (success) {
@@ -513,7 +438,7 @@ export default function AddMoneyPage() {
   return (
     <div className="flex flex-col h-screen bg-white">
       <div className="bg-[#29a9eb] text-white p-4 flex items-center">
-        <button onClick={() => router.push("/")} className="mr-4">
+        <button onClick={() => router.push("/home")} className="mr-4">
           <ArrowLeft size={24} />
         </button>
         <div className="text-xl font-medium">Add Money</div>
@@ -547,18 +472,6 @@ export default function AddMoneyPage() {
               <div className="text-left">
                 <h3 className="font-medium">Card To Sheba</h3>
                 <p className="text-sm text-gray-500">Add money from your credit/debit card</p>
-              </div>
-            </button>
-            <button
-              onClick={() => router.push("/add-money-stripe")}
-              className="w-full border rounded-lg p-4 flex items-center hover:bg-gray-50 transition-colors"
-            >
-              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-4">
-                <span className="text-blue-500 text-xl">🔐</span>
-              </div>
-              <div className="text-left">
-                <h3 className="font-medium">Stripe Payment</h3>
-                <p className="text-sm text-gray-500">VISA • Mastercard • Amex (Secure)</p>
               </div>
             </button>
           </div>
@@ -731,30 +644,6 @@ export default function AddMoneyPage() {
           <div className="text-2xl font-bold mb-2">Card Details</div>
           <div className="text-gray-600 mb-8">
             Amount: Tk{amount} ({selectedCardType})
-          </div>
-
-          {/* Test Card Information */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-            <h4 className="font-semibold text-blue-900 mb-3">Test Card Numbers (Sandbox)</h4>
-            <div className="space-y-2 text-sm text-blue-800">
-              <div className="flex justify-between">
-                <span>Visa (Success):</span>
-                <span className="font-mono font-bold">4111111111111111</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Mastercard (Success):</span>
-                <span className="font-mono font-bold">5555555555554444</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Expiry (any future):</span>
-                <span className="font-mono font-bold">12/28 or 12/29</span>
-              </div>
-              <div className="flex justify-between">
-                <span>CVV:</span>
-                <span className="font-mono font-bold">Any 3 digits (e.g., 123)</span>
-              </div>
-              <p className="text-xs italic mt-3">These are sandbox test cards - no real money is charged</p>
-            </div>
           </div>
 
           <div className="space-y-4">
