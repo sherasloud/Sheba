@@ -243,7 +243,12 @@ export default function BillPage() {
   return (
     <div className="flex flex-col h-screen bg-white">
       {step === 1 && (
-        <div className="flex-1 overflow-y-auto px-6 pb-10 pt-14">
+        <div className="flex-1 overflow-y-auto px-6 pb-10 pt-5">
+          <div className="mb-8 flex items-center">
+            <button onClick={() => router.push("/")} className="text-[#142033]" aria-label="Back to home">
+              <ArrowLeft size={34} strokeWidth={1.8} />
+            </button>
+          </div>
           <h1 className="mb-28 text-center text-6xl font-normal text-[#29a9eb]">বিল পে</h1>
 
           <div className="space-y-32">
@@ -383,7 +388,7 @@ export default function BillPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">প্রদানকারীর নম্বর / ড্যাশবোর্ড অ্যাক্সেস নম্বর</label>
+              <label className="block text-sm font-medium mb-2">প্রদানকারীর নম্ব��� / ড্যাশবোর্ড অ্যাক্সেস নম্বর</label>
               <input
                 type="tel"
                 className="w-full border rounded-md p-3"

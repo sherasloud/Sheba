@@ -96,7 +96,6 @@ export default function AppPage() {
   const nextBanner = () => {
     setCurrentBannerIndex((prevIndex) => {
       const nextIndex = (prevIndex + 1) % allBanners.length
-      console.log(`🔄 Next Banner: ${prevIndex} → ${nextIndex}`)
       return nextIndex
     })
     resetAutoRotation()
@@ -105,7 +104,6 @@ export default function AppPage() {
   const previousBanner = () => {
     setCurrentBannerIndex((prevIndex) => {
       const prevIdx = prevIndex === 0 ? allBanners.length - 1 : prevIndex - 1
-      console.log(`🔄 Previous Banner: ${prevIdx} → ${prevIdx}`)
       return prevIdx
     })
     resetAutoRotation()
@@ -129,7 +127,6 @@ export default function AppPage() {
     intervalRef.current = setInterval(() => {
       setCurrentBannerIndex((prevIndex) => {
         const nextIndex = (prevIndex + 1) % allBanners.length
-        console.log(`🔄 Auto Banner Change: ${prevIndex} → ${nextIndex}`)
         return nextIndex
       })
     }, 1500)
