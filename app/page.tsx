@@ -496,7 +496,7 @@ export default function AppPage() {
     >
       <div className="h-7 bg-white" />
 
-      <header className="bg-white px-6 pb-3 pt-2">
+      <header className="bg-white px-5 pb-2 pt-3">
         <div className="flex items-center justify-between">
           <div className="w-10" />
           <img src="/images/seba-logo-splash.png" alt="সেবা" className="h-12 w-auto object-contain" />
@@ -506,7 +506,7 @@ export default function AppPage() {
           </button>
         </div>
 
-        <div className="mt-5 flex items-center gap-4">
+        <div className="mt-6 flex items-center gap-4">
           <button type="button" onClick={handleProfileClick} className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#36a9e1] text-2xl font-semibold text-white">
             {profilePic || selectedPhoto ? <img src={profilePic || selectedPhoto || "/placeholder.svg"} alt="Profile" className="h-full w-full object-cover" /> : userName.slice(0, 2).toUpperCase()}
           </button>
@@ -557,7 +557,7 @@ export default function AppPage() {
           </div>
         )}
 
-        <div className="grid grid-cols-3 gap-x-2 gap-y-16 mb-4 [&>*:nth-child(n+10)]:hidden">
+        <div className="grid grid-cols-3 gap-x-1 gap-y-20 mb-4 [&>*:nth-child(n+10)]:hidden">
           <FeatureButton
             href="/send-money"
             icon={
