@@ -701,96 +701,74 @@ export default function AddMoneyPage() {
       )}
 
       {step === 4 && selectedMethod === "card" && (
-        <div className="flex flex-1 flex-col overflow-y-auto px-5 py-6">
-          <div className="text-2xl font-bold mb-2">Card Details</div>
-          <div className="text-[#38afe8] mb-8">
-            Amount: Tk{amount} ({selectedCardType})
-          </div>
+        <div className="flex flex-1 flex-col overflow-y-auto bg-white px-6 pb-8 pt-10">
+          <h1 className="mb-3 text-center text-4xl font-bold text-[#38afe8]">কার্ড ব্যবহার করুন</h1>
+          <p className="mb-10 text-center text-sm text-[#38afe8]">Amount: Tk{amount}</p>
 
-          {/* Test Card Information */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-            <h4 className="font-semibold text-blue-900 mb-3">Test Card Numbers (Sandbox)</h4>
-            <div className="space-y-2 text-sm text-[#38afe8]">
-              <div className="flex justify-between">
-                <span>Visa (Success):</span>
-                <span className="font-mono font-bold">4111111111111111</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Mastercard (Success):</span>
-                <span className="font-mono font-bold">5555555555554444</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Expiry (any future):</span>
-                <span className="font-mono font-bold">12/28 or 12/29</span>
-              </div>
-              <div className="flex justify-between">
-                <span>CVV:</span>
-                <span className="font-mono font-bold">Any 3 digits (e.g., 123)</span>
-              </div>
-              <p className="text-xs italic mt-3">These are sandbox test cards - no real money is charged</p>
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium mb-2">Card Number</label>
+          <div className="space-y-8">
+            <div className="relative">
+              <label className="mb-2 block text-2xl text-[#a8a8a8]">Card Number</label>
               <input
                 type="text"
-                className="w-full border rounded-md p-3"
+                className="w-full border-0 border-b border-[#d9d9d9] bg-transparent px-0 py-2 text-xl text-[#38afe8] outline-none focus:border-[#38afe8]"
                 value={cardDetails.cardNumber}
                 onChange={(e) => setCardDetails({ ...cardDetails, cardNumber: formatCardNumber(e.target.value) })}
-                placeholder="1234 5678 9012 3456"
+                placeholder="Card Number"
                 maxLength={19}
+              />
+              <Image
+                src={cardProviders.find((provider) => provider.name === selectedCardType)?.logo || "/placeholder.svg"}
+                alt={selectedCardType || "Card"}
+                width={100}
+                height={55}
+                className="absolute bottom-1 right-0 max-h-12 w-auto object-contain"
               />
             </div>
 
-            <div className="flex space-x-4">
+            <div className="flex gap-6">
               <div className="flex-1">
-                <label className="block text-sm font-medium mb-2">Expiry Date</label>
+                <label className="mb-2 block text-2xl text-[#a8a8a8]">Expiration Date</label>
                 <input
                   type="text"
-                  className="w-full border rounded-md p-3"
+                  className="w-full border-0 border-b border-[#d9d9d9] bg-transparent px-0 py-2 text-xl text-[#38afe8] outline-none focus:border-[#38afe8]"
                   value={cardDetails.expiryDate}
                   onChange={(e) => setCardDetails({ ...cardDetails, expiryDate: formatExpiryDate(e.target.value) })}
                   placeholder="MM/YY"
                   maxLength={5}
                 />
               </div>
-              <div className="flex-1">
-                <label className="block text-sm font-medium mb-2">CVV</label>
+              <div className="w-28">
+                <label className="mb-2 block text-2xl text-[#a8a8a8]">CVV</label>
                 <input
                   type="text"
-                  className="w-full border rounded-md p-3"
+                  className="w-full border-0 border-b border-[#d9d9d9] bg-transparent px-0 py-2 text-xl text-[#38afe8] outline-none focus:border-[#38afe8]"
                   value={cardDetails.cvv}
                   onChange={(e) => setCardDetails({ ...cardDetails, cvv: e.target.value.replace(/\D/g, "") })}
-                  placeholder="123"
+                  placeholder="CVV"
                   maxLength={3}
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">Cardholder Name</label>
+              <label className="mb-2 block text-2xl text-[#a8a8a8]">Cardholder name</label>
               <input
                 type="text"
-                className="w-full border rounded-md p-3"
+                className="w-full border-0 border-b border-[#d9d9d9] bg-transparent px-0 py-2 text-xl text-[#38afe8] outline-none focus:border-[#38afe8]"
                 value={cardDetails.cardholderName}
                 onChange={(e) => setCardDetails({ ...cardDetails, cardholderName: e.target.value })}
-                placeholder="Enter name as on card"
+                placeholder="Cardholder name"
               />
             </div>
           </div>
 
-          {error && <div className="text-red-500 mb-4">{error}</div>}
+          {error && <div className="mt-4 text-[#38afe8]">{error}</div>}
 
-          <div className="flex space-x-2 mt-auto">
-            <button
-              className="flex-1 border border-gray-300 p-4 rounded-md touch-manipulation"
-              onClick={handleBackStep}
-            >
+          <div className="mt-auto flex gap-3 pt-10">
+            <button className="flex-1 rounded-full border border-[#38afe8] p-4 text-[#38afe8]" onClick={handleBackStep}>
               Back
             </button>
-            <button className="flex-1 mobile-button" onClick={handleDetailsNext}>
+            <button className="flex-1 rounded-full bg-[#38afe8] p-4 text-white" onClick={handleDetailsNext}>
               Next
             </button>
           </div>
