@@ -557,7 +557,7 @@ export default function AppPage() {
           </div>
         )}
 
-        <div className="grid grid-cols-3 gap-x-2 gap-y-14 mb-4">
+        <div className="grid grid-cols-3 gap-x-2 gap-y-16 mb-4 [&>*:nth-child(n+10)]:hidden">
           <FeatureButton
             href="/send-money"
             icon={
@@ -615,7 +615,7 @@ export default function AppPage() {
           />
 
           <FeatureButton
-            href="/monthly-budget"
+            href="/transfer"
             icon={
               <img
                 src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Untitled%20design%20%2873%29-Wggx68AVJrS0LO5ulwzCBo8U8HFeOX.png"
@@ -623,7 +623,7 @@ export default function AppPage() {
                 className="w-12 h-12 object-contain"
               />
             }
-            title="Budget"
+            title="Transfer"
             iconSize="extra-large"
           />
           <FeatureButton
@@ -639,11 +639,23 @@ export default function AppPage() {
             iconSize="extra-large"
           />
           <FeatureButton
-            href="/bill"
+            href="/monthly-budget"
             icon={
               <img
                 src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Untitled%20design%20%2880%29-7fbg9uLBhrp9GYtiIJJJJiaPCDTjHM.png"
                 alt="Bill"
+                className="w-12 h-12 object-contain"
+              />
+            }
+            title="Budget"
+            iconSize="extra-large"
+          />
+          <FeatureButton
+            href="/bill"
+            icon={
+              <img
+                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Untitled%20design%20%2874%29-xRFkM5LL7L6QkHnPXyuzV9b1eF9M6O.png"
+                alt="Edu Fee"
                 className="w-12 h-12 object-contain"
               />
             }
@@ -654,24 +666,12 @@ export default function AppPage() {
             href="/edu-fee"
             icon={
               <img
-                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Untitled%20design%20%2874%29-xRFkM5LL7L6QkHnPXyuzV9b1eF9M6O.png"
-                alt="Edu Fee"
-                className="w-12 h-12 object-contain"
-              />
-            }
-            title="Edu Fee"
-            iconSize="extra-large"
-          />
-          <FeatureButton
-            href="/air-tickets"
-            icon={
-              <img
                 src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Untitled%20design%20%2889%29-Pt9GXwcc6ozU7Cz2uZclYH70hprrI4.png"
                 alt="Air Tickets"
                 className="w-12 h-12 object-contain"
               />
             }
-            title="Air Tickets"
+            title="Edu Fee"
             iconSize="extra-large"
           />
           <FeatureButton
