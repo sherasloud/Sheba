@@ -496,7 +496,7 @@ export default function AppPage() {
       <header className="bg-white px-5 pb-2 pt-3">
         <div className="flex items-center justify-between">
           <div className="w-10" />
-          <img src="/images/sheba-headline-logo.jpeg" alt="সেবা" className="h-14 w-auto object-contain" />
+          <img src="/images/sheba-headline-logo.jpeg" alt="সেবা" className="h-18 w-auto object-contain" />
           <button type="button" aria-label="Notifications" className="relative flex h-11 w-11 items-center justify-center text-[#142033]">
             <Bell size={30} strokeWidth={1.8} />
             <span className="absolute right-0 top-0 h-4 w-4 rounded-full bg-[#ef4b55]" />
