@@ -509,7 +509,7 @@ export default function AppPage() {
   </button>
   <div className="min-w-0">
   <p className="flex h-14 items-center truncate text-2xl font-normal text-[#485163]">Hi {userName},</p>
-  <button type="button" onClick={toggleBalance} className="absolute left-[8.5rem] right-4 top-[3.25rem] max-w-[calc(100%-10.5rem)] truncate text-left text-[clamp(1rem,5vw,1.5rem)] tracking-[0.12em] text-[#142033]" aria-label="Toggle balance">
+  <button type="button" onClick={toggleBalance} className="absolute left-[8.5rem] right-0 top-[3.25rem] whitespace-nowrap text-left text-[clamp(0.75rem,4.5vw,1.5rem)] tracking-[0.08em] text-[#142033]" aria-label="Toggle balance">
   {showBalance ? `${formatBalance(balance)} ৳` : "•••••• ৳"}
   </button>
   </div>
