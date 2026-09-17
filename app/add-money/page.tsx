@@ -512,7 +512,7 @@ export default function AddMoneyPage() {
 
   return (
     <div className="flex h-[100dvh] flex-col overflow-hidden bg-white text-[#38afe8]">
-      <div className="flex items-center justify-between border-b border-[#eef0f3] px-5 py-5">
+      <div className="flex items-center justify-between px-5 py-5">
         <button onClick={() => router.push("/")} className="text-[#38afe8]" aria-label="Back">
           <ArrowLeft size={24} />
         </button>
