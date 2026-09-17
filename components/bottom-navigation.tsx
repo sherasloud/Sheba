@@ -32,7 +32,7 @@ const BottomNavigation = React.memo(() => {
         <div className="flex justify-around items-center px-4 pb-[calc(0.1rem+env(safe-area-inset-bottom))] pt-2">
           <Link
             href="/"
-            className={`flex flex-col items-center justify-center p-2 min-w-[60px] transition-colors duration-200 ${
+            className={`flex translate-y-2 flex-col items-center justify-center p-2 min-w-[60px] transition-colors duration-200 ${
               pathname === "/" ? "text-[#29a9eb]" : "text-gray-500"
             }`}
           >
@@ -41,7 +41,7 @@ const BottomNavigation = React.memo(() => {
           </Link>
           <Link
             href="/scan-qr"
-            className={`flex flex-col items-center justify-center p-2 min-w-[60px] transition-colors duration-200 ${
+            className={`flex translate-y-2 flex-col items-center justify-center p-2 min-w-[60px] transition-colors duration-200 ${
               pathname === "/scan-qr" ? "text-[#29a9eb]" : "text-gray-500"
             }`}
           >
@@ -50,7 +50,7 @@ const BottomNavigation = React.memo(() => {
           </Link>
           <Link
             href="/inbox"
-            className={`flex flex-col items-center justify-center p-2 min-w-[60px] transition-colors duration-200 ${
+            className={`flex translate-y-2 flex-col items-center justify-center p-2 min-w-[60px] transition-colors duration-200 ${
               pathname === "/inbox" ? "text-[#29a9eb]" : "text-gray-500"
             }`}
           >
