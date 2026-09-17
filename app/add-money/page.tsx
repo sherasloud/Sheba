@@ -516,13 +516,13 @@ export default function AddMoneyPage() {
         <button onClick={() => router.push("/")} className="text-[#10141c]" aria-label="Back">
           <ArrowLeft size={24} />
         </button>
-        <div className="text-lg font-medium">Add Money</div>
+        <div className="text-lg font-medium text-[#38afe8]">Add Money</div>
         <div className="w-6" />
       </div>
 
       {step === 1 && (
         <div className="flex flex-1 flex-col overflow-y-auto px-5 py-6">
-          <div className="mb-2 text-2xl font-bold">Add Money</div>
+          <div className="mb-2 text-2xl font-bold text-[#38afe8]">Add Money</div>
           <div className="mb-8 text-sm text-[#9a9da5]">Choose a method to add money</div>
 
           <div className="space-y-4">
@@ -550,18 +550,7 @@ export default function AddMoneyPage() {
                 <p className="text-sm text-gray-500">Add money from your credit/debit card</p>
               </div>
             </button>
-            <button
-              onClick={() => router.push("/add-money-stripe")}
-              className="flex w-full items-center rounded-2xl border border-[#eef0f3] bg-white p-4 text-left shadow-[0_4px_14px_rgba(20,32,51,0.04)] transition-colors hover:border-[#38afe8] hover:bg-[#f8fcff]"
-            >
-              <div className="w-10 h-10 flex items-center justify-center rounded-full bg-[#e8f7fd] mr-4">
-                <span className="text-blue-500 text-xl">🔐</span>
-              </div>
-              <div className="text-left">
-                <h3 className="font-medium">Stripe Payment</h3>
-                <p className="text-sm text-gray-500">VISA • Mastercard • Amex (Secure)</p>
-              </div>
-            </button>
+
           </div>
         </div>
       )}
