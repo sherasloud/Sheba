@@ -116,7 +116,7 @@ export default function AppPage() {
 
     setTimeout(() => {
       startAutoRotation()
-    }, 5000)
+    }, 2000)
   }
 
   const startAutoRotation = () => {
@@ -129,7 +129,7 @@ export default function AppPage() {
         const nextIndex = (prevIndex + 1) % allBanners.length
         return nextIndex
       })
-    }, 5000)
+    }, 2000)
   }
 
   const getLatestBalance = useCallback(async () => {
@@ -523,24 +523,10 @@ export default function AppPage() {
               key={allBanners[currentBannerIndex].id}
               src={allBanners[currentBannerIndex].image}
               alt={allBanners[currentBannerIndex].alt}
-              className="h-32 w-full object-cover"
+              className="h-36 w-full object-cover"
               draggable={false}
             />
           </Link>
-          <div className="absolute bottom-2 left-1/2 flex -translate-x-1/2 gap-1.5">
-            {allBanners.map((banner, index) => (
-              <button
-                key={banner.id}
-                type="button"
-                aria-label={`Show banner ${index + 1}`}
-                onClick={() => {
-                  setCurrentBannerIndex(index)
-                  resetAutoRotation()
-                }}
-                className={`h-2 w-2 rounded-full ${index === currentBannerIndex ? "bg-white" : "bg-white/50"}`}
-              />
-            ))}
-          </div>
         </div>
         {/* Sheba Provider Transactions */}
         {isShebaProvider && (
