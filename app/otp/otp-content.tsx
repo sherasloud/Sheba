@@ -105,21 +105,21 @@ export default function OTPContent() {
 
 
   return (
-    <div className="h-[100dvh] w-full overflow-hidden bg-[#f7f8fc] px-4 py-3 text-[#142033] md:flex md:items-center md:justify-center">
-      <div className="relative flex h-full min-h-0 w-full max-w-md flex-col overflow-hidden rounded-[28px] bg-white shadow-[0_20px_60px_rgba(20,32,51,0.12)]">
-        <div className="flex items-center px-6 pt-6">
-          <button onClick={() => router.push("/enter-phone")} className="flex h-10 w-10 items-center justify-center text-[#142033]" aria-label="Back">
+    <div className="h-[100dvh] w-full overflow-hidden bg-[#38afe8] px-5 py-4 text-white">
+      <div className="relative flex h-full min-h-0 w-full flex-col">
+        <div className="flex items-center pt-2">
+          <button onClick={() => router.push("/enter-phone")} className="flex h-10 w-10 items-center justify-center text-white" aria-label="Back">
             <svg className="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
         </div>
 
-        <div className="flex min-h-0 flex-1 flex-col items-center px-6 pb-5 pt-3">
-          <img src="/images/sheba-headline-logo.jpeg" alt="সেবা" className="mb-4 h-12 w-auto object-contain" />
+        <div className="flex min-h-0 flex-1 flex-col items-center px-2 pb-5 pt-3">
+          <img src="/images/sheba-headline-logo.jpeg" alt="সেবা" className="mb-4 h-12 w-auto object-contain mix-blend-screen" />
           <div className="mb-4 w-full text-left">
-            <h1 className="text-3xl font-bold tracking-tight">Verification Code</h1>
-            <p className="mt-3 text-sm text-[#8d929d]">Enter the 6 digit code sent to your phone number</p>
+            <h1 className="text-3xl font-bold tracking-tight text-white">Verification Code</h1>
+            <p className="mt-3 text-sm text-white/80">Enter the 6 digit code sent to your phone number</p>
           </div>
 
           <div className="mb-4 flex w-full items-center justify-between rounded-2xl bg-[#f4f5f7] px-4 py-3">
