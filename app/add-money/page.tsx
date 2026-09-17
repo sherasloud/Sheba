@@ -511,25 +511,26 @@ export default function AddMoneyPage() {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-white">
-      <div className="bg-[#29a9eb] text-white p-4 flex items-center">
-        <button onClick={() => router.push("/")} className="mr-4">
+    <div className="flex h-[100dvh] flex-col overflow-hidden bg-white text-[#10141c]">
+      <div className="flex items-center justify-between border-b border-[#eef0f3] px-5 py-5">
+        <button onClick={() => router.push("/")} className="text-[#10141c]" aria-label="Back">
           <ArrowLeft size={24} />
         </button>
-        <div className="text-xl font-medium">Add Money</div>
+        <div className="text-lg font-medium">Add Money</div>
+        <div className="w-6" />
       </div>
 
       {step === 1 && (
-        <div className="p-6 flex flex-col flex-1">
-          <div className="text-2xl font-bold mb-2">Add Money</div>
-          <div className="text-gray-600 mb-8">Choose a method to add money</div>
+        <div className="flex flex-1 flex-col overflow-y-auto px-5 py-6">
+          <div className="mb-2 text-2xl font-bold">Add Money</div>
+          <div className="mb-8 text-sm text-[#9a9da5]">Choose a method to add money</div>
 
           <div className="space-y-4">
             <button
               onClick={() => handleMethodSelect("bank")}
-              className="w-full border rounded-lg p-4 flex items-center hover:bg-gray-50 transition-colors"
+              className="flex w-full items-center rounded-2xl border border-[#eef0f3] bg-white p-4 text-left shadow-[0_4px_14px_rgba(20,32,51,0.04)] transition-colors hover:border-[#38afe8] hover:bg-[#f8fcff]"
             >
-              <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mr-4">
+              <div className="w-10 h-10 flex items-center justify-center rounded-full bg-[#e8f7fd] mr-4">
                 <span className="text-green-500 text-xl">🏦</span>
               </div>
               <div className="text-left">
@@ -539,9 +540,9 @@ export default function AddMoneyPage() {
             </button>
             <button
               onClick={() => handleMethodSelect("card")}
-              className="w-full border rounded-lg p-4 flex items-center hover:bg-gray-50 transition-colors"
+              className="flex w-full items-center rounded-2xl border border-[#eef0f3] bg-white p-4 text-left shadow-[0_4px_14px_rgba(20,32,51,0.04)] transition-colors hover:border-[#38afe8] hover:bg-[#f8fcff]"
             >
-              <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center mr-4">
+              <div className="w-10 h-10 flex items-center justify-center rounded-full bg-[#e8f7fd] mr-4">
                 <span className="text-purple-500 text-xl">💳</span>
               </div>
               <div className="text-left">
@@ -551,9 +552,9 @@ export default function AddMoneyPage() {
             </button>
             <button
               onClick={() => router.push("/add-money-stripe")}
-              className="w-full border rounded-lg p-4 flex items-center hover:bg-gray-50 transition-colors"
+              className="flex w-full items-center rounded-2xl border border-[#eef0f3] bg-white p-4 text-left shadow-[0_4px_14px_rgba(20,32,51,0.04)] transition-colors hover:border-[#38afe8] hover:bg-[#f8fcff]"
             >
-              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+              <div className="w-10 h-10 flex items-center justify-center rounded-full bg-[#e8f7fd] mr-4">
                 <span className="text-blue-500 text-xl">🔐</span>
               </div>
               <div className="text-left">
@@ -566,7 +567,7 @@ export default function AddMoneyPage() {
       )}
 
       {step === 2 && selectedMethod === "card" && (
-        <div className="p-6 flex flex-col flex-1">
+        <div className="flex flex-1 flex-col overflow-y-auto px-5 py-6">
           <div className="text-2xl font-bold mb-2">Select Card Type</div>
           <div className="text-gray-600 mb-6">Choose your card provider</div>
 
@@ -613,7 +614,7 @@ export default function AddMoneyPage() {
       )}
 
       {step === 3 && (
-        <div className="p-6 flex flex-col flex-1">
+        <div className="flex flex-1 flex-col overflow-y-auto px-5 py-6">
           <div className="text-2xl font-bold mb-2">Enter Amount</div>
           <div className="text-gray-600 mb-8">
             {selectedMethod === "card" ? `${selectedCardType} to Sheba` : "Bank to Sheba"}
@@ -656,7 +657,7 @@ export default function AddMoneyPage() {
       )}
 
       {step === 4 && selectedMethod === "bank" && (
-        <div className="p-6 flex flex-col flex-1">
+        <div className="flex flex-1 flex-col overflow-y-auto px-5 py-6">
           <div className="text-2xl font-bold mb-2">Bank Details</div>
           <div className="text-gray-600 mb-8">Amount: Tk{amount}</div>
 
@@ -727,7 +728,7 @@ export default function AddMoneyPage() {
       )}
 
       {step === 4 && selectedMethod === "card" && (
-        <div className="p-6 flex flex-col flex-1">
+        <div className="flex flex-1 flex-col overflow-y-auto px-5 py-6">
           <div className="text-2xl font-bold mb-2">Card Details</div>
           <div className="text-gray-600 mb-8">
             Amount: Tk{amount} ({selectedCardType})
@@ -824,7 +825,7 @@ export default function AddMoneyPage() {
       )}
 
       {step === 5 && (
-        <div className="p-6 flex flex-col flex-1">
+        <div className="flex flex-1 flex-col overflow-y-auto px-5 py-6">
           <div className="text-2xl font-bold mb-2">Enter PIN</div>
           <div className="text-gray-600 mb-1">Amount: Tk{amount}</div>
           <div className="text-gray-600 mb-8">
