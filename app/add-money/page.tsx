@@ -573,45 +573,36 @@ export default function AddMoneyPage() {
       )}
 
       {step === 3 && (
-        <div className="flex flex-1 flex-col overflow-y-auto px-5 py-6">
-          <div className="text-2xl font-bold mb-2">Enter Amount</div>
-          <div className="text-[#38afe8] mb-8">
-            {selectedMethod === "card" ? `${selectedCardType} to Sheba` : "Bank to Sheba"}
-          </div>
-
-          <div className="mb-2 flex items-center">
-            <div className="mr-2">Tk</div>
-            <div>Amount (Tk)</div>
-          </div>
-
-          <input
-            type="text"
-            className="border rounded-md p-4 mb-2 text-center text-2xl"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            placeholder="0"
-          />
-
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
-            <div className="text-sm text-[#38afe8]">
-              <div>Your Sheba Balance: Tk{balance.toLocaleString()}</div>
-              {amount && <div>New Sheba Balance: Tk{(balance + Number(amount || 0)).toLocaleString()}</div>}
-            </div>
-          </div>
-
-          {error && <div className="text-red-500 mb-4">{error}</div>}
-
-          <div className="flex space-x-2 mt-auto">
-            <button
-              className="flex-1 border border-gray-300 p-4 rounded-md touch-manipulation"
-              onClick={handleBackStep}
-            >
-              Back
-            </button>
-            <button className="flex-1 mobile-button" onClick={handleAmountNext}>
-              Next
-            </button>
-          </div>
+        <div className={`flex flex-1 flex-col overflow-y-auto ${selectedMethod === "card" ? "bg-white px-8 pb-8 pt-16" : "px-5 py-6"}`}>
+          {selectedMethod === "card" ? (
+            <>
+              <div className="mb-28 flex items-center">
+                <button type="button" aria-label="Go back" onClick={handleBackStep} className="text-5xl font-light leading-none text-[#485163]">←</button>
+              </div>
+              <h1 className="mb-52 text-center text-[3.25rem] font-normal leading-tight text-[#38afe8]">এমাউন্ট লিখুন</h1>
+              <input
+                type="text"
+                aria-label="Amount"
+                className="mb-56 w-full border-0 bg-transparent p-0 text-center text-[7rem] font-light leading-none text-black outline-none placeholder:text-black"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value.replace(/[^0-9]/g, ""))}
+                placeholder="0"
+                inputMode="numeric"
+              />
+              {error && <div className="mb-4 text-center text-red-500">{error}</div>}
+              <button className="mobile-button w-full rounded-full py-5 text-5xl font-normal" onClick={handleAmountNext}>Next</button>
+            </>
+          ) : (
+            <>
+              <div className="mb-2 text-2xl font-bold">Enter Amount</div>
+              <div className="mb-8 text-[#38afe8]">Bank to Sheba</div>
+              <div className="mb-2 flex items-center"><div className="mr-2">Tk</div><div>Amount (Tk)</div></div>
+              <input type="text" className="mb-2 rounded-md border p-4 text-center text-2xl" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="0" />
+              <div className="mb-4 rounded-lg border border-blue-200 bg-blue-50 p-3"><div className="text-sm text-[#38afe8]"><div>Your Sheba Balance: Tk{balance.toLocaleString()}</div>{amount && <div>New Sheba Balance: Tk{(balance + Number(amount || 0)).toLocaleString()}</div>}</div></div>
+              {error && <div className="mb-4 text-red-500">{error}</div>}
+              <div className="mt-auto flex space-x-2"><button className="flex-1 rounded-md border border-gray-300 p-4 touch-manipulation" onClick={handleBackStep}>Back</button><button className="mobile-button flex-1" onClick={handleAmountNext}>Next</button></div>
+            </>
+          )}
         </div>
       )}
 
