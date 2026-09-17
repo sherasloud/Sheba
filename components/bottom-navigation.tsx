@@ -27,7 +27,7 @@ const BottomNavigation = React.memo(() => {
   }
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 bg-transparent">
+    <div className="absolute bottom-0 left-0 right-0 z-50 bg-transparent">
       <div className="mx-auto w-full max-w-[1180px]">
         <div className="flex justify-around items-end px-4 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-2">
           <Link
@@ -37,7 +37,7 @@ const BottomNavigation = React.memo(() => {
             }`}
           >
             <Home size={22} strokeWidth={1.8} />
-            <span className="mt-1 text-center text-base font-normal">Home</span>
+            <span className="mt-1 text-center text-base font-normal text-black">Home</span>
           </Link>
           <Link
             href="/scan-qr"
@@ -46,7 +46,7 @@ const BottomNavigation = React.memo(() => {
             }`}
           >
             <QrCode size={22} strokeWidth={1.8} />
-            <span className="mt-1 text-center text-base font-normal">Scan QR</span>
+            <span className="mt-1 text-center text-base font-normal text-black">Scan QR</span>
           </Link>
           <Link
             href="/inbox"
@@ -55,7 +55,7 @@ const BottomNavigation = React.memo(() => {
             }`}
           >
             <MessageSquare size={22} strokeWidth={1.8} />
-            <span className="mt-1 text-center text-base font-normal">Inbox</span>
+            <span className="mt-1 text-center text-base font-normal text-black">Inbox</span>
           </Link>
         </div>
       </div>

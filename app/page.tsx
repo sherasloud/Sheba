@@ -489,7 +489,7 @@ export default function AppPage() {
   return (
     <div
       className="mx-auto flex min-h-screen w-full max-w-[1180px] flex-col relative overflow-hidden bg-white text-[#142033] shadow-sm md:min-h-[calc(100vh-2rem)] md:my-4 md:rounded-3xl"
-      style={{ paddingBottom: "calc(78px + env(safe-area-inset-bottom))" }}
+      style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
       <div className="h-7 bg-white" />
 
