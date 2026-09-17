@@ -469,7 +469,7 @@ export default function AppPage() {
         {...linkProps}
       >
         <div
-          className={`mb-1 flex items-center justify-center ${
+          className={`mb-3 flex items-center justify-center ${
             iconSize === "super-large"
               ? "w-16 h-16"
               : iconSize === "extra-large"
