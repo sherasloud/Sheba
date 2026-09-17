@@ -142,8 +142,8 @@ export default function PinPage() {
 
   if (checkingUser) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center" style={{ backgroundColor: "#ffffff" }}>
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mb-4"></div>
+<div className="min-h-[100dvh] bg-white flex flex-col items-center justify-center">
+  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#38afe8] mb-4"></div>
         <p className="text-[#10141c] text-lg">যাচাই করা হচ্ছে...</p>
       </div>
     )
