@@ -27,9 +27,9 @@ const BottomNavigation = React.memo(() => {
   }
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 bg-white">
+    <div className="fixed bottom-0 left-0 right-0 z-50 bg-white opacity-100 shadow-[0_-4px_14px_rgba(20,32,51,0.06)]">
       <div className="mx-auto w-full max-w-[1180px]">
-        <div className="flex justify-around items-center px-4 pb-[calc(0.65rem+env(safe-area-inset-bottom))] pt-2">
+        <div className="flex justify-around items-center px-4 pb-[calc(0.35rem+env(safe-area-inset-bottom))] pt-1">
           <Link
             href="/"
             className={`flex flex-col items-center justify-center p-2 min-w-[60px] transition-colors duration-200 ${
