@@ -142,71 +142,63 @@ export default function PinPage() {
 
   if (checkingUser) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center" style={{ backgroundColor: "#1FBFFF" }}>
+      <div className="min-h-screen flex flex-col items-center justify-center" style={{ backgroundColor: "#ffffff" }}>
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mb-4"></div>
-        <p className="text-white text-lg">যাচাই করা হচ্ছে...</p>
+        <p className="text-[#10141c] text-lg">যাচাই করা হচ্ছে...</p>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen flex flex-col relative" style={{ backgroundColor: "#1FBFFF" }}>
+    <div className="h-[100dvh] overflow-hidden bg-white text-[#10141c]">
       {/* Header */}
-      <div className="flex items-center justify-between p-4 relative z-10">
-        <button onClick={() => router.push("/enter-phone")} className="text-white">
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+      <div className="flex justify-end px-6 pt-6">
+        <button onClick={() => router.push("/enter-phone")} className="text-[#666]" aria-label="Close">
+          <svg className="h-10 w-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeWidth={1.8} d="M6 6l12 12M18 6L6 18" />
           </svg>
         </button>
-        <div className="w-6"></div>
-        <div className="w-6"></div>
       </div>
 
       {/* Sheba Logo at Top */}
-      <div className="flex flex-col items-center pt-8 pb-8">
-        <h1 className="text-white text-8xl font-bold tracking-wider mb-4" style={{ fontFamily: "system-ui, -apple-system" }}>
-          সেবা
-        </h1>
-        {userName && (
-          <p className="text-white/80 text-lg">স্বাগতম, {userName}</p>
-        )}
+      <div className="flex flex-col items-center pt-20 pb-10">
+        <img src="/images/sheba-headline-logo.jpeg" alt="সেবা" className="h-20 w-auto object-contain" />
       </div>
 
       {/* PIN Input Section */}
-      <div className="flex-1 flex flex-col items-center px-6 relative z-10">
-        {/* PIN Dots */}
+      <div className="flex flex-col items-center px-6">
         <div className="mb-8">
-          <p className="text-white text-xl mb-6 text-center">আপনার পিন দিন</p>
-          <div className="flex justify-center space-x-4">
+          <p className="mb-4 text-center text-4xl font-bold text-[#10141c]">পিন দিন</p>
+          <p className="text-center text-xl text-[#a1a1a1]">অ্যাকাউন্টে প্রবেশ করতে পিন লিখুন</p>
+          <div className="mt-8 flex justify-center gap-7">
             {[0, 1, 2, 3, 4, 5].map((index) => (
               <div
                 key={index}
-                className={`w-4 h-4 rounded-full transition-all duration-200 ${
-                  index < pin.length ? "bg-white scale-110" : "bg-white/40"
+                className={`h-5 w-5 rounded-full transition-all duration-200 ${
+                  index < pin.length ? "bg-[#10141c] scale-110" : "bg-[#e4e5e8]"
                 }`}
               />
             ))}
           </div>
-          {error && <p className="text-red-200 text-base mt-4 text-center">{error}</p>}
+          {error && <p className="mt-5 text-center text-xl text-[#e05454]">{error}</p>}
         </div>
 
-        {/* Forgot PIN Link */}
         <button
           onClick={() => router.push("/forgot-pin")}
-          className="text-white/80 text-sm mb-6 underline"
+          className="mb-8 text-lg font-semibold text-[#38afe8] underline"
         >
           পিন ভুলে গেছেন?
         </button>
       </div>
 
       {/* Number Pad */}
-      <div className="pb-12 px-6 relative z-10">
-        <div className="grid grid-cols-3 gap-8 max-w-xs mx-auto">
+      <div className="px-6 pb-8">
+        <div className="mx-auto grid max-w-xs grid-cols-3 gap-y-6">
           {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((number) => (
             <button
               key={number}
               onClick={() => handlePinInput(number.toString())}
-              className="w-16 h-16 flex items-center justify-center text-4xl font-medium text-white hover:text-yellow-200 transition-colors active:scale-95"
+              className="flex h-16 w-16 items-center justify-center text-4xl font-medium text-[#10141c] transition-colors hover:text-[#38afe8] active:scale-95"
               disabled={isLoading}
             >
               {number}
@@ -217,7 +209,7 @@ export default function PinPage() {
 
           <button
             onClick={() => handlePinInput("0")}
-            className="w-16 h-16 flex items-center justify-center text-4xl font-medium text-white hover:text-yellow-200 transition-colors active:scale-95"
+            className="flex h-16 w-16 items-center justify-center text-4xl font-medium text-[#10141c] transition-colors hover:text-[#38afe8] active:scale-95"
             disabled={isLoading}
           >
             0
@@ -225,7 +217,7 @@ export default function PinPage() {
 
           <button
             onClick={handleDelete}
-            className="w-16 h-16 flex items-center justify-center text-white hover:text-yellow-200 transition-colors active:scale-95"
+            className="flex h-16 w-16 items-center justify-center text-[#cfd1d5] transition-colors hover:text-[#38afe8] active:scale-95"
             disabled={isLoading}
           >
             <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
