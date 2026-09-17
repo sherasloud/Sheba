@@ -28,7 +28,7 @@ const BottomNavigation = React.memo(() => {
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 bg-white">
-      <div className="max-w-[430px] mx-auto">
+      <div className="mx-auto w-full max-w-[1180px]">
         <div className="flex justify-around items-center px-4 pb-[calc(0.65rem+env(safe-area-inset-bottom))] pt-2">
           <Link
             href="/"

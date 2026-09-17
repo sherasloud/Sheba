@@ -488,7 +488,7 @@ export default function AppPage() {
 
   return (
     <div
-      className="flex min-h-screen w-full max-w-[430px] mx-auto flex-col relative overflow-hidden bg-white text-[#142033] shadow-sm"
+      className="mx-auto flex min-h-screen w-full max-w-[1180px] flex-col relative overflow-hidden bg-white text-[#142033] shadow-sm md:min-h-[calc(100vh-2rem)] md:my-4 md:rounded-3xl"
       style={{ paddingBottom: "calc(78px + env(safe-area-inset-bottom))" }}
     >
       <div className="h-7 bg-white" />
@@ -560,7 +560,7 @@ export default function AppPage() {
           </div>
         )}
 
-        <div className="grid grid-cols-3 gap-x-1 gap-y-20 mb-4 [&>*:nth-child(n+10)]:hidden">
+        <div className="grid grid-cols-3 gap-x-1 gap-y-20 mb-4">
           <FeatureButton
             href="/send-money"
             icon={
