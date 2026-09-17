@@ -29,14 +29,14 @@ const BottomNavigation = React.memo(() => {
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 bg-white opacity-100 shadow-[0_-4px_14px_rgba(20,32,51,0.06)]">
       <div className="mx-auto w-full max-w-[1180px]">
-        <div className="flex justify-around items-center px-4 pb-[calc(0.35rem+env(safe-area-inset-bottom))] pt-1">
+        <div className="flex justify-around items-center px-4 pb-[calc(0.1rem+env(safe-area-inset-bottom))] pt-2">
           <Link
             href="/"
             className={`flex flex-col items-center justify-center p-2 min-w-[60px] transition-colors duration-200 ${
               pathname === "/" ? "text-[#29a9eb]" : "text-gray-500"
             }`}
           >
-            <Home size={26} strokeWidth={1.8} />
+            <Home size={22} strokeWidth={1.8} />
             <span className="mt-1 text-center text-base font-normal">Home</span>
           </Link>
           <Link
@@ -45,7 +45,7 @@ const BottomNavigation = React.memo(() => {
               pathname === "/scan-qr" ? "text-[#29a9eb]" : "text-gray-500"
             }`}
           >
-            <QrCode size={26} strokeWidth={1.8} />
+            <QrCode size={22} strokeWidth={1.8} />
             <span className="mt-1 text-center text-base font-normal">Scan QR</span>
           </Link>
           <Link
@@ -54,7 +54,7 @@ const BottomNavigation = React.memo(() => {
               pathname === "/inbox" ? "text-[#29a9eb]" : "text-gray-500"
             }`}
           >
-            <MessageSquare size={26} strokeWidth={1.8} />
+            <MessageSquare size={22} strokeWidth={1.8} />
             <span className="mt-1 text-center text-base font-normal">Inbox</span>
           </Link>
         </div>
