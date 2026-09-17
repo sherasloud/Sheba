@@ -250,20 +250,19 @@ export default function BillPage() {
       </div>
 
       {step === 1 && (
-        <div className="p-6">
-          <h1 className="text-2xl font-bold mb-4">Pay Bills</h1>
-          <p className="text-gray-600 mb-6">Choose the type of bill you want to pay</p>
+        <div className="flex-1 overflow-y-auto px-6 pb-10 pt-12">
+          <h1 className="mb-12 text-center text-6xl font-normal text-[#29a9eb]">বিল পে</h1>
 
-          <div className="space-y-4">
+          <div className="space-y-16">
             <button
               onClick={() => handleCategorySelect("electricity")}
-              className="w-full border rounded-lg p-4 flex items-center hover:bg-gray-50 transition-colors"
+              className="flex w-full flex-col items-center gap-5 border-0 bg-transparent text-center transition-transform hover:scale-[1.02]"
             >
-              <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mr-4">
+              <div className="flex h-24 w-24 items-center justify-center rounded-full bg-yellow-100">
                 <Zap size={24} className="text-yellow-600" />
               </div>
-              <div className="text-left">
-                <h3 className="font-medium">Electricity Bill</h3>
+              <div className="text-center">
+                <h3 className="text-3xl font-normal text-foreground">বিদ্যুৎ বিল</h3>
                 <p className="text-sm text-gray-500">DESCO, DPDC, REB, BPDB, etc.</p>
                 <p className="text-xs text-yellow-600 mt-1">Instant payment • No extra fee</p>
               </div>
@@ -271,13 +270,13 @@ export default function BillPage() {
 
             <button
               onClick={() => handleCategorySelect("water")}
-              className="w-full border rounded-lg p-4 flex items-center hover:bg-gray-50 transition-colors"
+              className="flex w-full flex-col items-center gap-5 border-0 bg-transparent text-center transition-transform hover:scale-[1.02]"
             >
-              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+              <div className="flex h-24 w-24 items-center justify-center rounded-full bg-blue-100">
                 <Droplets size={24} className="text-blue-600" />
               </div>
-              <div className="text-left">
-                <h3 className="font-medium">Water Bill</h3>
+              <div className="text-center">
+                <h3 className="text-3xl font-normal text-[#29a9eb]">পানি বিল</h3>
                 <p className="text-sm text-gray-500">DWASA, CWASA, KWASA, etc.</p>
                 <p className="text-xs text-blue-600 mt-1">Instant payment • No extra fee</p>
               </div>
@@ -285,13 +284,13 @@ export default function BillPage() {
 
             <button
               onClick={() => handleCategorySelect("gas")}
-              className="w-full border rounded-lg p-4 flex items-center hover:bg-gray-50 transition-colors"
+              className="flex w-full flex-col items-center gap-5 border-0 bg-transparent text-center transition-transform hover:scale-[1.02]"
             >
-              <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mr-4">
+              <div className="flex h-24 w-24 items-center justify-center rounded-full bg-orange-100">
                 <Flame size={24} className="text-orange-600" />
               </div>
-              <div className="text-left">
-                <h3 className="font-medium">Gas Bill</h3>
+              <div className="text-center">
+                <h3 className="text-3xl font-normal text-orange-500">গ্যাস বিল</h3>
                 <p className="text-sm text-gray-500">Titas Gas, Jalalabad Gas, etc.</p>
                 <p className="text-xs text-orange-600 mt-1">Instant payment • No extra fee</p>
               </div>
@@ -299,13 +298,13 @@ export default function BillPage() {
 
             <button
               onClick={() => handleCategorySelect("internet")}
-              className="w-full border rounded-lg p-4 flex items-center hover:bg-gray-50 transition-colors"
+              className="flex w-full flex-col items-center gap-5 border-0 bg-transparent text-center transition-transform hover:scale-[1.02]"
             >
-              <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mr-4">
+              <div className="flex h-24 w-24 items-center justify-center rounded-full bg-purple-100">
                 <Wifi size={24} className="text-purple-600" />
               </div>
-              <div className="text-left">
-                <h3 className="font-medium">Internet & TV</h3>
+              <div className="text-center">
+                <h3 className="text-3xl font-normal text-purple-500">ইন্টারনেট বিল</h3>
                 <p className="text-sm text-gray-500">BTCL, Link3, Carnival, etc.</p>
                 <p className="text-xs text-purple-600 mt-1">Instant payment • No extra fee</p>
               </div>

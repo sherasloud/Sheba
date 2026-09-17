@@ -104,17 +104,27 @@ const SettingsPage = () => {
   }
 
   return (
-    <div className="container mx-auto p-4">
-      <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-bold">{t.settings}</h1>
-        <button 
+    <div className="min-h-screen bg-white pb-8">
+      <header className="flex items-center justify-between px-5 pb-3 pt-5">
+        <Link href="/" className="flex h-11 w-11 items-center justify-center text-[#142033]" aria-label="Back">
+          <span className="text-4xl font-light leading-none">‹</span>
+        </Link>
+        <img src="/images/seba-logo-splash.png" alt="সেবা" className="h-10 w-auto object-contain" />
+        <div className="w-11" />
+      </header>
+      <div className="px-5 pb-5 pt-2">
+        <div className="flex items-center justify-between">
+          <h1 className="text-3xl font-normal text-[#485163]">{t.settings}</h1>
+          <button 
           onClick={() => setLanguage(language === "en" ? "bn" : "en")}
           className="bg-[#29a9eb] text-white px-3 py-1 rounded text-sm"
         >
           {language === "en" ? "বাংলা" : "English"}
-        </button>
+          </button>
+        </div>
       </div>
 
+      <div className="px-5">
       <TransactionCleaner />
 
       {/* User Profile Section */}
@@ -232,6 +242,7 @@ const SettingsPage = () => {
             <div className="text-white font-bold text-xl">→</div>
           </a>
         </div>
+      </div>
       </div>
     </div>
   )
