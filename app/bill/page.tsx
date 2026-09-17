@@ -242,13 +242,6 @@ export default function BillPage() {
 
   return (
     <div className="flex flex-col h-screen bg-white">
-      <div className="flex h-44 items-center bg-[#29a9eb] px-5 text-white">
-        <button onClick={() => router.push("/")} className="mr-7" aria-label="Back">
-          <ArrowLeft size={42} strokeWidth={1.8} />
-        </button>
-        <div className="text-4xl font-normal">Bill Payment</div>
-      </div>
-
       {step === 1 && (
         <div className="flex-1 overflow-y-auto px-6 pb-10 pt-14">
           <h1 className="mb-28 text-center text-6xl font-normal text-[#29a9eb]">বিল পে</h1>
@@ -284,15 +277,6 @@ export default function BillPage() {
               </div>
             </button>
 
-            <button
-              onClick={() => handleCategorySelect("internet")}
-              className="flex w-full flex-col items-center gap-5 border-0 bg-transparent text-center transition-transform hover:scale-[1.02]"
-            >
-              <div className="flex items-center justify-center text-[76px] leading-none">📶</div>
-              <div className="text-center">
-                <h3 className="text-4xl font-normal text-purple-500">ইন্টারনেট বিল</h3>
-              </div>
-            </button>
           </div>
         </div>
       )}
