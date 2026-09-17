@@ -557,17 +557,14 @@ export default function AddMoneyPage() {
 
       {step === 2 && selectedMethod === "card" && (
         <div className="flex flex-1 flex-col items-center overflow-y-auto bg-white px-6 pb-8 pt-10">
-          <h1 className="mb-5 text-center text-4xl font-bold text-[#38afe8]">কার্ড দিয়ে টাকা</h1>
-          <p className="mb-12 text-sm text-[#38afe8]">Choose your card provider</p>
+          <h1 className="mb-24 text-center text-4xl font-bold text-[#38afe8]">কার্ড দিয়ে টাকা</h1>
 
           <div className="flex w-full max-w-xs flex-col items-center gap-10">
             {cardProviders.map((provider) => (
               <button
                 key={provider.name}
                 onClick={() => handleCardTypeSelect(provider.name)}
-                className={`flex w-full flex-col items-center rounded-2xl p-2 transition-transform hover:scale-[1.02] ${
-                  selectedCardType === provider.name ? "bg-[#f0faff] ring-2 ring-[#38afe8]" : ""
-                }`}
+                className="flex w-full flex-col items-center p-2"
               >
                 <div className="flex h-28 w-full items-center justify-center">
                   <Image
@@ -582,7 +579,6 @@ export default function AddMoneyPage() {
             ))}
           </div>
 
-          <div className="mt-8 text-sm text-[#38afe8]">Current Balance: Tk{balance.toLocaleString()}</div>
         </div>
       )}
 
