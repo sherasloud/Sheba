@@ -576,14 +576,11 @@ export default function AddMoneyPage() {
         <div className={`flex flex-1 flex-col overflow-y-auto ${selectedMethod === "card" ? "bg-white px-8 pb-8 pt-16" : "px-5 py-6"}`}>
           {selectedMethod === "card" ? (
             <>
-              <div className="mb-28 flex items-center">
-                <button type="button" aria-label="Go back" onClick={handleBackStep} className="text-5xl font-light leading-none text-[#485163]">←</button>
-              </div>
               <h1 className="mb-52 text-center text-[3.25rem] font-normal leading-tight text-[#38afe8]">এমাউন্ট লিখুন</h1>
               <input
                 type="text"
                 aria-label="Amount"
-                className="mb-56 w-full border-0 bg-transparent p-0 text-center text-[7rem] font-light leading-none text-black outline-none placeholder:text-black"
+                className="mb-24 w-full border-0 bg-transparent p-0 text-center text-[8rem] font-light leading-none text-black outline-none placeholder:text-black"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value.replace(/[^0-9]/g, ""))}
                 placeholder="0"
