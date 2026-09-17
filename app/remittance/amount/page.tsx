@@ -68,7 +68,7 @@ export default function RemittanceAmountPage() {
       </div>
 
       <div className="p-4 overflow-y-auto pb-20">
-        <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+        <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
           <div className="flex items-center">
             <img
               src={`https://flagcdn.com/w40/${country.code.toLowerCase()}.png`}
@@ -89,60 +89,74 @@ export default function RemittanceAmountPage() {
           </div>
         </div>
 
-        <div className="space-y-6">
-          <div className="border rounded-lg p-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Send Amount (BDT)</label>
-            <input
-              type="number"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              min="7000"
-              className="w-full p-4 border rounded-lg text-xl font-medium"
-              placeholder="Minimum Tk7,000"
-            />
-            {Number.parseInt(amount) < 7000 && <p className="text-red-500 text-sm mt-2">Minimum amount is Tk7,000</p>}
-          </div>
-
-          <div className="bg-gray-50 rounded-lg p-4">
-            <h3 className="font-medium mb-3">Transaction Summary</h3>
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span>Send Amount:</span>
-                <span className="font-medium">Tk{amount}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Transfer Fee:</span>
-                <span className="font-medium">Tk{fee}</span>
-              </div>
-              <div className="flex justify-between border-t pt-2 font-semibold">
-                <span>Total to Pay:</span>
-                <span className="text-blue-600">Tk{total}</span>
-              </div>
-              <div className="flex justify-between mt-3 pt-2 border-t">
-                <span>Recipient Gets:</span>
-                <span className="font-semibold text-green-600">
-                  {foreignAmount.toFixed(2)} {currencyCode}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-            <div className="text-sm text-blue-700 space-y-1">
-              <p>• Delivery Time: 24-48 hours</p>
-              <p>• Exchange rate matches Google rates</p>
-              <p>• All fees included in calculation</p>
-            </div>
-          </div>
-
-          <button
-            onClick={handleContinue}
-            disabled={isLoading || Number.parseInt(amount) < 7000}
-            className="w-full bg-[#29a9eb] text-white py-4 rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {isLoading ? "Processing..." : `Continue with Tk${total}`}
-          </button>
+        {/* Amount Display */}
+        <div className="text-center mb-4 py-3 bg-gray-50 rounded-lg">
+          <p className="text-gray-600 text-xs mb-1">Amount (BDT)</p>
+          <p className="text-3xl font-bold text-[#29a9eb]">Tk {amount ? Number(amount).toLocaleString() : '0'}</p>
         </div>
+
+        {/* Number Keypad */}
+        <div className="flex-1 flex flex-col items-center justify-center gap-2 mb-4">
+          <div className="grid grid-cols-3 gap-2 w-fit">
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
+              <button
+                key={num}
+                onClick={() => setAmount(amount + num.toString())}
+                className="w-14 h-14 rounded-lg text-2xl font-bold text-[#29a9eb] bg-gray-100 hover:bg-gray-200 active:scale-90 transition-all"
+              >
+                {num}
+              </button>
+            ))}
+          </div>
+
+          {/* Row with 0 and Delete */}
+          <div className="flex gap-2 justify-center">
+            <button
+              onClick={() => setAmount(amount + '0')}
+              className="w-14 h-14 rounded-lg text-2xl font-bold text-[#29a9eb] bg-gray-100 hover:bg-gray-200 active:scale-90 transition-all"
+            >
+              0
+            </button>
+            <button
+              onClick={() => setAmount(amount.slice(0, -1))}
+              className="w-14 h-14 rounded-lg bg-gray-100 hover:bg-gray-200 active:scale-90 transition-all flex items-center justify-center"
+            >
+              <ArrowLeft size={18} />
+            </button>
+          </div>
+        </div>
+
+        <div className="bg-gray-50 rounded-lg p-3 mb-4">
+          <h3 className="font-medium text-sm mb-2">Transaction Summary</h3>
+          <div className="space-y-1 text-xs">
+            <div className="flex justify-between">
+              <span>Send Amount:</span>
+              <span className="font-medium">Tk{amount || '0'}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Transfer Fee:</span>
+              <span className="font-medium">Tk{fee}</span>
+            </div>
+            <div className="flex justify-between border-t pt-1 font-semibold text-sm">
+              <span>Total to Pay:</span>
+              <span className="text-blue-600">Tk{total}</span>
+            </div>
+            <div className="flex justify-between mt-2 pt-1 border-t">
+              <span>Recipient Gets:</span>
+              <span className="font-semibold text-green-600">
+                {(Number.parseInt(amount || '0') * exchangeRate).toFixed(2)} {currencyCode}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <button
+          onClick={handleContinue}
+          disabled={isLoading || Number.parseInt(amount) < 7000}
+          className="w-full bg-[#29a9eb] text-white py-3 rounded-lg font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {isLoading ? "Processing..." : `Continue`}
+        </button>
       </div>
     </div>
   )

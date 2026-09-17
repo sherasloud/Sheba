@@ -3,21 +3,28 @@
 import type React from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { ArrowLeft, Bot, Bell } from "lucide-react"
+import { CheckCircle, ArrowLeft, Bot, Bell } from "lucide-react"
 import { useEffect, useState, useCallback, useRef } from "react"
 import { getUserBalance } from "@/lib/data/static-data"
 import { getCurrentUserAccount, getCurrentUser } from "@/lib/account-manager"
+import { VerifiedBadge } from "@/components/verified-badge"
+import BottomNavigation from "@/components/bottom-navigation"
+
 
 export default function AppPage() {
   const router = useRouter()
   const [balance, setBalance] = useState(0)
-  const [showBalance, setShowBalance] = useState(false) // Balance hidden by default, click "Sheba" to show
+  const [showBalance, setShowBalance] = useState(false)
   const [userName, setUserName] = useState("User")
   const [selectedPhoto, setSelectedPhoto] = useState("")
   const [isLoading, setIsLoading] = useState(true)
   const [isVerified, setIsVerified] = useState(false)
   const [phoneNumber, setPhoneNumber] = useState("")
   const [showIntro, setShowIntro] = useState(false)
+  const [isShebaProvider, setIsShebaProvider] = useState(false)
+  const [shebaTransactions, setShebaTransactions] = useState<any[]>([])
+  const [hasError, setHasError] = useState(false)
+  const [profilePic, setProfilePic] = useState<string | null>(null)
 
   const allBanners = [
     {
@@ -128,24 +135,33 @@ export default function AppPage() {
     }, 1500)
   }
 
-  const getLatestBalance = useCallback(() => {
+  const getLatestBalance = useCallback(async () => {
     try {
-      // First, try to get from account manager (most accurate)
-      const currentUser = getCurrentUser()
-      if (currentUser) {
-        const account = getCurrentUserAccount()
-        if (account) {
-          console.log(`[v0] Balance from account manager for ${currentUser.phone}: ${account.balance}`)
-          return account.balance
-        }
-      }
-      
-      // Fallback to localStorage
       const currentPhone = localStorage.getItem("phoneNumber")
       if (!currentPhone) return 0
 
+      // Fetch from Neon database via API - no caching
+      const response = await fetch('/api/user-profile', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Cache-Control': 'no-cache, no-store, must-revalidate',
+        },
+        cache: 'no-store',
+        body: JSON.stringify({ phone: currentPhone }),
+      })
+
+      if (!response.ok) throw new Error('Failed to fetch profile')
+      
+      const data = await response.json()
+      if (data.success && data.user) {
+        console.log(`[v0] Balance from Neon for ${currentPhone}: ${data.user.balance}`)
+        return data.user.balance
+      }
+
+      // Fallback to localStorage
       const balance = getUserBalance(currentPhone)
-      console.log(`[v0] Latest balance loaded for ${currentPhone}: ${balance}`)
+      console.log(`[v0] Fallback balance from localStorage for ${currentPhone}: ${balance}`)
       return balance
     } catch (err) {
       console.error("[v0] Error getting balance:", err)
@@ -157,33 +173,38 @@ export default function AppPage() {
     const userData = localStorage.getItem("userData")
     const storedPhone = localStorage.getItem("phoneNumber")
 
-    if (userData && storedPhone) {
-      const currentBalance = getLatestBalance()
-      setBalance(currentBalance)
-      console.log("[v0] Balance refreshed:", currentBalance)
-    }
-
-    const storedVerified = localStorage.getItem("isVerified")
-    const storedName = localStorage.getItem(`userName_${storedPhone}`)
-    const storedPhoto = localStorage.getItem(`userPhoto_${storedPhone}`)
-
-    if (userData) {
-      const user = JSON.parse(userData)
-      setIsVerified(user.isVerified || false)
-    } else if (storedVerified) {
-      setIsVerified(storedVerified === "true")
-    }
-
+    // Load user name immediately (don't wait for balance)
+    const storedName = localStorage.getItem('userName')
+    const storedPhoto = localStorage.getItem('selectedPhoto')
+    
     if (storedPhone) setPhoneNumber(storedPhone)
-    if (storedName) {
+    if (storedName && storedName !== "User") {
       setUserName(storedName)
-    } else {
-      setUserName("User")
     }
     if (storedPhoto) {
       setSelectedPhoto(storedPhoto)
-    } else {
-      setSelectedPhoto("")
+    }
+
+    // Then load balance
+    if (userData && storedPhone) {
+      const currentBalance = await getLatestBalance()
+      setBalance(currentBalance)
+      
+      // Fetch verification status from API instead of localStorage
+      try {
+        const response = await fetch(`/api/verification-status?phone=${encodeURIComponent(storedPhone)}`)
+        const result = await response.json()
+        
+        if (response.ok && result.success && result.data) {
+          const isFullyVerified = result.data.isVerified === true
+          setIsVerified(isFullyVerified)
+        } else {
+          setIsVerified(false)
+        }
+      } catch (error) {
+        console.error("[v0] Error fetching verification status:", error)
+        setIsVerified(false)
+      }
     }
   }, [getLatestBalance])
 
@@ -216,56 +237,149 @@ export default function AppPage() {
     refreshUserData()
   }
 
+  // Load user name immediately on mount
   useEffect(() => {
-    console.log("[v0] Home page authentication check starting")
+    const name = localStorage.getItem('userName')
+    if (name && name !== 'User') {
+      setUserName(name)
+    }
+  }, [])
 
-    // This ensures PIN expires when app/browser is closed
-    const phone = sessionStorage.getItem("phoneNumber") || localStorage.getItem("phoneNumber")
-    const pinVerified = sessionStorage.getItem("appPinVerified")
-    const pinVerifiedTime = sessionStorage.getItem("pinVerifiedTime")
+  useEffect(() => {
+    const initializeHome = async () => {
+      try {
+        console.log("[v0] Home page authentication check starting")
 
-    console.log("[v0] Auth values:", { phone, pinVerified, pinVerifiedTime })
+        // This ensures PIN expires when app/browser is closed
+        const phone = sessionStorage.getItem("phoneNumber") || localStorage.getItem("phoneNumber")
+        const pinVerified = sessionStorage.getItem("appPinVerified")
+        const pinVerifiedTime = sessionStorage.getItem("pinVerifiedTime")
 
-    if (!phone) {
-      console.log("[v0] No phone number, redirecting to /enter-phone")
-      router.replace("/enter-phone")
-      return
+        console.log("[v0] Auth values:", { phone, pinVerified, pinVerifiedTime })
+
+        if (!phone) {
+          console.log("[v0] No phone number, redirecting to /enter-phone")
+          router.replace("/enter-phone")
+          return
+        }
+
+        console.log("[v0] Authentication passed, loading home page")
+
+      // Fetch balance from Neon database - no caching
+      let currentBalance = 0
+      try {
+        const response = await fetch('/api/user-profile', {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+          },
+          cache: 'no-store',
+          body: JSON.stringify({ phone }),
+        })
+        const data = await response.json()
+        // Check if we have a valid user response
+        if (data.success && data.user) {
+          currentBalance = Number(data.user.balance) || 0
+          console.log(`[v0] Balance fetched from Neon for ${phone}: ${currentBalance}`)
+        } else {
+          // Fallback to localStorage
+          currentBalance = getUserBalance(phone)
+          console.log(`[v0] No Neon user found, using localStorage balance: ${currentBalance}`)
+        }
+      } catch (err) {
+        console.warn("[v0] Error fetching balance from Neon (non-blocking):", err)
+        currentBalance = getUserBalance(phone)
+      }
+
+      const userData = {
+        phoneNumber: phone,
+        balance: currentBalance,
+        accountNumber: phone === "01709783145" ? "ADMIN001" : phone === "01930314459" ? "ADMIN002" : `USER${Date.now()}`,
+        createdAt: new Date().toISOString(),
+        fullName: localStorage.getItem(`userName_${phone}`) || "User",
+      }
+
+      localStorage.setItem("userData", JSON.stringify(userData))
+      localStorage.setItem("isLoggedIn", "true")
+
+      if (!localStorage.getItem(`userName_${phone}`)) {
+        localStorage.setItem(`userName_${phone}`, "User")
+      }
+
+      setBalance(currentBalance)
+      setPhoneNumber(phone)
+      
+      // Load profile pic from localStorage
+      const savedPic = localStorage.getItem(`profilePic_${phone}`)
+      if (savedPic) {
+        setProfilePic(savedPic)
+      }
+
+      // Fetch real name from database
+      try {
+        const userResponse = await fetch('/api/user', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone: phone.trim() }),
+        })
+        if (userResponse.ok) {
+          const userData = await userResponse.json()
+          setUserName(userData.fullName || "User")
+          console.log(`[v0] Real name loaded: ${userData.fullName}`)
+        } else {
+          setUserName("User")
+        }
+      } catch (err) {
+        console.warn("[v0] Error fetching real name, using default:", err)
+        setUserName("User")
+      }
+      
+      setIsLoading(false)
+      console.log(`[v0] User setup complete with balance: ${currentBalance}`)
+
+      // Check if this is a Sheba provider (optional - don't block on error)
+      if (phone && phone.trim()) {
+        try {
+          const shebaResponse = await fetch('/api/sheba/get', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ phone: phone.trim() }),
+          })
+          if (shebaResponse.ok) {
+            const shebaData = await shebaResponse.json()
+            if (shebaData.provider && shebaData.provider.isVerified) {
+              setIsShebaProvider(true)
+              setBalance(Number(shebaData.provider.balance) || 0)
+              
+              // Load Sheba transactions
+              try {
+                const txnResponse = await fetch('/api/sheba/transactions', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ providerId: shebaData.provider.id }),
+                })
+                if (txnResponse.ok) {
+                  const txnData = await txnResponse.json()
+                  setShebaTransactions(Array.isArray(txnData.transactions) ? txnData.transactions : [])
+                }
+              } catch (txnErr) {
+                console.warn('[v0] Could not fetch transactions:', txnErr)
+              }
+            }
+          }
+        } catch (err) {
+          console.warn('[v0] Error checking Sheba provider (non-blocking):', err)
+        }
+      }
+      } catch (err) {
+        console.error('[v0] Critical error in initializeHome:', err)
+        setHasError(true)
+        setIsLoading(false)
+      }
     }
 
-    if (!pinVerified || pinVerified !== "true") {
-      console.log("[v0] PIN not verified in session, redirecting to /pin")
-      router.replace("/pin")
-      return
-    }
-
-    console.log("[v0] Authentication passed, loading home page")
-
-    const currentBalance = getUserBalance(phone)
-    console.log(`[v0] Balance loaded for ${phone}: ${currentBalance}`)
-
-    const userData = {
-      phoneNumber: phone,
-      balance: currentBalance,
-      isVerified: true,
-      accountNumber: phone === "01709783145" ? "ADMIN001" : phone === "01930314459" ? "ADMIN002" : `USER${Date.now()}`,
-      createdAt: new Date().toISOString(),
-      fullName: localStorage.getItem(`userName_${phone}`) || "User",
-    }
-
-    localStorage.setItem("userData", JSON.stringify(userData))
-    localStorage.setItem("isVerified", "true")
-    localStorage.setItem("isLoggedIn", "true")
-
-    if (!localStorage.getItem(`userName_${phone}`)) {
-      localStorage.setItem(`userName_${phone}`, "User")
-    }
-
-    setBalance(currentBalance)
-    setUserName(localStorage.getItem(`userName_${phone}`) || "User")
-    setIsVerified(true)
-    setPhoneNumber(phone)
-    setIsLoading(false)
-    console.log(`[v0] User setup complete with balance: ${currentBalance}`)
+    initializeHome()
 
     window.addEventListener("storage", handleStorageChange)
     window.addEventListener("focus", handleFocus)
@@ -304,6 +418,25 @@ export default function AppPage() {
     console.log("[v0] Balance visibility toggled to:", !showBalance)
   }
 
+  if (hasError) {
+    return (
+      <div className="mobile-page items-center justify-center bg-red-50">
+        <div className="text-center">
+          <p className="text-red-600 font-semibold">Something went wrong</p>
+          <button
+            onClick={() => {
+              setHasError(false)
+              window.location.reload()
+            }}
+            className="mt-4 px-4 py-2 bg-red-600 text-white rounded"
+          >
+            Reload
+          </button>
+        </div>
+      </div>
+    )
+  }
+
   if (isLoading) {
     return (
       <div className="mobile-page items-center justify-center bg-[#3498DB]">
@@ -320,6 +453,7 @@ export default function AppPage() {
     isRestricted = true,
     isExternal = false,
     iconSize = "normal",
+    requiresBalance = false,
   }: {
     href: string
     icon: React.ReactNode
@@ -327,14 +461,13 @@ export default function AppPage() {
     isRestricted?: boolean
     isExternal?: boolean
     iconSize?: "normal" | "extra-large" | "super-large"
+    requiresBalance?: boolean
   }) => {
-    const canAccess = isVerified || !isRestricted
-
     const linkProps = isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {}
 
     return (
       <Link
-        href={canAccess ? href : "#"}
+        href={href}
         className="flex flex-col items-center touch-manipulation no-tap-highlight p-2 rounded-lg active:bg-gray-100 transition-colors"
         {...linkProps}
       >
@@ -358,93 +491,73 @@ export default function AppPage() {
 
   return (
     <div
-      className="flex flex-col h-screen max-w-sm mx-auto relative overflow-hidden"
-      style={{
-        backgroundColor: "#1A2B47",
-        backgroundImage: 'url("/images/sheba.png")',
-        backgroundRepeat: "no-repeat",
-        backgroundPosition: "center",
-        backgroundSize: "contain",
-      }}
+      className="flex min-h-screen w-full max-w-[430px] mx-auto flex-col relative overflow-hidden bg-white text-[#142033] shadow-sm"
+      style={{ paddingBottom: "calc(78px + env(safe-area-inset-bottom))" }}
     >
-      <div className="safe-area-top"></div>
+      <div className="h-7 bg-white" />
 
-      <div className="bg-white px-5 pb-3 pt-3">
+      <header className="bg-white px-6 pb-3 pt-2">
         <div className="flex items-center justify-between">
-          <div className="w-11" />
-          <img src="/images/seba-logo-splash.png" alt="সেবা" className="h-10 w-auto object-contain" />
-          <button
-            type="button"
-            aria-label="Notifications"
-            className="relative flex h-11 w-11 items-center justify-center text-[#142033]"
-          >
-            <Bell size={30} strokeWidth={1.8} />
-            <span className="absolute right-1.5 top-1.5 h-2.5 w-2.5 rounded-full bg-[#ef4b55]" />
+          <div className="w-10" />
+          <img src="/images/seba-logo-splash.png" alt="সেবা" className="h-12 w-auto object-contain" />
+          <button type="button" aria-label="Notifications" className="relative flex h-11 w-11 items-center justify-center text-[#142033]">
+            <Bell size={38} strokeWidth={1.8} />
+            <span className="absolute right-0 top-0 h-4 w-4 rounded-full bg-[#ef4b55]" />
           </button>
         </div>
 
-        <div className="mt-4 flex items-center gap-4">
-          <button
-            type="button"
-            onClick={handleProfileClick}
-            className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#36a9e1] text-xl font-semibold text-white"
-          >
-            {selectedPhoto ? (
-              <img src={selectedPhoto || "/placeholder.svg"} alt="Profile" className="h-full w-full object-cover" />
-            ) : (
-              userName.slice(0, 2).toUpperCase()
-            )}
+        <div className="mt-5 flex items-center gap-4">
+          <button type="button" onClick={handleProfileClick} className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#36a9e1] text-2xl font-semibold text-white">
+            {profilePic || selectedPhoto ? <img src={profilePic || selectedPhoto || "/placeholder.svg"} alt="Profile" className="h-full w-full object-cover" /> : userName.slice(0, 2).toUpperCase()}
           </button>
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-2xl font-normal text-[#485163]">Hi {userName},</p>
-            <button
-              type="button"
-              onClick={toggleBalance}
-              className="mt-2 text-2xl tracking-[0.3em] text-[#142033]"
-              aria-label="Toggle balance"
-            >
+          <div className="min-w-0">
+            <p className="truncate text-[30px] font-normal text-[#485163]">Hi {userName},</p>
+            <button type="button" onClick={toggleBalance} className="mt-4 text-[30px] tracking-[0.35em] text-[#142033]" aria-label="Toggle balance">
               {showBalance ? `${formatBalance(balance)} ৳` : "•••••• ৳"}
             </button>
           </div>
         </div>
+      </header>
 
-      </div>
-
-      <div className="flex-1 overflow-y-auto px-4 pb-16 pt-3">
-        <div
-          className="mb-4 relative overflow-hidden rounded-2xl shadow-md select-none"
-          onTouchStart={onTouchStart}
-          onTouchMove={onTouchMove}
-          onTouchEnd={onTouchEnd}
-        >
-          <Link href={allBanners[currentBannerIndex].link} className="block">
-            <img
-              src={allBanners[currentBannerIndex].image || "/placeholder.svg"}
-              alt={allBanners[currentBannerIndex].alt}
-              className="w-full h-32 object-cover rounded-2xl transition-all duration-500"
-              draggable={false}
-            />
+      <main className="flex-1 overflow-y-auto bg-white px-5 pb-8 pt-5">
+        <div className="relative mb-9 overflow-hidden rounded-[22px] shadow-[0_8px_22px_rgba(30,64,88,0.12)] select-none" onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}>
+          <Link href="/financial-awareness" className="block">
+            <img src="/images/home-reference-banner.jpg" alt="কাজে লাগবে ভাই" className="h-40 w-full object-cover" draggable={false} />
           </Link>
-
-          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex space-x-1">
-            {allBanners.map((_, index) => (
-              <button
-                key={index}
-                type="button"
-                aria-label={`Go to banner ${index + 1}`}
-                className={`h-2 w-2 rounded-full transition-all duration-500 ${
-                  index === currentBannerIndex ? "bg-white shadow-lg scale-125" : "bg-white/50"
-                }`}
-                onClick={() => {
-                  setCurrentBannerIndex(index)
-                  resetAutoRotation()
-                }}
-              />
-            ))}
-          </div>
         </div>
+        {/* Sheba Provider Transactions */}
+        {isShebaProvider && (
+          <div className="mb-4 bg-blue-50 rounded-lg p-4">
+            <div className="flex justify-between items-center mb-3">
+              <h3 className="text-sm font-bold text-gray-900">Recent Transactions</h3>
+              <button
+                onClick={() => router.push('/sheba/withdraw')}
+                className="text-xs bg-green-600 text-white px-3 py-1 rounded-full hover:bg-green-700 transition"
+              >
+                Withdraw
+              </button>
+            </div>
+            {shebaTransactions.length > 0 ? (
+              <div className="space-y-2 max-h-48 overflow-y-auto">
+                {shebaTransactions.slice(0, 5).map((txn: any) => (
+                  <div key={txn.id} className="flex justify-between items-center p-2 bg-white rounded border border-gray-200">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-medium text-gray-900 truncate">Shusto Paid</p>
+                      <p className="text-xs text-gray-500">{new Date(txn.createdAt).toLocaleDateString('bn-BD')}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm font-bold text-green-600">+৳{Number(txn.amount).toLocaleString('bn-BD')}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-xs text-gray-500 text-center py-4">No transactions yet</p>
+            )}
+          </div>
+        )}
 
-        <div className="grid grid-cols-3 gap-x-2 gap-y-5 mb-4">
+        <div className="grid grid-cols-3 gap-x-2 gap-y-14 mb-4">
           <FeatureButton
             href="/send-money"
             icon={
@@ -456,6 +569,7 @@ export default function AppPage() {
             }
             title="Send Money"
             iconSize="extra-large"
+            requiresBalance={true}
           />
           <FeatureButton
             href="/recharge"
@@ -484,6 +598,7 @@ export default function AppPage() {
             }
             title="Cashout"
             iconSize="extra-large"
+            requiresBalance={true}
           />
 
           <FeatureButton
@@ -499,12 +614,6 @@ export default function AppPage() {
             iconSize="extra-large"
           />
 
-          <FeatureButton
-            href="/transfer"
-            icon={<ArrowLeft size={32} className="rotate-45 text-red-500" />}
-            title="Transfer"
-            iconSize="extra-large"
-          />
           <FeatureButton
             href="/monthly-budget"
             icon={
@@ -578,6 +687,19 @@ export default function AppPage() {
             iconSize="extra-large"
           />
           <FeatureButton
+            href="/toll"
+            icon={
+              <img
+                src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Untitled%20design-13-EGLDGz2iHEJJ3hD65CAOcuSQ4uBiGr.png"
+                alt="Toll"
+                className="w-14 h-14 object-contain"
+              />
+            }
+            title="Toll"
+            iconSize="extra-large"
+            requiresBalance={true}
+          />
+          <FeatureButton
             href="/remittance"
             icon={
               <img
@@ -599,7 +721,7 @@ export default function AppPage() {
               />
             }
             title="Savings"
-            iconSize="super-large"
+            iconSize="extra-large"
           />
           <FeatureButton
             href="/debenture"
@@ -611,7 +733,7 @@ export default function AppPage() {
               />
             }
             title="Debenture"
-            iconSize="super-large"
+            iconSize="extra-large"
           />
           <FeatureButton
             href="/donate"
@@ -632,7 +754,8 @@ export default function AppPage() {
             iconSize="extra-large"
           />
         </div>
-      </div>
+      </main>
+      <BottomNavigation />
     </div>
   )
 }

@@ -28,24 +28,6 @@ export default function PaymentAmountPage() {
     }
   }, [router])
 
-  const handleAmountChange = (value: string) => {
-    // Remove any non-numeric characters except decimal point
-    const numericValue = value.replace(/[^\d.]/g, "")
-
-    // Ensure only one decimal point
-    const parts = numericValue.split(".")
-    if (parts.length > 2) {
-      return
-    }
-
-    // Limit decimal places to 2
-    if (parts[1] && parts[1].length > 2) {
-      return
-    }
-
-    setAmount(numericValue)
-  }
-
   const handleContinue = () => {
     if (!amount || Number.parseFloat(amount) <= 0) {
       alert("Please enter a valid amount")
@@ -102,67 +84,84 @@ export default function PaymentAmountPage() {
         <div className="text-xl font-medium">Payment Details</div>
       </div>
 
-      <div className="flex-1 p-6">
+      <div className="flex-1 p-4 flex flex-col overflow-y-auto">
         {/* Store Info */}
-        <div className="bg-gray-50 rounded-lg p-4 mb-6">
+        <div className="bg-gray-50 rounded-lg p-3 mb-4">
           <div className="flex items-center">
-            <div className="w-16 h-16 rounded-lg overflow-hidden mr-4 bg-white p-2 shadow-sm">
+            <div className="w-12 h-12 rounded-lg overflow-hidden mr-3 bg-white p-2 shadow-sm">
               <Image
                 src={selectedStore.logo || "/placeholder.svg"}
                 alt={selectedStore.name}
-                width={64}
-                height={64}
+                width={48}
+                height={48}
                 className="w-full h-full object-contain"
                 onError={(e) => {
                   const target = e.target as HTMLImageElement
-                  target.src = "/placeholder.svg?height=64&width=64"
+                  target.src = "/placeholder.svg?height=48&width=48"
                 }}
               />
             </div>
             <div>
-              <div className="font-semibold text-lg">{selectedStore.name}</div>
-              <div className="text-sm text-gray-600">{selectedStore.category}</div>
+              <div className="font-semibold text-sm">{selectedStore.name}</div>
+              <div className="text-xs text-gray-600">{selectedStore.category}</div>
             </div>
           </div>
-        </div>
-
-        {/* Amount Input */}
-        <div className="mb-6">
-          <label className="block text-gray-700 text-sm font-medium mb-2">Amount</label>
-          <div className="relative">
-            <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500 text-xl">Tk</span>
-            <input
-              type="text"
-              value={amount}
-              onChange={(e) => handleAmountChange(e.target.value)}
-              placeholder="Enter amount"
-              className="w-full pl-12 pr-4 py-4 border border-gray-300 rounded-lg text-xl focus:outline-none focus:ring-2 focus:ring-[#29a9eb] focus:border-transparent"
-            />
-          </div>
-          {amount && (
-            <div className="text-sm text-gray-600 mt-2">
-              Amount: Tk{Number.parseFloat(amount || "0").toLocaleString()}
-            </div>
-          )}
         </div>
 
         {/* Order ID Input */}
-        <div className="mb-6">
-          <label className="block text-gray-700 text-sm font-medium mb-2">Order ID</label>
+        <div className="mb-4">
+          <label className="block text-gray-700 text-xs font-medium mb-1">Order ID</label>
           <input
             type="text"
             value={orderId}
             onChange={(e) => setOrderId(e.target.value)}
             placeholder="Enter order ID"
-            className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#29a9eb] focus:border-transparent"
+            className="w-full p-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#29a9eb] focus:border-transparent"
           />
+        </div>
+
+        {/* Amount Display */}
+        <div className="text-center mb-4 py-3 bg-gray-50 rounded-lg">
+          <p className="text-gray-600 text-xs mb-1">Amount</p>
+          <p className="text-3xl font-bold text-[#29a9eb]">৳ {amount ? Number(amount).toLocaleString() : '0'}</p>
+        </div>
+
+        {/* Number Keypad */}
+        <div className="flex flex-col items-center justify-center gap-4 mb-6">
+          <div className="grid grid-cols-3 gap-2 w-fit">
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
+              <button
+                key={num}
+                onClick={() => setAmount(amount + num.toString())}
+                className="w-14 h-14 rounded-lg text-2xl font-bold text-[#29a9eb] bg-gray-100 hover:bg-gray-200 active:scale-90 transition-all"
+              >
+                {num}
+              </button>
+            ))}
+          </div>
+
+          {/* Row with 0 and Delete */}
+          <div className="flex gap-2 justify-center mb-24">
+            <button
+              onClick={() => setAmount(amount + '0')}
+              className="w-14 h-14 rounded-lg text-2xl font-bold text-[#29a9eb] bg-gray-100 hover:bg-gray-200 active:scale-90 transition-all"
+            >
+              0
+            </button>
+            <button
+              onClick={() => setAmount(amount.slice(0, -1))}
+              className="w-14 h-14 rounded-lg bg-gray-100 hover:bg-gray-200 active:scale-90 transition-all flex items-center justify-center"
+            >
+              <ArrowLeft size={18} />
+            </button>
+          </div>
         </div>
 
         {/* Continue Button */}
         <button
           onClick={handleContinue}
           disabled={!amount || !orderId.trim()}
-          className="w-full bg-[#29a9eb] text-white py-4 rounded-lg font-medium text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full bg-[#29a9eb] text-white py-3 rounded-lg font-medium text-base disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Continue
         </button>

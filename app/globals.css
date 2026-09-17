@@ -327,6 +327,11 @@ a {
     overflow-y: auto;
     overflow-x: hidden;
     width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     -webkit-overflow-scrolling: touch;
     contain: layout style paint;
   }

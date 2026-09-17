@@ -140,40 +140,40 @@ export default function PaymentPinPage() {
       </div>
 
       {/* Content */}
-      <div className="flex-1 flex flex-col justify-center items-center px-6">
-        {/* Payment Summary */}
-        <div className="text-center mb-8">
-          <div className="text-gray-600 mb-2">Payment to</div>
-          <div className="text-xl font-semibold text-gray-900 mb-2">{paymentData.storeName}</div>
-          <div className="text-sm text-gray-500 mb-4">Order ID: {paymentData.orderId}</div>
-          <div className="text-3xl font-bold text-[#29a9eb]">Tk{paymentData.amount.toLocaleString()}</div>
+      <div className="flex-1 flex flex-col justify-between px-4 py-6">
+        {/* Payment Summary - Top Section */}
+        <div className="text-center">
+          <div className="text-gray-600 text-sm mb-1">Payment to</div>
+          <div className="text-lg font-semibold text-gray-900 mb-1">{paymentData.storeName}</div>
+          <div className="text-xs text-gray-500 mb-3">Order ID: {paymentData.orderId}</div>
+          <div className="text-4xl font-bold text-[#29a9eb]">Tk{paymentData.amount.toLocaleString()}</div>
         </div>
 
-        {/* PIN Input */}
-        <div className="w-full max-w-sm mb-8">
-          <div className="text-center mb-6">
-            <div className="text-lg font-medium text-gray-900 mb-2">Enter your PIN</div>
-            <div className="text-gray-600">Enter your 6-digit security PIN to confirm payment</div>
+        {/* PIN Input - Middle Section */}
+        <div className="w-full">
+          <div className="text-center mb-4">
+            <div className="text-base font-medium text-gray-900 mb-1">Enter your PIN</div>
+            <div className="text-sm text-gray-600">6-digit security PIN</div>
           </div>
 
           <input
             type="password"
             value={pin}
             onChange={(e) => handlePinChange(e.target.value)}
-            className="w-full text-center text-2xl tracking-[0.5em] py-4 border-2 border-gray-300 rounded-lg focus:border-[#29a9eb] focus:outline-none"
+            className="w-full text-center text-3xl tracking-[0.5em] py-4 border-2 border-gray-300 rounded-lg focus:border-[#29a9eb] focus:outline-none"
             placeholder="••••••"
             maxLength={6}
             autoFocus
           />
 
-          {error && <div className="text-red-500 text-sm text-center mt-3">{error}</div>}
+          {error && <div className="text-red-500 text-sm text-center mt-2">{error}</div>}
         </div>
 
-        {/* Submit Button */}
+        {/* Submit Button - Bottom Section */}
         <button
           onClick={handlePinSubmit}
           disabled={pin.length !== 6 || isLoading}
-          className="w-full max-w-sm bg-[#29a9eb] text-white py-4 rounded-lg font-medium text-lg disabled:bg-gray-300 disabled:cursor-not-allowed"
+          className="w-full bg-[#29a9eb] text-white py-4 rounded-lg font-medium text-base disabled:bg-gray-300 disabled:cursor-not-allowed"
         >
           {isLoading ? (
             <div className="flex items-center justify-center">

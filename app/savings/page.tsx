@@ -69,10 +69,6 @@ export default function SavingsPage() {
     return () => window.removeEventListener("storage", handleStorageChange)
   }, [])
 
-  if (!isVerified) {
-    return <VerificationRequired title="Savings" />
-  }
-
   const activeGoals = getActiveSavingsGoals()
   const completedGoals = getCompletedSavingsGoals()
 
