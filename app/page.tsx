@@ -516,7 +516,7 @@ export default function AppPage() {
         </div>
       </header>
 
-      <main className="flex-1 overflow-y-auto bg-white px-4 pb-8 pt-4">
+      <main className="flex-1 overflow-y-auto bg-white px-4 pb-32 pt-4">
         <div className="relative mb-9 overflow-hidden rounded-[22px] shadow-[0_8px_22px_rgba(30,64,88,0.12)] select-none" onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}>
           <Link href={allBanners[currentBannerIndex].link} className="block">
             <img
