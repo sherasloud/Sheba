@@ -3,7 +3,7 @@
 import type React from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { CheckCircle, ArrowLeft, Bot } from "lucide-react"
+import { ArrowLeft, Bot, Bell } from "lucide-react"
 import { useEffect, useState, useCallback, useRef } from "react"
 import { getUserBalance } from "@/lib/data/static-data"
 import { getCurrentUserAccount, getCurrentUser } from "@/lib/account-manager"
@@ -369,80 +369,70 @@ export default function AppPage() {
     >
       <div className="safe-area-top"></div>
 
-      <div
-        className="pb-4 pt-3 px-4"
-        style={{
-          backgroundColor: "#3498DB",
-        }}
-      >
-        <div className="text-white text-center mb-3">
-          <div
-            className="flex items-center justify-center cursor-pointer select-none active:opacity-80 transition-opacity"
-            onClick={toggleBalance}
+      <div className="bg-white px-5 pb-3 pt-3">
+        <div className="flex items-center justify-between">
+          <div className="w-11" />
+          <img src="/images/seba-logo-splash.png" alt="সেবা" className="h-10 w-auto object-contain" />
+          <button
+            type="button"
+            aria-label="Notifications"
+            className="relative flex h-11 w-11 items-center justify-center text-[#142033]"
           >
-            <h1 className="text-2xl font-bold">সেবা</h1>
+            <Bell size={30} strokeWidth={1.8} />
+            <span className="absolute right-1.5 top-1.5 h-2.5 w-2.5 rounded-full bg-[#ef4b55]" />
+          </button>
+        </div>
+
+        <div className="mt-4 flex items-center gap-4">
+          <button
+            type="button"
+            onClick={handleProfileClick}
+            className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#36a9e1] text-xl font-semibold text-white"
+          >
+            {selectedPhoto ? (
+              <img src={selectedPhoto || "/placeholder.svg"} alt="Profile" className="h-full w-full object-cover" />
+            ) : (
+              userName.slice(0, 2).toUpperCase()
+            )}
+          </button>
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-2xl font-normal text-[#485163]">Hi {userName},</p>
+            <button
+              type="button"
+              onClick={toggleBalance}
+              className="mt-2 text-2xl tracking-[0.3em] text-[#142033]"
+              aria-label="Toggle balance"
+            >
+              {showBalance ? `${formatBalance(balance)} ৳` : "•••••• ৳"}
+            </button>
           </div>
         </div>
 
-        <div className="bg-white text-black rounded-full flex items-center justify-between p-2 transition-all duration-300">
-          {showBalance ? (
-            <div className="flex-1 text-center">
-              <div className="text-sm font-medium">
-                {formatBalance(balance)} <span className="text-xs text-gray-500">৳</span>
-              </div>
-            </div>
-          ) : (
-            <div className="flex items-center space-x-3 flex-1">
-              <div
-                className="w-9 h-9 bg-gray-300 rounded-full flex items-center justify-center overflow-hidden cursor-pointer flex-shrink-0"
-                onClick={handleProfileClick}
-              >
-                {selectedPhoto ? (
-                  <img src={selectedPhoto || "/placeholder.svg"} alt="Profile" className="w-full h-full object-cover" />
-                ) : (
-                  <div className="text-gray-600 text-xs font-bold">
-                    {userName
-                      .split(" ")
-                      .map((n) => n[0])
-                      .join("")
-                      .toUpperCase()}
-                  </div>
-                )}
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center space-x-2">
-                  <div className="font-medium text-sm truncate">{userName}</div>
-                  {isVerified && <CheckCircle size={14} className="text-blue-500 flex-shrink-0" />}
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
       </div>
 
-      <div className="bg-white rounded-t-3xl -mt-3 flex-1 pt-4 px-4 pb-16 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto px-4 pb-16 pt-3">
         <div
-          className="mb-3 relative overflow-hidden rounded-xl shadow-md select-none"
+          className="mb-4 relative overflow-hidden rounded-2xl shadow-md select-none"
           onTouchStart={onTouchStart}
           onTouchMove={onTouchMove}
           onTouchEnd={onTouchEnd}
         >
           <Link href={allBanners[currentBannerIndex].link} className="block">
             <img
-              key={`banner-${currentBannerIndex}-${Date.now()}`}
               src={allBanners[currentBannerIndex].image || "/placeholder.svg"}
               alt={allBanners[currentBannerIndex].alt}
-              className="w-full h-32 object-cover rounded-xl transition-all duration-500"
-              style={{ objectPosition: "center center", objectFit: "cover" }}
+              className="w-full h-32 object-cover rounded-2xl transition-all duration-500"
               draggable={false}
             />
           </Link>
 
-          <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex space-x-1">
+          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex space-x-1">
             {allBanners.map((_, index) => (
-              <div
+              <button
                 key={index}
-                className={`w-2 h-2 rounded-full transition-all duration-500 cursor-pointer ${
+                type="button"
+                aria-label={`Go to banner ${index + 1}`}
+                className={`h-2 w-2 rounded-full transition-all duration-500 ${
                   index === currentBannerIndex ? "bg-white shadow-lg scale-125" : "bg-white/50"
                 }`}
                 onClick={() => {
