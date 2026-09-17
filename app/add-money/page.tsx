@@ -701,16 +701,15 @@ export default function AddMoneyPage() {
       )}
 
       {step === 4 && selectedMethod === "card" && (
-        <div className="flex flex-1 flex-col overflow-y-auto bg-white px-6 pb-8 pt-10">
-          <h1 className="mb-3 text-center text-4xl font-bold text-[#38afe8]">কার্ড ব্যবহার করুন</h1>
-          <p className="mb-10 text-center text-sm text-[#38afe8]">Amount: Tk{amount}</p>
+        <div className="flex flex-1 flex-col overflow-y-auto bg-white px-8 pb-8 pt-10">
+          <h1 className="mb-24 text-center text-[3.25rem] font-normal leading-[1.2] text-[#38afe8]">কার্ড ব্যবহার করুন</h1>
 
-          <div className="space-y-8">
+          <div className="space-y-20">
             <div className="relative">
-              <label className="mb-2 block text-2xl text-[#a8a8a8]">Card Number</label>
               <input
                 type="text"
-                className="w-full border-0 border-b border-[#d9d9d9] bg-transparent px-0 py-2 text-xl text-[#38afe8] outline-none focus:border-[#38afe8]"
+                aria-label="Card Number"
+                className="w-full border-0 bg-transparent px-0 py-0 text-[3rem] font-light text-[#a8a8a8] outline-none placeholder:text-[#a8a8a8]"
                 value={cardDetails.cardNumber}
                 onChange={(e) => setCardDetails({ ...cardDetails, cardNumber: formatCardNumber(e.target.value) })}
                 placeholder="Card Number"
@@ -719,59 +718,48 @@ export default function AddMoneyPage() {
               <Image
                 src={cardProviders.find((provider) => provider.name === selectedCardType)?.logo || "/placeholder.svg"}
                 alt={selectedCardType || "Card"}
-                width={100}
-                height={55}
-                className="absolute bottom-1 right-0 max-h-12 w-auto object-contain"
+                width={135}
+                height={75}
+                className="absolute -top-1 right-0 max-h-20 w-auto object-contain"
               />
             </div>
 
-            <div className="flex gap-6">
-              <div className="flex-1">
-                <label className="mb-2 block text-2xl text-[#a8a8a8]">Expiration Date</label>
-                <input
-                  type="text"
-                  className="w-full border-0 border-b border-[#d9d9d9] bg-transparent px-0 py-2 text-xl text-[#38afe8] outline-none focus:border-[#38afe8]"
-                  value={cardDetails.expiryDate}
-                  onChange={(e) => setCardDetails({ ...cardDetails, expiryDate: formatExpiryDate(e.target.value) })}
-                  placeholder="MM/YY"
-                  maxLength={5}
-                />
-              </div>
-              <div className="w-28">
-                <label className="mb-2 block text-2xl text-[#a8a8a8]">CVV</label>
-                <input
-                  type="text"
-                  className="w-full border-0 border-b border-[#d9d9d9] bg-transparent px-0 py-2 text-xl text-[#38afe8] outline-none focus:border-[#38afe8]"
-                  value={cardDetails.cvv}
-                  onChange={(e) => setCardDetails({ ...cardDetails, cvv: e.target.value.replace(/\D/g, "") })}
-                  placeholder="CVV"
-                  maxLength={3}
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="mb-2 block text-2xl text-[#a8a8a8]">Cardholder name</label>
+            <div className="flex items-start justify-between gap-8">
               <input
                 type="text"
-                className="w-full border-0 border-b border-[#d9d9d9] bg-transparent px-0 py-2 text-xl text-[#38afe8] outline-none focus:border-[#38afe8]"
-                value={cardDetails.cardholderName}
-                onChange={(e) => setCardDetails({ ...cardDetails, cardholderName: e.target.value })}
-                placeholder="Cardholder name"
+                aria-label="Expiration Date"
+                className="min-w-0 flex-1 border-0 bg-transparent px-0 py-0 text-[2.8rem] font-light text-[#a8a8a8] outline-none placeholder:text-[#a8a8a8]"
+                value={cardDetails.expiryDate}
+                onChange={(e) => setCardDetails({ ...cardDetails, expiryDate: formatExpiryDate(e.target.value) })}
+                placeholder="Expiration Date"
+                maxLength={5}
+              />
+              <input
+                type="text"
+                aria-label="CVV"
+                className="w-32 border-0 bg-transparent px-0 py-0 text-[2.8rem] font-light text-[#a8a8a8] outline-none placeholder:text-[#a8a8a8]"
+                value={cardDetails.cvv}
+                onChange={(e) => setCardDetails({ ...cardDetails, cvv: e.target.value.replace(/\D/g, "") })}
+                placeholder="CVV"
+                maxLength={3}
               />
             </div>
+
+            <input
+              type="text"
+              aria-label="Cardholder name"
+              className="w-full border-0 bg-transparent px-0 py-0 text-center text-[2.8rem] font-light text-[#a8a8a8] outline-none placeholder:text-[#a8a8a8]"
+              value={cardDetails.cardholderName}
+              onChange={(e) => setCardDetails({ ...cardDetails, cardholderName: e.target.value })}
+              placeholder="Cardholder name"
+            />
           </div>
 
           {error && <div className="mt-4 text-[#38afe8]">{error}</div>}
 
-          <div className="mt-auto flex gap-3 pt-10">
-            <button className="flex-1 rounded-full border border-[#38afe8] p-4 text-[#38afe8]" onClick={handleBackStep}>
-              Back
-            </button>
-            <button className="flex-1 rounded-full bg-[#38afe8] p-4 text-white" onClick={handleDetailsNext}>
-              Next
-            </button>
-          </div>
+          <button className="mt-auto w-full rounded-full bg-[#38afe8] py-5 text-[3.2rem] font-light leading-none text-white" onClick={handleDetailsNext}>
+            Next
+          </button>
         </div>
       )}
 
