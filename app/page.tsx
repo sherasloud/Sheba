@@ -473,7 +473,7 @@ export default function AppPage() {
             iconSize === "super-large"
               ? "w-16 h-16"
               : iconSize === "extra-large"
-                ? "w-12 h-12"
+                ? "w-14 h-14"
                 : iconSize === "large"
                   ? "w-9 h-9"
                   : "w-7 h-7"
@@ -481,7 +481,7 @@ export default function AppPage() {
         >
           {icon}
         </div>
-        <div className="text-center text-sm font-normal leading-tight text-black">{title}</div>
+        <div className="text-center text-[17px] font-normal leading-tight text-black">{title}</div>
       </Link>
     )
   }
@@ -491,20 +491,20 @@ export default function AppPage() {
       className="mx-auto flex min-h-screen w-full max-w-[1180px] flex-col relative overflow-hidden bg-white text-[#142033] shadow-sm md:min-h-[calc(100vh-2rem)] md:my-4 md:rounded-3xl"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
-      <div className="h-7 bg-white" />
+      <div className="h-4 bg-white" />
 
-      <header className="bg-white px-5 pb-2 pt-3">
+      <header className="bg-white px-5 pb-1 pt-1">
         <div className="flex items-center justify-between">
           <div className="w-10" />
-          <img src="/images/sheba-headline-logo.jpeg" alt="সেবা" className="h-16 w-auto object-contain" />
+          <img src="/images/sheba-headline-logo.jpeg" alt="সেবা" className="h-11 w-auto object-contain" />
           <button type="button" aria-label="Notifications" className="relative flex h-11 w-11 items-center justify-center text-[#142033]">
             <Bell size={30} strokeWidth={1.8} />
             <span className="absolute right-0 top-0 h-4 w-4 rounded-full bg-[#ef4b55]" />
           </button>
         </div>
 
-        <div className="mt-6 flex items-center gap-4">
-          <button type="button" onClick={handleProfileClick} className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#36a9e1] text-xl font-semibold text-white">
+        <div className="mt-4 flex items-center gap-4 px-9">
+          <button type="button" onClick={handleProfileClick} className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#36a9e1] text-lg font-semibold text-white">
             {profilePic || selectedPhoto ? <img src={profilePic || selectedPhoto || "/placeholder.svg"} alt="Profile" className="h-full w-full object-cover" /> : userName.slice(0, 2).toUpperCase()}
           </button>
           <div className="min-w-0">
@@ -560,7 +560,7 @@ export default function AppPage() {
           </div>
         )}
 
-        <div className="grid grid-cols-3 gap-x-1 gap-y-14 mb-4">
+        <div className="grid grid-cols-3 gap-x-2 gap-y-16 px-4 pb-4">
           <FeatureButton
             href="/send-money"
             icon={
