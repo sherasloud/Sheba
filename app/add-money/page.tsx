@@ -103,7 +103,8 @@ export default function AddMoneyPage() {
     setSelectedCardType(cardType)
     localStorage.setItem("selectedCardType", cardType)
     setError("")
-    setStep(4)
+    setAmount("")
+    setStep(3)
   }
 
   const handleCardPayment = (userAmountNum: number) => {
