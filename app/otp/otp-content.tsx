@@ -105,8 +105,8 @@ export default function OTPContent() {
 
 
   return (
-    <div className="min-h-screen w-full bg-[#f7f8fc] px-4 py-6 text-[#142033] md:flex md:items-center md:justify-center">
-      <div className="relative flex min-h-[calc(100vh-3rem)] w-full max-w-md flex-col overflow-hidden rounded-[28px] bg-white shadow-[0_20px_60px_rgba(20,32,51,0.12)] md:min-h-[680px]">
+    <div className="h-[100dvh] w-full overflow-hidden bg-[#f7f8fc] px-4 py-3 text-[#142033] md:flex md:items-center md:justify-center">
+      <div className="relative flex h-full min-h-0 w-full max-w-md flex-col overflow-hidden rounded-[28px] bg-white shadow-[0_20px_60px_rgba(20,32,51,0.12)]">
         <div className="flex items-center px-6 pt-6">
           <button onClick={() => router.push("/enter-phone")} className="flex h-10 w-10 items-center justify-center text-[#142033]" aria-label="Back">
             <svg className="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -115,14 +115,14 @@ export default function OTPContent() {
           </button>
         </div>
 
-        <div className="flex flex-1 flex-col items-center px-6 pb-12 pt-8">
-          <img src="/images/sheba-headline-logo.jpeg" alt="সেবা" className="mb-10 h-16 w-auto object-contain" />
-          <div className="mb-8 w-full text-left">
+        <div className="flex min-h-0 flex-1 flex-col items-center px-6 pb-5 pt-3">
+          <img src="/images/sheba-headline-logo.jpeg" alt="সেবা" className="mb-4 h-12 w-auto object-contain" />
+          <div className="mb-4 w-full text-left">
             <h1 className="text-3xl font-bold tracking-tight">Verification Code</h1>
             <p className="mt-3 text-sm text-[#8d929d]">Enter the 6 digit code sent to your phone number</p>
           </div>
 
-          <div className="mb-7 flex w-full items-center justify-between rounded-2xl bg-[#f4f5f7] px-4 py-3">
+          <div className="mb-4 flex w-full items-center justify-between rounded-2xl bg-[#f4f5f7] px-4 py-3">
             <div>
               <p className="text-xs text-[#9a9da5]">Verification code sent to</p>
               <p className="mt-1 text-base font-medium">{phoneNumber || "Phone number"}</p>
@@ -150,7 +150,7 @@ export default function OTPContent() {
 
           {error && <p className="mt-4 text-center text-sm text-red-500">{error}</p>}
 
-          <div className="mt-12 text-center">
+          <div className="mt-5 text-center">
             <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full border-2 border-[#5c5be5] text-xs text-[#8d929d]">
               {timeLeft > 0 ? formatTime(timeLeft) : "00:00"}
             </div>
