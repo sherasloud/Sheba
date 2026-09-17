@@ -556,49 +556,33 @@ export default function AddMoneyPage() {
       )}
 
       {step === 2 && selectedMethod === "card" && (
-        <div className="flex flex-1 flex-col overflow-y-auto px-5 py-6">
-          <div className="text-2xl font-bold mb-2">Select Card Type</div>
-          <div className="text-gray-600 mb-6">Choose your card provider</div>
+        <div className="flex flex-1 flex-col items-center overflow-y-auto bg-white px-6 pb-8 pt-10">
+          <h1 className="mb-5 text-center text-4xl font-bold text-[#38afe8]">কার্ড দিয়ে টাকা</h1>
+          <p className="mb-12 text-sm text-[#9a9da5]">Choose your card provider</p>
 
-          {selectedCardType && (
-            <div className="mb-6 p-4 bg-blue-50 border border-[#29a9eb] rounded-lg flex items-center justify-center">
-              <Image
-                src={cardProviders.find((p) => p.name === selectedCardType)?.logo || "/placeholder.svg"}
-                alt={selectedCardType}
-                width={60}
-                height={40}
-                className="object-contain mr-3"
-              />
-              <span className="font-medium text-[#29a9eb]">{selectedCardType} Selected</span>
-            </div>
-          )}
-
-          <div className="grid grid-cols-2 gap-4">
+          <div className="flex w-full max-w-xs flex-col items-center gap-10">
             {cardProviders.map((provider) => (
               <button
                 key={provider.name}
                 onClick={() => handleCardTypeSelect(provider.name)}
-                className={`flex flex-col items-center justify-center p-4 border rounded-lg transition-colors min-h-[120px] ${
-                  selectedCardType === provider.name ? "border-[#29a9eb] bg-blue-50" : "hover:bg-gray-50"
+                className={`flex w-full flex-col items-center rounded-2xl p-2 transition-transform hover:scale-[1.02] ${
+                  selectedCardType === provider.name ? "bg-[#f0faff] ring-2 ring-[#38afe8]" : ""
                 }`}
               >
-                <Image
-                  src={provider.logo || "/placeholder.svg"}
-                  alt={provider.name}
-                  width={80}
-                  height={50}
-                  className="object-contain mb-2"
-                />
-                <span className="text-sm font-medium">{provider.name}</span>
+                <div className="flex h-28 w-full items-center justify-center">
+                  <Image
+                    src={provider.logo || "/placeholder.svg"}
+                    alt={provider.name}
+                    width={190}
+                    height={100}
+                    className="max-h-24 w-auto object-contain"
+                  />
+                </div>
               </button>
             ))}
           </div>
 
-          <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-            <div className="text-sm text-gray-600">
-              <span className="font-medium">Current Balance:</span> Tk{balance.toLocaleString()}
-            </div>
-          </div>
+          <div className="mt-8 text-sm text-[#9a9da5]">Current Balance: Tk{balance.toLocaleString()}</div>
         </div>
       )}
 
