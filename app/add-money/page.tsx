@@ -473,31 +473,31 @@ export default function AddMoneyPage() {
           </div>
 
           <h2 className="text-2xl font-bold mb-2">Success!</h2>
-          <p className="text-gray-600 mb-4">Money added successfully</p>
+          <p className="text-[#38afe8] mb-4">Money added successfully</p>
 
           <div className="bg-gray-100 w-full rounded-lg p-4 mb-6">
             <div className="flex justify-between mb-2">
-              <span className="text-gray-600">Amount:</span>
+              <span className="text-[#38afe8]">Amount:</span>
               <span className="font-bold">Tk{amount}</span>
             </div>
             <div className="flex justify-between mb-2">
-              <span className="text-gray-600">Method:</span>
+              <span className="text-[#38afe8]">Method:</span>
               <span className="font-bold">
                 {selectedMethod === "card" ? `${selectedCardType} Card` : bankDetails.bankName}
               </span>
             </div>
             <div className="flex justify-between mb-2">
-              <span className="text-gray-600">Sheba Balance:</span>
+              <span className="text-[#38afe8]">Sheba Balance:</span>
               <span className="font-bold">Tk{balance.toLocaleString()}</span>
             </div>
             {selectedMethod === "card" && (
               <div className="flex justify-between mb-2">
-                <span className="text-gray-600">Card Balance:</span>
+                <span className="text-[#38afe8]">Card Balance:</span>
                 <span className="font-bold">Tk{cardBalance.toLocaleString()}</span>
               </div>
             )}
             <div className="flex justify-between">
-              <span className="text-gray-600">Transaction ID:</span>
+              <span className="text-[#38afe8]">Transaction ID:</span>
               <span className="font-bold">{Math.random().toString(36).substring(2, 10).toUpperCase()}</span>
             </div>
           </div>
@@ -511,9 +511,9 @@ export default function AddMoneyPage() {
   }
 
   return (
-    <div className="flex h-[100dvh] flex-col overflow-hidden bg-white text-[#10141c]">
+    <div className="flex h-[100dvh] flex-col overflow-hidden bg-white text-[#38afe8]">
       <div className="flex items-center justify-between border-b border-[#eef0f3] px-5 py-5">
-        <button onClick={() => router.push("/")} className="text-[#10141c]" aria-label="Back">
+        <button onClick={() => router.push("/")} className="text-[#38afe8]" aria-label="Back">
           <ArrowLeft size={24} />
         </button>
         <div className="text-lg font-medium text-[#38afe8]">Add Money</div>
@@ -523,7 +523,7 @@ export default function AddMoneyPage() {
       {step === 1 && (
         <div className="flex flex-1 flex-col overflow-y-auto px-5 py-6">
           <div className="mb-2 text-2xl font-bold text-[#38afe8]">Add Money</div>
-          <div className="mb-8 text-sm text-[#9a9da5]">Choose a method to add money</div>
+          <div className="mb-8 text-sm text-[#38afe8]">Choose a method to add money</div>
 
           <div className="space-y-4">
             <button
@@ -535,7 +535,7 @@ export default function AddMoneyPage() {
               </div>
               <div className="text-left">
                 <h3 className="font-medium">Bank To Sheba</h3>
-                <p className="text-sm text-gray-500">Add money from your bank account</p>
+                <p className="text-sm text-[#38afe8]">Add money from your bank account</p>
               </div>
             </button>
             <button
@@ -547,7 +547,7 @@ export default function AddMoneyPage() {
               </div>
               <div className="text-left">
                 <h3 className="font-medium">Card To Sheba</h3>
-                <p className="text-sm text-gray-500">Add money from your credit/debit card</p>
+                <p className="text-sm text-[#38afe8]">Add money from your credit/debit card</p>
               </div>
             </button>
 
@@ -558,7 +558,7 @@ export default function AddMoneyPage() {
       {step === 2 && selectedMethod === "card" && (
         <div className="flex flex-1 flex-col items-center overflow-y-auto bg-white px-6 pb-8 pt-10">
           <h1 className="mb-5 text-center text-4xl font-bold text-[#38afe8]">কার্ড দিয়ে টাকা</h1>
-          <p className="mb-12 text-sm text-[#9a9da5]">Choose your card provider</p>
+          <p className="mb-12 text-sm text-[#38afe8]">Choose your card provider</p>
 
           <div className="flex w-full max-w-xs flex-col items-center gap-10">
             {cardProviders.map((provider) => (
@@ -582,14 +582,14 @@ export default function AddMoneyPage() {
             ))}
           </div>
 
-          <div className="mt-8 text-sm text-[#9a9da5]">Current Balance: Tk{balance.toLocaleString()}</div>
+          <div className="mt-8 text-sm text-[#38afe8]">Current Balance: Tk{balance.toLocaleString()}</div>
         </div>
       )}
 
       {step === 3 && (
         <div className="flex flex-1 flex-col overflow-y-auto px-5 py-6">
           <div className="text-2xl font-bold mb-2">Enter Amount</div>
-          <div className="text-gray-600 mb-8">
+          <div className="text-[#38afe8] mb-8">
             {selectedMethod === "card" ? `${selectedCardType} to Sheba` : "Bank to Sheba"}
           </div>
 
@@ -607,7 +607,7 @@ export default function AddMoneyPage() {
           />
 
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
-            <div className="text-sm text-blue-800">
+            <div className="text-sm text-[#38afe8]">
               <div>Your Sheba Balance: Tk{balance.toLocaleString()}</div>
               {amount && <div>New Sheba Balance: Tk{(balance + Number(amount || 0)).toLocaleString()}</div>}
             </div>
@@ -632,7 +632,7 @@ export default function AddMoneyPage() {
       {step === 4 && selectedMethod === "bank" && (
         <div className="flex flex-1 flex-col overflow-y-auto px-5 py-6">
           <div className="text-2xl font-bold mb-2">Bank Details</div>
-          <div className="text-gray-600 mb-8">Amount: Tk{amount}</div>
+          <div className="text-[#38afe8] mb-8">Amount: Tk{amount}</div>
 
           <div className="space-y-4">
             <div>
@@ -703,14 +703,14 @@ export default function AddMoneyPage() {
       {step === 4 && selectedMethod === "card" && (
         <div className="flex flex-1 flex-col overflow-y-auto px-5 py-6">
           <div className="text-2xl font-bold mb-2">Card Details</div>
-          <div className="text-gray-600 mb-8">
+          <div className="text-[#38afe8] mb-8">
             Amount: Tk{amount} ({selectedCardType})
           </div>
 
           {/* Test Card Information */}
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
             <h4 className="font-semibold text-blue-900 mb-3">Test Card Numbers (Sandbox)</h4>
-            <div className="space-y-2 text-sm text-blue-800">
+            <div className="space-y-2 text-sm text-[#38afe8]">
               <div className="flex justify-between">
                 <span>Visa (Success):</span>
                 <span className="font-mono font-bold">4111111111111111</span>
@@ -800,14 +800,14 @@ export default function AddMoneyPage() {
       {step === 5 && (
         <div className="flex flex-1 flex-col overflow-y-auto px-5 py-6">
           <div className="text-2xl font-bold mb-2">Enter PIN</div>
-          <div className="text-gray-600 mb-1">Amount: Tk{amount}</div>
-          <div className="text-gray-600 mb-8">
+          <div className="text-[#38afe8] mb-1">Amount: Tk{amount}</div>
+          <div className="text-[#38afe8] mb-8">
             {selectedMethod === "card" ? `From: ${selectedCardType} Card` : `From: ${bankDetails.bankName}`}
           </div>
 
           {selectedMethod === "card" && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4">
-              <div className="text-sm text-red-800">
+              <div className="text-sm text-[#38afe8]">
                 <div>⚠️ Tk{amount} will be deducted from your card</div>
               </div>
             </div>
