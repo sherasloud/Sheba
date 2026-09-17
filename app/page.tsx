@@ -3,7 +3,7 @@
 import type React from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { CheckCircle, ArrowLeft, Bot } from "lucide-react"
+import { CheckCircle, ArrowLeft, Bot, Bell } from "lucide-react"
 import { useEffect, useState, useCallback, useRef } from "react"
 import { getUserBalance } from "@/lib/data/static-data"
 import { getCurrentUserAccount, getCurrentUser } from "@/lib/account-manager"
@@ -497,7 +497,10 @@ export default function AppPage() {
         <div className="flex items-center justify-between">
           <div className="w-10" />
           <img src="/images/sheba-headline-logo.jpeg" alt="সেবা" className="h-16 w-auto object-contain" />
-          <div className="w-10" aria-hidden="true" />
+          <button type="button" aria-label="Notifications" className="relative flex h-11 w-11 items-center justify-center text-[#142033]">
+            <Bell size={30} strokeWidth={1.8} />
+            <span className="absolute right-0 top-0 h-4 w-4 rounded-full bg-[#ef4b55]" />
+          </button>
         </div>
 
         <div className="mt-6 flex items-center gap-4">
