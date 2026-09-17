@@ -8,7 +8,6 @@ import VerificationRequired from "@/components/verification-required"
 import { 
   getProfileByPhone, 
   sendMoney as supabaseSendMoney,
-  verifyPin,
   subscribeToBalanceUpdates,
   recordTransaction,
   updateBalance, // Declare the updateBalance variable here
@@ -16,6 +15,29 @@ import {
 import { ErrorBoundary } from "@/components/error-boundary"
 
 function CashoutContent() {
+  // Play notification sound
+  const playNotificationSound = () => {
+    try {
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
+      const oscillator = audioContext.createOscillator()
+      const gainNode = audioContext.createGain()
+      
+      oscillator.connect(gainNode)
+      gainNode.connect(audioContext.destination)
+      
+      oscillator.frequency.value = 800
+      oscillator.type = 'sine'
+      
+      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime)
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5)
+      
+      oscillator.start(audioContext.currentTime)
+      oscillator.stop(audioContext.currentTime + 0.5)
+    } catch (err) {
+      console.error('[v0] Sound not available')
+    }
+  }
+
   const [phoneNumber, setPhoneNumber] = useState("")
   const [step, setStep] = useState(1)
   const [amount, setAmount] = useState("")
@@ -37,15 +59,15 @@ function CashoutContent() {
   // Calculate fee: 9 taka per 1000 taka
   // State gets 5 tk, Admin gets 4 tk
   const calculateFee = (amount: number) => {
-    return Math.ceil(amount / 1000) * 9
+    return (amount / 1000) * 9 // Proportional: ৳9 per ৳1000
   }
 
   const calculateStateCommission = (amount: number) => {
-    return Math.ceil(amount / 1000) * 5 // State gets 5 tk per 1000
+    return ((amount / 1000) * 9) * 0.5 // State gets 50% of fee
   }
 
   const calculateAdminCommission = (amount: number) => {
-    return Math.ceil(amount / 1000) * 4 // Admin gets 4 tk per 1000
+    return ((amount / 1000) * 9) * 0.5 // Company gets 50% of fee
   }
 
   const fee = amount ? calculateFee(Number(amount)) : 0
@@ -58,17 +80,28 @@ function CashoutContent() {
     if (!currentPhone) return
 
     try {
-      const profile = await getProfileByPhone(currentPhone)
-      
-      if (profile) {
-        const bal = Number(profile.balance) || 0
-        setBalance(bal)
-        localStorage.setItem(`userBalance_${currentPhone}`, bal.toString())
-        localStorage.setItem("userBalance", bal.toString())
+      // Fetch balance from Neon database
+      const response = await fetch('/api/user-profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: currentPhone }),
+      })
+
+      if (response.ok) {
+        const data = await response.json()
+        if (data.user) {
+          const bal = Number(data.user.balance) || 0
+          setBalance(bal)
+          localStorage.setItem(`userBalance_${currentPhone}`, bal.toString())
+          localStorage.setItem("userBalance", bal.toString())
+        } else {
+          setBalance(0)
+        }
       } else {
         setBalance(0)
       }
-    } catch {
+    } catch (error) {
+      console.error('[v0] Error fetching balance from Neon:', error)
       setBalance(0)
     }
   }
@@ -123,19 +156,58 @@ function CashoutContent() {
 
       // Check if agent exists and is a State account
       try {
-        const agentProfile = await getProfileByPhone(phoneNumber)
+        console.log('[v0] Checking agent:', phoneNumber)
+        
+        // Fetch all users and find matching phone
+        const response = await fetch('/api/users-list', {
+          cache: 'no-store',
+        })
+        
+        if (!response.ok) throw new Error('Failed to fetch users')
+        
+        const users = await response.json()
+        console.log('[v0] Total users:', users.length)
+        console.log('[v0] Users in list:', users.map((u: any) => ({ phone: u.phone, type: u.account_type })))
+        
+        // Try multiple phone formats
+        const phonesToCheck = [
+          phoneNumber,
+          phoneNumber.replace(/^0/, '88'),
+          phoneNumber.replace(/^88/, '0'),
+        ]
+        
+        let agentProfile = null
+        for (const phoneToCheck of phonesToCheck) {
+          agentProfile = users.find((u: any) => 
+            u.phone === phoneToCheck || 
+            u.phone?.replace(/^0/, '88') === phoneToCheck.replace(/^0/, '88')
+          )
+          if (agentProfile) {
+            console.log('[v0] Found agent with format:', phoneToCheck)
+            break
+          }
+        }
+        
+        console.log('[v0] Agent profile found:', agentProfile)
+        
         if (agentProfile) {
-          if (agentProfile.account_type !== "state") {
-            setError("এই নম্বরে কোনো State এজেন্ট নেই")
+          const isStateAccount = agentProfile.account_type?.toLowerCase() === "state"
+          console.log('[v0] Is state account?', isStateAccount, 'Type:', agentProfile.account_type)
+          
+          if (!isStateAccount) {
+            setError(`এই নম্বরে কোনো State এজেন্ট নেই (Type: ${agentProfile.account_type})`)
             return
           }
           setAgentName(agentProfile.name)
         } else {
-          setError("এই নম্বরে কোনো State এজেন্ট নেই")
+          setError("এই নম্বরে কোনো এজেন্ট পাওয়া যায়নি")
+          console.log('[v0] Agent not found - checked formats:', phonesToCheck)
           return
         }
-      } catch {
-        setAgentName(`Agent ${phoneNumber.slice(-4)}`)
+      } catch (err) {
+        console.error('[v0] Error checking agent:', err)
+        setError("এজেন্ট যাচাই করতে ত্রুটি হয়েছে")
+        return
       }
 
       setStep(2)
@@ -172,55 +244,54 @@ function CashoutContent() {
     setError("")
 
     try {
-      // Verify PIN first
-      const isPinValid = await verifyPin(senderPhone, pin)
-      if (!isPinValid) {
-        setError("ভুল পিন। আবার চেষ্টা করুন।")
+      // Verify PIN from Neon database via API
+      try {
+        const trimmedPhone = senderPhone.trim()
+        console.log("[v0] PIN verification request:", { phone: trimmedPhone, pin: pin ? "provided" : "missing" })
+        
+        const pinResponse = await fetch('/api/verify-pin', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone: trimmedPhone, pin }),
+        })
+
+        const pinData = await pinResponse.json()
+        console.log("[v0] PIN verification response:", { 
+          status: pinResponse.status, 
+          verified: pinData.verified,
+          message: pinData.message,
+          success: pinData.success
+        })
+
+        if (!pinData.verified || !pinResponse.ok) {
+          setError(pinData.message || "ভুল পিন। আবার চেষ্টা করুন।")
+          setIsProcessing(false)
+          return
+        }
+      } catch (error) {
+        console.error('[v0] Error verifying PIN:', error)
+        setError("পিন যাচাইকরণ ব্যর্থ হয়েছে। আবার চেষ্টা করুন।")
         setIsProcessing(false)
         return
       }
 
-      // Cashout via Supabase (send to State agent + fee)
-      const result = await supabaseSendMoney(
-        senderPhone,
-        phoneNumber,
-        totalAmount,
-        `CASHOUT${Date.now()}`
-      )
+      // Cashout via Neon database API
+      const cashoutResponse = await fetch('/api/cashout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          senderPhone,
+          amount: totalAmount,
+          agentPhone: phoneNumber, // State agent phone
+        }),
+      })
+
+      const result = await cashoutResponse.json()
+      console.log('[v0] Cashout result:', result)
 
       if (result.success) {
-        const txnId = result.transaction?.reference || `CASHOUT${Date.now()}`
+        const txnId = result.transaction?.id || `CASHOUT${Date.now()}`
         setTransactionId(txnId)
-        
-        // Recalculate commissions for this amount
-        const cashoutAmount = Number(amount)
-        const stateComm = Math.ceil(cashoutAmount / 1000) * 5
-        const adminComm = Math.ceil(cashoutAmount / 1000) * 4
-        
-        // Record transaction in database
-        await recordTransaction(
-          senderPhone,
-          phoneNumber,
-          totalAmount,
-          "cashout",
-          txnId
-        )
-        
-        // Distribute commissions
-        // State agent gets 5 tk per 1000 tk
-        const stateAgent = await getProfileByPhone(phoneNumber)
-        if (stateAgent) {
-          await updateBalance(phoneNumber, stateAgent.balance + stateComm)
-          console.log("[v0] State commission added:", stateComm, "to", phoneNumber)
-        }
-        
-        // Admin gets 4 tk per 1000 tk
-        const adminPhone = "01709783145" // Admin phone
-        const adminProfile = await getProfileByPhone(adminPhone)
-        if (adminProfile) {
-          await updateBalance(adminPhone, adminProfile.balance + adminComm)
-          console.log("[v0] Admin commission added:", adminComm, "to admin")
-        }
         
         await loadBalance()
         
@@ -244,8 +315,15 @@ function CashoutContent() {
   }
 
   if (success) {
+    // Play sound immediately
+    playNotificationSound()
+    
+    // Dispatch event to notify home page to refresh balance
+    console.log('[v0] Dispatching balanceUpdated event')
+    window.dispatchEvent(new Event('balanceUpdated'))
+
     return (
-      <div className="mobile-page">
+      <div className="mobile-page bg-white">
         <div className="mobile-header">
           <Link href="/" className="mr-4 touch-manipulation">
             <ArrowLeft size={24} />
@@ -253,49 +331,66 @@ function CashoutContent() {
           <div className="text-lg font-medium">Cashout</div>
         </div>
 
-        <div className="mobile-content flex flex-col items-center justify-center">
-          <div className="w-16 h-16 bg-[#29a9eb] rounded-full flex items-center justify-center mb-6">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
-              <path d="M20 6L9 17L4 12" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+        <div className="mobile-content flex flex-col items-center justify-center bg-gradient-to-b from-white to-gray-50 min-h-screen px-6 py-8">
+          {/* Large Blue Checkmark Circle */}
+          <div className="w-24 h-24 bg-[#1E88E5] rounded-full flex items-center justify-center mb-8 shadow-lg">
+            <svg width="56" height="56" viewBox="0 0 24 24" fill="none">
+              <path d="M20 6L9 17L4 12" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </div>
 
-          <h2 className="text-xl font-bold mb-2">সফল!</h2>
-          <p className="text-gray-600 mb-4 text-center">ক্যাশআউট সফলভাবে সম্পন্ন হয়েছে</p>
+          {/* Title */}
+          <h2 className="text-3xl font-bold text-[#1E88E5] mb-2 text-center">Cashout</h2>
+          
+          {/* Bengali Success Message */}
+          <p className="text-lg font-semibold text-[#1E88E5] mb-2 text-center">সফল হয়েছে !</p>
 
-          <div className="bg-gray-100 w-full rounded-lg p-4 mb-6">
-            <div className="flex justify-between mb-2 text-sm">
-              <span className="text-gray-600">ক্যাশআউট পরিমাণ:</span>
-              <span className="font-bold">৳ {Number(amount).toLocaleString()}</span>
+          {/* State Number */}
+          <p className="text-gray-700 text-center mb-6 font-medium">State নম্বর</p>
+          <p className="text-gray-900 text-xl font-bold mb-8 text-center">{phoneNumber}</p>
+
+          {/* Transaction Details */}
+          <div className="w-full space-y-4 mb-8">
+            <div className="flex justify-between items-center text-gray-800">
+              <span className="text-base font-medium">পরিমাণ:</span>
+              <span className="text-2xl font-bold text-[#1E88E5]">৳ {Number(amount).toLocaleString()}</span>
             </div>
-            <div className="flex justify-between mb-2 text-sm">
-              <span className="text-gray-600">ফি (৳৫/১০০০):</span>
-              <span className="font-bold">৳ {fee}</span>
-            </div>
-            <div className="flex justify-between mb-2 text-sm border-t pt-2">
-              <span className="text-gray-600">মোট কাটা:</span>
-              <span className="font-bold">৳ {totalAmount.toLocaleString()}</span>
-            </div>
-            <div className="flex justify-between mb-2 text-sm">
-              <span className="text-gray-600">এজেন্ট:</span>
-              <span className="font-bold">{agentName}</span>
-            </div>
-            <div className="flex justify-between mb-2 text-sm">
-              <span className="text-gray-600">ফোন:</span>
-              <span className="font-bold">{phoneNumber}</span>
-            </div>
-            <div className="flex justify-between mb-2 text-sm">
-              <span className="text-gray-600">নতুন ব্যালেন্স:</span>
-              <span className="font-bold text-green-600">৳ {balance.toLocaleString()}</span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-gray-600">Transaction ID:</span>
-              <span className="font-bold text-xs">{transactionId}</span>
+            
+            <div className="flex justify-between items-center text-gray-700">
+              <span className="text-sm">তারিখ:</span>
+              <div className="text-right">
+                <div className="text-lg font-bold text-[#1E88E5]">{new Date().toLocaleDateString('en-BD', { day: '2-digit', month: '2-digit', year: '2-digit' }).split('/').join('.')}</div>
+                <div className="text-lg font-bold text-[#1E88E5]">{new Date().toLocaleTimeString('en-BD', { hour: '2-digit', minute: '2-digit', hour12: true })}</div>
+              </div>
             </div>
           </div>
 
-          <Link href="/" className="mobile-button">
-            হোম এ ফিরে যান
+          {/* Transaction ID */}
+          <p className="text-[#1E88E5] text-center font-bold mb-2">Transaction ID:</p>
+          <p className="text-gray-900 font-bold text-center mb-8 text-lg">{transactionId}</p>
+
+          {/* Details Box */}
+          <div className="bg-gray-100 w-full rounded-lg p-4 mb-8 space-y-3">
+            <div className="flex justify-between text-sm">
+              <span className="text-gray-600">ফি (৳৫/১০০০):</span>
+              <span className="font-bold">৳ {fee}</span>
+            </div>
+            <div className="flex justify-between text-sm border-t pt-3">
+              <span className="text-gray-600">মোট কাটা:</span>
+              <span className="font-bold">৳ {totalAmount.toLocaleString()}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-gray-600">এজেন্ট নাম:</span>
+              <span className="font-bold">{agentName}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-gray-600">নতুন ব্যালেন্স:</span>
+              <span className="font-bold text-green-600">৳ {balance.toLocaleString()}</span>
+            </div>
+          </div>
+
+          <Link href="/inbox" className="mobile-button w-full bg-[#1E88E5] text-white font-bold py-3 rounded-lg hover:bg-[#1565C0] transition">
+            লেনদেনের ইতিহাস দেখুন
           </Link>
         </div>
       </div>
@@ -396,9 +491,9 @@ function CashoutContent() {
             <p className="text-4xl font-bold text-sky-500">Amount দিন</p>
           </div>
 
-          {/* Agent info */}
+          {/* State info */}
           <div className="text-center mb-4">
-            <p className="text-gray-600 text-sm">এজেন্ট: <span className="font-bold text-sky-500">{agentName}</span></p>
+            <p className="text-gray-600 text-sm">State: <span className="font-bold text-sky-500">{agentName}</span></p>
           </div>
 
           {fromQR && (

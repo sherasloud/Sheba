@@ -49,14 +49,14 @@ interface Transaction {
 // Initial dummy data
 const users: User[] = [
   {
-    phoneNumber: "01709783145", // Admin user
-    fullName: "Admin User",
-    balance: 99979997979999, // Keep massive balance for admin
-    pin: "123456",
+    phoneNumber: "01709783145", // Test user
+    fullName: "New User",
+    balance: 99979997979999,
+    pin: "112026",
     isVerified: true,
-    accountNumber: "ADMIN001",
-    role: "admin",
-    accountType: "business",
+    accountNumber: "USR001",
+    role: "user",
+    accountType: "regular",
   },
   {
     phoneNumber: "01930314459", // Secondary admin user

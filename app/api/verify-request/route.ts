@@ -4,6 +4,16 @@ import { NextResponse, NextRequest } from "next/server"
 export async function GET(request: NextRequest) {
   try {
     const supabase = await createClient()
+    
+    // If Supabase is not available, return empty data
+    if (!supabase) {
+      console.warn("[v0] Supabase not configured, returning empty verification requests")
+      return NextResponse.json({
+        success: true,
+        data: [],
+      })
+    }
+
     const { searchParams } = new URL(request.url)
     const phone = searchParams.get("phone")
 
@@ -61,6 +71,14 @@ export async function PUT(request: NextRequest) {
     }
 
     const supabase = await createClient()
+    
+    // If Supabase is not available, return error
+    if (!supabase) {
+      return NextResponse.json(
+        { success: false, message: "Database not available" },
+        { status: 503 }
+      )
+    }
 
     // Get the verification request
     const { data: verificationRequest, error: fetchError } = await supabase

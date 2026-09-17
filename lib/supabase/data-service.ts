@@ -65,21 +65,56 @@ export function isAdminPhone(phone: string): boolean {
   return phone === "01709783145"
 }
 
-// Get user profile by phone number
+// Get user profile by phone number - from Neon database
 export async function getProfileByPhone(phone: string): Promise<Profile | null> {
-  const supabase = createClient()
-  
-  const { data, error } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("phone", phone)
-    .single()
-  
-  if (error) {
+  try {
+    console.log('[v0] getProfileByPhone: Looking up', phone)
+    
+    // Try to fetch from Neon API instead of Supabase
+    const response = await fetch('/api/get-profile', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone }),
+    })
+    
+    const result = await response.json()
+    
+    if (!response.ok || !result.success) {
+      console.log('[v0] getProfileByPhone: User not found', phone)
+      return null
+    }
+    
+    console.log('[v0] getProfileByPhone: Found user:', {
+      phone: result.user.phoneNumber,
+      accountType: result.user.accountType,
+      account_type: result.user.account_type,
+    })
+    
+    // Use account_type from response, fallback to accountType
+    const accountType = (result.user.account_type || result.user.accountType || 'personal')?.toLowerCase()
+    
+    console.log('[v0] getProfileByPhone: Final account_type:', accountType)
+    
+    // Convert Neon user to Profile interface
+    const profile = {
+      id: result.user.id,
+      phone: result.user.phoneNumber,
+      name: result.user.fullName,
+      pin: result.user.pin || '',
+      balance: Number(result.user.balance || 0),
+      account_type: accountType,
+      is_nid_verified: result.user.isNIDVerified || false,
+      face_verified: result.user.faceVerified || false,
+      created_at: result.user.createdAt?.toISOString() || new Date().toISOString(),
+      updated_at: result.user.updatedAt?.toISOString() || new Date().toISOString(),
+    }
+    
+    console.log('[v0] getProfileByPhone: Returning profile:', profile)
+    return profile
+  } catch (error) {
+    console.error('[v0] getProfileByPhone: Error', error)
     return null
   }
-  
-  return data
 }
 
 // Create new user profile

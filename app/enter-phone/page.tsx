@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { getProfileByPhone } from "@/lib/supabase/data-service"
 
 export default function EnterPhonePage() {
   const [phoneNumber, setPhoneNumber] = useState("")
@@ -36,24 +35,17 @@ export default function EnterPhonePage() {
     try {
       console.log("[v0] Phone verification for:", phoneNumber)
       
-      // Store phone temporarily
-      sessionStorage.setItem("pendingPhone", phoneNumber)
+      // Store phone in both storage
       sessionStorage.setItem("phoneNumber", phoneNumber)
+      localStorage.setItem("phoneNumber", phoneNumber)
 
       // Simulate 1.5 second delay for dial detection
       await new Promise(resolve => setTimeout(resolve, 1500))
       
       console.log("[v0] Dial verification complete, moving to OTP")
       
-      // Check if user exists
-      const profile = await getProfileByPhone(phoneNumber)
-      
       // Navigate to OTP page
-      if (profile) {
-        router.push(`/otp?phone=${phoneNumber}`)
-      } else {
-        router.push(`/otp?phone=${phoneNumber}&new=true`)
-      }
+      router.push(`/otp?phone=${encodeURIComponent(phoneNumber)}`)
     } catch (err) {
       console.error("[v0] Error in handleNext:", err)
       setError("একটি ত্রুটি ঘটেছে। আবার চেষ্টা করুন")

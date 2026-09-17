@@ -78,37 +78,37 @@ export default function ScanQRPage() {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-white">
-      <div className="bg-[#29a9eb] text-white p-4 flex items-center justify-start">
+    <div className="flex flex-col h-screen" style={{ backgroundColor: "#1FBFFF" }}>
+      <div className="text-white p-4 flex items-center justify-start">
         <Link href="/" className="mr-4">
           <ArrowLeft size={24} />
         </Link>
-        <div className="text-xl font-medium">QR Code</div>
+        <div className="text-xl font-medium">QR কোড</div>
       </div>
 
-      <div className="p-6 flex flex-col items-center flex-1 justify-center">
-        <div className="w-32 h-32 bg-gray-100 rounded-full flex items-center justify-center mb-6">
-          <QrCode size={48} className="text-[#29a9eb]" />
+      <div className="flex-1 bg-white rounded-t-3xl p-6 flex flex-col items-center justify-center">
+        <div className="w-24 h-24 bg-gradient-to-br from-blue-100 to-cyan-100 rounded-full flex items-center justify-center mb-8 shadow-md">
+          <QrCode size={48} className="text-[#1FBFFF]" />
         </div>
 
-        <h2 className="text-xl font-bold mb-2">QR Code Options</h2>
-        <p className="text-center text-gray-600 mb-8">Choose what you want to do with QR codes</p>
+        <h2 className="text-2xl font-bold mb-2 text-gray-800">QR কোড অপশন</h2>
+        <p className="text-center text-gray-600 mb-10">QR কোড দিয়ে কি করতে চান?</p>
 
         <div className="w-full space-y-4">
           <button
             onClick={() => setShowScanner(true)}
-            className="bg-[#29a9eb] text-white py-4 px-8 rounded-lg w-full flex items-center justify-center text-lg font-medium"
+            className="bg-[#1FBFFF] text-white py-4 px-8 rounded-full w-full flex items-center justify-center text-lg font-medium hover:shadow-lg transition"
           >
             <QrCode size={20} className="mr-3" />
-            Scan QR Code
+            স্ক্যান করুন
           </button>
 
           <button
             onClick={() => setShowQRShare(true)}
-            className="bg-green-600 text-white py-4 px-8 rounded-lg w-full flex items-center justify-center text-lg font-medium"
+            className="bg-gradient-to-r from-green-400 to-cyan-400 text-white py-4 px-8 rounded-full w-full flex items-center justify-center text-lg font-medium hover:shadow-lg transition"
           >
             <Share2 size={20} className="mr-3" />
-            Share My QR Code
+            শেয়ার করুন
           </button>
         </div>
       </div>
@@ -236,51 +236,53 @@ function QRShare({ onBack, userName, phoneNumber }: { onBack: () => void; userNa
   }
 
   return (
-    <div className="flex flex-col h-screen bg-white">
-      <div className="bg-[#29a9eb] text-white p-4 flex items-center">
+    <div className="flex flex-col h-screen" style={{ backgroundColor: "#1FBFFF" }}>
+      <div className="text-white p-4 flex items-center">
         <button onClick={onBack} className="mr-4">
           <ArrowLeft size={24} />
         </button>
-        <div className="text-xl font-medium">My QR Code</div>
+        <div className="text-xl font-medium">আপনার QR কোড</div>
       </div>
 
-      <div className="p-6 flex flex-col items-center flex-1 overflow-y-auto">
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
-          <canvas
-            ref={canvasRef}
-            className="border border-gray-200 rounded-lg"
-            style={{ maxWidth: "100%", height: "auto" }}
-          />
+      <div className="flex-1 bg-white rounded-t-3xl p-6 flex flex-col items-center overflow-y-auto">
+        <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl shadow-lg p-8 mb-8 w-full">
+          <div className="flex justify-center">
+            <canvas
+              ref={canvasRef}
+              className="border-2 border-blue-200 rounded-xl"
+              style={{ maxWidth: "90%", height: "auto" }}
+            />
+          </div>
         </div>
 
-        <div className="text-center mb-6">
-          <h3 className="text-lg font-bold mb-2">{userName}</h3>
-          <p className="text-gray-600">{phoneNumber}</p>
-          <p className="text-sm text-gray-500 mt-2">Scan this code to send me money</p>
+        <div className="text-center mb-8 w-full">
+          <h3 className="text-2xl font-bold mb-2 text-gray-800">{userName}</h3>
+          <p className="text-lg text-[#1FBFFF] font-semibold">{phoneNumber}</p>
+          <p className="text-sm text-gray-500 mt-3">এই QR কোড স্ক্যান করে আমাকে টাকা পাঠান</p>
         </div>
 
         <div className="w-full space-y-3">
           <button
             onClick={shareQR}
-            className="bg-green-600 text-white py-3 px-6 rounded-lg w-full flex items-center justify-center font-medium"
+            className="bg-[#1FBFFF] text-white py-4 px-6 rounded-full w-full flex items-center justify-center font-semibold text-lg hover:shadow-lg transition"
           >
             <Share2 size={20} className="mr-2" />
-            Share QR Code
+            শেয়ার করুন
           </button>
 
           <button
             onClick={downloadQR}
-            className="bg-gray-600 text-white py-3 px-6 rounded-lg w-full flex items-center justify-center font-medium"
+            className="bg-gray-300 text-gray-700 py-4 px-6 rounded-full w-full flex items-center justify-center font-semibold text-lg hover:bg-gray-400 transition"
           >
             <Download size={20} className="mr-2" />
-            Download QR Code
+            ডাউনলোড করুন
           </button>
         </div>
 
         {isAdmin && (
           <Link href="/development-app" className="w-full mt-8">
-            <button className="bg-indigo-600 text-white py-3 px-6 rounded-lg w-full flex items-center justify-center font-medium hover:bg-indigo-700 transition">
-              🛠️ Development App
+            <button className="bg-gradient-to-r from-purple-500 to-pink-500 text-white py-4 px-6 rounded-full w-full flex items-center justify-center font-semibold text-lg hover:shadow-lg transition">
+              ⚙️ Admin Panel
             </button>
           </Link>
         )}
