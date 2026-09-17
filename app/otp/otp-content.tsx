@@ -105,68 +105,70 @@ export default function OTPContent() {
 
 
   return (
-    <div className="min-h-screen w-full bg-[#1FBFFF] flex flex-col">
-      <div className="flex items-center p-4">
-        <button onClick={() => router.push("/enter-phone")} className="text-white">
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-        </button>
-      </div>
-
-      <div className="flex-1 flex flex-col items-center justify-center px-6 pb-20">
-        <div className="mb-8">
-          <h1 className="text-white text-7xl font-bold tracking-wider" style={{ fontFamily: "system-ui" }}>
-            সেবা
-          </h1>
+    <div className="min-h-screen w-full bg-[#f7f8fc] px-4 py-6 text-[#142033] md:flex md:items-center md:justify-center">
+      <div className="relative flex min-h-[calc(100vh-3rem)] w-full max-w-md flex-col overflow-hidden rounded-[28px] bg-white shadow-[0_20px_60px_rgba(20,32,51,0.12)] md:min-h-[680px]">
+        <div className="flex items-center px-6 pt-6">
+          <button onClick={() => router.push("/enter-phone")} className="flex h-10 w-10 items-center justify-center text-[#142033]" aria-label="Back">
+            <svg className="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
         </div>
 
-        <div className="text-center mb-8">
-          <p className="text-white text-xl mb-2">OTP যাচাই করুন</p>
-          <p className="text-white/80 text-base">{phoneNumber} এ পাঠানো ৬ সংখ্যার কোড লিখুন</p>
+        <div className="flex flex-1 flex-col items-center px-6 pb-12 pt-8">
+          <img src="/images/sheba-headline-logo.jpeg" alt="সেবা" className="mb-10 h-16 w-auto object-contain" />
+          <div className="mb-8 w-full text-left">
+            <h1 className="text-3xl font-bold tracking-tight">Verification Code</h1>
+            <p className="mt-3 text-sm text-[#8d929d]">Enter the 6 digit code sent to your phone number</p>
+          </div>
+
+          <div className="mb-7 flex w-full items-center justify-between rounded-2xl bg-[#f4f5f7] px-4 py-3">
+            <div>
+              <p className="text-xs text-[#9a9da5]">Verification code sent to</p>
+              <p className="mt-1 text-base font-medium">{phoneNumber || "Phone number"}</p>
+            </div>
+            <button type="button" onClick={() => router.push("/enter-phone")} className="text-xl text-[#142033]" aria-label="Edit phone number">✎</button>
+          </div>
+
+          <div className="flex w-full justify-between gap-3">
+            {otp.map((digit, index) => (
+              <input
+                key={index}
+                ref={(el) => { inputRefs.current[index] = el }}
+                type="tel"
+                inputMode="numeric"
+                maxLength={1}
+                value={digit}
+                onChange={(e) => handleInputChange(index, e.target.value)}
+                onKeyDown={(e) => handleKeyDown(index, e)}
+                onPaste={handlePaste}
+                className="h-16 w-full rounded-xl border border-[#e3e5ea] bg-[#f4f5f7] text-center text-2xl font-bold text-[#142033] outline-none focus:border-[#5c5be5] focus:bg-white"
+                disabled={isLoading}
+              />
+            ))}
+          </div>
+
+          {error && <p className="mt-4 text-center text-sm text-red-500">{error}</p>}
+
+          <div className="mt-12 text-center">
+            <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full border-2 border-[#5c5be5] text-xs text-[#8d929d]">
+              {timeLeft > 0 ? formatTime(timeLeft) : "00:00"}
+            </div>
+            {timeLeft > 0 ? (
+              <p className="text-sm text-[#8d929d]">Resend code</p>
+            ) : (
+              <button onClick={resendOTP} className="text-sm font-medium text-[#5c5be5] underline">Resend code</button>
+            )}
+          </div>
+
+          <button
+            onClick={() => verifyOTP(otp.join(""))}
+            disabled={otp.some((digit) => digit === "") || isLoading}
+            className="mt-auto w-full rounded-xl bg-[#5c5be5] px-6 py-4 text-base font-semibold text-white transition hover:bg-[#4c4bd0] disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {isLoading ? "Verifying..." : "Verify code"}
+          </button>
         </div>
-
-        <div className="flex gap-3 mb-6">
-          {otp.map((digit, index) => (
-            <input
-              key={index}
-              ref={(el) => {
-                inputRefs.current[index] = el
-              }}
-              type="tel"
-              inputMode="numeric"
-              maxLength={1}
-              value={digit}
-              onChange={(e) => handleInputChange(index, e.target.value)}
-              onKeyDown={(e) => handleKeyDown(index, e)}
-              onPaste={handlePaste}
-              className="w-12 h-14 text-center text-2xl font-bold bg-white rounded-xl text-gray-800 focus:outline-none focus:ring-2 focus:ring-white/50"
-              disabled={isLoading}
-            />
-          ))}
-        </div>
-
-        {error && <p className="text-red-200 text-base mb-4 text-center">{error}</p>}
-
-
-
-        <div className="text-center mb-8">
-          {timeLeft > 0 ? (
-            <p className="text-white/80 text-base">পুনরায় পাঠান {formatTime(timeLeft)} পরে</p>
-          ) : (
-            <button onClick={resendOTP} className="text-white text-base font-semibold underline">
-              OTP পুনরায় পাঠান
-            </button>
-          )}
-        </div>
-
-        <button
-          onClick={() => verifyOTP(otp.join(""))}
-          disabled={otp.some((digit) => digit === "") || isLoading}
-          className="w-full max-w-md bg-white text-[#1FBFFF] text-xl font-semibold py-4 px-8 rounded-full hover:bg-white/90 transition-all duration-200 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {isLoading ? "যাচাই হচ্ছে..." : "যাচাই করুন"}
-        </button>
       </div>
 
       {isLoading && (

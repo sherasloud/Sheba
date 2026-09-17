@@ -19,6 +19,7 @@ const BottomNavigation = React.memo(() => {
     "/phone",
     "/pin",
     "/sim-detection",
+    "/otp",
   ]
 
   // Don't render if current page is in hideOnPages array
@@ -27,7 +28,7 @@ const BottomNavigation = React.memo(() => {
   }
 
   return (
-    <div className="absolute bottom-0 left-0 right-0 z-50 bg-transparent">
+    <div className="fixed bottom-0 left-0 right-0 z-50 bg-transparent">
       <div className="mx-auto w-full max-w-[1180px]">
         <div className="flex justify-around items-end px-4 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-2">
           <Link
