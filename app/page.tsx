@@ -129,7 +129,7 @@ export default function AppPage() {
         const nextIndex = (prevIndex + 1) % allBanners.length
         return nextIndex
       })
-    }, 1500)
+    }, 5000)
   }
 
   const getLatestBalance = useCallback(async () => {
@@ -518,9 +518,29 @@ export default function AppPage() {
 
       <main className="flex-1 overflow-y-auto bg-white px-4 pb-8 pt-4">
         <div className="relative mb-9 overflow-hidden rounded-[22px] shadow-[0_8px_22px_rgba(30,64,88,0.12)] select-none" onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}>
-          <Link href="/financial-awareness" className="block">
-            <img src="/images/home-reference-banner.jpg" alt="কাজে লাগবে ভাই" className="h-32 w-full object-cover" draggable={false} />
+          <Link href={allBanners[currentBannerIndex].link} className="block">
+            <img
+              key={allBanners[currentBannerIndex].id}
+              src={allBanners[currentBannerIndex].image}
+              alt={allBanners[currentBannerIndex].alt}
+              className="h-32 w-full object-cover"
+              draggable={false}
+            />
           </Link>
+          <div className="absolute bottom-2 left-1/2 flex -translate-x-1/2 gap-1.5">
+            {allBanners.map((banner, index) => (
+              <button
+                key={banner.id}
+                type="button"
+                aria-label={`Show banner ${index + 1}`}
+                onClick={() => {
+                  setCurrentBannerIndex(index)
+                  resetAutoRotation()
+                }}
+                className={`h-2 w-2 rounded-full ${index === currentBannerIndex ? "bg-white" : "bg-white/50"}`}
+              />
+            ))}
+          </div>
         </div>
         {/* Sheba Provider Transactions */}
         {isShebaProvider && (
