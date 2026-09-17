@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
+import { getProfileByPhone } from "@/lib/supabase/data-service"
 
 export default function EnterPhonePage() {
   const [phoneNumber, setPhoneNumber] = useState("")
@@ -33,22 +34,27 @@ export default function EnterPhonePage() {
     setError("")
 
     try {
-      console.log("[v0] Phone verification for:", phoneNumber)
+      // Check if user exists in Supabase
+      const profile = await getProfileByPhone(phoneNumber)
       
-      // Store phone in both storage
+      // Store phone temporarily
+      sessionStorage.setItem("pendingPhone", phoneNumber)
       sessionStorage.setItem("phoneNumber", phoneNumber)
-      localStorage.setItem("phoneNumber", phoneNumber)
 
-      // Simulate 1.5 second delay for dial detection
-      await new Promise(resolve => setTimeout(resolve, 1500))
-      
-      console.log("[v0] Dial verification complete, moving to OTP")
-      
-      // Navigate to OTP page
-      router.push(`/otp?phone=${encodeURIComponent(phoneNumber)}`)
+      if (profile) {
+        // Existing user - go to OTP then PIN
+        router.push(`/otp?phone=${phoneNumber}`)
+      } else {
+        // New user - go to OTP then onboarding
+        router.push(`/otp?phone=${phoneNumber}&new=true`)
+      }
     } catch (err) {
-      console.error("[v0] Error in handleNext:", err)
-      setError("একটি ত্রুটি ঘটেছে। আবার চেষ্টা করুন")
+      console.error("[v0] Error checking user:", err)
+      // On error, treat as new user
+      sessionStorage.setItem("pendingPhone", phoneNumber)
+      sessionStorage.setItem("phoneNumber", phoneNumber)
+      router.push(`/otp?phone=${phoneNumber}&new=true`)
+    } finally {
       setIsChecking(false)
     }
   }
@@ -103,7 +109,7 @@ export default function EnterPhonePage() {
             যাচাই করা হচ্ছে...
           </>
         ) : (
-          "সামনে যান"
+          "সামনে যাই"
         )}
       </button>
     </div>

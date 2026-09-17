@@ -2,6 +2,9 @@ import type React from "react"
 import "./globals.css"
 import type { Metadata, Viewport } from "next"
 import { Inter } from "next/font/google"
+import BottomNavigation from "@/components/bottom-navigation"
+import { RealtimeTransferNotification } from "@/components/realtime-transfer-notification"
+import Script from "next/script"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -15,7 +18,6 @@ export const viewport: Viewport = {
   maximumScale: 1,
   userScalable: false,
   viewportFit: "cover",
-  orientation: "portrait",
 }
 
 export const metadata: Metadata = {
@@ -49,38 +51,26 @@ export const metadata: Metadata = {
     "application-name": "Sheba",
     "msapplication-TileColor": "#29a9eb",
     "msapplication-config": "none",
-    "screen-orientation": "portrait-primary",
   },
-    generator: 'v0.app'
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  // Main layout component for Sheba mobile app
   return (
-    <html lang="en" className="bg-white text-gray-900" style={{ orientation: "portrait" }}>
+    <html lang="en">
       <head>
-        <style>{`
-          html, body {
-            orientation: portrait-primary !important;
-            max-width: 100vw;
-            overflow-x: hidden;
-          }
-          @media (orientation: landscape) {
-            html, body {
-              transform: rotate(90deg);
-              transform-origin: left top;
-              width: 100vh;
-              height: 100vw;
-              position: fixed;
-              overflow: hidden;
-            }
-          }
-        `}</style>
+        <Script
+          id="btoa-polyfill"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `(function(){if(typeof window==="undefined")return;try{var o=window.btoa,a=window.atob;window.btoa=function(t){if(null==t)return"";var e=String(t);if(""===e)return"";try{return o(e)}catch(t){try{return o(unescape(encodeURIComponent(e)))}catch(t){try{for(var n=new TextEncoder,r=n.encode(e),i="",c=0;c<r.length;c++)i+=String.fromCharCode(r[c]);return o(i)}catch(t){return""}}}},window.atob=function(t){if(null==t)return"";var e=String(t);if(""===e)return"";try{return a(e)}catch(t){try{return decodeURIComponent(escape(a(e)))}catch(t){return""}}},window.addEventListener("error",(function(t){if(t.message&&(t.message.includes("btoa")||t.message.includes("atob")||t.message.includes("Latin1")||t.message.includes("InvalidCharacterError")||t.message.includes("invalid characters")))return t.preventDefault(),t.stopPropagation(),t.stopImmediatePropagation(),!1}),!0),window.addEventListener("unhandledrejection",(function(t){if(t.reason&&t.reason.message&&(t.reason.message.includes("btoa")||t.reason.message.includes("atob")||t.reason.message.includes("Latin1")||t.reason.message.includes("InvalidCharacterError")||t.reason.message.includes("invalid characters")))return t.preventDefault(),t.stopPropagation(),t.stopImmediatePropagation(),!1}),!0)}catch(t){}})();`,
+          }}
+        />
+        <Script src="/btoa-emergency-fix.js" strategy="beforeInteractive" />
       </head>
-      <body className={`${inter.className} antialiased bg-white min-h-screen`}>
-        <main className="flex-1">
-          {children}
-        </main>
+      <body className={`${inter.className} antialiased`}>
+        <RealtimeTransferNotification />
+        {children}
+        <BottomNavigation />
       </body>
     </html>
   )

@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation"
 import { ArrowLeft, Send, Download } from "lucide-react"
 import { getTransactions, subscribeToTransactions, getProfileByPhone } from "@/lib/supabase/data-service"
 import { ErrorBoundary } from "@/components/error-boundary"
-import { VerifiedBadge } from "@/components/verified-badge"
 
 interface Transaction {
   id: string
@@ -22,7 +21,6 @@ interface TransactionDisplayData extends Transaction {
   isReceived: boolean
   sourcePhone: string
   category: "Served Cash" | "Cash Came"
-  partnerVerified?: boolean
 }
 
 export default function TransactionHistoryPage() {
@@ -32,7 +30,6 @@ export default function TransactionHistoryPage() {
   const [userPhone, setUserPhone] = useState("")
   const [userName, setUserName] = useState("")
   const [filter, setFilter] = useState<"all" | "sent" | "received">("all")
-  const [verificationCache, setVerificationCache] = useState<Record<string, boolean>>({})
 
   useEffect(() => {
     // Check authentication
@@ -85,57 +82,23 @@ export default function TransactionHistoryPage() {
     return isReceived ? "Cash Came" : "Served Cash"
   }
 
-  const getTransactionDisplayData = async (tx: Transaction): Promise<TransactionDisplayData> => {
+  const getTransactionDisplayData = (tx: Transaction): TransactionDisplayData => {
     const isReceived = tx.receiver_phone === userPhone
-    const partnerPhone = isReceived ? tx.sender_phone : tx.receiver_phone
-    
-    // Check cache first
-    let partnerVerified = verificationCache[partnerPhone]
-    if (partnerVerified === undefined) {
-      // Fetch if not in cache - use API for accurate verification status
-      try {
-        const response = await fetch(`/api/verification-status?phone=${encodeURIComponent(partnerPhone)}`)
-        const result = await response.json()
-        
-        if (response.ok && result.success && result.data) {
-          partnerVerified = result.data.isVerified === true
-        } else {
-          partnerVerified = false
-        }
-        
-        setVerificationCache(prev => ({
-          ...prev,
-          [partnerPhone]: partnerVerified
-        }))
-      } catch {
-        console.error("[v0] Error fetching verification status for:", partnerPhone)
-        partnerVerified = false
-      }
-    }
-    
     return {
       ...tx,
       isReceived,
-      sourcePhone: partnerPhone,
+      sourcePhone: isReceived ? tx.sender_phone : tx.receiver_phone,
       category: determineCategory(isReceived),
-      partnerVerified,
     }
   }
 
-  const [filteredTransactions, setFilteredTransactions] = useState<TransactionDisplayData[]>([])
-
-  useEffect(() => {
-    const processTransactions = async () => {
-      const processed = await Promise.all(transactions.map(getTransactionDisplayData))
-      const filtered = processed.filter((tx) => {
-        if (filter === "sent") return !tx.isReceived
-        if (filter === "received") return tx.isReceived
-        return true
-      })
-      setFilteredTransactions(filtered)
-    }
-    processTransactions()
-  }, [transactions, filter, verificationCache])
+  const filteredTransactions = transactions
+    .map(getTransactionDisplayData)
+    .filter((tx) => {
+      if (filter === "sent") return !tx.isReceived
+      if (filter === "received") return tx.isReceived
+      return true
+    })
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
@@ -198,12 +161,7 @@ export default function TransactionHistoryPage() {
             <div className="space-y-3">
               {filteredTransactions.map((tx) => {
                 const lastFourDigits = tx.sourcePhone.slice(-4)
-                // Green for received (+), Red for sent (-)
-                const amountColor = tx.isReceived ? "text-green-600" : "text-red-600"
-                const amountBgColor = tx.isReceived ? "bg-green-50" : "bg-red-50"
-                
-                // Direction label
-                const directionLabel = tx.isReceived ? `থেকে: ${tx.sourcePhone}` : `কাছে: ${tx.sourcePhone}`
+                const amountColor = tx.isReceived ? "text-blue-600" : "text-red-600"
 
                 return (
                   <div
@@ -211,20 +169,17 @@ export default function TransactionHistoryPage() {
                     className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg"
                   >
                     {/* Icon */}
-                    <div className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 ${amountBgColor}`}>
-                      <Send size={20} className={tx.isReceived ? "text-green-600" : "text-red-600"} />
+                    <div className="w-12 h-12 rounded-full bg-gray-300 flex items-center justify-center flex-shrink-0">
+                      <Send size={20} className="text-gray-600" />
                     </div>
 
                     {/* Details */}
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <p className="font-semibold text-gray-800">
-                          {tx.transaction_type || "লেনদেন"}
-                        </p>
-                        <VerifiedBadge isVerified={tx.partnerVerified || false} size="sm" />
-                      </div>
-                      <p className="text-sm text-gray-600">{directionLabel}</p>
-                      <p className="text-xs text-gray-500">
+                      <p className="font-semibold text-gray-800">
+                        {tx.transaction_type || "লেনদেন"}
+                      </p>
+                      <p className="text-sm text-gray-600">{lastFourDigits}</p>
+                      <p className="text-sm text-gray-500">
                         {formatDate(tx.created_at)} | ID: {tx.reference}
                       </p>
                     </div>

@@ -1,7 +1,8 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
+import { useRouter } from "next/navigation"
+import { getProfileByPhone, verifyPin } from "@/lib/supabase/data-service"
 
 export default function PinPage() {
   const [pin, setPin] = useState("")
@@ -10,13 +11,12 @@ export default function PinPage() {
   const [phoneNumber, setPhoneNumber] = useState("")
   const [userName, setUserName] = useState("")
   const [checkingUser, setCheckingUser] = useState(true)
-  const [isNewUser, setIsNewUser] = useState(false)
   const router = useRouter()
-  const searchParams = useSearchParams()
 
   useEffect(() => {
-    const initPage = async () => {
-      const currentPhone = searchParams.get("phone") || sessionStorage.getItem("phoneNumber") || localStorage.getItem("phoneNumber")
+    const checkUser = async () => {
+      const otpVerified = sessionStorage.getItem("otpVerified")
+      const currentPhone = sessionStorage.getItem("phoneNumber") || localStorage.getItem("phoneNumber")
 
       if (!currentPhone) {
         console.log("[v0] No phone number found, redirecting to enter-phone")
@@ -25,36 +25,33 @@ export default function PinPage() {
       }
 
       setPhoneNumber(currentPhone)
-      
-      // Fetch user name from Neon database
+
+      // Check if user exists in Supabase
       try {
-        const response = await fetch('/api/user-profile', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ phone: currentPhone }),
-        })
+        const profile = await getProfileByPhone(currentPhone)
         
-        if (response.ok) {
-          const data = await response.json()
-          if (data.user?.fullName) {
-            setUserName(data.user.fullName)
-            console.log('[v0] User name loaded from Neon:', data.user.fullName)
-          } else {
-            setUserName("ব্যবহারকারী")
-          }
+        if (profile) {
+          // User exists - show PIN entry
+          setUserName(profile.name)
+          localStorage.setItem("userName", profile.name)
+          setCheckingUser(false)
         } else {
-          setUserName("ব্যবহারকারী")
+          // New user - redirect to onboarding
+          console.log("[v0] User not found in Supabase, redirecting to onboarding")
+          sessionStorage.setItem("phoneNumber", currentPhone)
+          router.replace("/onboarding")
+          return
         }
       } catch (err) {
-        console.error('[v0] Error fetching user name:', err)
-        setUserName("ব্যবহারকারী")
+        console.error("[v0] Error checking user:", err)
+        // On error, redirect to onboarding to be safe
+        router.replace("/onboarding")
+        return
       }
-      
-      setCheckingUser(false) // No need to check, OTP already verified
     }
 
-    initPage()
-  }, [router, searchParams])
+    checkUser()
+  }, [router])
 
   const handlePinInput = (digit: string) => {
     if (pin.length < 6) {
@@ -62,7 +59,7 @@ export default function PinPage() {
       setPin(newPin)
 
       if (newPin.length === 6) {
-        verifyPinWithMongoDB(newPin)
+        verifyPinWithSupabase(newPin)
       }
     }
   }
@@ -72,63 +69,53 @@ export default function PinPage() {
     setError("")
   }
 
-  const verifyPinWithMongoDB = async (enteredPin: string) => {
+  const verifyPinWithSupabase = async (enteredPin: string) => {
     setIsLoading(true)
     setError("")
 
     console.log("[v0] PIN verification started for:", phoneNumber)
 
     try {
-      if (isNewUser) {
-        // New user - should not be here, go to onboarding instead
-        console.log("[v0] New user should not be on PIN page, redirecting to onboarding")
-        router.replace(`/onboarding?phone=${encodeURIComponent(phoneNumber)}`)
-        return
-      }
+      const isValid = await verifyPin(phoneNumber, enteredPin)
 
-      // Existing user - verify PIN with MongoDB
-      const response = await fetch("/api/verify-pin", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone: phoneNumber, pin: enteredPin }),
-      })
-
-      const data = await response.json()
-
-      if (data.success) {
+      if (isValid) {
         console.log("[v0] PIN verified successfully")
-        console.log("[v0] User name from Neon:", data.user?.fullName)
         
-        // Update user name from verified data
-        if (data.user?.fullName) {
-          setUserName(data.user.fullName)
+        // Get full profile for localStorage
+        const profile = await getProfileByPhone(phoneNumber)
+        
+        if (profile) {
+          const timestamp = Date.now().toString()
+
+          // Store session data
+          sessionStorage.setItem("phoneNumber", phoneNumber)
+          sessionStorage.setItem("appPinVerified", "true")
+          sessionStorage.setItem("pinVerifiedTime", timestamp)
+
+          // Store persistent data
+          localStorage.setItem("phoneNumber", phoneNumber)
+          localStorage.setItem("appPinVerified", "true")
+          localStorage.setItem("pinVerifiedTime", timestamp)
+          localStorage.setItem("userName", profile.name)
+          localStorage.setItem("isVerified", profile.is_verified.toString())
+          localStorage.setItem("userBalance", profile.balance.toString())
+          localStorage.setItem(`userBalance_${phoneNumber}`, profile.balance.toString())
+          localStorage.setItem("userData", JSON.stringify({
+            phoneNumber: profile.phone,
+            fullName: profile.name,
+            balance: profile.balance,
+            isVerified: profile.is_verified,
+            accountType: profile.account_type,
+          }))
+
+          console.log("[v0] User data stored, redirecting to home")
+          router.replace("/")
+        } else {
+          setError("ব্যবহারকারী পাওয়া যায়নি")
+          setPin("")
         }
-        
-        const timestamp = Date.now().toString()
-
-        // Store session data
-        sessionStorage.setItem("phoneNumber", phoneNumber)
-        sessionStorage.setItem("appPinVerified", "true")
-        sessionStorage.setItem("pinVerifiedTime", timestamp)
-
-        // Store persistent data
-        localStorage.setItem("phoneNumber", phoneNumber)
-        localStorage.setItem("appPinVerified", "true")
-        localStorage.setItem("pinVerifiedTime", timestamp)
-        localStorage.setItem("userName", data.user?.fullName || "")
-        localStorage.setItem("userBalance", data.user?.balance.toString() || "0")
-        localStorage.setItem("userData", JSON.stringify({
-          phoneNumber: data.user?.phoneNumber,
-          fullName: data.user?.fullName,
-          balance: data.user?.balance,
-          accountType: data.user?.accountType,
-        }))
-
-        console.log("[v0] User data stored, redirecting to home")
-        // Existing user - redirect to home immediately
-        setTimeout(() => router.push("/"), 500)
       } else {
-        setError(data.message || "ভুল পিন। আবার চেষ্টা করুন।")
+        setError("ভুল পিন। আবার চেষ্টা করুন।")
         setPin("")
       }
     } catch (err) {

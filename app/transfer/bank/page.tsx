@@ -352,7 +352,6 @@ export default function BankTransferPage() {
 
   if (success) {
     const totalAmount = Number(amount) + selectedBank.fee
-    const transactionId = `BT${Date.now()}${Math.random().toString(36).substring(2, 6).toUpperCase()}`
 
     return (
       <div className="flex flex-col h-screen bg-white">
@@ -363,78 +362,59 @@ export default function BankTransferPage() {
           <div className="text-xl font-medium">Bank Transfer</div>
         </div>
 
-        <div className="flex flex-col items-center justify-center flex-1 bg-gradient-to-b from-white to-gray-50 px-6 py-8 overflow-y-auto">
-          {/* Large Blue Checkmark Circle */}
-          <div className="w-24 h-24 bg-[#1E88E5] rounded-full flex items-center justify-center mb-8 shadow-lg flex-shrink-0">
-            <svg width="56" height="56" viewBox="0 0 24 24" fill="none">
-              <path d="M20 6L9 17L4 12" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
+        <div className="flex flex-col items-center justify-center flex-1 p-6">
+          <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mb-6">
+            <CheckCircle size={40} className="text-white" />
           </div>
 
-          {/* Title */}
-          <h2 className="text-3xl font-bold text-[#1E88E5] mb-2 text-center">Send Money</h2>
-          
-          {/* Bengali Success Message */}
-          <p className="text-lg font-semibold text-[#1E88E5] mb-2 text-center">সফল হয়েছে !</p>
+          <h2 className="text-2xl font-bold mb-2">Transfer Successful!</h2>
+          <p className="text-gray-600 mb-4">Money transferred to bank account</p>
 
-          {/* Account Number */}
-          <p className="text-gray-700 text-center mb-6 font-medium">ব্যাংক অ্যাকাউন্ট নম্বর</p>
-          <p className="text-gray-900 text-xl font-bold mb-8 text-center">{recipientDetails.accountNumber}</p>
-
-          {/* Transaction Details */}
-          <div className="w-full space-y-4 mb-8">
-            <div className="flex justify-between items-center text-gray-800">
-              <span className="text-base font-medium">পরিমাণ:</span>
-              <span className="text-2xl font-bold text-[#1E88E5]">৳ {Number(amount).toLocaleString()}</span>
-            </div>
-            
-            <div className="flex justify-between items-center text-gray-700">
-              <span className="text-sm">তারিখ:</span>
-              <div className="text-right">
-                <div className="text-lg font-bold text-[#1E88E5]">{new Date().toLocaleDateString('en-BD', { day: '2-digit', month: '2-digit', year: '2-digit' }).split('/').join('.')}</div>
-                <div className="text-lg font-bold text-[#1E88E5]">{new Date().toLocaleTimeString('en-BD', { hour: '2-digit', minute: '2-digit', hour12: true })}</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Transaction ID */}
-          <p className="text-[#1E88E5] text-center font-bold mb-2">Transaction ID:</p>
-          <p className="text-gray-900 font-bold text-center mb-8 text-lg">{transactionId}</p>
-
-          {/* Details Box */}
-          <div className="bg-gray-100 w-full rounded-lg p-4 mb-8 space-y-3">
-            <div className="flex justify-between text-sm">
-              <span className="text-gray-600">ব্যাংক:</span>
+          <div className="bg-gray-100 w-full rounded-lg p-4 mb-6">
+            <div className="flex justify-between mb-2">
+              <span className="text-gray-600">Bank:</span>
               <span className="font-bold">{selectedBank.shortName}</span>
             </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-gray-600">অ্যাকাউন্ট নাম:</span>
+            <div className="flex justify-between mb-2">
+              <span className="text-gray-600">Account Number:</span>
+              <span className="font-bold">{recipientDetails.accountNumber}</span>
+            </div>
+            <div className="flex justify-between mb-2">
+              <span className="text-gray-600">Account Name:</span>
               <span className="font-bold">{recipientDetails.accountName}</span>
             </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-gray-600">ফি:</span>
-              <span className="font-bold">৳ {selectedBank.fee}</span>
+            <div className="flex justify-between mb-2">
+              <span className="text-gray-600">Transfer Amount:</span>
+              <span className="font-bold">Tk{amount}</span>
             </div>
-            <div className="flex justify-between text-sm border-t pt-3">
-              <span className="text-gray-600">মোট কাটা:</span>
-              <span className="font-bold text-red-600">৳ {totalAmount}</span>
+            <div className="flex justify-between mb-2">
+              <span className="text-gray-600">Transfer Fee:</span>
+              <span className="font-bold">Tk{selectedBank.fee}</span>
             </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-gray-600">নতুন ব্যালেন্স:</span>
-              <span className="font-bold text-green-600">৳ {balance.toLocaleString()}</span>
+            <div className="flex justify-between mb-2 border-t pt-2">
+              <span className="text-gray-600">Total Deducted:</span>
+              <span className="font-bold text-red-600">Tk{totalAmount}</span>
+            </div>
+            <div className="flex justify-between mb-2">
+              <span className="text-gray-600">Your New Balance:</span>
+              <span className="font-bold">Tk{balance.toLocaleString()}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-600">Transaction ID:</span>
+              <span className="font-bold">BT{Date.now().toString().slice(-8)}</span>
             </div>
           </div>
 
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-8 w-full">
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6 w-full">
             <p className="text-blue-800 text-sm text-center">
-              <strong>প্রসেসিং সময়:</strong> ব্যাংক ট্রান্সফার সাধারণত ১-৩ কর্মদিবসে সম্পন্ন হয়।
+              <strong>Processing Time:</strong> Bank transfers usually take 1-3 business days to complete.
               <br />
-              <strong>রেফারেন্স:</strong> আপনার রেকর্ডের জন্য এই Transaction ID সংরক্ষণ করুন।
+              <strong>Reference:</strong> Keep this transaction ID for your records.
             </p>
           </div>
 
-          <Link href="/" className="bg-[#1E88E5] text-white font-bold py-3 px-6 rounded-lg w-full text-center hover:bg-[#1565C0] transition flex-shrink-0">
-            সম্পন্ন
+          <Link href="/transfer" className="bg-[#29a9eb] text-white py-3 px-6 rounded-md w-full text-center">
+            Done
           </Link>
         </div>
       </div>
