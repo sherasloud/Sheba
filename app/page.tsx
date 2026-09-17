@@ -465,7 +465,7 @@ export default function AppPage() {
     return (
       <Link
         href={href}
-        className="flex flex-col items-center touch-manipulation no-tap-highlight p-2 rounded-lg active:bg-gray-100 transition-colors"
+        className="flex flex-col items-center touch-manipulation no-tap-highlight p-1 rounded-lg active:bg-gray-100 transition-colors"
         {...linkProps}
       >
         <div
@@ -560,7 +560,7 @@ export default function AppPage() {
           </div>
         )}
 
-        <div className="grid grid-cols-3 gap-x-2 gap-y-16 px-4 pb-4">
+        <div className="grid grid-cols-3 gap-x-2 gap-y-10 px-4 pb-4">
           <FeatureButton
             href="/send-money"
             icon={
