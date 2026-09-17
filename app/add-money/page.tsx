@@ -100,39 +100,28 @@ export default function AddMoneyPage() {
   }
 
   const handleCardTypeSelect = (cardType: string) => {
-    console.log("[v0] Card type selected:", cardType)
     setSelectedCardType(cardType)
     localStorage.setItem("selectedCardType", cardType)
-    
-    const userAmount = prompt("Enter amount to add (Minimum: 10 Tk):", "")
-    console.log("[v0] User entered amount:", userAmount)
-    
-    if (!userAmount || isNaN(Number(userAmount)) || Number(userAmount) < 10) {
-      setError("Please enter a valid amount (minimum 10 Tk)")
-      return
-    }
-    
+    setError("")
+    setStep(4)
+  }
+
+  const handleCardPayment = (userAmountNum: number) => {
     // Calculate total amount with commission (2% SSLCommerz fee)
-    const userAmountNum = Number(userAmount)
-    const commissionRate = 0.02 // 2% commission
+    const commissionRate = 0.02
     const commission = Math.round(userAmountNum * commissionRate * 100) / 100
     const totalAmount = userAmountNum + commission
     
-    console.log("[v0] Amount calculation - User: Tk" + userAmountNum + ", Commission (2%): Tk" + commission + ", Total: Tk" + totalAmount)
-    
     const transactionRef = `SHEBA_${Date.now()}_${Math.random().toString(36).substr(2, 9).toUpperCase()}`
-    console.log("[v0] Transaction ref:", transactionRef)
     localStorage.setItem("transactionRef", transactionRef)
-    localStorage.setItem("addMoneyAmount", String(userAmountNum)) // Store user's requested amount
-    localStorage.setItem("commissionAmount", String(commission)) // Store commission for later
+    localStorage.setItem("addMoneyAmount", String(userAmountNum))
+    localStorage.setItem("commissionAmount", String(commission))
     
     // Create and submit form to SSLCommerz
     const form = document.createElement("form")
     form.method = "POST"
     form.action = "https://pay.sslcommerz.com/gwprocess/v4/api.php"
     form.style.display = "none"
-    
-    console.log("[v0] Creating form with store_id:", SSLCOMMERZ_STORE_ID)
     
     const fields: Record<string, string> = {
       store_id: SSLCOMMERZ_STORE_ID,
@@ -557,7 +546,7 @@ export default function AddMoneyPage() {
 
       {step === 2 && selectedMethod === "card" && (
         <div className="flex flex-1 flex-col items-center overflow-y-auto bg-white px-6 pb-8 pt-10">
-          <h1 className="mb-24 text-center text-4xl font-bold text-[#38afe8]">কার্ড দিয়ে টাকা</h1>
+          <h1 className="mb-24 text-center text-4xl font-bold text-[#38afe8]">কার্ড নির্বাচন করুন</h1>
 
           <div className="flex w-full max-w-xs flex-col items-center gap-10">
             {cardProviders.map((provider) => (
