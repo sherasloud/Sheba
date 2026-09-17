@@ -29,10 +29,10 @@ const BottomNavigation = React.memo(() => {
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 bg-transparent">
       <div className="mx-auto w-full max-w-[1180px]">
-        <div className="flex justify-around items-center px-4 pb-[calc(0.1rem+env(safe-area-inset-bottom))] pt-2">
+        <div className="flex justify-around items-center px-4 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-2">
           <Link
             href="/"
-            className={`flex translate-y-2 flex-col items-center justify-center p-2 min-w-[60px] transition-colors duration-200 ${
+            className={`flex flex-col items-center justify-center p-2 min-w-[60px] transition-colors duration-200 ${
               pathname === "/" ? "text-[#29a9eb]" : "text-gray-500"
             }`}
           >
@@ -41,7 +41,7 @@ const BottomNavigation = React.memo(() => {
           </Link>
           <Link
             href="/scan-qr"
-            className={`flex translate-y-2 flex-col items-center justify-center p-2 min-w-[60px] transition-colors duration-200 ${
+            className={`flex flex-col items-center justify-center p-2 min-w-[60px] transition-colors duration-200 ${
               pathname === "/scan-qr" ? "text-[#29a9eb]" : "text-gray-500"
             }`}
           >
@@ -50,7 +50,7 @@ const BottomNavigation = React.memo(() => {
           </Link>
           <Link
             href="/inbox"
-            className={`flex translate-y-2 flex-col items-center justify-center p-2 min-w-[60px] transition-colors duration-200 ${
+            className={`flex flex-col items-center justify-center p-2 min-w-[60px] transition-colors duration-200 ${
               pathname === "/inbox" ? "text-[#29a9eb]" : "text-gray-500"
             }`}
           >
