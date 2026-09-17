@@ -38,7 +38,7 @@ const BottomNavigation = React.memo(() => {
             }`}
           >
             <Home size={20} strokeWidth={1.8} />
-            <span className="mt-0.5 text-center text-[15px] font-normal text-black">Home</span>
+            <span className="mt-0.5 text-center text-[15px] font-normal">Home</span>
           </Link>
           <Link
             href="/scan-qr"
@@ -47,7 +47,7 @@ const BottomNavigation = React.memo(() => {
             }`}
           >
             <QrCode size={20} strokeWidth={1.8} />
-            <span className="mt-0.5 text-center text-[15px] font-normal text-black">Scan QR</span>
+            <span className="mt-0.5 text-center text-[15px] font-normal">Scan QR</span>
           </Link>
           <Link
             href="/inbox"
@@ -56,7 +56,7 @@ const BottomNavigation = React.memo(() => {
             }`}
           >
             <MessageSquare size={20} strokeWidth={1.8} />
-            <span className="mt-0.5 text-center text-[15px] font-normal text-black">Inbox</span>
+            <span className="mt-0.5 text-center text-[15px] font-normal">Inbox</span>
           </Link>
         </div>
       </div>
