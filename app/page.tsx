@@ -465,6 +465,10 @@ export default function AppPage() {
     return (
       <Link
         href={href}
+        prefetch={true}
+        onPointerDown={() => {
+          if (!isExternal) router.prefetch(href)
+        }}
         className="flex flex-col items-center touch-manipulation no-tap-highlight p-1 rounded-lg active:bg-gray-100 transition-colors"
         {...linkProps}
       >
