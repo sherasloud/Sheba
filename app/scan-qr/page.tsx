@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { ArrowLeft, QrCode, Share2, Download } from "lucide-react"
+import jsQR from "jsqr"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import VerificationRequired from "@/components/verification-required"
@@ -439,130 +440,13 @@ function QRScanner({ onBack }: { onBack: () => void }) {
 
   const detectQRCode = (imageData: ImageData): string | null => {
     try {
-      const data = imageData.data
-      const width = imageData.width
-      const height = imageData.height
-
-      const threshold = 120
-      const binaryData = new Uint8Array(width * height)
-
-      for (let i = 0; i < data.length; i += 4) {
-        const gray = data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114
-        binaryData[i / 4] = gray < threshold ? 0 : 1
-      }
-
-      const finderPatterns = findFinderPatterns(binaryData, width, height)
-
-      if (finderPatterns.length >= 3) {
-        const hasValidStructure = validateQRStructure(finderPatterns, width, height)
-
-        if (hasValidStructure) {
-          // Return different QR types for testing
-          const qrTypes = ["send_money", "cashout", "payment", "add_money"]
-          const randomType = qrTypes[Math.floor(Math.random() * qrTypes.length)]
-
-          return JSON.stringify({
-            type: `sheba_${randomType}`,
-            service: randomType.replace("_", " "),
-            name: "Demo User",
-            phone: "01700000000",
-            account: `SHEBA01700000000`,
-            timestamp: new Date().toISOString(),
-            version: "1.0",
-          })
-        }
-      }
-
-      return null
-    } catch (error) {
+      const result = jsQR(imageData.data, imageData.width, imageData.height, {
+        inversionAttempts: "attemptBoth",
+      })
+      return result?.data ?? null
+    } catch {
       return null
     }
-  }
-
-  const findFinderPatterns = (
-    binaryData: Uint8Array,
-    width: number,
-    height: number,
-  ): Array<{ x: number; y: number; size: number }> => {
-    const patterns: Array<{ x: number; y: number; size: number }> = []
-    const minSize = 21
-    const step = 5
-
-    for (let y = 0; y < height - minSize; y += step) {
-      for (let x = 0; x < width - minSize; x += step) {
-        const patternSize = checkFinderPattern(binaryData, width, height, x, y)
-        if (patternSize > 0) {
-          patterns.push({ x, y, size: patternSize })
-          x += patternSize
-        }
-      }
-    }
-
-    return patterns
-  }
-
-  const checkFinderPattern = (
-    binaryData: Uint8Array,
-    width: number,
-    height: number,
-    startX: number,
-    startY: number,
-  ): number => {
-    const patternSize = 21
-    if (startX + patternSize >= width || startY + patternSize >= height) return 0
-
-    const centerX = startX + Math.floor(patternSize / 2)
-    const centerY = startY + Math.floor(patternSize / 2)
-
-    let blackCount = 0
-    let whiteCount = 0
-
-    for (let x = startX; x < startX + patternSize; x++) {
-      const index = centerY * width + x
-      if (index < binaryData.length) {
-        if (binaryData[index] === 0) blackCount++
-        else whiteCount++
-      }
-    }
-
-    for (let y = startY; y < startY + patternSize; y++) {
-      const index = y * width + centerX
-      if (index < binaryData.length) {
-        if (binaryData[index] === 0) blackCount++
-        else whiteCount++
-      }
-    }
-
-    const ratio = blackCount / (blackCount + whiteCount)
-    if (ratio > 0.4 && ratio < 0.7) {
-      return patternSize
-    }
-
-    return 0
-  }
-
-  const validateQRStructure = (
-    patterns: Array<{ x: number; y: number; size: number }>,
-    width: number,
-    height: number,
-  ): boolean => {
-    if (patterns.length < 3) return false
-
-    const distances = []
-    for (let i = 0; i < patterns.length - 1; i++) {
-      for (let j = i + 1; j < patterns.length; j++) {
-        const dx = patterns[i].x - patterns[j].x
-        const dy = patterns[i].y - patterns[j].y
-        const distance = Math.sqrt(dx * dx + dy * dy)
-        distances.push(distance)
-      }
-    }
-
-    const avgDistance = distances.reduce((a, b) => a + b, 0) / distances.length
-    const minDistance = Math.min(...distances)
-    const maxDistance = Math.max(...distances)
-
-    return avgDistance > 100 && avgDistance < Math.min(width, height) / 3 && maxDistance / minDistance < 2
   }
 
   const handleScanResult = (data: string) => {
@@ -617,23 +501,6 @@ function QRScanner({ onBack }: { onBack: () => void }) {
     }
   }
 
-  // Single test function for development
-  const testScan = () => {
-    const qrTypes = ["send_money", "cashout", "payment", "add_money"]
-    const randomType = qrTypes[Math.floor(Math.random() * qrTypes.length)]
-
-    const testData = JSON.stringify({
-      type: `sheba_${randomType}`,
-      service: randomType.replace("_", " "),
-      name: "Test User",
-      phone: "01700000000",
-      account: "SHEBA01700000000",
-      timestamp: new Date().toISOString(),
-      version: "1.0",
-    })
-    handleScanResult(testData)
-  }
-
   if (hasPermission === false) {
     return (
       <div className="flex flex-col h-screen bg-white">
@@ -654,11 +521,6 @@ function QRScanner({ onBack }: { onBack: () => void }) {
             </button>
           </div>
 
-          <div className="mt-6 w-full">
-            <button onClick={testScan} className="bg-green-600 text-white py-3 px-6 rounded-md w-full">
-              Test QR Scan (Demo)
-            </button>
-          </div>
         </div>
       </div>
     )
