@@ -387,8 +387,8 @@ export default function InboxPage() {
                   className={`flex w-full items-center justify-between text-left ${isVerified ? "cursor-default" : "cursor-pointer"}`}
                 >
                   <span>Verify</span>
-                  <span className={isVerified ? "text-green-600" : "text-[#1FBFFF]"}>
-                    {isVerified ? "Verified" : "Verify now"}
+                  <span className={isVerified ? "flex items-center gap-1 text-[#1FBFFF]" : "text-[#1FBFFF]"}>
+                    {isVerified ? <><Check size={20} strokeWidth={2.5} aria-hidden="true" />Verified</> : "Verify now"}
                   </span>
                 </button>
 
