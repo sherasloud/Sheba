@@ -184,7 +184,7 @@ export default function PinPage() {
 
         <button
           onClick={() => router.push("/forgot-pin")}
-          className="mb-8 text-lg font-semibold text-[#38afe8] underline"
+          className="mb-8 text-lg font-semibold text-[#38afe8] no-underline"
         >
           পিন ভুলে গেছেন?
         </button>
