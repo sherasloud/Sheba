@@ -17,22 +17,21 @@ export default function RailTicketsPage() {
 
   if (showTicketIntro) {
     return (
-      <main className="flex min-h-[100dvh] flex-col items-center justify-between bg-white px-6 py-20 text-[#2d2d2d]">
-        <div className="flex w-full flex-col items-center">
-          <h1 className="mt-10 text-center text-6xl font-normal tracking-tight">Train Tickets</h1>
-          <img src="/images/rail-tickets-icon.png" alt="Bangladesh Railway" className="mt-40 h-32 w-56 object-contain" />
-          <img src="/images/rail-tickets-icon.png" alt="Rail ticket" className="mt-40 h-40 w-56 object-contain opacity-70" />
-        </div>
+      <main className="relative min-h-[100dvh] overflow-hidden bg-white">
+        <img
+          src="/images/rail-ticket-intro.png"
+          alt="Train Tickets with Bangladesh Railway logo and Continue button"
+          className="absolute inset-0 h-full w-full object-contain object-top"
+        />
         <button
           type="button"
+          aria-label="Continue to rail ticket search"
           onClick={() => {
             setShowTicketIntro(false)
             setSelectedService("train")
           }}
-          className="w-full max-w-md rounded-full bg-[#42afe8] px-8 py-5 text-4xl font-normal text-white transition-colors hover:bg-[#279fdc]"
-        >
-          Continue
-        </button>
+          className="absolute bottom-[12%] left-1/2 h-[7%] w-[52%] -translate-x-1/2 rounded-full bg-transparent"
+        />
       </main>
     )
   }
