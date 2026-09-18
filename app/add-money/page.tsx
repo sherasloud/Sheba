@@ -643,7 +643,7 @@ export default function AddMoneyPage() {
       )}
 
       {step === 3 && (
-        <div className={`flex flex-1 flex-col overflow-y-auto ${selectedMethod === "card" ? "bg-white px-8 pb-8 pt-16" : "px-5 py-6"}`}>
+        <div className="flex flex-1 flex-col overflow-y-auto bg-white px-8 pb-8 pt-16">
           {selectedMethod === "card" ? (
             <>
               <h1 className="mb-24 text-center text-[3.25rem] font-normal leading-tight text-[#38afe8]">এমাউন্ট লিখুন</h1>
@@ -651,13 +651,13 @@ export default function AddMoneyPage() {
                 <input
                   type="text"
                   aria-label="Amount"
-                  className="w-full border-0 bg-transparent p-0 text-center text-[14rem] font-normal leading-none text-black outline-none placeholder:text-black"
+                  className="w-full min-w-0 border-0 bg-transparent p-0 text-center text-[clamp(4.5rem,24vw,14rem)] font-normal leading-none text-black outline-none placeholder:text-black"
                   value={amount}
                 onChange={(e) => setAmount(e.target.value.replace(/[^0-9]/g, ""))}
                 placeholder="0"
                   inputMode="numeric"
                 />
-                <span className="text-5xl font-normal">Tk</span>
+                <span className="shrink-0 text-5xl font-normal">৳</span>
               </div>
               {error && <div className="mb-4 text-center text-red-500">{error}</div>}
               <div className="flex justify-center"><button className="mobile-button w-full max-w-sm rounded-full py-5 text-5xl font-normal" onClick={handleAmountNext}>Next</button></div>
@@ -670,12 +670,12 @@ export default function AddMoneyPage() {
                   type="text"
                   aria-label="Amount"
                   inputMode="numeric"
-                  className="h-32 w-full rounded-2xl border-0 bg-transparent p-0 text-center text-[10rem] font-normal leading-none text-black outline-none placeholder:text-black"
+                  className="h-32 min-w-0 w-full rounded-2xl border-0 bg-transparent p-0 text-center text-[clamp(4.5rem,24vw,14rem)] font-normal leading-none text-black outline-none placeholder:text-black"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value.replace(/[^0-9]/g, ""))}
                   placeholder="0"
                 />
-                <span className="text-5xl font-normal">Tk</span>
+                <span className="shrink-0 text-5xl font-normal">৳</span>
               </div>
               {error && <div className="mb-4 text-center text-red-500">{error}</div>}
               <div className="mt-auto flex justify-center"><button className="mobile-button w-full max-w-sm rounded-full py-5 text-4xl font-normal" onClick={handleAmountNext}>Next</button></div>
@@ -687,7 +687,7 @@ export default function AddMoneyPage() {
       {step === 4 && selectedMethod === "bank" && (
         <div className="flex flex-1 flex-col overflow-y-auto bg-white px-6 pb-8 pt-10 text-black">
           <h1 className="mb-4 text-center text-4xl font-normal text-[#38afe8]">ব্যাংক তথ্য</h1>
-          <div className="mb-8 text-center text-lg font-medium text-[#38afe8]">Amount: Tk{amount}</div>
+          <div className="mb-8 text-center text-lg font-medium text-[#38afe8]">Amount: ৳{amount}</div>
 
           <div className="space-y-4">
             <div>
