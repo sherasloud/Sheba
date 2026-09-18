@@ -1,42 +1,41 @@
 export default function Loading() {
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#8fd8f3] text-white" aria-label="Loading Sheba">
-      <div className="absolute inset-0 bg-gradient-to-b from-[#66c6ed] via-[#b9e8f6] to-[#f7d99d]" />
+    <main className="cat-loading relative min-h-screen overflow-hidden bg-[#7fb0d6]" aria-label="Loading Sheba">
+      <img
+        src="/images/cat-loading-scene.jpeg"
+        alt="A sleeping cat resting in a green field beneath a blue sky"
+        className="absolute inset-0 h-full w-full object-cover"
+      />
 
-      <div className="sun absolute left-1/2 top-[22%] h-24 w-24 -translate-x-1/2 rounded-full bg-[#ffd66b] shadow-[0_0_45px_12px_rgba(255,214,107,0.45)]" />
+      <div className="wind wind-one absolute left-[-12%] top-[43%] h-px w-[58%] bg-white/80" />
+      <div className="wind wind-two absolute right-[-10%] top-[28%] h-px w-[45%] bg-white/80" />
+      <div className="wind wind-three absolute left-[10%] bottom-[24%] h-1 w-[34%] rounded-full bg-[#6da936]/60" />
+      <div className="wind wind-four absolute right-[8%] bottom-[27%] h-1 w-[27%] rounded-full bg-[#6da936]/50" />
 
-      <div className="absolute inset-x-0 bottom-0 h-[38%] bg-[#2eafc0]">
-        <div className="river-highlight absolute inset-x-0 top-8 h-8 bg-[#8be0df]/60" />
-        <div className="river-line absolute inset-x-0 top-24 h-5 bg-[#b4ece5]/50" />
-        <div className="river-line river-line-delay absolute inset-x-0 top-44 h-4 bg-[#b4ece5]/40" />
-        <div className="absolute -top-7 left-0 h-12 w-[58%] rounded-tr-[100%] bg-[#4a9e68]" />
-        <div className="absolute -top-8 right-0 h-14 w-[52%] rounded-tl-[100%] bg-[#3f9865]" />
+      <div className="cat-rest absolute bottom-[15%] left-1/2 h-12 w-20 -translate-x-1/2 rounded-[50%] bg-white/10 blur-[2px]" />
+      <div className="cat-awake absolute bottom-[15%] left-1/2 -translate-x-1/2 text-3xl opacity-0" aria-hidden="true">
+        ^•ﻌ•^
       </div>
 
-      <div className="relative z-10 flex min-h-screen flex-col items-center justify-center pb-10">
-        <div className="mb-8 text-5xl font-semibold tracking-tight text-white drop-shadow-md">সেবা</div>
-        <div className="rounded-full bg-white/20 px-5 py-2 text-sm font-medium backdrop-blur-sm">Loading...</div>
+      <div className="absolute inset-x-0 bottom-[7%] text-center text-sm font-medium tracking-wide text-white/90 drop-shadow">
+        Loading...
       </div>
 
       <style>{`
-        .sun { animation: sunset 5s ease-in-out infinite alternate; }
-        .river-highlight { animation: river 3.5s ease-in-out infinite alternate; }
-        .river-line { animation: riverLine 4s ease-in-out infinite alternate; }
-        .river-line-delay { animation-delay: 1.2s; }
-        @keyframes sunset {
-          from { transform: translate(-50%, -8px); opacity: .92; }
-          to { transform: translate(-50%, 105px); opacity: 1; }
-        }
-        @keyframes river {
-          from { transform: translateX(-3%); opacity: .35; }
-          to { transform: translateX(8%); opacity: .7; }
-        }
-        @keyframes riverLine {
-          from { transform: translateX(8%); }
-          to { transform: translateX(-8%); }
-        }
+        .wind-one { animation: breezeOne 3.2s ease-in-out infinite; }
+        .wind-two { animation: breezeTwo 4s ease-in-out infinite; }
+        .wind-three { animation: grass 2.4s ease-in-out infinite alternate; }
+        .wind-four { animation: grass 3s ease-in-out .5s infinite alternate; }
+        .cat-rest { animation: catSleep 3.8s ease-in-out forwards; }
+        .cat-awake { animation: catWake 4s ease-in-out 3.2s forwards; }
+        @keyframes breezeOne { 0%, 100% { transform: translateX(0) rotate(-16deg); opacity: .25; } 50% { transform: translateX(35px) rotate(-10deg); opacity: .9; } }
+        @keyframes breezeTwo { 0%, 100% { transform: translateX(0) rotate(-14deg); opacity: .25; } 50% { transform: translateX(-45px) rotate(-8deg); opacity: .85; } }
+        @keyframes grass { from { transform: skewX(0); } to { transform: skewX(-8deg) translateX(8px); } }
+        @keyframes catSleep { 0%, 78% { transform: translateX(-50%) scaleY(.82); opacity: .25; } 100% { transform: translateX(-50%) scaleY(1); opacity: 0; } }
+        @keyframes catWake { 0%, 18% { transform: translateX(-50%) translateY(5px); opacity: 0; } 35% { opacity: 1; } 55% { transform: translateX(-50%) translateY(-9px); } 100% { transform: translateX(90vw) translateY(-4px); opacity: 0; } }
         @media (prefers-reduced-motion: reduce) {
-          .sun, .river-highlight, .river-line { animation: none; }
+          .wind, .cat-rest, .cat-awake { animation: none; }
+          .cat-rest { opacity: .25; }
         }
       `}</style>
     </main>
