@@ -320,8 +320,7 @@ function ManageAccountsContent() {
                       {new Date(user.createdAt).toLocaleDateString('bn-BD')}
                     </p>
                   </div>
-                </div>
-              ))}
+                ))}
             </div>
           </div>
         )}
@@ -481,7 +480,13 @@ function ManageAccountsContent() {
                       <p className="font-semibold text-gray-900">{biller.name}</p>
                       <p className="text-xs text-gray-500">{biller.category}</p>
                     </div>
-
+                    <button
+                      onClick={() => handleDeleteBiller(biller.id)}
+                      className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition"
+                      title="ডিলিট করুন"
+                    >
+                      <Trash2 size={18} />
+                    </button>
                   </div>
                 ))
               )}
