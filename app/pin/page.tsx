@@ -155,7 +155,7 @@ export default function PinPage() {
   }
 
   return (
-    <div className="h-[100dvh] overflow-hidden bg-white text-[#10141c]">
+    <div className="fixed inset-0 h-[100dvh] w-full overflow-hidden bg-white text-[#10141c]">
       {/* Header */}
       <div className="flex justify-end px-6 pt-6">
         <button onClick={() => router.push("/enter-phone")} className="text-[#666]" aria-label="Close">
@@ -248,11 +248,13 @@ export default function PinPage() {
       )}
 
       <style jsx global>{`
-        html, body {
-          overflow-x: hidden !important;
-          margin: 0 !important;
-          padding: 0 !important;
-        }
+  html, body {
+  width: 100% !important;
+  height: 100% !important;
+  overflow: hidden !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  }
         
         body::-webkit-scrollbar {
           display: none !important;
