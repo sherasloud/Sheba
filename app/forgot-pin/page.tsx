@@ -82,7 +82,7 @@ export default function ForgotPinPage() {
   return (
     <div className="flex flex-col h-screen bg-white">
       <div className="bg-[#29a9eb] text-white p-4 flex items-center">
-        <Link href="/welcome" className="mr-4">
+        <Link href="/" className="mr-4">
           <ArrowLeft size={24} />
         </Link>
         <div className="text-xl font-medium">Reset PIN</div>
