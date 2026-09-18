@@ -13,6 +13,29 @@ export default function RailTicketsPage() {
   const [passengers, setPassengers] = useState(1)
   const [showFromSuggestions, setShowFromSuggestions] = useState(false)
   const [showToSuggestions, setShowToSuggestions] = useState(false)
+  const [showTicketIntro, setShowTicketIntro] = useState(true)
+
+  if (showTicketIntro) {
+    return (
+      <main className="flex min-h-[100dvh] flex-col items-center justify-between bg-white px-6 py-20 text-[#2d2d2d]">
+        <div className="flex w-full flex-col items-center">
+          <h1 className="mt-10 text-center text-6xl font-normal tracking-tight">Train Tickets</h1>
+          <img src="/images/rail-tickets-icon.png" alt="Bangladesh Railway" className="mt-40 h-32 w-56 object-contain" />
+          <img src="/images/rail-tickets-icon.png" alt="Rail ticket" className="mt-40 h-40 w-56 object-contain opacity-70" />
+        </div>
+        <button
+          type="button"
+          onClick={() => {
+            setShowTicketIntro(false)
+            setSelectedService("train")
+          }}
+          className="w-full max-w-md rounded-full bg-[#42afe8] px-8 py-5 text-4xl font-normal text-white transition-colors hover:bg-[#279fdc]"
+        >
+          Continue
+        </button>
+      </main>
+    )
+  }
 
   // Metro Rail Stations (Dhaka Metro MRT Line-6)
   const metroStations = [
