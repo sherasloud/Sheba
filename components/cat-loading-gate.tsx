@@ -19,7 +19,7 @@ export function CatLoadingGate({ children }: { children: React.ReactNode }) {
             alt="A sleeping cat resting in a green field beneath a blue sky"
             className="absolute inset-0 h-full w-full object-cover image-quality"
           />
-          <div className="cat-sleep-overlay absolute bottom-[15%] left-1/2 z-10 h-8 w-12 -translate-x-1/2 rounded-[55%] bg-white shadow-sm" aria-hidden="true">
+          <div className="cat-sleep-overlay absolute bottom-[15%] left-1/2 z-10 h-10 w-16 -translate-x-1/2 rounded-[55%] bg-white shadow-sm" aria-hidden="true">
             <span className="cat-ear cat-ear-left" />
             <span className="cat-ear cat-ear-right" />
             <span className="cat-face">•︵•</span>
@@ -35,6 +35,12 @@ export function CatLoadingGate({ children }: { children: React.ReactNode }) {
             <span className="car-wheel car-wheel-right" />
           </div>
           <div className="driver absolute bottom-[25.5%] left-[-8%] z-10 h-4 w-2 rounded-t-full bg-[#3f5b78]" aria-hidden="true" />
+          <div className="cycle absolute bottom-[24%] left-[-18%] z-10 h-12 w-20" aria-hidden="true">
+            <span className="cycle-frame" />
+            <span className="cycle-rider" />
+            <span className="cycle-wheel cycle-wheel-left" />
+            <span className="cycle-wheel cycle-wheel-right" />
+          </div>
           <div className="wind wind-one absolute left-[-12%] top-[43%] h-px w-[58%] bg-white/80" />
           <div className="wind wind-two absolute right-[-10%] top-[28%] h-px w-[45%] bg-white/80" />
           <div className="wind wind-three absolute left-[10%] bottom-[24%] h-1 w-[34%] rounded-full bg-[#6da936]/60" />
@@ -45,12 +51,19 @@ export function CatLoadingGate({ children }: { children: React.ReactNode }) {
       <style jsx global>{`
         .image-quality { image-rendering: auto; }
         .cat-sleep-overlay { animation: catSleep 7s ease-in forwards; }
-        .cat-face { position: absolute; inset: 6px 0 auto; text-align: center; color: #607d8b; font-size: 11px; opacity: .85; }
+        .cat-face { position: absolute; inset: 13px 0 auto; text-align: center; color: #607d8b; font-size: 13px; opacity: .7; transform: rotate(8deg); }
         .cat-ear { position: absolute; top: -5px; width: 13px; height: 13px; background: white; transform: rotate(45deg); }
         .cat-ear-left { left: 5px; }
         .cat-ear-right { right: 5px; }
-        .car-one { animation: drive 9s linear infinite; }
-        .car-two { animation: drive 9s linear 2.2s infinite; }
+        .car-one { animation: drive 9s linear infinite; transform: scale(1.65); }
+        .car-two { animation: drive 9s linear 2.2s infinite; transform: scale(1.5); }
+        .cycle { animation: cycleDrive 9s linear 1.1s infinite; transform: scale(1.55); }
+        .cycle-frame { position: absolute; left: 23px; top: 17px; width: 29px; height: 17px; border: 2px solid #245b8a; border-top: 0; transform: skewX(-18deg); }
+        .cycle-rider { position: absolute; left: 34px; top: 1px; width: 10px; height: 10px; border-radius: 999px; background: #df765d; }
+        .cycle-rider::after { content: ''; position: absolute; top: 9px; left: 1px; width: 15px; height: 16px; border-radius: 8px 8px 3px 3px; background: #245b8a; transform: rotate(18deg); }
+        .cycle-wheel { position: absolute; bottom: 0; width: 18px; height: 18px; border: 2px solid #245b8a; border-radius: 999px; }
+        .cycle-wheel-left { left: 8px; }
+        .cycle-wheel-right { right: 8px; }
         .driver { animation: drive 9s linear 2.2s infinite; }
         .car-window { position: absolute; left: 15px; top: 3px; width: 14px; height: 7px; border-radius: 2px; background: #b9e2f5; }
         .car-wheel { position: absolute; bottom: -4px; width: 8px; height: 8px; border-radius: 999px; background: #334155; }
@@ -62,11 +75,12 @@ export function CatLoadingGate({ children }: { children: React.ReactNode }) {
         .wind-four { animation: grass 3.4s ease-in-out .5s infinite alternate; }
         @keyframes catSleep { 0%, 76% { transform: translateX(-50%) scale(.9); opacity: 1; } 88%, 100% { transform: translateX(-50%) translateY(-35px) scale(1.12); opacity: 0; } }
         @keyframes drive { from { transform: translateX(0); } to { transform: translateX(135vw); } }
+        @keyframes cycleDrive { from { transform: translateX(0) scale(1.55); } to { transform: translateX(145vw) scale(1.55); } }
         @keyframes breezeOne { 0%, 100% { transform: translateX(0) rotate(-16deg); opacity: .2; } 50% { transform: translateX(42px) rotate(-10deg); opacity: .9; } }
         @keyframes breezeTwo { 0%, 100% { transform: translateX(0) rotate(-14deg); opacity: .2; } 50% { transform: translateX(-52px) rotate(-8deg); opacity: .85; } }
         @keyframes grass { from { transform: skewX(0); } to { transform: skewX(-8deg) translateX(8px); } }
         @media (prefers-reduced-motion: reduce) {
-          .wind, .car-one, .car-two, .driver, .cat-sleep-overlay { animation: none; }
+          .wind, .car-one, .car-two, .driver, .cycle, .cat-sleep-overlay { animation: none; }
         }
       `}</style>
     </>
