@@ -24,12 +24,12 @@ export function CatLoadingGate({ children }: { children: React.ReactNode }) {
             <span className="cat-ear cat-ear-right" />
             <span className="cat-face">⌒ᴗ⌒</span>
           </div>
-          <div className="car car-one absolute bottom-[22%] left-[-15%] z-10 h-24 w-36 rounded-md bg-[#ef6a5b] shadow-sm" aria-hidden="true">
+          <div className="car car-one absolute bottom-[22%] left-[-15%] z-10 h-10 w-20 rounded-xl bg-[#ef6a5b] shadow-sm" aria-hidden="true">
             <span className="car-window" />
             <span className="car-wheel car-wheel-left" />
             <span className="car-wheel car-wheel-right" />
           </div>
-          <div className="car car-two absolute bottom-[22%] left-[-15%] z-10 h-24 w-36 rounded-md bg-[#f3c45b] shadow-sm" aria-hidden="true">
+          <div className="car car-two absolute bottom-[22%] left-[-15%] z-10 h-12 w-20 rounded-lg bg-[#f3c45b] shadow-sm" aria-hidden="true">
             <span className="car-window car-window-small" />
             <span className="car-wheel car-wheel-left" />
             <span className="car-wheel car-wheel-right" />
@@ -38,7 +38,7 @@ export function CatLoadingGate({ children }: { children: React.ReactNode }) {
             <img
               src="/images/cyclist-rider.jpeg"
               alt=""
-              className="h-full w-full object-contain cyclist-image"
+              className="h-full w-full object-contain cyclist-image mix-blend-multiply"
             />
           </div>
           <div className="wind wind-one absolute left-[-12%] top-[43%] h-px w-[58%] bg-white/80" />
@@ -55,8 +55,10 @@ export function CatLoadingGate({ children }: { children: React.ReactNode }) {
         .cat-ear { position: absolute; top: -5px; width: 13px; height: 13px; background: white; transform: rotate(45deg); }
         .cat-ear-left { left: 5px; }
         .cat-ear-right { right: 5px; }
-        .car-one { animation: drive 9s linear 0s infinite; transform: scale(1.2); }
-        .car-two { animation: drive 9s linear 3s infinite; transform: scale(1.2); }
+        .car-one { animation: drive 9s linear 0s infinite; }
+        .car-two { animation: drive 9s linear 3s infinite; }
+        .car-one::after { content: ''; position: absolute; left: 18px; top: -7px; width: 34px; height: 12px; border-radius: 12px 12px 2px 2px; background: #ef6a5b; }
+        .car-two::after { content: ''; position: absolute; left: 8px; top: -8px; width: 54px; height: 13px; border-radius: 8px 8px 2px 2px; background: #f3c45b; }
         .cycle { animation: cycleDrive 9s linear 6s infinite; }
         .cyclist-image { filter: saturate(1.08) contrast(1.08); mix-blend-mode: multiply; }
         .cycle-frame { position: absolute; left: 23px; top: 17px; width: 29px; height: 17px; border: 2px solid #245b8a; border-top: 0; transform: skewX(-18deg); }
@@ -71,10 +73,11 @@ export function CatLoadingGate({ children }: { children: React.ReactNode }) {
         .cycle-wheel-left { left: 8px; }
         .cycle-wheel-right { right: 8px; }
         .driver { animation: drive 9s linear 2.2s infinite; }
-        .car-window { position: absolute; left: 15px; top: 3px; width: 14px; height: 7px; border-radius: 2px; background: #b9e2f5; }
-        .car-wheel { position: absolute; bottom: -4px; width: 8px; height: 8px; border-radius: 999px; background: #334155; }
-        .car-wheel-left { left: 7px; }
-        .car-wheel-right { right: 7px; }
+        .car-window { position: absolute; left: 25px; top: 5px; width: 24px; height: 9px; border-radius: 3px; background: #b9e2f5; z-index: 1; }
+        .car-window-small { left: 24px; width: 32px; }
+        .car-wheel { position: absolute; bottom: -5px; width: 11px; height: 11px; border: 2px solid #1f2937; border-radius: 999px; background: #64748b; z-index: 2; }
+        .car-wheel-left { left: 10px; }
+        .car-wheel-right { right: 10px; }
         .wind-one { animation: breezeOne 1.8s ease-in-out infinite; }
         .wind-two { animation: breezeTwo 2.2s ease-in-out infinite; }
         .wind-three { animation: grass 1.4s ease-in-out infinite alternate; }
