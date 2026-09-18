@@ -248,7 +248,7 @@ export default function InboxPage() {
                   const bgColor = colors[hash]
                   
                   const userProfilePic = transactionProfilePics[otherPhone]
-                  const displayChar = otherPhone ? otherPhone.charAt(0).toUpperCase() : '?'
+                  const displayChar = otherPhone ? otherPhone.charAt(0).toUpperCase() : null
 
                   return (
                     <div
@@ -258,9 +258,11 @@ export default function InboxPage() {
                       <div className={`w-12 h-12 rounded-full ${bgColor} flex items-center justify-center text-white font-bold text-sm flex-shrink-0 overflow-hidden`}>
                         {userProfilePic ? (
                           <img src={userProfilePic} alt={otherPhone || 'Profile'} className="w-full h-full object-cover" />
-                        ) : (
-                          displayChar
-                        )}
+  ) : displayChar ? (
+  displayChar
+  ) : (
+  <User size={22} strokeWidth={1.8} aria-hidden="true" />
+  )}
                       </div>
                       
                       <div className="flex-1 min-w-0">
