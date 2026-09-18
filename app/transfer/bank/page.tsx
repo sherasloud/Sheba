@@ -658,8 +658,11 @@ export default function BankTransferPage() {
             </div>
           )}
 
-          <div className="mt-auto pt-4">
-            <button onClick={handleAmountNext} className="bg-[#29a9eb] text-white p-4 rounded-md w-full">
+          <div className="mt-auto flex">
+            <button
+              onClick={handleAmountNext}
+              className="flex-1 bg-[#29a9eb] text-white p-4 rounded-md ml-2"
+            >
               Next
             </button>
           </div>
