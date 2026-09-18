@@ -283,17 +283,55 @@ export default function AddMoneyPage() {
     return true
   }
 
-  const handleDetailsNext = () => {
-    let isValid = false
-
-    if (selectedMethod === "bank") {
-      isValid = validateBankDetails()
-    } else if (selectedMethod === "card") {
-      isValid = validateCardDetails()
+  const startPayStationCheckout = async () => {
+    const currentPhone = localStorage.getItem("phoneNumber")
+    if (!currentPhone) {
+      setError("Phone number not found. Please log in again.")
+      return
     }
 
-    if (isValid) {
-      setStep(5) // Go to PIN step
+    setIsLoading(true)
+    setError("")
+
+    try {
+      const userData = JSON.parse(localStorage.getItem("userData") || "{}")
+      const response = await fetch("/api/paystation/initiate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          phoneNumber: currentPhone,
+          amount: Number(amount),
+          userEmail: userData.email,
+          userName: userData.name || cardDetails.cardholderName || "Customer",
+        }),
+      })
+      const result = await response.json()
+      if (!response.ok || !result.success) {
+        setError(result.message || "Unable to start PayStation checkout")
+        setIsLoading(false)
+        return
+      }
+
+      localStorage.setItem("paystationInvoice", result.invoiceNumber)
+      localStorage.setItem("paystationAmount", String(amount))
+      window.location.assign(result.redirectUrl)
+    } catch {
+      setIsLoading(false)
+      setError("Unable to connect to PayStation. Please try again.")
+    }
+  }
+
+  const handleDetailsNext = () => {
+    if (selectedMethod === "card") {
+      if (validateCardDetails()) {
+        // Card details are collected first; only then redirect to PayStation.
+        void startPayStationCheckout()
+      }
+      return
+    }
+
+    if (validateBankDetails()) {
+      setStep(5)
       setError("")
     }
   }
