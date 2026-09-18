@@ -372,7 +372,7 @@ export default function InboxPage() {
                 </div>
               </label>
 
-              <div className="mt-28 flex w-full max-w-md flex-col gap-8 text-2xl font-normal">
+              <div className="mt-28 flex w-full max-w-md flex-col gap-8 text-2xl font-normal leading-normal">
                 <button onClick={() => setShowNameModal(true)} className="flex w-full items-center justify-between text-left">
                   <span>Name</span>
                   <span className="max-w-[60%] truncate text-right">{userName || "ShebaUser"}</span>
@@ -399,7 +399,7 @@ export default function InboxPage() {
 
                 <button type="button" className="flex w-full items-center justify-between text-left">
                   <span>Language</span>
-                  <span className="text-right">��াংলা</span>
+                  <span className="whitespace-nowrap text-right">বাংলা</span>
                 </button>
 
                 <button type="button" className="flex w-full items-center justify-between text-left">
