@@ -582,12 +582,12 @@ export default function AddMoneyPage() {
 
       {step === 1 && (
   <div className="flex flex-1 flex-col overflow-y-auto bg-white px-5 pb-8 pt-6">
-  <div className="space-y-3">
+  <div className="space-y-4">
   <button
   onClick={() => handleMethodSelect("card")}
   className="flex w-full items-center rounded-xl border border-[#edf0f3] bg-white px-4 py-4 text-left shadow-[0_3px_12px_rgba(20,32,51,0.05)] transition-colors hover:border-[#38afe8]"
   >
-    <div className="mr-4 flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-[#fff4df] text-[#e6a91d]"><CreditCard size={22} strokeWidth={1.8} /></div>
+    <div className="mr-4 flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-[#e8f7fd] text-[#249fe0]"><CreditCard size={22} strokeWidth={1.8} /></div>
     <div className="min-w-0 flex-1">
       <h3 className="text-base font-medium text-[#151522]">Credit Card</h3>
       <p className="text-xs text-[#a5a9b1]">Visa or Mastercard</p>
@@ -598,7 +598,7 @@ export default function AddMoneyPage() {
   onClick={() => handleMethodSelect("bank")}
   className="flex w-full items-center rounded-xl border border-[#edf0f3] bg-white px-4 py-4 text-left shadow-[0_3px_12px_rgba(20,32,51,0.05)] transition-colors hover:border-[#38afe8]"
   >
-    <div className="mr-4 flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-[#e8f7fd] text-[#38afe8]"><Building2 size={22} strokeWidth={1.8} /></div>
+    <div className="mr-4 flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-[#eaf8ef] text-[#2da35a]"><Building2 size={22} strokeWidth={1.8} /></div>
     <div className="min-w-0 flex-1">
       <h3 className="text-base font-medium text-[#151522]">Bank Account</h3>
       <p className="text-xs text-[#a5a9b1]">Transfer from your bank</p>
