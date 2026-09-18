@@ -23,6 +23,7 @@ export default function RailTicketsPage() {
           alt="Bangladesh Railway rail ticket"
           className="absolute inset-0 h-full w-full object-contain object-top"
         />
+        <div className="absolute inset-x-0 top-0 h-[17%] bg-white" />
         <div className="absolute inset-x-0 bottom-0 h-[19%] bg-white" />
         <div className="absolute left-1/2 top-[17%] w-[72%] -translate-x-1/2 bg-white py-2 text-center text-[clamp(2rem,7vw,4rem)] font-normal tracking-tight text-[#2d2d2d]">
           Rail Tickets
