@@ -18,21 +18,24 @@ export default function RailTicketsPage() {
   if (showTicketIntro) {
     return (
       <main className="relative min-h-[100dvh] overflow-hidden bg-white">
-        <button
-          type="button"
-          aria-label="Continue to rail ticket search"
-          onClick={() => {
-            setShowTicketIntro(false)
-            setSelectedService("train")
-          }}
-          className="absolute inset-0 h-full w-full cursor-pointer border-0 bg-transparent p-0"
-        >
-          <img
-            src="/images/rail-ticket-intro.png"
-            alt="Train Tickets with Bangladesh Railway logo and Continue button"
-            className="pointer-events-none absolute inset-0 h-full w-full object-contain object-top"
-          />
-        </button>
+        <img
+          src="/images/rail-ticket-intro.png"
+          alt="Bangladesh Railway rail ticket"
+          className="absolute inset-0 h-full w-full object-contain object-top"
+        />
+        <div className="absolute left-1/2 top-[17%] w-[72%] -translate-x-1/2 bg-white py-2 text-center text-[clamp(2rem,7vw,4rem)] font-normal tracking-tight text-[#2d2d2d]">
+          Rail Tickets
+        </div>
+        <div className="absolute bottom-[10%] left-1/2 flex w-[52%] -translate-x-1/2 justify-center bg-white py-2">
+          <button
+            type="button"
+            aria-label="Go back"
+            onClick={() => router.back()}
+            className="w-full rounded-full bg-[#42afe8] px-8 py-4 text-[clamp(1.5rem,5vw,2.5rem)] font-normal text-white"
+          >
+            Back
+          </button>
+        </div>
       </main>
     )
   }
