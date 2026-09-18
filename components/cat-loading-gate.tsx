@@ -58,11 +58,11 @@ export function CatLoadingGate({ children }: { children: React.ReactNode }) {
         .car-two { animation: drive 9s linear 2.2s infinite; transform: scale(1.5); }
         .cycle { animation: cycleDrive 9s linear 1.1s infinite; transform: scale(1.55); }
         .cycle-frame { position: absolute; left: 23px; top: 17px; width: 29px; height: 17px; border: 2px solid #245b8a; border-top: 0; transform: skewX(-18deg); }
-        .cycle-rider { position: absolute; left: 31px; top: 0; width: 20px; height: 30px; }
-        .rider-head { position: absolute; left: 4px; top: 0; width: 12px; height: 12px; border-radius: 999px; background: #f0b08a; }
-        .rider-body { position: absolute; left: 5px; top: 10px; width: 14px; height: 18px; border-radius: 8px 8px 3px 3px; background: #245b8a; transform: rotate(16deg); }
-        .rider-arm { position: absolute; left: 14px; top: 12px; width: 13px; height: 3px; border-radius: 99px; background: #f0b08a; transform: rotate(28deg); transform-origin: left; }
-        .rider-leg { position: absolute; left: 8px; top: 25px; width: 3px; height: 14px; border-radius: 99px; background: #334155; transform-origin: top; }
+        .cycle-rider { position: absolute; left: 28px; top: -28px; width: 34px; height: 58px; }
+        .rider-head { position: absolute; left: 10px; top: 0; width: 17px; height: 17px; border-radius: 999px; background: #d98968; box-shadow: 3px -3px 0 #3f2d26; }
+        .rider-body { position: absolute; left: 9px; top: 14px; width: 21px; height: 27px; border-radius: 10px 10px 5px 5px; background: #245b8a; transform: rotate(16deg); }
+        .rider-arm { position: absolute; left: 24px; top: 19px; width: 22px; height: 5px; border-radius: 99px; background: #d98968; transform: rotate(28deg); transform-origin: left; }
+        .rider-leg { position: absolute; left: 14px; top: 37px; width: 5px; height: 24px; border-radius: 99px; background: #334155; transform-origin: top; }
         .rider-leg-one { transform: rotate(35deg); }
         .rider-leg-two { transform: rotate(-35deg); }
         .cycle-wheel { position: absolute; bottom: 0; width: 18px; height: 18px; border: 2px solid #245b8a; border-radius: 999px; }
