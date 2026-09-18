@@ -34,11 +34,12 @@ export function CatLoadingGate({ children }: { children: React.ReactNode }) {
             <span className="car-wheel car-wheel-left" />
             <span className="car-wheel car-wheel-right" />
           </div>
-          <div className="cycle absolute bottom-[24%] left-[-18%] z-10 h-12 w-20" aria-hidden="true">
-            <span className="cycle-frame" />
-            <span className="cycle-rider"><i className="rider-head" /><i className="rider-body" /><i className="rider-arm" /><i className="rider-leg rider-leg-one" /><i className="rider-leg rider-leg-two" /></span>
-            <span className="cycle-wheel cycle-wheel-left" />
-            <span className="cycle-wheel cycle-wheel-right" />
+          <div className="cycle absolute bottom-[19%] left-[-28%] z-10 h-48 w-72" aria-hidden="true">
+            <img
+              src="/images/cyclist-rider.jpeg"
+              alt=""
+              className="h-full w-full object-contain"
+            />
           </div>
           <div className="wind wind-one absolute left-[-12%] top-[43%] h-px w-[58%] bg-white/80" />
           <div className="wind wind-two absolute right-[-10%] top-[28%] h-px w-[45%] bg-white/80" />
@@ -56,7 +57,7 @@ export function CatLoadingGate({ children }: { children: React.ReactNode }) {
         .cat-ear-right { right: 5px; }
         .car-one { animation: drive 9s linear infinite; transform: scale(1.65); }
         .car-two { animation: drive 9s linear 2.2s infinite; transform: scale(1.5); }
-        .cycle { animation: cycleDrive 9s linear 1.1s infinite; transform: scale(1.55); }
+        .cycle { animation: cycleDrive 9s linear 1.1s infinite; }
         .cycle-frame { position: absolute; left: 23px; top: 17px; width: 29px; height: 17px; border: 2px solid #245b8a; border-top: 0; transform: skewX(-18deg); }
         .cycle-rider { position: absolute; left: 28px; top: -28px; width: 34px; height: 58px; }
         .rider-head { position: absolute; left: 10px; top: 0; width: 17px; height: 17px; border-radius: 999px; background: #d98968; box-shadow: 3px -3px 0 #3f2d26; }
@@ -79,7 +80,7 @@ export function CatLoadingGate({ children }: { children: React.ReactNode }) {
         .wind-four { animation: grass 1.7s ease-in-out .3s infinite alternate; }
         @keyframes catSleep { 0%, 76% { transform: translateX(-50%) scale(.9); opacity: 1; } 88%, 100% { transform: translateX(-50%) translateY(-35px) scale(1.12); opacity: 0; } }
         @keyframes drive { from { transform: translateX(0); } to { transform: translateX(135vw); } }
-        @keyframes cycleDrive { from { transform: translateX(0) scale(1.55); } to { transform: translateX(145vw) scale(1.55); } }
+        @keyframes cycleDrive { from { transform: translateX(0); } to { transform: translateX(145vw); } }
         @keyframes breezeOne { 0%, 100% { transform: translateX(0) rotate(-16deg); opacity: .2; } 50% { transform: translateX(42px) rotate(-10deg); opacity: .9; } }
         @keyframes breezeTwo { 0%, 100% { transform: translateX(0) rotate(-14deg); opacity: .2; } 50% { transform: translateX(-52px) rotate(-8deg); opacity: .85; } }
         @keyframes grass { from { transform: skewX(0); } to { transform: skewX(-8deg) translateX(8px); } }
