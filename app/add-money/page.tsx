@@ -44,6 +44,19 @@ export default function AddMoneyPage() {
   })
 
   useEffect(() => {
+    const paymentStatus = new URLSearchParams(window.location.search).get("payment")
+    if (paymentStatus === "success") {
+      const returnedAmount = localStorage.getItem("paystationAmount")
+      if (returnedAmount) setAmount(returnedAmount)
+      setSuccess(true)
+      localStorage.removeItem("paystationAmount")
+      localStorage.removeItem("paystationInvoice")
+    } else if (paymentStatus === "failed") {
+      setError("PayStation payment failed. Please try again.")
+    } else if (paymentStatus === "pending") {
+      setError("Payment received. Wallet credit is being verified.")
+    }
+
     // Check verification status
     const userData = localStorage.getItem("userData")
     const storedVerified = localStorage.getItem("isVerified")
@@ -362,9 +375,6 @@ export default function AddMoneyPage() {
     setError("")
 
     try {
-      // Simulate processing time
-      await new Promise((resolve) => setTimeout(resolve, 1500))
-
       const currentPhone = localStorage.getItem("phoneNumber")
       if (!currentPhone) {
         setError("Phone number not found. Please log in again.")
@@ -374,7 +384,30 @@ export default function AddMoneyPage() {
 
       const userData = JSON.parse(localStorage.getItem("userData") || "{}")
 
-      // Call the add-money API
+      if (selectedMethod === "card") {
+        const response = await fetch("/api/paystation/initiate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            phoneNumber: currentPhone,
+            amount: Number(amount),
+            userEmail: userData.email,
+            userName: userData.name || "Customer",
+          }),
+        })
+        const result = await response.json()
+        if (!response.ok || !result.success) {
+          setError(result.message || "Unable to start PayStation checkout")
+          setIsLoading(false)
+          return
+        }
+        localStorage.setItem("paystationInvoice", result.invoiceNumber)
+        localStorage.setItem("paystationAmount", String(amount))
+        window.location.assign(result.redirectUrl)
+        return
+      }
+
+      // Bank flow remains the existing internal balance flow.
       const response = await fetch("/api/add-money", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
