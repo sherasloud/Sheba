@@ -26,16 +26,14 @@ export default function RailTicketsPage() {
         <div className="absolute left-1/2 top-[17%] w-[72%] -translate-x-1/2 bg-white py-2 text-center text-[clamp(2rem,7vw,4rem)] font-normal tracking-tight text-[#2d2d2d]">
           Rail Tickets
         </div>
-        <div className="absolute bottom-[10%] left-1/2 flex w-[52%] -translate-x-1/2 justify-center bg-white py-2">
-          <button
-            type="button"
-            aria-label="Go back"
-            onClick={() => router.back()}
-            className="w-full rounded-full bg-[#42afe8] px-8 py-4 text-[clamp(1.5rem,5vw,2.5rem)] font-normal text-white"
-          >
-            Back
-          </button>
-        </div>
+        <button
+          type="button"
+          aria-label="Go back"
+          onClick={() => router.back()}
+          className="absolute left-5 top-5 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white text-3xl font-light text-[#2d2d2d] shadow-sm"
+        >
+          ‹
+        </button>
       </main>
     )
   }
