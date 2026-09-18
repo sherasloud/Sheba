@@ -661,30 +661,29 @@ export default function AddMoneyPage() {
             </>
           ) : (
             <>
-              <div className="mb-2 text-2xl font-bold">Enter Amount</div>
-              <div className="mb-8 text-[#38afe8]">Bank to Sheba</div>
-              <div className="mb-2 flex items-center"><div className="mr-2">Tk</div><div>Amount (Tk)</div></div>
+              <h1 className="mb-24 text-center text-[3.25rem] font-normal leading-tight text-[#38afe8]">এমাউন্ট লিখুন</h1>
               <input
                 type="text"
                 aria-label="Amount"
                 inputMode="numeric"
-                className="mb-2 h-24 w-full rounded-md border p-4 text-center text-6xl font-medium"
+                className="mb-10 h-32 w-full rounded-2xl border-0 bg-transparent p-0 text-center text-[7rem] font-medium leading-none text-black outline-none placeholder:text-black"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value.replace(/[^0-9]/g, ""))}
                 placeholder="0"
               />
-              <div className="mb-4 rounded-lg border border-blue-200 bg-blue-50 p-3"><div className="text-sm text-[#38afe8]"><div>Your Sheba Balance: Tk{balance.toLocaleString()}</div>{amount && <div>New Sheba Balance: Tk{(balance + Number(amount || 0)).toLocaleString()}</div>}</div></div>
-              {error && <div className="mb-4 text-red-500">{error}</div>}
-              <div className="mt-auto flex space-x-2"><button className="flex-1 rounded-md border border-gray-300 p-4 touch-manipulation" onClick={handleBackStep}>Back</button><button className="mobile-button flex-1" onClick={handleAmountNext}>Next</button></div>
+              <div className="mb-6 text-center text-sm text-[#38afe8]">Bank to Sheba</div>
+              <div className="mb-4 rounded-2xl border border-[#d9f2fc] bg-[#f5fcff] p-4 text-center text-sm text-[#38afe8]"><div>Your Sheba Balance: Tk{balance.toLocaleString()}</div>{amount && <div>New Sheba Balance: Tk{(balance + Number(amount || 0)).toLocaleString()}</div>}</div>
+              {error && <div className="mb-4 text-center text-red-500">{error}</div>}
+              <div className="mt-auto flex items-center gap-3"><button className="rounded-full border border-[#38afe8] px-6 py-4 text-[#38afe8] touch-manipulation" onClick={handleBackStep}>Back</button><button className="mobile-button flex-1 rounded-full py-5 text-4xl font-normal" onClick={handleAmountNext}>Next</button></div>
             </>
           )}
         </div>
       )}
 
       {step === 4 && selectedMethod === "bank" && (
-        <div className="flex flex-1 flex-col overflow-y-auto px-5 py-6">
-          <div className="text-2xl font-bold mb-2">Bank Details</div>
-          <div className="text-[#38afe8] mb-8">Amount: Tk{amount}</div>
+        <div className="flex flex-1 flex-col overflow-y-auto bg-white px-6 pb-8 pt-10 text-black">
+          <h1 className="mb-4 text-center text-4xl font-normal text-[#38afe8]">ব্যাংক তথ্য</h1>
+          <div className="mb-8 text-center text-lg font-medium text-[#38afe8]">Amount: Tk{amount}</div>
 
           <div className="space-y-4">
             <div>
