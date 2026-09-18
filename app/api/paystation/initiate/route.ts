@@ -14,9 +14,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, message: "Invalid amount or phone number" }, { status: 400 })
     }
 
-    const merchantId = process.env.PAYSTATION_MERCHANT_ID
+    const merchantId = process.env.PAYSTATION_MERCHANT_ID || process.env.PAYSTATION_STORE_ID
     const password = process.env.PAYSTATION_PASSWORD
-    if (!merchantId || !password) {
+    const storeId = process.env.PAYSTATION_STORE_ID || merchantId
+    if (!merchantId || !password || !storeId) {
       console.error("[v0] PayStation credentials are not configured")
       return NextResponse.json({ success: false, message: "PayStation is not configured" }, { status: 503 })
     }
@@ -25,6 +26,7 @@ export async function POST(request: Request) {
     const origin = new URL(request.url).origin
     const form = new URLSearchParams({
       merchantId,
+      store_id: storeId,
       password,
       invoice_number: invoiceNumber,
       payment_amount: amount.toFixed(2),
