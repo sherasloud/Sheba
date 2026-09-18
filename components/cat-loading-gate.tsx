@@ -15,8 +15,8 @@ export function CatLoadingGate({ children }: { children: React.ReactNode }) {
       <div className={showIntro ? "fixed inset-0 z-[9999]" : "pointer-events-none fixed inset-0 z-[-1] opacity-0"}>
         <main className="cat-loading relative min-h-screen overflow-hidden bg-[#7fb0d6]" aria-label="Sheba intro">
           <img
-            src="/images/cat-loading-scene.jpeg"
-            alt="A sleeping cat resting in a green field beneath a blue sky"
+            src="/images/loading-background.jpeg"
+            alt="Soft blue sky and white shoreline illustration"
             className="absolute inset-0 h-full w-full object-cover image-quality"
           />
           <div className="cat-sleep-overlay absolute bottom-[15%] left-1/2 z-10 h-7 w-11 -translate-x-1/2 rounded-[55%] bg-white shadow-sm" aria-hidden="true">
