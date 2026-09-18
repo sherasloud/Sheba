@@ -192,12 +192,12 @@ export default function InboxPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-0 border-b border-gray-200 bg-white sticky top-0 z-10">
+      <div className="flex gap-0 bg-white sticky top-0 z-10">
         <button
           onClick={() => setActiveTab('transactions')}
           className={`flex-1 py-3 px-4 font-medium transition-colors ${
             activeTab === 'transactions'
-              ? 'text-[#1FBFFF] border-b-2 border-[#1FBFFF]'
+              ? 'text-[#1FBFFF]'
               : 'text-gray-600 hover:text-gray-900'
           }`}
         >
@@ -207,7 +207,7 @@ export default function InboxPage() {
           onClick={() => setActiveTab('notifications')}
           className={`flex-1 py-3 px-4 font-medium transition-colors ${
             activeTab === 'notifications'
-              ? 'text-[#1FBFFF] border-b-2 border-[#1FBFFF]'
+              ? 'text-[#1FBFFF]'
               : 'text-gray-600 hover:text-gray-900'
           }`}
         >
@@ -217,7 +217,7 @@ export default function InboxPage() {
           onClick={() => setActiveTab('account')}
           className={`flex-1 py-3 px-4 font-medium transition-colors ${
             activeTab === 'account'
-              ? 'text-[#1FBFFF] border-b-2 border-[#1FBFFF]'
+              ? 'text-[#1FBFFF]'
               : 'text-gray-600 hover:text-gray-900'
           }`}
         >
