@@ -320,7 +320,8 @@ function ManageAccountsContent() {
                       {new Date(user.createdAt).toLocaleDateString('bn-BD')}
                     </p>
                   </div>
-                ))}
+                </div>
+              ))}
             </div>
           </div>
         )}
