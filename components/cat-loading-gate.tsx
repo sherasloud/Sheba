@@ -22,7 +22,7 @@ export function CatLoadingGate({ children }: { children: React.ReactNode }) {
           <div className="cat-sleep-overlay absolute bottom-[15%] left-1/2 z-10 h-7 w-11 -translate-x-1/2 rounded-[55%] bg-white shadow-sm" aria-hidden="true">
             <span className="cat-ear cat-ear-left" />
             <span className="cat-ear cat-ear-right" />
-            <span className="cat-face">⌣</span>
+            <span className="cat-face">⌒ᴗ⌒</span>
           </div>
           <div className="car car-one absolute bottom-[25%] left-[-15%] z-10 h-5 w-12 rounded-md bg-[#ef6a5b] shadow-sm" aria-hidden="true">
             <span className="car-window" />
@@ -36,7 +36,7 @@ export function CatLoadingGate({ children }: { children: React.ReactNode }) {
           </div>
           <div className="cycle absolute bottom-[24%] left-[-18%] z-10 h-12 w-20" aria-hidden="true">
             <span className="cycle-frame" />
-            <span className="cycle-rider" />
+            <span className="cycle-rider"><i className="rider-head" /><i className="rider-body" /><i className="rider-arm" /><i className="rider-leg rider-leg-one" /><i className="rider-leg rider-leg-two" /></span>
             <span className="cycle-wheel cycle-wheel-left" />
             <span className="cycle-wheel cycle-wheel-right" />
           </div>
@@ -50,7 +50,7 @@ export function CatLoadingGate({ children }: { children: React.ReactNode }) {
       <style jsx global>{`
         .image-quality { image-rendering: auto; }
         .cat-sleep-overlay { animation: catSleep 7s ease-in forwards; }
-        .cat-face { position: absolute; inset: 8px 0 auto; text-align: center; color: #607d8b; font-size: 10px; font-weight: 600; opacity: .65; transform: rotate(8deg); }
+        .cat-face { position: absolute; inset: 8px 0 auto; text-align: center; color: #607d8b; font-size: 10px; font-weight: 600; letter-spacing: -1px; opacity: .65; transform: rotate(8deg); }
         .cat-ear { position: absolute; top: -5px; width: 13px; height: 13px; background: white; transform: rotate(45deg); }
         .cat-ear-left { left: 5px; }
         .cat-ear-right { right: 5px; }
@@ -58,8 +58,13 @@ export function CatLoadingGate({ children }: { children: React.ReactNode }) {
         .car-two { animation: drive 9s linear 2.2s infinite; transform: scale(1.5); }
         .cycle { animation: cycleDrive 9s linear 1.1s infinite; transform: scale(1.55); }
         .cycle-frame { position: absolute; left: 23px; top: 17px; width: 29px; height: 17px; border: 2px solid #245b8a; border-top: 0; transform: skewX(-18deg); }
-        .cycle-rider { position: absolute; left: 34px; top: 0; width: 13px; height: 13px; border-radius: 999px; background: #f0b08a; }
-        .cycle-rider::after { content: ''; position: absolute; top: 9px; left: 1px; width: 15px; height: 16px; border-radius: 8px 8px 3px 3px; background: #245b8a; transform: rotate(18deg); }
+        .cycle-rider { position: absolute; left: 31px; top: 0; width: 20px; height: 30px; }
+        .rider-head { position: absolute; left: 4px; top: 0; width: 12px; height: 12px; border-radius: 999px; background: #f0b08a; }
+        .rider-body { position: absolute; left: 5px; top: 10px; width: 14px; height: 18px; border-radius: 8px 8px 3px 3px; background: #245b8a; transform: rotate(16deg); }
+        .rider-arm { position: absolute; left: 14px; top: 12px; width: 13px; height: 3px; border-radius: 99px; background: #f0b08a; transform: rotate(28deg); transform-origin: left; }
+        .rider-leg { position: absolute; left: 8px; top: 25px; width: 3px; height: 14px; border-radius: 99px; background: #334155; transform-origin: top; }
+        .rider-leg-one { transform: rotate(35deg); }
+        .rider-leg-two { transform: rotate(-35deg); }
         .cycle-wheel { position: absolute; bottom: 0; width: 18px; height: 18px; border: 2px solid #245b8a; border-radius: 999px; }
         .cycle-wheel-left { left: 8px; }
         .cycle-wheel-right { right: 8px; }
