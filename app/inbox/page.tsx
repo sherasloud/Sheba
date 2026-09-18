@@ -353,105 +353,43 @@ export default function InboxPage() {
 
         {/* Settings Tab */}
         {activeTab === 'account' && (
-          <div className="p-4 space-y-4">
-            {/* Profile Picture Section */}
-            <div className="bg-white rounded-lg p-4 border border-gray-200">
-              <h2 className="font-bold text-lg mb-4">প্রোফাইল ছবি</h2>
-              
-              <div className="flex flex-col items-center gap-4">
-                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-[#1FBFFF] to-[#1fa5eb] flex items-center justify-center overflow-hidden">
+          <div className="min-h-full bg-white px-6 pb-16 pt-12 text-black">
+            <div className="flex flex-col items-center">
+              <label className="relative cursor-pointer">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleProfilePicUpload}
+                  disabled={uploadingProfile}
+                  className="hidden"
+                />
+                <div className="flex h-52 w-52 items-center justify-center overflow-hidden rounded-full bg-[#b9ddf8]">
                   {profilePic ? (
-                    <img src={profilePic} alt="Profile" className="w-full h-full object-cover" />
+                    <img src={profilePic} alt="Profile" className="h-full w-full object-cover" />
                   ) : (
-                    <User size={48} className="text-white" />
+                    <User size={92} strokeWidth={1.2} className="text-white" />
                   )}
                 </div>
-                
-                <label className="relative cursor-pointer">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleProfilePicUpload}
-                    disabled={uploadingProfile}
-                    className="hidden"
-                  />
-                  <div className="flex items-center gap-2 px-4 py-2 bg-[#1FBFFF] text-white rounded-lg hover:bg-[#1fa5eb] transition font-medium">
-                    <Upload size={18} />
-                    {uploadingProfile ? 'আপলোড করছি...' : 'ছবি আপলোড করুন'}
-                  </div>
-                </label>
-              </div>
-            </div>
+              </label>
 
-            {/* Account Settings Section */}
-            <div className="bg-gradient-to-r from-[#29a9eb] to-blue-400 rounded-lg p-4 border-2 border-[#29a9eb]">
-              <h2 className="font-bold text-lg mb-4 text-white">👤 আপনার নাম</h2>
-              
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-blue-100 text-sm">বর্তমান নাম</p>
-                  <p className="font-bold text-white text-lg">{userName}</p>
-                </div>
-                <button
-                  onClick={() => setShowNameModal(true)}
-                  className="bg-white text-[#29a9eb] px-4 py-2 rounded-lg font-semibold hover:bg-gray-100 transition"
-                >
-                  পরিবর্তন করুন
-                </button>
-              </div>
-            </div>
+              <button onClick={() => setShowNameModal(true)} className="mt-28 text-5xl font-normal leading-none">
+                নামে
+              </button>
 
-            {/* Account Settings Section */}
-            <div className="bg-white rounded-lg p-4 border border-gray-200">
-              <h2 className="font-bold text-lg mb-4">অ্যাকাউন্ট সেটিংস</h2>
-              
-              <div className="space-y-3">
-                <div className="pb-3 border-b border-gray-200">
-                  <p className="text-sm text-gray-600">ফোন নম্বর</p>
-                  <p className="font-medium">{userPhone}</p>
-                </div>
-                
-                <div className="pb-3 border-b border-gray-200">
-                  <p className="text-sm text-gray-600">ফোন নম্বর</p>
-                  <p className="font-medium">{userPhone}</p>
-                </div>
-                
-                <div className="pb-3 border-b border-gray-200">
-                  <p className="text-sm text-gray-600">যাচাইকরণ স্থিতি</p>
-                  <p className="font-medium">
-                    {isVerified ? '✓ যাচাইকৃত' : '✗ অ-যাচাইকৃত'}
-                  </p>
-                </div>
-              </div>
-            </div>
+              <button onClick={() => setShowNameModal(true)} className="mt-20 text-4xl font-normal leading-none">
+                একাউন্ট চেইঞ্জ
+              </button>
 
-            {/* Facebook Link Section */}
-            <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg p-4 border-2 border-blue-500">
-              <a
-                href="https://facebook.com/ShebaBangIadesh"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-between hover:opacity-90 transition-all"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="bg-white text-blue-600 p-3 rounded-lg font-bold text-lg">f</div>
-                  <div>
-                    <div className="font-bold text-white">📘 Sheba Facebook</div>
-                    <div className="text-sm text-blue-100">আমাদের অফিসিয়াল ফেসবুক পেজ</div>
-                  </div>
-                </div>
-                <div className="text-white text-xl">→</div>
-              </a>
-            </div>
+              <button type="button" className="mt-20 text-4xl font-normal leading-none">
+                Language
+              </button>
 
-            {/* Logout Section */}
-            <div className="bg-white rounded-lg p-4 border border-gray-200">
-              <button
-                onClick={handleLogout}
-                className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-red-50 text-red-600 rounded-lg font-medium hover:bg-red-100 transition"
-              >
-                <LogOut size={18} />
-                লগআউট
+              <button type="button" className="mt-20 text-4xl font-normal leading-none">
+                Change PIN
+              </button>
+
+              <button onClick={handleLogout} className="mt-20 text-5xl font-normal leading-none">
+                একাউন্ট লগআউট
               </button>
             </div>
           </div>
