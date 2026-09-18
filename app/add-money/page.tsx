@@ -582,10 +582,6 @@ export default function AddMoneyPage() {
 
       {step === 1 && (
   <div className="flex flex-1 flex-col overflow-y-auto bg-[#f7f8fa] px-5 pb-8 pt-6">
-  <div className="mb-8 flex items-center justify-center">
-    <h1 className="text-xl font-medium text-[#151522]">Payment Method</h1>
-  </div>
-
   <div className="space-y-3">
   <button
   onClick={() => handleMethodSelect("card")}
@@ -613,10 +609,6 @@ export default function AddMoneyPage() {
   </button>
   </div>
 
-  <div className="mt-auto pt-10">
-    <div className="mb-3 flex items-center justify-between border-b border-dashed border-[#dfe2e6] pb-3 text-sm text-[#9297a0]"><span>Available balance</span><span className="font-medium text-[#151522]">৳{balance.toLocaleString()}</span></div>
-    <button disabled={!selectedMethod} onClick={() => selectedMethod && handleMethodSelect(selectedMethod)} className="w-full rounded-xl bg-[#151522] py-4 text-base font-medium text-white transition-opacity disabled:cursor-not-allowed disabled:opacity-40">Continue</button>
-  </div>
   </div>
       )}
 
