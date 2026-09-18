@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { ArrowLeft, Copy, Check, Building2, CreditCard, ChevronRight, Circle } from "lucide-react"
+import { ArrowLeft, Copy, Check, Building2, CreditCard } from "lucide-react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 import VerificationRequired from "@/components/verification-required"
@@ -592,8 +592,7 @@ export default function AddMoneyPage() {
       <h3 className="text-base font-medium text-[#151522]">Credit Card</h3>
       <p className="text-xs text-[#a5a9b1]">Visa or Mastercard</p>
     </div>
-    <Circle size={21} strokeWidth={1.7} className="text-[#8b9098]" />
-    <ChevronRight size={18} className="ml-2 text-[#b7bbc1]" />
+
   </button>
   <button
   onClick={() => handleMethodSelect("bank")}
@@ -604,8 +603,7 @@ export default function AddMoneyPage() {
       <h3 className="text-base font-medium text-[#151522]">Bank Account</h3>
       <p className="text-xs text-[#a5a9b1]">Transfer from your bank</p>
     </div>
-    <Circle size={21} strokeWidth={1.7} className="text-[#8b9098]" />
-    <ChevronRight size={18} className="ml-2 text-[#b7bbc1]" />
+
   </button>
   </div>
 
