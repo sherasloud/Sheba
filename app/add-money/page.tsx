@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { ArrowLeft, Copy, Check } from "lucide-react"
+import { ArrowLeft, Copy, Check, Building2, CreditCard } from "lucide-react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 import VerificationRequired from "@/components/verification-required"
@@ -44,6 +44,19 @@ export default function AddMoneyPage() {
   })
 
   useEffect(() => {
+    const paymentStatus = new URLSearchParams(window.location.search).get("payment")
+    if (paymentStatus === "success") {
+      const returnedAmount = localStorage.getItem("paystationAmount")
+      if (returnedAmount) setAmount(returnedAmount)
+      setSuccess(true)
+      localStorage.removeItem("paystationAmount")
+      localStorage.removeItem("paystationInvoice")
+    } else if (paymentStatus === "failed") {
+      setError("PayStation payment failed. Please try again.")
+    } else if (paymentStatus === "pending") {
+      setError("Payment received. Wallet credit is being verified.")
+    }
+
     // Check verification status
     const userData = localStorage.getItem("userData")
     const storedVerified = localStorage.getItem("isVerified")
@@ -100,39 +113,29 @@ export default function AddMoneyPage() {
   }
 
   const handleCardTypeSelect = (cardType: string) => {
-    console.log("[v0] Card type selected:", cardType)
     setSelectedCardType(cardType)
     localStorage.setItem("selectedCardType", cardType)
-    
-    const userAmount = prompt("Enter amount to add (Minimum: 10 Tk):", "")
-    console.log("[v0] User entered amount:", userAmount)
-    
-    if (!userAmount || isNaN(Number(userAmount)) || Number(userAmount) < 10) {
-      setError("Please enter a valid amount (minimum 10 Tk)")
-      return
-    }
-    
+    setError("")
+    setAmount("")
+    setStep(3)
+  }
+
+  const handleCardPayment = (userAmountNum: number) => {
     // Calculate total amount with commission (2% SSLCommerz fee)
-    const userAmountNum = Number(userAmount)
-    const commissionRate = 0.02 // 2% commission
+    const commissionRate = 0.02
     const commission = Math.round(userAmountNum * commissionRate * 100) / 100
     const totalAmount = userAmountNum + commission
     
-    console.log("[v0] Amount calculation - User: Tk" + userAmountNum + ", Commission (2%): Tk" + commission + ", Total: Tk" + totalAmount)
-    
     const transactionRef = `SHEBA_${Date.now()}_${Math.random().toString(36).substr(2, 9).toUpperCase()}`
-    console.log("[v0] Transaction ref:", transactionRef)
     localStorage.setItem("transactionRef", transactionRef)
-    localStorage.setItem("addMoneyAmount", String(userAmountNum)) // Store user's requested amount
-    localStorage.setItem("commissionAmount", String(commission)) // Store commission for later
+    localStorage.setItem("addMoneyAmount", String(userAmountNum))
+    localStorage.setItem("commissionAmount", String(commission))
     
     // Create and submit form to SSLCommerz
     const form = document.createElement("form")
     form.method = "POST"
     form.action = "https://pay.sslcommerz.com/gwprocess/v4/api.php"
     form.style.display = "none"
-    
-    console.log("[v0] Creating form with store_id:", SSLCOMMERZ_STORE_ID)
     
     const fields: Record<string, string> = {
       store_id: SSLCOMMERZ_STORE_ID,
@@ -280,18 +283,55 @@ export default function AddMoneyPage() {
     return true
   }
 
-  const handleDetailsNext = () => {
-    let isValid = false
-
-    if (selectedMethod === "bank") {
-      isValid = validateBankDetails()
-    } else if (selectedMethod === "card") {
-      isValid = validateCardDetails()
+  const startPayStationCheckout = async () => {
+    const currentPhone = localStorage.getItem("phoneNumber")
+    if (!currentPhone) {
+      setError("Phone number not found. Please log in again.")
+      return
     }
 
-    if (isValid) {
-      setStep(5) // Go to PIN step
-      setError("")
+    setIsLoading(true)
+    setError("")
+
+    try {
+      const userData = JSON.parse(localStorage.getItem("userData") || "{}")
+      const response = await fetch("/api/paystation/initiate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          phoneNumber: currentPhone,
+          amount: Number(amount),
+          userEmail: userData.email,
+          userName: userData.name || cardDetails.cardholderName || "Customer",
+        }),
+      })
+      const result = await response.json()
+      if (!response.ok || !result.success) {
+        setError(result.message || "Unable to start PayStation checkout")
+        setIsLoading(false)
+        return
+      }
+
+      localStorage.setItem("paystationInvoice", result.invoiceNumber)
+      localStorage.setItem("paystationAmount", String(amount))
+      window.location.assign(result.redirectUrl)
+    } catch {
+      setIsLoading(false)
+      setError("Unable to connect to PayStation. Please try again.")
+    }
+  }
+
+  const handleDetailsNext = () => {
+    if (selectedMethod === "card") {
+      if (validateCardDetails()) {
+        void startPayStationCheckout()
+      }
+      return
+    }
+
+    if (selectedMethod === "bank" && validateBankDetails()) {
+      // Bank details are collected first; all Add Money methods use PayStation.
+      void startPayStationCheckout()
     }
   }
 
@@ -372,9 +412,6 @@ export default function AddMoneyPage() {
     setError("")
 
     try {
-      // Simulate processing time
-      await new Promise((resolve) => setTimeout(resolve, 1500))
-
       const currentPhone = localStorage.getItem("phoneNumber")
       if (!currentPhone) {
         setError("Phone number not found. Please log in again.")
@@ -384,7 +421,30 @@ export default function AddMoneyPage() {
 
       const userData = JSON.parse(localStorage.getItem("userData") || "{}")
 
-      // Call the add-money API
+      if (selectedMethod === "card") {
+        const response = await fetch("/api/paystation/initiate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            phoneNumber: currentPhone,
+            amount: Number(amount),
+            userEmail: userData.email,
+            userName: userData.name || "Customer",
+          }),
+        })
+        const result = await response.json()
+        if (!response.ok || !result.success) {
+          setError(result.message || "Unable to start PayStation checkout")
+          setIsLoading(false)
+          return
+        }
+        localStorage.setItem("paystationInvoice", result.invoiceNumber)
+        localStorage.setItem("paystationAmount", String(amount))
+        window.location.assign(result.redirectUrl)
+        return
+      }
+
+      // Bank flow remains the existing internal balance flow.
       const response = await fetch("/api/add-money", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -473,31 +533,31 @@ export default function AddMoneyPage() {
           </div>
 
           <h2 className="text-2xl font-bold mb-2">Success!</h2>
-          <p className="text-gray-600 mb-4">Money added successfully</p>
+          <p className="text-[#38afe8] mb-4">Money added successfully</p>
 
           <div className="bg-gray-100 w-full rounded-lg p-4 mb-6">
             <div className="flex justify-between mb-2">
-              <span className="text-gray-600">Amount:</span>
+              <span className="text-[#38afe8]">Amount:</span>
               <span className="font-bold">Tk{amount}</span>
             </div>
             <div className="flex justify-between mb-2">
-              <span className="text-gray-600">Method:</span>
+              <span className="text-[#38afe8]">Method:</span>
               <span className="font-bold">
                 {selectedMethod === "card" ? `${selectedCardType} Card` : bankDetails.bankName}
               </span>
             </div>
             <div className="flex justify-between mb-2">
-              <span className="text-gray-600">Sheba Balance:</span>
+              <span className="text-[#38afe8]">Sheba Balance:</span>
               <span className="font-bold">Tk{balance.toLocaleString()}</span>
             </div>
             {selectedMethod === "card" && (
               <div className="flex justify-between mb-2">
-                <span className="text-gray-600">Card Balance:</span>
+                <span className="text-[#38afe8]">Card Balance:</span>
                 <span className="font-bold">Tk{cardBalance.toLocaleString()}</span>
               </div>
             )}
             <div className="flex justify-between">
-              <span className="text-gray-600">Transaction ID:</span>
+              <span className="text-[#38afe8]">Transaction ID:</span>
               <span className="font-bold">{Math.random().toString(36).substring(2, 10).toUpperCase()}</span>
             </div>
           </div>
@@ -511,154 +571,118 @@ export default function AddMoneyPage() {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-white">
-      <div className="bg-[#29a9eb] text-white p-4 flex items-center">
-        <button onClick={() => router.push("/")} className="mr-4">
+    <div className="flex h-[100dvh] flex-col overflow-hidden bg-white text-[#38afe8]">
+      <div className="flex items-center bg-white px-5 py-5">
+        <button onClick={() => router.push("/")} className="text-[#38afe8]" aria-label="Back">
           <ArrowLeft size={24} />
         </button>
-        <div className="text-xl font-medium">Add Money</div>
+        {step !== 3 && <div className="ml-auto mr-auto text-lg font-medium text-[#38afe8]">Add Money</div>}
+        {step !== 3 && <div className="w-6" />}
       </div>
 
       {step === 1 && (
-        <div className="p-6 flex flex-col flex-1">
-          <div className="text-2xl font-bold mb-2">Add Money</div>
-          <div className="text-gray-600 mb-8">Choose a method to add money</div>
+  <div className="flex flex-1 flex-col overflow-y-auto bg-white px-5 pb-8 pt-6">
+  <div className="space-y-3">
+  <button
+  onClick={() => handleMethodSelect("card")}
+  className="flex w-full items-center rounded-xl border border-[#edf0f3] bg-white px-4 py-4 text-left shadow-[0_3px_12px_rgba(20,32,51,0.05)] transition-colors hover:border-[#38afe8]"
+  >
+    <div className="mr-4 flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-[#fff4df] text-[#e6a91d]"><CreditCard size={22} strokeWidth={1.8} /></div>
+    <div className="min-w-0 flex-1">
+      <h3 className="text-base font-medium text-[#151522]">Credit Card</h3>
+      <p className="text-xs text-[#a5a9b1]">Visa or Mastercard</p>
+    </div>
 
-          <div className="space-y-4">
-            <button
-              onClick={() => handleMethodSelect("bank")}
-              className="w-full border rounded-lg p-4 flex items-center hover:bg-gray-50 transition-colors"
-            >
-              <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center mr-4">
-                <span className="text-green-500 text-xl">🏦</span>
-              </div>
-              <div className="text-left">
-                <h3 className="font-medium">Bank To Sheba</h3>
-                <p className="text-sm text-gray-500">Add money from your bank account</p>
-              </div>
-            </button>
-            <button
-              onClick={() => handleMethodSelect("card")}
-              className="w-full border rounded-lg p-4 flex items-center hover:bg-gray-50 transition-colors"
-            >
-              <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center mr-4">
-                <span className="text-purple-500 text-xl">💳</span>
-              </div>
-              <div className="text-left">
-                <h3 className="font-medium">Card To Sheba</h3>
-                <p className="text-sm text-gray-500">Add money from your credit/debit card</p>
-              </div>
-            </button>
-            <button
-              onClick={() => router.push("/add-money-stripe")}
-              className="w-full border rounded-lg p-4 flex items-center hover:bg-gray-50 transition-colors"
-            >
-              <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-4">
-                <span className="text-blue-500 text-xl">🔐</span>
-              </div>
-              <div className="text-left">
-                <h3 className="font-medium">Stripe Payment</h3>
-                <p className="text-sm text-gray-500">VISA • Mastercard • Amex (Secure)</p>
-              </div>
-            </button>
-          </div>
-        </div>
+  </button>
+  <button
+  onClick={() => handleMethodSelect("bank")}
+  className="flex w-full items-center rounded-xl border border-[#edf0f3] bg-white px-4 py-4 text-left shadow-[0_3px_12px_rgba(20,32,51,0.05)] transition-colors hover:border-[#38afe8]"
+  >
+    <div className="mr-4 flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-[#e8f7fd] text-[#38afe8]"><Building2 size={22} strokeWidth={1.8} /></div>
+    <div className="min-w-0 flex-1">
+      <h3 className="text-base font-medium text-[#151522]">Bank Account</h3>
+      <p className="text-xs text-[#a5a9b1]">Transfer from your bank</p>
+    </div>
+
+  </button>
+  </div>
+
+  </div>
       )}
 
       {step === 2 && selectedMethod === "card" && (
-        <div className="p-6 flex flex-col flex-1">
-          <div className="text-2xl font-bold mb-2">Select Card Type</div>
-          <div className="text-gray-600 mb-6">Choose your card provider</div>
+        <div className="flex flex-1 flex-col items-center overflow-y-auto bg-white px-6 pb-8 pt-10">
+          <h1 className="mb-24 text-center text-4xl font-normal text-[#38afe8]">কার্ড সিলেক্ট করুন</h1>
 
-          {selectedCardType && (
-            <div className="mb-6 p-4 bg-blue-50 border border-[#29a9eb] rounded-lg flex items-center justify-center">
-              <Image
-                src={cardProviders.find((p) => p.name === selectedCardType)?.logo || "/placeholder.svg"}
-                alt={selectedCardType}
-                width={60}
-                height={40}
-                className="object-contain mr-3"
-              />
-              <span className="font-medium text-[#29a9eb]">{selectedCardType} Selected</span>
-            </div>
-          )}
-
-          <div className="grid grid-cols-2 gap-4">
+          <div className="flex w-full max-w-xs flex-col items-center gap-10">
             {cardProviders.map((provider) => (
               <button
                 key={provider.name}
                 onClick={() => handleCardTypeSelect(provider.name)}
-                className={`flex flex-col items-center justify-center p-4 border rounded-lg transition-colors min-h-[120px] ${
-                  selectedCardType === provider.name ? "border-[#29a9eb] bg-blue-50" : "hover:bg-gray-50"
-                }`}
+                className="flex w-full flex-col items-center p-2"
               >
-                <Image
-                  src={provider.logo || "/placeholder.svg"}
-                  alt={provider.name}
-                  width={80}
-                  height={50}
-                  className="object-contain mb-2"
-                />
-                <span className="text-sm font-medium">{provider.name}</span>
+                <div className="flex h-28 w-full items-center justify-center">
+                  <Image
+                    src={provider.logo || "/placeholder.svg"}
+                    alt={provider.name}
+                    width={190}
+                    height={100}
+                    className="max-h-24 w-auto object-contain"
+                  />
+                </div>
               </button>
             ))}
           </div>
 
-          <div className="mt-6 p-4 bg-gray-50 rounded-lg">
-            <div className="text-sm text-gray-600">
-              <span className="font-medium">Current Balance:</span> Tk{balance.toLocaleString()}
-            </div>
-          </div>
         </div>
       )}
 
       {step === 3 && (
-        <div className="p-6 flex flex-col flex-1">
-          <div className="text-2xl font-bold mb-2">Enter Amount</div>
-          <div className="text-gray-600 mb-8">
-            {selectedMethod === "card" ? `${selectedCardType} to Sheba` : "Bank to Sheba"}
-          </div>
-
-          <div className="mb-2 flex items-center">
-            <div className="mr-2">Tk</div>
-            <div>Amount (Tk)</div>
-          </div>
-
-          <input
-            type="text"
-            className="border rounded-md p-4 mb-2 text-center text-2xl"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            placeholder="0"
-          />
-
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
-            <div className="text-sm text-blue-800">
-              <div>Your Sheba Balance: Tk{balance.toLocaleString()}</div>
-              {amount && <div>New Sheba Balance: Tk{(balance + Number(amount || 0)).toLocaleString()}</div>}
-            </div>
-          </div>
-
-          {error && <div className="text-red-500 mb-4">{error}</div>}
-
-          <div className="flex space-x-2 mt-auto">
-            <button
-              className="flex-1 border border-gray-300 p-4 rounded-md touch-manipulation"
-              onClick={handleBackStep}
-            >
-              Back
-            </button>
-            <button className="flex-1 mobile-button" onClick={handleAmountNext}>
-              Next
-            </button>
-          </div>
+        <div className="flex flex-1 flex-col overflow-y-auto bg-white px-8 pb-8 pt-16">
+          {selectedMethod === "card" ? (
+            <>
+              <h1 className="mb-24 text-center text-[3.25rem] font-normal leading-tight text-[#38afe8]">এমাউন্ট লিখুন</h1>
+              <div className="mb-24 flex items-center justify-center gap-1 text-black">
+                <input
+                  type="text"
+                  aria-label="Amount"
+                  className="w-auto min-w-0 max-w-[78vw] border-0 bg-transparent p-0 text-center text-[clamp(3rem,8vw,3rem)] font-normal leading-none text-black outline-none placeholder:text-black"
+                  value={amount}
+                onChange={(e) => setAmount(e.target.value.replace(/[^0-9]/g, ""))}
+                placeholder="0"
+                  inputMode="numeric"
+                />
+                <span className="shrink-0 text-5xl font-normal">৳</span>
+              </div>
+              {error && <div className="mb-4 text-center text-red-500">{error}</div>}
+              <div className="flex justify-center"><button className="mobile-button w-full max-w-sm rounded-full py-5 text-5xl font-normal" onClick={handleAmountNext}>Next</button></div>
+            </>
+          ) : (
+            <>
+              <h1 className="mb-24 text-center text-[3.25rem] font-normal leading-tight text-[#38afe8]">এমাউন্ট লিখুন</h1>
+              <div className="mb-10 flex items-center justify-center gap-1 text-black">
+                <input
+                  type="text"
+                  aria-label="Amount"
+                  inputMode="numeric"
+                  className="h-20 w-auto min-w-0 max-w-[78vw] rounded-2xl border-0 bg-transparent p-0 text-center text-[clamp(3rem,8vw,3rem)] font-normal leading-none text-black outline-none placeholder:text-black"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value.replace(/[^0-9]/g, ""))}
+                  placeholder="0"
+                />
+                <span className="shrink-0 text-5xl font-normal">৳</span>
+              </div>
+              {error && <div className="mb-4 text-center text-red-500">{error}</div>}
+              <div className="mt-auto flex justify-center"><button className="mobile-button w-full max-w-sm rounded-full py-5 text-4xl font-normal" onClick={handleAmountNext}>Next</button></div>
+            </>
+          )}
         </div>
       )}
 
       {step === 4 && selectedMethod === "bank" && (
-        <div className="p-6 flex flex-col flex-1">
-          <div className="text-2xl font-bold mb-2">Bank Details</div>
-          <div className="text-gray-600 mb-8">Amount: Tk{amount}</div>
+        <div className="flex flex-1 flex-col overflow-y-auto bg-white px-6 pb-8 pt-10 text-black">
+          <h1 className="mb-4 text-center text-4xl font-normal text-[#38afe8]">ব্যাংক তথ্য</h1>
+          <div className="mb-8 text-center text-lg font-medium text-[#38afe8]">Amount: ৳{amount}</div>
 
           <div className="space-y-4">
             <div>
@@ -727,113 +751,79 @@ export default function AddMoneyPage() {
       )}
 
       {step === 4 && selectedMethod === "card" && (
-        <div className="p-6 flex flex-col flex-1">
-          <div className="text-2xl font-bold mb-2">Card Details</div>
-          <div className="text-gray-600 mb-8">
-            Amount: Tk{amount} ({selectedCardType})
-          </div>
+        <div className="flex flex-1 flex-col overflow-y-auto bg-white px-8 pb-8 pt-10">
+          <h1 className="mb-24 text-center text-[3.25rem] font-normal leading-[1.2] text-[#38afe8]">কার্ডের তথ্য দিন</h1>
 
-          {/* Test Card Information */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-            <h4 className="font-semibold text-blue-900 mb-3">Test Card Numbers (Sandbox)</h4>
-            <div className="space-y-2 text-sm text-blue-800">
-              <div className="flex justify-between">
-                <span>Visa (Success):</span>
-                <span className="font-mono font-bold">4111111111111111</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Mastercard (Success):</span>
-                <span className="font-mono font-bold">5555555555554444</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Expiry (any future):</span>
-                <span className="font-mono font-bold">12/28 or 12/29</span>
-              </div>
-              <div className="flex justify-between">
-                <span>CVV:</span>
-                <span className="font-mono font-bold">Any 3 digits (e.g., 123)</span>
-              </div>
-              <p className="text-xs italic mt-3">These are sandbox test cards - no real money is charged</p>
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium mb-2">Card Number</label>
+          <div className="space-y-20">
+            <div className="relative">
               <input
                 type="text"
-                className="w-full border rounded-md p-3"
+                aria-label="Card Number"
+                className="w-full border-0 bg-transparent px-0 py-0 text-[3rem] font-light text-[#a8a8a8] outline-none placeholder:text-[#a8a8a8]"
                 value={cardDetails.cardNumber}
                 onChange={(e) => setCardDetails({ ...cardDetails, cardNumber: formatCardNumber(e.target.value) })}
-                placeholder="1234 5678 9012 3456"
+                placeholder="Card Number"
                 maxLength={19}
               />
-            </div>
-
-            <div className="flex space-x-4">
-              <div className="flex-1">
-                <label className="block text-sm font-medium mb-2">Expiry Date</label>
-                <input
-                  type="text"
-                  className="w-full border rounded-md p-3"
-                  value={cardDetails.expiryDate}
-                  onChange={(e) => setCardDetails({ ...cardDetails, expiryDate: formatExpiryDate(e.target.value) })}
-                  placeholder="MM/YY"
-                  maxLength={5}
-                />
-              </div>
-              <div className="flex-1">
-                <label className="block text-sm font-medium mb-2">CVV</label>
-                <input
-                  type="text"
-                  className="w-full border rounded-md p-3"
-                  value={cardDetails.cvv}
-                  onChange={(e) => setCardDetails({ ...cardDetails, cvv: e.target.value.replace(/\D/g, "") })}
-                  placeholder="123"
-                  maxLength={3}
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">Cardholder Name</label>
-              <input
-                type="text"
-                className="w-full border rounded-md p-3"
-                value={cardDetails.cardholderName}
-                onChange={(e) => setCardDetails({ ...cardDetails, cardholderName: e.target.value })}
-                placeholder="Enter name as on card"
+              <Image
+                src={cardProviders.find((provider) => provider.name === selectedCardType)?.logo || "/placeholder.svg"}
+                alt={selectedCardType || "Card"}
+                width={135}
+                height={75}
+                className="absolute -top-4 right-0 max-h-20 w-auto object-contain"
               />
             </div>
+
+            <div className="flex items-start justify-between gap-8">
+              <input
+                type="text"
+                aria-label="Expiration Date"
+                className="min-w-0 flex-1 border-0 bg-transparent px-0 py-0 text-[2.8rem] font-light text-[#a8a8a8] outline-none placeholder:text-[#a8a8a8]"
+                value={cardDetails.expiryDate}
+                onChange={(e) => setCardDetails({ ...cardDetails, expiryDate: formatExpiryDate(e.target.value) })}
+                placeholder="Expiration Date"
+                maxLength={5}
+              />
+              <input
+                type="text"
+                aria-label="CVV"
+                className="w-32 border-0 bg-transparent px-0 py-0 text-[2.8rem] font-light text-[#a8a8a8] outline-none placeholder:text-[#a8a8a8]"
+                value={cardDetails.cvv}
+                onChange={(e) => setCardDetails({ ...cardDetails, cvv: e.target.value.replace(/\D/g, "") })}
+                placeholder="CVV"
+                maxLength={3}
+              />
+            </div>
+
+            <input
+              type="text"
+              aria-label="Cardholder name"
+              className="w-full border-0 bg-transparent px-0 py-0 text-center text-[2.8rem] font-light text-[#a8a8a8] outline-none placeholder:text-[#a8a8a8]"
+              value={cardDetails.cardholderName}
+              onChange={(e) => setCardDetails({ ...cardDetails, cardholderName: e.target.value })}
+              placeholder="Cardholder name"
+            />
           </div>
 
-          {error && <div className="text-red-500 mb-4">{error}</div>}
+          {error && <div className="mt-4 text-[#38afe8]">{error}</div>}
 
-          <div className="flex space-x-2 mt-auto">
-            <button
-              className="flex-1 border border-gray-300 p-4 rounded-md touch-manipulation"
-              onClick={handleBackStep}
-            >
-              Back
-            </button>
-            <button className="flex-1 mobile-button" onClick={handleDetailsNext}>
-              Next
-            </button>
-          </div>
+          <button className="mt-auto w-full rounded-full bg-[#38afe8] py-5 text-[3.2rem] font-light leading-none text-white" onClick={handleDetailsNext}>
+            Next
+          </button>
         </div>
       )}
 
       {step === 5 && (
-        <div className="p-6 flex flex-col flex-1">
+        <div className="flex flex-1 flex-col overflow-y-auto px-5 py-6">
           <div className="text-2xl font-bold mb-2">Enter PIN</div>
-          <div className="text-gray-600 mb-1">Amount: Tk{amount}</div>
-          <div className="text-gray-600 mb-8">
+          <div className="text-[#38afe8] mb-1">Amount: Tk{amount}</div>
+          <div className="text-[#38afe8] mb-8">
             {selectedMethod === "card" ? `From: ${selectedCardType} Card` : `From: ${bankDetails.bankName}`}
           </div>
 
           {selectedMethod === "card" && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4">
-              <div className="text-sm text-red-800">
+              <div className="text-sm text-[#38afe8]">
                 <div>⚠️ Tk{amount} will be deducted from your card</div>
               </div>
             </div>

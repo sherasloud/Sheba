@@ -19,6 +19,7 @@ const BottomNavigation = React.memo(() => {
     "/phone",
     "/pin",
     "/sim-detection",
+    "/otp",
   ]
 
   // Don't render if current page is in hideOnPages array
@@ -27,17 +28,17 @@ const BottomNavigation = React.memo(() => {
   }
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 bg-white">
-      <div className="max-w-[430px] mx-auto">
-        <div className="flex justify-around items-center py-3 px-4">
+    <div className="fixed bottom-0 left-0 right-0 z-50 h-20 bg-white/95">
+      <div className="mx-auto w-full max-w-[1180px]">
+        <div className="flex justify-around items-end px-4 pb-[calc(0.5rem+env(safe-area-inset-bottom))] pt-1">
           <Link
             href="/"
             className={`flex flex-col items-center justify-center p-2 min-w-[60px] transition-colors duration-200 ${
               pathname === "/" ? "text-[#29a9eb]" : "text-gray-500"
             }`}
           >
-            <Home size={18} />
-            <span className="text-[11px] mt-1 text-center font-medium">Home</span>
+            <Home size={20} strokeWidth={1.8} />
+            <span className="mt-0.5 text-center text-[15px] font-normal">Home</span>
           </Link>
           <Link
             href="/scan-qr"
@@ -45,8 +46,8 @@ const BottomNavigation = React.memo(() => {
               pathname === "/scan-qr" ? "text-[#29a9eb]" : "text-gray-500"
             }`}
           >
-            <QrCode size={18} />
-            <span className="text-[11px] mt-1 text-center font-medium">Scan QR</span>
+            <QrCode size={20} strokeWidth={1.8} />
+            <span className="mt-0.5 text-center text-[15px] font-normal">Scan QR</span>
           </Link>
           <Link
             href="/inbox"
@@ -54,8 +55,8 @@ const BottomNavigation = React.memo(() => {
               pathname === "/inbox" ? "text-[#29a9eb]" : "text-gray-500"
             }`}
           >
-            <MessageSquare size={18} />
-            <span className="text-[11px] mt-1 text-center font-medium">Inbox</span>
+            <MessageSquare size={20} strokeWidth={1.8} />
+            <span className="mt-0.5 text-center text-[15px] font-normal">Inbox</span>
           </Link>
         </div>
       </div>

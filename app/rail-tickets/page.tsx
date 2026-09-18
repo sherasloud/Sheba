@@ -13,6 +13,32 @@ export default function RailTicketsPage() {
   const [passengers, setPassengers] = useState(1)
   const [showFromSuggestions, setShowFromSuggestions] = useState(false)
   const [showToSuggestions, setShowToSuggestions] = useState(false)
+  const [showTicketIntro, setShowTicketIntro] = useState(true)
+
+  if (showTicketIntro) {
+    return (
+      <main className="relative min-h-[100dvh] overflow-hidden bg-white">
+        <img
+          src="/images/rail-ticket-intro.png"
+          alt="Bangladesh Railway rail ticket"
+          className="absolute inset-0 h-full w-full object-contain object-top"
+        />
+        <div className="absolute inset-x-0 top-0 h-[22%] bg-white" />
+        <div className="absolute inset-x-0 bottom-0 h-[19%] bg-white" />
+        <div className="absolute left-1/2 top-[18%] w-[72%] -translate-x-1/2 bg-white py-2 text-center text-[clamp(2rem,7vw,4rem)] font-normal tracking-tight text-[#2d2d2d]">
+          Rail Tickets
+        </div>
+        <button
+          type="button"
+          aria-label="Go back"
+          onClick={() => router.back()}
+          className="absolute left-5 top-5 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white text-3xl font-light text-[#2d2d2d] shadow-sm"
+        >
+          ‹
+        </button>
+      </main>
+    )
+  }
 
   // Metro Rail Stations (Dhaka Metro MRT Line-6)
   const metroStations = [
@@ -89,13 +115,13 @@ export default function RailTicketsPage() {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-gray-50 max-w-sm mx-auto relative">
+    <div className="flex flex-col h-screen bg-white max-w-sm mx-auto relative">
       {/* Header */}
-      <div className="bg-sky-500 text-white p-4 flex items-center space-x-3">
-        <button onClick={() => router.back()} className="p-1">
-          <ArrowLeft size={20} />
+      <div className="bg-white p-5 flex items-center space-x-3 text-[#2d2d2d]">
+        <button onClick={() => router.back()} className="p-1" aria-label="Back">
+          <ArrowLeft size={22} />
         </button>
-        <h1 className="text-lg font-semibold">Rail Tickets</h1>
+        <h1 className="text-xl font-normal">Rail Tickets</h1>
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-6">
@@ -124,9 +150,9 @@ export default function RailTicketsPage() {
                 selectedService === "train" ? "border-sky-500 bg-sky-50" : "border-gray-200 hover:border-gray-300"
               }`}
             >
-              <div className="text-2xl mb-2">🚆</div>
-              <div className="font-medium">Train</div>
-              <div className="text-xs text-gray-500">Intercity</div>
+              <img src="/images/rail-tickets-icon.png" alt="Rail ticket" className="mx-auto mb-2 h-12 w-16 object-contain" />
+              <div className="font-medium">Rail Tickets</div>
+              <div className="text-xs text-gray-500">Bangladesh Railway</div>
             </button>
           </div>
         </div>
@@ -269,7 +295,7 @@ export default function RailTicketsPage() {
             className="w-full bg-sky-500 text-white py-4 rounded-xl font-semibold text-lg hover:bg-sky-600 transition-colors flex items-center justify-center space-x-2"
           >
             <Train size={20} />
-            <span>Search {selectedService === "metro" ? "Metro" : "Train"} Tickets</span>
+            <span>Search {selectedService === "metro" ? "Metro Rail" : "Rail Tickets"}</span>
           </button>
         )}
 
@@ -283,7 +309,7 @@ export default function RailTicketsPage() {
             </div>
             <div className="flex items-center space-x-2">
               <div className="w-2 h-2 bg-sky-500 rounded-full"></div>
-              <span>Train: Tk150-2500 (Bangladesh Railway rates)</span>
+              <span>Rail Tickets: Tk150-2500 (Bangladesh Railway rates)</span>
             </div>
             <div className="flex items-center space-x-2">
               <div className="w-2 h-2 bg-sky-500 rounded-full"></div>

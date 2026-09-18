@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { ArrowLeft, Zap, Droplets, Flame, Wifi, CheckCircle, AlertTriangle, Search } from "lucide-react"
+import { ArrowLeft, CheckCircle, AlertTriangle, Search } from "lucide-react"
 import { useRouter } from "next/navigation"
 
 const billProviders: { [key: string]: any[] } = {}
@@ -242,74 +242,46 @@ export default function BillPage() {
 
   return (
     <div className="flex flex-col h-screen bg-white">
-      <div className="bg-[#29a9eb] text-white p-4 flex items-center">
-        <button onClick={() => router.push("/")} className="mr-4">
-          <ArrowLeft size={24} />
-        </button>
-        <div className="text-xl font-medium">Bill Payment</div>
-      </div>
-
       {step === 1 && (
-        <div className="p-6">
-          <h1 className="text-2xl font-bold mb-4">Pay Bills</h1>
-          <p className="text-gray-600 mb-6">Choose the type of bill you want to pay</p>
+        <div className="flex-1 overflow-y-auto px-6 pb-10 pt-5">
+          <div className="mb-8 flex items-center">
+            <button onClick={() => router.push("/")} className="text-[#142033]" aria-label="Back to home">
+              <ArrowLeft size={34} strokeWidth={1.8} />
+            </button>
+          </div>
+          <h1 className="mb-28 text-center text-6xl font-normal text-[#29a9eb]">বিল পে</h1>
 
-          <div className="space-y-4">
+          <div className="space-y-32">
             <button
               onClick={() => handleCategorySelect("electricity")}
-              className="w-full border rounded-lg p-4 flex items-center hover:bg-gray-50 transition-colors"
+              className="flex w-full flex-col items-center gap-5 border-0 bg-transparent text-center transition-transform hover:scale-[1.02]"
             >
-              <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mr-4">
-                <Zap size={24} className="text-yellow-600" />
-              </div>
-              <div className="text-left">
-                <h3 className="font-medium">Electricity Bill</h3>
-                <p className="text-sm text-gray-500">DESCO, DPDC, REB, BPDB, etc.</p>
-                <p className="text-xs text-yellow-600 mt-1">Instant payment • No extra fee</p>
+              <div className="flex items-center justify-center text-[76px] leading-none">💡</div>
+              <div className="text-center">
+                <h3 className="text-4xl font-normal text-foreground">বিদ্যুৎ বিল</h3>
               </div>
             </button>
 
             <button
               onClick={() => handleCategorySelect("water")}
-              className="w-full border rounded-lg p-4 flex items-center hover:bg-gray-50 transition-colors"
+              className="flex w-full flex-col items-center gap-5 border-0 bg-transparent text-center transition-transform hover:scale-[1.02]"
             >
-              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
-                <Droplets size={24} className="text-blue-600" />
-              </div>
-              <div className="text-left">
-                <h3 className="font-medium">Water Bill</h3>
-                <p className="text-sm text-gray-500">DWASA, CWASA, KWASA, etc.</p>
-                <p className="text-xs text-blue-600 mt-1">Instant payment • No extra fee</p>
+              <div className="flex items-center justify-center text-[76px] leading-none">💧</div>
+              <div className="text-center">
+                <h3 className="text-4xl font-normal text-[#29a9eb]">পানি বিল</h3>
               </div>
             </button>
 
             <button
               onClick={() => handleCategorySelect("gas")}
-              className="w-full border rounded-lg p-4 flex items-center hover:bg-gray-50 transition-colors"
+              className="flex w-full flex-col items-center gap-5 border-0 bg-transparent text-center transition-transform hover:scale-[1.02]"
             >
-              <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mr-4">
-                <Flame size={24} className="text-orange-600" />
-              </div>
-              <div className="text-left">
-                <h3 className="font-medium">Gas Bill</h3>
-                <p className="text-sm text-gray-500">Titas Gas, Jalalabad Gas, etc.</p>
-                <p className="text-xs text-orange-600 mt-1">Instant payment • No extra fee</p>
+              <div className="flex items-center justify-center text-[76px] leading-none">🔥</div>
+              <div className="text-center">
+                <h3 className="text-4xl font-normal text-orange-500">গ্যাস বিল</h3>
               </div>
             </button>
 
-            <button
-              onClick={() => handleCategorySelect("internet")}
-              className="w-full border rounded-lg p-4 flex items-center hover:bg-gray-50 transition-colors"
-            >
-              <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mr-4">
-                <Wifi size={24} className="text-purple-600" />
-              </div>
-              <div className="text-left">
-                <h3 className="font-medium">Internet & TV</h3>
-                <p className="text-sm text-gray-500">BTCL, Link3, Carnival, etc.</p>
-                <p className="text-xs text-purple-600 mt-1">Instant payment • No extra fee</p>
-              </div>
-            </button>
           </div>
         </div>
       )}
@@ -416,7 +388,7 @@ export default function BillPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">প্রদানকারীর নম্বর / ড্যাশবোর্ড অ্যাক্সেস নম্বর</label>
+              <label className="block text-sm font-medium mb-2">প্রদানকারীর নম্ব��� / ড্যাশবোর্ড অ্যাক্সেস নম্বর</label>
               <input
                 type="tel"
                 className="w-full border rounded-md p-3"

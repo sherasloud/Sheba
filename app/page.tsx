@@ -96,7 +96,6 @@ export default function AppPage() {
   const nextBanner = () => {
     setCurrentBannerIndex((prevIndex) => {
       const nextIndex = (prevIndex + 1) % allBanners.length
-      console.log(`🔄 Next Banner: ${prevIndex} → ${nextIndex}`)
       return nextIndex
     })
     resetAutoRotation()
@@ -105,7 +104,6 @@ export default function AppPage() {
   const previousBanner = () => {
     setCurrentBannerIndex((prevIndex) => {
       const prevIdx = prevIndex === 0 ? allBanners.length - 1 : prevIndex - 1
-      console.log(`🔄 Previous Banner: ${prevIdx} → ${prevIdx}`)
       return prevIdx
     })
     resetAutoRotation()
@@ -118,7 +116,7 @@ export default function AppPage() {
 
     setTimeout(() => {
       startAutoRotation()
-    }, 5000)
+    }, 2000)
   }
 
   const startAutoRotation = () => {
@@ -129,10 +127,9 @@ export default function AppPage() {
     intervalRef.current = setInterval(() => {
       setCurrentBannerIndex((prevIndex) => {
         const nextIndex = (prevIndex + 1) % allBanners.length
-        console.log(`🔄 Auto Banner Change: ${prevIndex} → ${nextIndex}`)
         return nextIndex
       })
-    }, 1500)
+    }, 2000)
   }
 
   const getLatestBalance = useCallback(async () => {
@@ -260,6 +257,14 @@ export default function AppPage() {
         if (!phone) {
           console.log("[v0] No phone number, redirecting to /enter-phone")
           router.replace("/enter-phone")
+          return
+        }
+
+        // Re-open the PIN screen after the app/browser session is closed.
+        // The old error state is component-local, so the PIN page starts clean.
+        if (pinVerified !== "true") {
+          console.log("[v0] PIN session missing, redirecting to /pin")
+          router.replace(`/pin?phone=${encodeURIComponent(phone)}`)
           return
         }
 
@@ -468,15 +473,19 @@ export default function AppPage() {
     return (
       <Link
         href={href}
-        className="flex flex-col items-center touch-manipulation no-tap-highlight p-2 rounded-lg active:bg-gray-100 transition-colors"
+        prefetch={true}
+        onPointerDown={() => {
+          if (!isExternal) router.prefetch(href)
+        }}
+        className="flex flex-col items-center touch-manipulation no-tap-highlight p-1 rounded-lg active:bg-gray-100 transition-colors"
         {...linkProps}
       >
         <div
-          className={`mb-1 flex items-center justify-center ${
+          className={`mb-3 flex items-center justify-center ${
             iconSize === "super-large"
               ? "w-16 h-16"
               : iconSize === "extra-large"
-                ? "w-12 h-12"
+                ? "w-14 h-14"
                 : iconSize === "large"
                   ? "w-9 h-9"
                   : "w-7 h-7"
@@ -484,45 +493,51 @@ export default function AppPage() {
         >
           {icon}
         </div>
-        <div className="text-center text-xs font-medium leading-tight">{title}</div>
+        <div className="text-center text-[13px] font-medium leading-tight text-[#000000]">{title}</div>
       </Link>
     )
   }
 
   return (
     <div
-      className="flex min-h-screen w-full max-w-[430px] mx-auto flex-col relative overflow-hidden bg-white text-[#142033] shadow-sm"
-      style={{ paddingBottom: "calc(78px + env(safe-area-inset-bottom))" }}
+      className="mx-auto flex min-h-screen w-full max-w-[1180px] flex-col relative overflow-hidden bg-white text-[#142033] shadow-sm md:min-h-[calc(100vh-2rem)] md:my-4 md:rounded-3xl"
+      style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
-      <div className="h-7 bg-white" />
+      <div className="h-4 bg-white" />
 
-      <header className="bg-white px-6 pb-3 pt-2">
+      <header className="bg-white px-5 pb-10 pt-1">
         <div className="flex items-center justify-between">
           <div className="w-10" />
-          <img src="/images/seba-logo-splash.png" alt="সেবা" className="h-12 w-auto object-contain" />
+          <img src="/images/sheba-headline-logo.jpeg" alt="সেবা" className="h-11 w-auto object-contain" />
           <button type="button" aria-label="Notifications" className="relative flex h-11 w-11 items-center justify-center text-[#142033]">
-            <Bell size={38} strokeWidth={1.8} />
+            <Bell size={30} strokeWidth={1.8} />
             <span className="absolute right-0 top-0 h-4 w-4 rounded-full bg-[#ef4b55]" />
           </button>
         </div>
 
-        <div className="mt-5 flex items-center gap-4">
-          <button type="button" onClick={handleProfileClick} className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#36a9e1] text-2xl font-semibold text-white">
-            {profilePic || selectedPhoto ? <img src={profilePic || selectedPhoto || "/placeholder.svg"} alt="Profile" className="h-full w-full object-cover" /> : userName.slice(0, 2).toUpperCase()}
-          </button>
-          <div className="min-w-0">
-            <p className="truncate text-[30px] font-normal text-[#485163]">Hi {userName},</p>
-            <button type="button" onClick={toggleBalance} className="mt-4 text-[30px] tracking-[0.35em] text-[#142033]" aria-label="Toggle balance">
-              {showBalance ? `${formatBalance(balance)} ৳` : "•••••• ৳"}
-            </button>
-          </div>
-        </div>
+  <div className="relative mt-4 flex items-start gap-4 px-9">
+  <button type="button" onClick={handleProfileClick} className="-translate-y-1 flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#36a9e1] text-lg font-semibold text-white">
+  {profilePic || selectedPhoto ? <img src={profilePic || selectedPhoto || "/placeholder.svg"} alt="Profile" className="h-full w-full object-cover" /> : userName.slice(0, 2).toUpperCase()}
+  </button>
+  <div className="min-w-0">
+  <p className="flex h-14 items-center truncate text-2xl font-normal text-[#485163]">Hi {userName},</p>
+  <button type="button" onClick={toggleBalance} className="absolute left-0 right-0 top-[3.75rem] whitespace-nowrap text-center text-[clamp(1.15rem,7vw,2.25rem)] font-normal tracking-normal text-[#142033]" aria-label="Toggle balance">
+  {showBalance ? `${formatBalance(balance)} ৳` : "•••••• ৳"}
+  </button>
+  </div>
+  </div>
       </header>
 
-      <main className="flex-1 overflow-y-auto bg-white px-5 pb-8 pt-5">
+      <main className="flex-1 overflow-y-auto bg-white px-4 pb-40 pt-8">
         <div className="relative mb-9 overflow-hidden rounded-[22px] shadow-[0_8px_22px_rgba(30,64,88,0.12)] select-none" onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}>
-          <Link href="/financial-awareness" className="block">
-            <img src="/images/home-reference-banner.jpg" alt="কাজে লাগবে ভাই" className="h-40 w-full object-cover" draggable={false} />
+          <Link href={allBanners[currentBannerIndex].link} className="block">
+            <img
+              key={allBanners[currentBannerIndex].id}
+              src={allBanners[currentBannerIndex].image}
+              alt={allBanners[currentBannerIndex].alt}
+              className="h-36 w-full object-cover"
+              draggable={false}
+            />
           </Link>
         </div>
         {/* Sheba Provider Transactions */}
@@ -557,7 +572,7 @@ export default function AppPage() {
           </div>
         )}
 
-        <div className="grid grid-cols-3 gap-x-2 gap-y-14 mb-4">
+        <div className="grid grid-cols-3 gap-x-2 gap-y-12 px-4 pb-4">
           <FeatureButton
             href="/send-money"
             icon={

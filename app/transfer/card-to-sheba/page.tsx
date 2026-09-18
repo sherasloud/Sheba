@@ -236,12 +236,13 @@ export default function CardToShebaPage() {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-white">
-      <div className="bg-[#29a9eb] text-white p-4 flex items-center">
-        <button onClick={() => router.push("/transfer")} className="mr-4">
+    <div className="flex h-[100dvh] flex-col overflow-hidden bg-white">
+      <div className="flex items-center justify-between px-5 py-5">
+        <button onClick={() => router.push("/transfer")} className="text-[#10141c]" aria-label="Back">
           <ArrowLeft size={24} />
         </button>
-        <div className="text-xl font-medium">Card to Sheba</div>
+        <div className="text-lg font-medium text-[#38afe8]">Card to Sheba</div>
+        <div className="w-6" />
       </div>
 
       {step === 1 && (
@@ -286,50 +287,41 @@ export default function CardToShebaPage() {
       )}
 
       {step === 2 && (
-        <div className="p-6 flex flex-col flex-1">
-          <div className="text-2xl font-bold mb-2">Select Card Type</div>
-          <div className="text-gray-600 mb-8">Amount: Tk{Number(amount).toLocaleString()}</div>
+        <div className="flex flex-1 flex-col items-center overflow-y-auto px-6 pb-8 pt-10">
+          <h1 className="mb-14 text-center text-4xl font-bold text-[#38afe8]">কার্ড দিয়ে টাকা</h1>
+          <div className="mb-10 text-sm text-[#9a9da5]">Amount: Tk{Number(amount).toLocaleString()}</div>
 
-          <div className="grid grid-cols-2 gap-4 mb-6">
+          <div className="flex w-full max-w-xs flex-col items-center gap-12">
             <button
               onClick={() => handleCardSelect("Visa")}
-              className="border rounded-lg p-4 flex flex-col items-center hover:bg-gray-50 transition-colors"
+              className="flex w-full flex-col items-center rounded-2xl p-2 transition-transform hover:scale-[1.02]"
             >
-              <div className="w-16 h-16 flex items-center justify-center mb-2">
-                <Image src="/images/visa-logo.png" alt="Visa" width={64} height={64} />
+              <div className="flex h-28 w-full items-center justify-center">
+                <Image src="/images/visa-logo.png" alt="Visa" width={190} height={100} />
               </div>
               <div>Visa</div>
             </button>
 
             <button
               onClick={() => handleCardSelect("Mastercard")}
-              className="border rounded-lg p-4 flex flex-col items-center hover:bg-gray-50 transition-colors"
+              className="flex w-full flex-col items-center rounded-2xl p-2 transition-transform hover:scale-[1.02]"
             >
-              <div className="w-16 h-16 flex items-center justify-center mb-2">
-                <Image src="/images/mastercard-logo.webp" alt="Mastercard" width={64} height={64} />
+              <div className="flex h-28 w-full items-center justify-center">
+                <Image src="/images/mastercard-logo.webp" alt="Mastercard" width={190} height={100} />
               </div>
               <div>Mastercard</div>
             </button>
 
             <button
               onClick={() => handleCardSelect("American Express")}
-              className="border rounded-lg p-4 flex flex-col items-center hover:bg-gray-50 transition-colors"
+              className="flex w-full flex-col items-center rounded-2xl p-2 transition-transform hover:scale-[1.02]"
             >
-              <div className="w-16 h-16 flex items-center justify-center mb-2">
-                <Image src="/images/amex-logo.png" alt="American Express" width={64} height={64} />
+              <div className="flex h-28 w-full items-center justify-center">
+                <Image src="/images/amex-logo.png" alt="American Express" width={190} height={100} />
               </div>
               <div>Amex</div>
             </button>
 
-            <button
-              onClick={() => handleCardSelect("Discover")}
-              className="border rounded-lg p-4 flex flex-col items-center hover:bg-gray-50 transition-colors"
-            >
-              <div className="w-16 h-16 flex items-center justify-center mb-2">
-                <Image src="/images/discover-logo.jpeg" alt="Discover" width={64} height={64} />
-              </div>
-              <div>Discover</div>
-            </button>
           </div>
 
           {error && <div className="text-red-500 mb-4">{error}</div>}

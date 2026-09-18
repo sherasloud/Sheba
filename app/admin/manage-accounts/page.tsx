@@ -700,7 +700,7 @@ function ManageAccountsContent() {
                 <option value="Children" className="bg-white text-gray-900">শিশু সহায়তা</option>
                 <option value="Health" className="bg-white text-gray-900">স্বাস্থ্য</option>
                 <option value="Education" className="bg-white text-gray-900">শিক্ষা</option>
-                <option value="Emergency" className="bg-white text-gray-900">জরুরি সহায়তা</option>
+                <option value="Emergency" className="bg-white text-gray-900">জ��ুরি সহায়তা</option>
                 <option value="Environment" className="bg-white text-gray-900">পরিবেশ</option>
               </select>
               <button

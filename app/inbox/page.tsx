@@ -179,17 +179,16 @@ export default function InboxPage() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      {/* Header */}
-      <div className="flex items-center justify-between p-4 bg-[#1FBFFF]">
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => router.push('/')}
-            className="text-white p-2 hover:bg-white/20 rounded-lg transition"
-          >
-            <ArrowLeft size={24} />
-          </button>
-          <h1 className="text-white text-lg font-bold">Inbox</h1>
-        </div>
+      <header className="flex items-center justify-between bg-white px-5 pb-3 pt-5">
+        <button onClick={() => router.push('/')} className="flex h-11 w-11 items-center justify-center text-[#142033]" aria-label="Back">
+          <ArrowLeft size={30} strokeWidth={1.8} />
+        </button>
+        <img src="/images/seba-logo-splash.png" alt="সেবা" className="h-10 w-auto object-contain" />
+        <div className="w-11" />
+      </header>
+      <div className="border-b border-[#e9eef3] px-5 pb-4 pt-2">
+        <h1 className="text-3xl font-normal text-[#485163]">Inbox</h1>
+        <p className="mt-1 text-sm text-[#8a93a3]">আপনার লেনদেন ও নোটিফিকেশন</p>
       </div>
 
       {/* Tabs */}

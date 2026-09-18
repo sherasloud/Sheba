@@ -1113,7 +1113,6 @@ export const cardProviders = [
     logo: "data:image/svg+xml,%3Csvg viewBox='0 0 200 120' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='60' cy='60' r='50' fill='%23EB001B'/%3E%3Ccircle cx='140' cy='60' r='50' fill='%23F79E1B'/%3E%3C/svg%3E",
   },
   { name: "American Express", logo: "/images/amex-logo.png" },
-  { name: "Discover", logo: "/images/discover-logo.jpeg" },
 ]
 
 export const operators = [
