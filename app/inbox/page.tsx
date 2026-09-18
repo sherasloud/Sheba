@@ -378,6 +378,20 @@ export default function InboxPage() {
                   <span className="max-w-[60%] truncate text-right">{userName || "ShebaUser"}</span>
                 </button>
 
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (!isVerified) window.open("https://verify.didit.me/u/-nz59ozcQIevHqyp-PGeLA", "_blank", "noopener,noreferrer")
+                  }}
+                  disabled={isVerified}
+                  className={`flex w-full items-center justify-between text-left ${isVerified ? "cursor-default" : "cursor-pointer"}`}
+                >
+                  <span>Verify</span>
+                  <span className={isVerified ? "text-green-600" : "text-[#1FBFFF]"}>
+                    {isVerified ? "Verified" : "Verify now"}
+                  </span>
+                </button>
+
                 <button onClick={() => setShowNameModal(true)} className="flex w-full items-center justify-between text-left">
                   <span>Account</span>
                   <span className="text-right">Change</span>
@@ -385,7 +399,7 @@ export default function InboxPage() {
 
                 <button type="button" className="flex w-full items-center justify-between text-left">
                   <span>Language</span>
-                  <span className="text-right">বাংলা</span>
+                  <span className="text-right">��াংলা</span>
                 </button>
 
                 <button type="button" className="flex w-full items-center justify-between text-left">
