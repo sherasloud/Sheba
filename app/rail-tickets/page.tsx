@@ -18,11 +18,6 @@ export default function RailTicketsPage() {
   if (showTicketIntro) {
     return (
       <main className="relative min-h-[100dvh] overflow-hidden bg-white">
-        <img
-          src="/images/rail-ticket-intro.png"
-          alt="Train Tickets with Bangladesh Railway logo and Continue button"
-          className="absolute inset-0 h-full w-full object-contain object-top"
-        />
         <button
           type="button"
           aria-label="Continue to rail ticket search"
@@ -30,8 +25,14 @@ export default function RailTicketsPage() {
             setShowTicketIntro(false)
             setSelectedService("train")
           }}
-          className="absolute bottom-[12%] left-1/2 h-[7%] w-[52%] -translate-x-1/2 rounded-full bg-transparent"
-        />
+          className="absolute inset-0 h-full w-full cursor-pointer border-0 bg-transparent p-0"
+        >
+          <img
+            src="/images/rail-ticket-intro.png"
+            alt="Train Tickets with Bangladesh Railway logo and Continue button"
+            className="pointer-events-none absolute inset-0 h-full w-full object-contain object-top"
+          />
+        </button>
       </main>
     )
   }
