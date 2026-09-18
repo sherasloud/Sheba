@@ -183,7 +183,7 @@ export default function InboxPage() {
         <button onClick={() => router.push('/')} className="flex h-11 w-11 items-center justify-center text-[#142033]" aria-label="Back">
           <ArrowLeft size={30} strokeWidth={1.8} />
         </button>
-        <img src="/images/seba-logo-splash.png" alt="সেবা" className="h-10 w-auto object-contain" />
+        <img src="/images/inbox-header-logo.png" alt="সেবা" className="h-10 w-[150px] object-contain" />
         <div className="w-11" />
       </header>
       <div className="border-b border-[#e9eef3] px-5 pb-4 pt-2">
