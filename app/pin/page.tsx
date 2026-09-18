@@ -156,14 +156,8 @@ export default function PinPage() {
 
   return (
     <div className="fixed inset-0 h-[100dvh] w-full overflow-hidden bg-white text-[#10141c]">
-      {/* Header */}
-      <div className="flex justify-end px-6 pt-6">
-        <button onClick={() => router.push("/enter-phone")} className="text-[#666]" aria-label="Close">
-          <svg className="h-10 w-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeWidth={1.8} d="M6 6l12 12M18 6L6 18" />
-          </svg>
-        </button>
-      </div>
+  {/* Header */}
+  <div className="h-16" />
 
       {/* Sheba Logo at Top */}
       <div className="flex flex-col items-center pt-20 pb-10">
