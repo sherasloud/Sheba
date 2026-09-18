@@ -481,13 +481,7 @@ function ManageAccountsContent() {
                       <p className="font-semibold text-gray-900">{biller.name}</p>
                       <p className="text-xs text-gray-500">{biller.category}</p>
                     </div>
-                    <button
-                      onClick={() => handleDeleteBiller(biller.id)}
-                      className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition"
-                      title="ডিলিট করুন"
-                    >
-                      <Trash2 size={18} />
-                    </button>
+
                   </div>
                 ))
               )}
@@ -700,7 +694,7 @@ function ManageAccountsContent() {
                 <option value="Children" className="bg-white text-gray-900">শিশু সহায়তা</option>
                 <option value="Health" className="bg-white text-gray-900">স্বাস্থ্য</option>
                 <option value="Education" className="bg-white text-gray-900">শিক্ষা</option>
-                <option value="Emergency" className="bg-white text-gray-900">জরুরি সহায়তা</option>
+                <option value="Emergency" className="bg-white text-gray-900">জ��ুরি সহায়তা</option>
                 <option value="Environment" className="bg-white text-gray-900">পরিবেশ</option>
               </select>
               <button
