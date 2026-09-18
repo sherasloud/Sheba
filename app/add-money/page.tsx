@@ -324,15 +324,14 @@ export default function AddMoneyPage() {
   const handleDetailsNext = () => {
     if (selectedMethod === "card") {
       if (validateCardDetails()) {
-        // Card details are collected first; only then redirect to PayStation.
         void startPayStationCheckout()
       }
       return
     }
 
-    if (validateBankDetails()) {
-      setStep(5)
-      setError("")
+    if (selectedMethod === "bank" && validateBankDetails()) {
+      // Bank details are collected first; all Add Money methods use PayStation.
+      void startPayStationCheckout()
     }
   }
 
