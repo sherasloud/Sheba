@@ -572,11 +572,11 @@ export default function AddMoneyPage() {
 
   return (
     <div className="flex h-[100dvh] flex-col overflow-hidden bg-white text-[#38afe8]">
-      <div className="flex items-center justify-between px-5 py-5">
-        <button onClick={() => router.push("/")} className="text-[#38afe8]" aria-label="Back">
+      <div className={`flex items-center justify-between px-5 py-5 ${step === 3 || step === 4 ? "bg-[#38afe8]" : "bg-white"}`}>
+        <button onClick={() => router.push("/")} className={step === 3 || step === 4 ? "text-white" : "text-[#38afe8]"} aria-label="Back">
           <ArrowLeft size={24} />
         </button>
-        <div className="text-lg font-medium text-[#38afe8]">Add Money</div>
+        <div className={`text-lg font-medium ${step === 3 || step === 4 ? "text-white" : "text-[#38afe8]"}`}>Add Money</div>
         <div className="w-6" />
       </div>
 
@@ -647,12 +647,12 @@ export default function AddMoneyPage() {
           {selectedMethod === "card" ? (
             <>
               <h1 className="mb-52 text-center text-[3.25rem] font-normal leading-tight text-[#38afe8]">এমাউন্ট লিখুন</h1>
-              <div className="mb-24 flex items-center justify-center gap-5 text-[#38afe8]">
+              <div className="mb-24 flex items-center justify-center gap-5 text-black">
                 <span className="text-5xl font-normal">Tk</span>
                 <input
                   type="text"
                   aria-label="Amount"
-                  className="w-full border-0 bg-transparent p-0 text-center text-[14rem] font-normal leading-none text-[#38afe8] outline-none placeholder:text-[#38afe8]"
+                  className="w-full border-0 bg-transparent p-0 text-center text-[14rem] font-normal leading-none text-black outline-none placeholder:text-black"
                   value={amount}
                 onChange={(e) => setAmount(e.target.value.replace(/[^0-9]/g, ""))}
                 placeholder="0"
@@ -660,27 +660,25 @@ export default function AddMoneyPage() {
                 />
               </div>
               {error && <div className="mb-4 text-center text-red-500">{error}</div>}
-              <button className="mobile-button w-full rounded-full py-5 text-5xl font-normal" onClick={handleAmountNext}>Next</button>
+              <div className="flex justify-center"><button className="mobile-button w-full max-w-sm rounded-full py-5 text-5xl font-normal" onClick={handleAmountNext}>Next</button></div>
             </>
           ) : (
             <>
               <h1 className="mb-24 text-center text-[3.25rem] font-normal leading-tight text-[#38afe8]">এমাউন্ট লিখুন</h1>
-              <div className="mb-10 flex items-center justify-center gap-4 text-[#38afe8]">
+              <div className="mb-10 flex items-center justify-center gap-4 text-black">
                 <span className="text-5xl font-normal">Tk</span>
                 <input
                   type="text"
                   aria-label="Amount"
                   inputMode="numeric"
-                  className="h-32 w-full rounded-2xl border-0 bg-transparent p-0 text-center text-[10rem] font-normal leading-none text-[#38afe8] outline-none placeholder:text-[#38afe8]"
+                  className="h-32 w-full rounded-2xl border-0 bg-transparent p-0 text-center text-[10rem] font-normal leading-none text-black outline-none placeholder:text-black"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value.replace(/[^0-9]/g, ""))}
                   placeholder="0"
                 />
               </div>
-              <div className="mb-6 text-center text-sm text-[#38afe8]">Bank to Sheba</div>
-              <div className="mb-4 rounded-2xl border border-[#d9f2fc] bg-[#f5fcff] p-4 text-center text-sm text-[#38afe8]">Your Sheba Balance: Tk{balance.toLocaleString()}</div>
               {error && <div className="mb-4 text-center text-red-500">{error}</div>}
-              <div className="mt-auto"><button className="mobile-button w-full rounded-full py-5 text-4xl font-normal" onClick={handleAmountNext}>Next</button></div>
+              <div className="mt-auto flex justify-center"><button className="mobile-button w-full max-w-sm rounded-full py-5 text-4xl font-normal" onClick={handleAmountNext}>Next</button></div>
             </>
           )}
         </div>
