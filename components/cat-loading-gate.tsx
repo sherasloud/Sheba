@@ -38,7 +38,7 @@ export function CatLoadingGate({ children }: { children: React.ReactNode }) {
             <img
               src="/images/cyclist-rider.jpeg"
               alt=""
-              className="h-full w-full object-contain mix-blend-multiply cyclist-image"
+              className="h-full w-full object-contain cyclist-image"
             />
           </div>
           <div className="wind wind-one absolute left-[-12%] top-[43%] h-px w-[58%] bg-white/80" />
@@ -55,10 +55,10 @@ export function CatLoadingGate({ children }: { children: React.ReactNode }) {
         .cat-ear { position: absolute; top: -5px; width: 13px; height: 13px; background: white; transform: rotate(45deg); }
         .cat-ear-left { left: 5px; }
         .cat-ear-right { right: 5px; }
-        .car-one { animation: drive 9s linear infinite; transform: scale(1.65); }
-        .car-two { animation: drive 9s linear 2.2s infinite; transform: scale(1.5); }
-        .cycle { animation: cycleDrive 9s linear 1.1s infinite; }
-        .cyclist-image { filter: saturate(1.08) contrast(1.08); }
+        .car-one { animation: drive 9s linear 0s infinite; transform: scale(1.2); }
+        .car-two { animation: drive 9s linear 3s infinite; transform: scale(1.2); }
+        .cycle { animation: cycleDrive 9s linear 6s infinite; }
+        .cyclist-image { filter: saturate(1.08) contrast(1.08); mix-blend-mode: multiply; }
         .cycle-frame { position: absolute; left: 23px; top: 17px; width: 29px; height: 17px; border: 2px solid #245b8a; border-top: 0; transform: skewX(-18deg); }
         .cycle-rider { position: absolute; left: 28px; top: -28px; width: 34px; height: 58px; }
         .rider-head { position: absolute; left: 10px; top: 0; width: 17px; height: 17px; border-radius: 999px; background: #d98968; box-shadow: 3px -3px 0 #3f2d26; }
@@ -82,6 +82,7 @@ export function CatLoadingGate({ children }: { children: React.ReactNode }) {
         @keyframes catSleep { 0%, 76% { transform: translateX(-50%) scale(.9); opacity: 1; } 88%, 100% { transform: translateX(-50%) translateY(-35px) scale(1.12); opacity: 0; } }
         @keyframes drive { from { transform: translateX(0); } to { transform: translateX(135vw); } }
         @keyframes cycleDrive { from { transform: translateX(0); } to { transform: translateX(145vw); } }
+        .car-two::before { content: 'BUS'; position: absolute; left: 42px; top: 30px; color: #6a4b12; font-size: 11px; font-weight: 700; letter-spacing: .08em; }
         @keyframes breezeOne { 0%, 100% { transform: translateX(0) rotate(-16deg); opacity: .2; } 50% { transform: translateX(42px) rotate(-10deg); opacity: .9; } }
         @keyframes breezeTwo { 0%, 100% { transform: translateX(0) rotate(-14deg); opacity: .2; } 50% { transform: translateX(-52px) rotate(-8deg); opacity: .85; } }
         @keyframes grass { from { transform: skewX(0); } to { transform: skewX(-8deg) translateX(8px); } }
