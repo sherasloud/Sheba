@@ -646,9 +646,7 @@ export default function AddMoneyPage() {
         <div className={`flex flex-1 flex-col overflow-y-auto ${selectedMethod === "card" ? "bg-white px-8 pb-8 pt-16" : "px-5 py-6"}`}>
           {selectedMethod === "card" ? (
             <>
-              <h1 className="mb-52 text-center text-[3.25rem] font-normal leading-tight text-[#38afe8]">এমাউন্ট লিখুন</h1>
               <div className="mb-24 flex items-center justify-center gap-5 text-black">
-                <span className="text-5xl font-normal">Tk</span>
                 <input
                   type="text"
                   aria-label="Amount"
@@ -658,15 +656,14 @@ export default function AddMoneyPage() {
                 placeholder="0"
                   inputMode="numeric"
                 />
+                <span className="text-5xl font-normal">Tk</span>
               </div>
               {error && <div className="mb-4 text-center text-red-500">{error}</div>}
               <div className="flex justify-center"><button className="mobile-button w-full max-w-sm rounded-full py-5 text-5xl font-normal" onClick={handleAmountNext}>Next</button></div>
             </>
           ) : (
             <>
-              <h1 className="mb-24 text-center text-[3.25rem] font-normal leading-tight text-[#38afe8]">এমাউন্ট লিখুন</h1>
               <div className="mb-10 flex items-center justify-center gap-4 text-black">
-                <span className="text-5xl font-normal">Tk</span>
                 <input
                   type="text"
                   aria-label="Amount"
@@ -676,6 +673,7 @@ export default function AddMoneyPage() {
                   onChange={(e) => setAmount(e.target.value.replace(/[^0-9]/g, ""))}
                   placeholder="0"
                 />
+                <span className="text-5xl font-normal">Tk</span>
               </div>
               {error && <div className="mb-4 text-center text-red-500">{error}</div>}
               <div className="mt-auto flex justify-center"><button className="mobile-button w-full max-w-sm rounded-full py-5 text-4xl font-normal" onClick={handleAmountNext}>Next</button></div>
