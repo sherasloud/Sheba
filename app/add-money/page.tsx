@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { ArrowLeft, Copy, Check } from "lucide-react"
+import { ArrowLeft, Copy, Check, Building2, CreditCard, ChevronRight, Circle } from "lucide-react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 import VerificationRequired from "@/components/verification-required"
@@ -581,38 +581,43 @@ export default function AddMoneyPage() {
       </div>
 
       {step === 1 && (
-        <div className="flex flex-1 flex-col overflow-y-auto px-5 py-6">
-          <div className="mb-2 text-2xl font-bold text-[#38afe8]">Add Money</div>
-          <div className="mb-8 text-sm text-[#38afe8]">Choose a method to add money</div>
+  <div className="flex flex-1 flex-col overflow-y-auto bg-[#f7f8fa] px-5 pb-8 pt-6">
+  <div className="mb-8 flex items-center justify-center">
+    <h1 className="text-xl font-medium text-[#151522]">Payment Method</h1>
+  </div>
 
-          <div className="space-y-4">
-            <button
-              onClick={() => handleMethodSelect("bank")}
-              className="flex w-full items-center rounded-2xl border border-[#eef0f3] bg-white p-4 text-left shadow-[0_4px_14px_rgba(20,32,51,0.04)] transition-colors hover:border-[#38afe8] hover:bg-[#f8fcff]"
-            >
-              <div className="w-10 h-10 flex items-center justify-center rounded-full bg-[#e8f7fd] mr-4">
-                <span className="text-green-500 text-xl">🏦</span>
-              </div>
-              <div className="text-left">
-                <h3 className="font-medium">Bank To Sheba</h3>
-                <p className="text-sm text-[#38afe8]">Add money from your bank account</p>
-              </div>
-            </button>
-            <button
-              onClick={() => handleMethodSelect("card")}
-              className="flex w-full items-center rounded-2xl border border-[#eef0f3] bg-white p-4 text-left shadow-[0_4px_14px_rgba(20,32,51,0.04)] transition-colors hover:border-[#38afe8] hover:bg-[#f8fcff]"
-            >
-              <div className="w-10 h-10 flex items-center justify-center rounded-full bg-[#e8f7fd] mr-4">
-                <span className="text-purple-500 text-xl">💳</span>
-              </div>
-              <div className="text-left">
-                <h3 className="font-medium">Card To Sheba</h3>
-                <p className="text-sm text-[#38afe8]">Add money from your credit/debit card</p>
-              </div>
-            </button>
+  <div className="space-y-3">
+  <button
+  onClick={() => handleMethodSelect("card")}
+  className="flex w-full items-center rounded-xl border border-[#edf0f3] bg-white px-4 py-4 text-left shadow-[0_3px_12px_rgba(20,32,51,0.05)] transition-colors hover:border-[#38afe8]"
+  >
+    <div className="mr-4 flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-[#fff4df] text-[#e6a91d]"><CreditCard size={22} strokeWidth={1.8} /></div>
+    <div className="min-w-0 flex-1">
+      <h3 className="text-base font-medium text-[#151522]">Credit Card</h3>
+      <p className="text-xs text-[#a5a9b1]">Visa or Mastercard</p>
+    </div>
+    <Circle size={21} strokeWidth={1.7} className="text-[#8b9098]" />
+    <ChevronRight size={18} className="ml-2 text-[#b7bbc1]" />
+  </button>
+  <button
+  onClick={() => handleMethodSelect("bank")}
+  className="flex w-full items-center rounded-xl border border-[#edf0f3] bg-white px-4 py-4 text-left shadow-[0_3px_12px_rgba(20,32,51,0.05)] transition-colors hover:border-[#38afe8]"
+  >
+    <div className="mr-4 flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-[#e8f7fd] text-[#38afe8]"><Building2 size={22} strokeWidth={1.8} /></div>
+    <div className="min-w-0 flex-1">
+      <h3 className="text-base font-medium text-[#151522]">Bank Account</h3>
+      <p className="text-xs text-[#a5a9b1]">Transfer from your bank</p>
+    </div>
+    <Circle size={21} strokeWidth={1.7} className="text-[#8b9098]" />
+    <ChevronRight size={18} className="ml-2 text-[#b7bbc1]" />
+  </button>
+  </div>
 
-          </div>
-        </div>
+  <div className="mt-auto pt-10">
+    <div className="mb-3 flex items-center justify-between border-b border-dashed border-[#dfe2e6] pb-3 text-sm text-[#9297a0]"><span>Available balance</span><span className="font-medium text-[#151522]">৳{balance.toLocaleString()}</span></div>
+    <button disabled={!selectedMethod} onClick={() => selectedMethod && handleMethodSelect(selectedMethod)} className="w-full rounded-xl bg-[#151522] py-4 text-base font-medium text-white transition-opacity disabled:cursor-not-allowed disabled:opacity-40">Continue</button>
+  </div>
+  </div>
       )}
 
       {step === 2 && selectedMethod === "card" && (
