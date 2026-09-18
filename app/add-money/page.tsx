@@ -647,11 +647,11 @@ export default function AddMoneyPage() {
           {selectedMethod === "card" ? (
             <>
               <h1 className="mb-24 text-center text-[3.25rem] font-normal leading-tight text-[#38afe8]">এমাউন্ট লিখুন</h1>
-              <div className="mb-24 flex items-center justify-center gap-5 text-black">
+              <div className="mb-24 flex items-center justify-center gap-1 text-black">
                 <input
                   type="text"
                   aria-label="Amount"
-                  className="w-full min-w-0 border-0 bg-transparent p-0 text-center text-[clamp(4.5rem,24vw,14rem)] font-normal leading-none text-black outline-none placeholder:text-black"
+                  className="w-auto min-w-0 max-w-[78vw] border-0 bg-transparent p-0 text-center text-[clamp(3rem,8vw,3rem)] font-normal leading-none text-black outline-none placeholder:text-black"
                   value={amount}
                 onChange={(e) => setAmount(e.target.value.replace(/[^0-9]/g, ""))}
                 placeholder="0"
@@ -665,12 +665,12 @@ export default function AddMoneyPage() {
           ) : (
             <>
               <h1 className="mb-24 text-center text-[3.25rem] font-normal leading-tight text-[#38afe8]">এমাউন্ট লিখুন</h1>
-              <div className="mb-10 flex items-center justify-center gap-4 text-black">
+              <div className="mb-10 flex items-center justify-center gap-1 text-black">
                 <input
                   type="text"
                   aria-label="Amount"
                   inputMode="numeric"
-                  className="h-32 min-w-0 w-full rounded-2xl border-0 bg-transparent p-0 text-center text-[clamp(4.5rem,24vw,14rem)] font-normal leading-none text-black outline-none placeholder:text-black"
+                  className="h-20 w-auto min-w-0 max-w-[78vw] rounded-2xl border-0 bg-transparent p-0 text-center text-[clamp(3rem,8vw,3rem)] font-normal leading-none text-black outline-none placeholder:text-black"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value.replace(/[^0-9]/g, ""))}
                   placeholder="0"
