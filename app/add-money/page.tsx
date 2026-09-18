@@ -647,30 +647,36 @@ export default function AddMoneyPage() {
           {selectedMethod === "card" ? (
             <>
               <h1 className="mb-52 text-center text-[3.25rem] font-normal leading-tight text-[#38afe8]">এমাউন্ট লিখুন</h1>
-              <input
-                type="text"
-                aria-label="Amount"
-                className="mb-24 w-full border-0 bg-transparent p-0 text-center text-[14rem] font-semibold leading-none text-black outline-none placeholder:text-black"
-                value={amount}
+              <div className="mb-24 flex items-center justify-center gap-5 text-[#38afe8]">
+                <span className="text-5xl font-normal">Tk</span>
+                <input
+                  type="text"
+                  aria-label="Amount"
+                  className="w-full border-0 bg-transparent p-0 text-center text-[14rem] font-normal leading-none text-[#38afe8] outline-none placeholder:text-[#38afe8]"
+                  value={amount}
                 onChange={(e) => setAmount(e.target.value.replace(/[^0-9]/g, ""))}
                 placeholder="0"
-                inputMode="numeric"
-              />
+                  inputMode="numeric"
+                />
+              </div>
               {error && <div className="mb-4 text-center text-red-500">{error}</div>}
               <button className="mobile-button w-full rounded-full py-5 text-5xl font-normal" onClick={handleAmountNext}>Next</button>
             </>
           ) : (
             <>
               <h1 className="mb-24 text-center text-[3.25rem] font-normal leading-tight text-[#38afe8]">এমাউন্ট লিখুন</h1>
-              <input
-                type="text"
-                aria-label="Amount"
-                inputMode="numeric"
-                className="mb-10 h-32 w-full rounded-2xl border-0 bg-transparent p-0 text-center text-[10rem] font-semibold leading-none text-black outline-none placeholder:text-black"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value.replace(/[^0-9]/g, ""))}
-                placeholder="0"
-              />
+              <div className="mb-10 flex items-center justify-center gap-4 text-[#38afe8]">
+                <span className="text-5xl font-normal">Tk</span>
+                <input
+                  type="text"
+                  aria-label="Amount"
+                  inputMode="numeric"
+                  className="h-32 w-full rounded-2xl border-0 bg-transparent p-0 text-center text-[10rem] font-normal leading-none text-[#38afe8] outline-none placeholder:text-[#38afe8]"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value.replace(/[^0-9]/g, ""))}
+                  placeholder="0"
+                />
+              </div>
               <div className="mb-6 text-center text-sm text-[#38afe8]">Bank to Sheba</div>
               <div className="mb-4 rounded-2xl border border-[#d9f2fc] bg-[#f5fcff] p-4 text-center text-sm text-[#38afe8]">Your Sheba Balance: Tk{balance.toLocaleString()}</div>
               {error && <div className="mb-4 text-center text-red-500">{error}</div>}
