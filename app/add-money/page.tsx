@@ -650,7 +650,7 @@ export default function AddMoneyPage() {
               <input
                 type="text"
                 aria-label="Amount"
-                className="mb-24 w-full border-0 bg-transparent p-0 text-center text-[8rem] font-light leading-none text-black outline-none placeholder:text-black"
+                className="mb-24 w-full border-0 bg-transparent p-0 text-center text-[10rem] font-medium leading-none text-black outline-none placeholder:text-black"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value.replace(/[^0-9]/g, ""))}
                 placeholder="0"
@@ -668,7 +668,7 @@ export default function AddMoneyPage() {
                 type="text"
                 aria-label="Amount"
                 inputMode="numeric"
-                className="mb-2 h-24 w-full rounded-md border p-4 text-center text-4xl font-medium"
+                className="mb-2 h-24 w-full rounded-md border p-4 text-center text-6xl font-medium"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value.replace(/[^0-9]/g, ""))}
                 placeholder="0"
