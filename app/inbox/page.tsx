@@ -321,7 +321,7 @@ export default function InboxPage() {
           <div className="p-0">
             {notifications.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-40">
-                <p className="text-gray-500 text-center">কোন বিজ্ঞপ্তি নেই</p>
+                <p className="text-gray-500 text-center">কোন বিজ্ঞ��্তি নেই</p>
               </div>
             ) : (
               <div className="divide-y divide-gray-200">
@@ -372,25 +372,32 @@ export default function InboxPage() {
                 </div>
               </label>
 
-              <button onClick={() => setShowNameModal(true)} className="mt-28 text-5xl font-normal leading-none">
-                নামে
-              </button>
+              <div className="mt-28 flex w-full max-w-md flex-col gap-8 text-2xl font-normal">
+                <button onClick={() => setShowNameModal(true)} className="flex w-full items-center justify-between text-left">
+                  <span>Name</span>
+                  <span className="max-w-[60%] truncate text-right">{userName || "ShebaUser"}</span>
+                </button>
 
-              <button onClick={() => setShowNameModal(true)} className="mt-20 text-4xl font-normal leading-none">
-                একাউন্ট চেইঞ্জ
-              </button>
+                <button onClick={() => setShowNameModal(true)} className="flex w-full items-center justify-between text-left">
+                  <span>Account</span>
+                  <span className="text-right">Change</span>
+                </button>
 
-              <button type="button" className="mt-20 text-4xl font-normal leading-none">
-                Language
-              </button>
+                <button type="button" className="flex w-full items-center justify-between text-left">
+                  <span>Language</span>
+                  <span className="text-right">বাংলা</span>
+                </button>
 
-              <button type="button" className="mt-20 text-4xl font-normal leading-none">
-                Change PIN
-              </button>
+                <button type="button" className="flex w-full items-center justify-between text-left">
+                  <span>PIN</span>
+                  <span className="text-right">Change PIN</span>
+                </button>
 
-              <button onClick={handleLogout} className="mt-20 text-5xl font-normal leading-none">
-                একাউন্ট লগআউট
-              </button>
+                <button onClick={handleLogout} className="flex w-full items-center justify-between text-left">
+                  <span>Account</span>
+                  <span className="text-right">Logout</span>
+                </button>
+              </div>
             </div>
           </div>
         )}
