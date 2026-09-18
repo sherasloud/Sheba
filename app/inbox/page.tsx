@@ -183,21 +183,21 @@ export default function InboxPage() {
         <button onClick={() => router.push('/')} className="flex h-11 w-11 items-center justify-center text-[#142033]" aria-label="Back">
           <ArrowLeft size={30} strokeWidth={1.8} />
         </button>
-        <img src="/images/seba-logo-splash.png" alt="সেবা" className="h-10 w-auto object-contain" />
+        <img src="/images/inbox-header-logo.png" alt="সেবা" className="h-10 w-[150px] object-contain" />
         <div className="w-11" />
       </header>
-      <div className="border-b border-[#e9eef3] px-5 pb-4 pt-2">
+      <div className="px-5 pb-4 pt-2">
         <h1 className="text-3xl font-normal text-[#485163]">Inbox</h1>
         <p className="mt-1 text-sm text-[#8a93a3]">আপনার লেনদেন ও নোটিফিকেশন</p>
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-0 border-b border-gray-200 bg-white sticky top-0 z-10">
+      <div className="flex gap-0 bg-white sticky top-0 z-10">
         <button
           onClick={() => setActiveTab('transactions')}
           className={`flex-1 py-3 px-4 font-medium transition-colors ${
             activeTab === 'transactions'
-              ? 'text-[#1FBFFF] border-b-2 border-[#1FBFFF]'
+              ? 'text-[#1FBFFF]'
               : 'text-gray-600 hover:text-gray-900'
           }`}
         >
@@ -207,7 +207,7 @@ export default function InboxPage() {
           onClick={() => setActiveTab('notifications')}
           className={`flex-1 py-3 px-4 font-medium transition-colors ${
             activeTab === 'notifications'
-              ? 'text-[#1FBFFF] border-b-2 border-[#1FBFFF]'
+              ? 'text-[#1FBFFF]'
               : 'text-gray-600 hover:text-gray-900'
           }`}
         >
@@ -217,7 +217,7 @@ export default function InboxPage() {
           onClick={() => setActiveTab('account')}
           className={`flex-1 py-3 px-4 font-medium transition-colors ${
             activeTab === 'account'
-              ? 'text-[#1FBFFF] border-b-2 border-[#1FBFFF]'
+              ? 'text-[#1FBFFF]'
               : 'text-gray-600 hover:text-gray-900'
           }`}
         >
@@ -248,7 +248,7 @@ export default function InboxPage() {
                   const bgColor = colors[hash]
                   
                   const userProfilePic = transactionProfilePics[otherPhone]
-                  const displayChar = otherPhone ? otherPhone.charAt(0).toUpperCase() : '?'
+                  const displayChar = otherPhone ? otherPhone.charAt(0).toUpperCase() : null
 
                   return (
                     <div
@@ -258,9 +258,11 @@ export default function InboxPage() {
                       <div className={`w-12 h-12 rounded-full ${bgColor} flex items-center justify-center text-white font-bold text-sm flex-shrink-0 overflow-hidden`}>
                         {userProfilePic ? (
                           <img src={userProfilePic} alt={otherPhone || 'Profile'} className="w-full h-full object-cover" />
-                        ) : (
-                          displayChar
-                        )}
+  ) : displayChar ? (
+  displayChar
+  ) : (
+  <User size={22} strokeWidth={1.8} aria-hidden="true" />
+  )}
                       </div>
                       
                       <div className="flex-1 min-w-0">
@@ -319,7 +321,7 @@ export default function InboxPage() {
           <div className="p-0">
             {notifications.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-40">
-                <p className="text-gray-500 text-center">কোন বিজ্ঞপ্তি নেই</p>
+                <p className="text-gray-500 text-center">কোন বিজ্ঞ��্তি নেই</p>
               </div>
             ) : (
               <div className="divide-y divide-gray-200">
@@ -351,106 +353,63 @@ export default function InboxPage() {
 
         {/* Settings Tab */}
         {activeTab === 'account' && (
-          <div className="p-4 space-y-4">
-            {/* Profile Picture Section */}
-            <div className="bg-white rounded-lg p-4 border border-gray-200">
-              <h2 className="font-bold text-lg mb-4">প্রোফাইল ছবি</h2>
-              
-              <div className="flex flex-col items-center gap-4">
-                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-[#1FBFFF] to-[#1fa5eb] flex items-center justify-center overflow-hidden">
+          <div className="min-h-full bg-white px-6 pb-16 pt-12 text-black">
+            <div className="flex flex-col items-center">
+              <label className="relative cursor-pointer">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleProfilePicUpload}
+                  disabled={uploadingProfile}
+                  className="hidden"
+                />
+                <div className="flex h-52 w-52 items-center justify-center overflow-hidden rounded-full bg-[#b9ddf8]">
                   {profilePic ? (
-                    <img src={profilePic} alt="Profile" className="w-full h-full object-cover" />
+                    <img src={profilePic} alt="Profile" className="h-full w-full object-cover" />
                   ) : (
-                    <User size={48} className="text-white" />
+                    <User size={92} strokeWidth={1.2} className="text-white" />
                   )}
                 </div>
-                
-                <label className="relative cursor-pointer">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleProfilePicUpload}
-                    disabled={uploadingProfile}
-                    className="hidden"
-                  />
-                  <div className="flex items-center gap-2 px-4 py-2 bg-[#1FBFFF] text-white rounded-lg hover:bg-[#1fa5eb] transition font-medium">
-                    <Upload size={18} />
-                    {uploadingProfile ? 'আপলোড করছি...' : 'ছবি আপলোড করুন'}
-                  </div>
-                </label>
-              </div>
-            </div>
+              </label>
 
-            {/* Account Settings Section */}
-            <div className="bg-gradient-to-r from-[#29a9eb] to-blue-400 rounded-lg p-4 border-2 border-[#29a9eb]">
-              <h2 className="font-bold text-lg mb-4 text-white">👤 আপনার নাম</h2>
-              
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-blue-100 text-sm">বর্তমান নাম</p>
-                  <p className="font-bold text-white text-lg">{userName}</p>
-                </div>
-                <button
-                  onClick={() => setShowNameModal(true)}
-                  className="bg-white text-[#29a9eb] px-4 py-2 rounded-lg font-semibold hover:bg-gray-100 transition"
-                >
-                  পরিবর্তন করুন
+              <button
+                type="button"
+                onClick={() => {
+                  if (!isVerified) window.open("https://verify.didit.me/u/-nz59ozcQIevHqyp-PGeLA", "_blank", "noopener,noreferrer")
+                }}
+                disabled={isVerified}
+                className={`mt-6 flex items-center gap-2 text-xl font-normal ${isVerified ? "cursor-default text-[#1FBFFF]" : "text-[#1FBFFF]"}`}
+              >
+                {isVerified ? <><Check size={22} strokeWidth={2.5} aria-hidden="true" />Verified</> : "Verify your account"}
+              </button>
+
+              <div className="mt-12 flex w-full max-w-md flex-col gap-8 text-2xl font-normal leading-normal">
+                <button onClick={() => setShowNameModal(true)} className="flex w-full items-center justify-between text-left">
+                  <span>Name</span>
+                  <span className="max-w-[60%] truncate text-right">{userName || "ShebaUser"}</span>
+                </button>
+
+
+                <button onClick={() => setShowNameModal(true)} className="flex w-full items-center justify-between text-left">
+                  <span>Account</span>
+                  <span className="text-right">Change</span>
+                </button>
+
+                <button type="button" className="flex w-full items-center justify-between text-left">
+                  <span>Language</span>
+                  <span className="whitespace-nowrap text-right">বাংলা</span>
+                </button>
+
+                <button type="button" className="flex w-full items-center justify-between text-left">
+                  <span>PIN</span>
+                  <span className="text-right">Change PIN</span>
+                </button>
+
+                <button onClick={handleLogout} className="flex w-full items-center justify-between text-left">
+                  <span>Account</span>
+                  <span className="text-right">Logout</span>
                 </button>
               </div>
-            </div>
-
-            {/* Account Settings Section */}
-            <div className="bg-white rounded-lg p-4 border border-gray-200">
-              <h2 className="font-bold text-lg mb-4">অ্যাকাউন্ট সেটিংস</h2>
-              
-              <div className="space-y-3">
-                <div className="pb-3 border-b border-gray-200">
-                  <p className="text-sm text-gray-600">ফোন নম্বর</p>
-                  <p className="font-medium">{userPhone}</p>
-                </div>
-                
-                <div className="pb-3 border-b border-gray-200">
-                  <p className="text-sm text-gray-600">ফোন নম্বর</p>
-                  <p className="font-medium">{userPhone}</p>
-                </div>
-                
-                <div className="pb-3 border-b border-gray-200">
-                  <p className="text-sm text-gray-600">যাচাইকরণ স্থিতি</p>
-                  <p className="font-medium">
-                    {isVerified ? '✓ যাচাইকৃত' : '✗ অ-যাচাইকৃত'}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Facebook Link Section */}
-            <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg p-4 border-2 border-blue-500">
-              <a
-                href="https://facebook.com/ShebaBangIadesh"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-between hover:opacity-90 transition-all"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="bg-white text-blue-600 p-3 rounded-lg font-bold text-lg">f</div>
-                  <div>
-                    <div className="font-bold text-white">📘 Sheba Facebook</div>
-                    <div className="text-sm text-blue-100">আমাদের অফিসিয়াল ফেসবুক পেজ</div>
-                  </div>
-                </div>
-                <div className="text-white text-xl">→</div>
-              </a>
-            </div>
-
-            {/* Logout Section */}
-            <div className="bg-white rounded-lg p-4 border border-gray-200">
-              <button
-                onClick={handleLogout}
-                className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-red-50 text-red-600 rounded-lg font-medium hover:bg-red-100 transition"
-              >
-                <LogOut size={18} />
-                লগআউট
-              </button>
             </div>
           </div>
         )}
