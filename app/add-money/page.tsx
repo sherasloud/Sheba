@@ -664,7 +664,15 @@ export default function AddMoneyPage() {
               <div className="mb-2 text-2xl font-bold">Enter Amount</div>
               <div className="mb-8 text-[#38afe8]">Bank to Sheba</div>
               <div className="mb-2 flex items-center"><div className="mr-2">Tk</div><div>Amount (Tk)</div></div>
-              <input type="text" className="mb-2 rounded-md border p-4 text-center text-2xl" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="0" />
+              <input
+                type="text"
+                aria-label="Amount"
+                inputMode="numeric"
+                className="mb-2 h-24 w-full rounded-md border p-4 text-center text-4xl font-medium"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value.replace(/[^0-9]/g, ""))}
+                placeholder="0"
+              />
               <div className="mb-4 rounded-lg border border-blue-200 bg-blue-50 p-3"><div className="text-sm text-[#38afe8]"><div>Your Sheba Balance: Tk{balance.toLocaleString()}</div>{amount && <div>New Sheba Balance: Tk{(balance + Number(amount || 0)).toLocaleString()}</div>}</div></div>
               {error && <div className="mb-4 text-red-500">{error}</div>}
               <div className="mt-auto flex space-x-2"><button className="flex-1 rounded-md border border-gray-300 p-4 touch-manipulation" onClick={handleBackStep}>Back</button><button className="mobile-button flex-1" onClick={handleAmountNext}>Next</button></div>
