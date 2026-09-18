@@ -650,7 +650,7 @@ export default function AddMoneyPage() {
               <input
                 type="text"
                 aria-label="Amount"
-                className="mb-24 w-full border-0 bg-transparent p-0 text-center text-[12rem] font-semibold leading-none text-black outline-none placeholder:text-black"
+                className="mb-24 w-full border-0 bg-transparent p-0 text-center text-[14rem] font-semibold leading-none text-black outline-none placeholder:text-black"
                 value={amount}
                 onChange={(e) => setAmount(e.target.value.replace(/[^0-9]/g, ""))}
                 placeholder="0"
@@ -672,9 +672,9 @@ export default function AddMoneyPage() {
                 placeholder="0"
               />
               <div className="mb-6 text-center text-sm text-[#38afe8]">Bank to Sheba</div>
-              <div className="mb-4 rounded-2xl border border-[#d9f2fc] bg-[#f5fcff] p-4 text-center text-sm text-[#38afe8]"><div>Your Sheba Balance: Tk{balance.toLocaleString()}</div>{amount && <div>New Sheba Balance: Tk{(balance + Number(amount || 0)).toLocaleString()}</div>}</div>
+              <div className="mb-4 rounded-2xl border border-[#d9f2fc] bg-[#f5fcff] p-4 text-center text-sm text-[#38afe8]">Your Sheba Balance: Tk{balance.toLocaleString()}</div>
               {error && <div className="mb-4 text-center text-red-500">{error}</div>}
-              <div className="mt-auto flex items-center gap-3"><button className="rounded-full border border-[#38afe8] px-6 py-4 text-[#38afe8] touch-manipulation" onClick={handleBackStep}>Back</button><button className="mobile-button flex-1 rounded-full py-5 text-4xl font-normal" onClick={handleAmountNext}>Next</button></div>
+              <div className="mt-auto"><button className="mobile-button w-full rounded-full py-5 text-4xl font-normal" onClick={handleAmountNext}>Next</button></div>
             </>
           )}
         </div>
