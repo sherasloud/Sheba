@@ -372,25 +372,23 @@ export default function InboxPage() {
                 </div>
               </label>
 
-              <div className="mt-28 flex w-full max-w-md flex-col gap-8 text-2xl font-normal leading-normal">
+              <button
+                type="button"
+                onClick={() => {
+                  if (!isVerified) window.open("https://verify.didit.me/u/-nz59ozcQIevHqyp-PGeLA", "_blank", "noopener,noreferrer")
+                }}
+                disabled={isVerified}
+                className={`mt-6 flex items-center gap-2 text-xl font-normal ${isVerified ? "cursor-default text-[#1FBFFF]" : "text-[#1FBFFF]"}`}
+              >
+                {isVerified ? <><Check size={22} strokeWidth={2.5} aria-hidden="true" />Verified</> : "Verify your account"}
+              </button>
+
+              <div className="mt-12 flex w-full max-w-md flex-col gap-8 text-2xl font-normal leading-normal">
                 <button onClick={() => setShowNameModal(true)} className="flex w-full items-center justify-between text-left">
                   <span>Name</span>
                   <span className="max-w-[60%] truncate text-right">{userName || "ShebaUser"}</span>
                 </button>
 
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (!isVerified) window.open("https://verify.didit.me/u/-nz59ozcQIevHqyp-PGeLA", "_blank", "noopener,noreferrer")
-                  }}
-                  disabled={isVerified}
-                  className={`flex w-full items-center justify-between text-left ${isVerified ? "cursor-default" : "cursor-pointer"}`}
-                >
-                  <span>Verify</span>
-                  <span className={isVerified ? "flex items-center gap-1 text-[#1FBFFF]" : "text-[#1FBFFF]"}>
-                    {isVerified ? <><Check size={20} strokeWidth={2.5} aria-hidden="true" />Verified</> : "Verify now"}
-                  </span>
-                </button>
 
                 <button onClick={() => setShowNameModal(true)} className="flex w-full items-center justify-between text-left">
                   <span>Account</span>
