@@ -16,6 +16,11 @@ export default function PinPage() {
 
   useEffect(() => {
     const initPage = async () => {
+      // Always start a fresh PIN attempt when the app is reopened.
+      setPin("")
+      setError("")
+      setIsLoading(false)
+
       const currentPhone = searchParams.get("phone") || sessionStorage.getItem("phoneNumber") || localStorage.getItem("phoneNumber")
 
       if (!currentPhone) {

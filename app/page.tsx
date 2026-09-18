@@ -260,6 +260,14 @@ export default function AppPage() {
           return
         }
 
+        // Re-open the PIN screen after the app/browser session is closed.
+        // The old error state is component-local, so the PIN page starts clean.
+        if (pinVerified !== "true") {
+          console.log("[v0] PIN session missing, redirecting to /pin")
+          router.replace(`/pin?phone=${encodeURIComponent(phone)}`)
+          return
+        }
+
         console.log("[v0] Authentication passed, loading home page")
 
       // Fetch balance from Neon database - no caching
