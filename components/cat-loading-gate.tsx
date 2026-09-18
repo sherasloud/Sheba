@@ -22,13 +22,19 @@ export function CatLoadingGate({ children }: { children: React.ReactNode }) {
           <div className="cat-sleep-overlay absolute bottom-[15%] left-1/2 z-10 h-8 w-12 -translate-x-1/2 rounded-[55%] bg-white shadow-sm" aria-hidden="true">
             <span className="cat-ear cat-ear-left" />
             <span className="cat-ear cat-ear-right" />
-            <span className="cat-face">•ᴗ•</span>
+            <span className="cat-face">•︵•</span>
           </div>
-          <div className="car absolute bottom-[25%] left-[-15%] z-10 h-5 w-12 rounded-md bg-[#ef6a5b] shadow-sm" aria-hidden="true">
+          <div className="car car-one absolute bottom-[25%] left-[-15%] z-10 h-5 w-12 rounded-md bg-[#ef6a5b] shadow-sm" aria-hidden="true">
             <span className="car-window" />
             <span className="car-wheel car-wheel-left" />
             <span className="car-wheel car-wheel-right" />
           </div>
+          <div className="car car-two absolute bottom-[25.5%] left-[-15%] z-10 h-4 w-10 rounded-md bg-[#f3c45b] shadow-sm" aria-hidden="true">
+            <span className="car-window car-window-small" />
+            <span className="car-wheel car-wheel-left" />
+            <span className="car-wheel car-wheel-right" />
+          </div>
+          <div className="driver absolute bottom-[25.5%] left-[-8%] z-10 h-4 w-2 rounded-t-full bg-[#3f5b78]" aria-hidden="true" />
           <div className="wind wind-one absolute left-[-12%] top-[43%] h-px w-[58%] bg-white/80" />
           <div className="wind wind-two absolute right-[-10%] top-[28%] h-px w-[45%] bg-white/80" />
           <div className="wind wind-three absolute left-[10%] bottom-[24%] h-1 w-[34%] rounded-full bg-[#6da936]/60" />
@@ -43,7 +49,9 @@ export function CatLoadingGate({ children }: { children: React.ReactNode }) {
         .cat-ear { position: absolute; top: -5px; width: 13px; height: 13px; background: white; transform: rotate(45deg); }
         .cat-ear-left { left: 5px; }
         .cat-ear-right { right: 5px; }
-        .car { animation: drive 9s linear infinite; }
+        .car-one { animation: drive 9s linear infinite; }
+        .car-two { animation: drive 9s linear 2.2s infinite; }
+        .driver { animation: drive 9s linear 2.2s infinite; }
         .car-window { position: absolute; left: 15px; top: 3px; width: 14px; height: 7px; border-radius: 2px; background: #b9e2f5; }
         .car-wheel { position: absolute; bottom: -4px; width: 8px; height: 8px; border-radius: 999px; background: #334155; }
         .car-wheel-left { left: 7px; }
@@ -58,7 +66,7 @@ export function CatLoadingGate({ children }: { children: React.ReactNode }) {
         @keyframes breezeTwo { 0%, 100% { transform: translateX(0) rotate(-14deg); opacity: .2; } 50% { transform: translateX(-52px) rotate(-8deg); opacity: .85; } }
         @keyframes grass { from { transform: skewX(0); } to { transform: skewX(-8deg) translateX(8px); } }
         @media (prefers-reduced-motion: reduce) {
-          .wind, .car, .cat-sleep-overlay { animation: none; }
+          .wind, .car-one, .car-two, .driver, .cat-sleep-overlay { animation: none; }
         }
       `}</style>
     </>
