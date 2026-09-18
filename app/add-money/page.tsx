@@ -572,16 +572,16 @@ export default function AddMoneyPage() {
 
   return (
     <div className="flex h-[100dvh] flex-col overflow-hidden bg-white text-[#38afe8]">
-      <div className={`flex items-center px-5 py-5 ${step === 3 ? "bg-white" : step === 4 ? "bg-[#38afe8]" : "bg-white"}`}>
-        <button onClick={() => router.push("/")} className={step === 4 ? "text-white" : "text-[#38afe8]"} aria-label="Back">
+      <div className="flex items-center bg-white px-5 py-5">
+        <button onClick={() => router.push("/")} className="text-[#38afe8]" aria-label="Back">
           <ArrowLeft size={24} />
         </button>
-        {step !== 3 && <div className={`ml-auto mr-auto text-lg font-medium ${step === 4 ? "text-white" : "text-[#38afe8]"}`}>Add Money</div>}
+        {step !== 3 && <div className="ml-auto mr-auto text-lg font-medium text-[#38afe8]">Add Money</div>}
         {step !== 3 && <div className="w-6" />}
       </div>
 
       {step === 1 && (
-  <div className="flex flex-1 flex-col overflow-y-auto bg-[#f7f8fa] px-5 pb-8 pt-6">
+  <div className="flex flex-1 flex-col overflow-y-auto bg-white px-5 pb-8 pt-6">
   <div className="space-y-3">
   <button
   onClick={() => handleMethodSelect("card")}
