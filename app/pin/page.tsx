@@ -197,7 +197,7 @@ export default function PinPage() {
             <button
               key={number}
               onClick={() => handlePinInput(number.toString())}
-              className="flex h-16 w-16 items-center justify-center text-4xl font-medium text-[#10141c] transition-colors hover:text-[#38afe8] active:scale-95"
+              className="flex h-16 w-16 items-center justify-center text-3xl font-medium text-[#10141c] transition-colors hover:text-[#38afe8] active:scale-95"
               disabled={isLoading}
             >
               {number}
@@ -208,7 +208,7 @@ export default function PinPage() {
 
           <button
             onClick={() => handlePinInput("0")}
-            className="flex h-16 w-16 items-center justify-center text-4xl font-medium text-[#10141c] transition-colors hover:text-[#38afe8] active:scale-95"
+            className="flex h-16 w-16 items-center justify-center text-3xl font-medium text-[#10141c] transition-colors hover:text-[#38afe8] active:scale-95"
             disabled={isLoading}
           >
             0
