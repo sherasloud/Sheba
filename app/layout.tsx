@@ -2,6 +2,7 @@ import type React from "react"
 import "./globals.css"
 import type { Metadata, Viewport } from "next"
 import { Inter } from "next/font/google"
+import { CatLoadingGate } from "@/components/cat-loading-gate"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -60,7 +61,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className="bg-white text-gray-900">
       <body className={`${inter.className} antialiased bg-white min-h-screen`}>
         <main className="flex-1">
-          {children}
+          <CatLoadingGate>{children}</CatLoadingGate>
         </main>
       </body>
     </html>
