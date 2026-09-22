@@ -7,17 +7,16 @@ export default function EnterPhonePage() {
   const [phoneNumber, setPhoneNumber] = useState("")
   const [error, setError] = useState("")
   const [isChecking, setIsChecking] = useState(false)
-  const [method, setMethod] = useState<"phone" | "email">("phone")
   const router = useRouter()
 
   const handleNext = async () => {
     if (!phoneNumber) {
-      setError("আপনার ফোন নাম্বার লিখুন")
+      setError("Please enter your phone number")
       return
     }
 
     if (phoneNumber.length !== 11 || !/^01\d{9}$/.test(phoneNumber)) {
-      setError("সঠিক ১১ ডিজিটের ফোন নাম্বার লিখুন")
+      setError("Please enter a valid 11-digit phone number")
       return
     }
 
@@ -37,7 +36,7 @@ export default function EnterPhonePage() {
       router.push(`/otp?phone=${encodeURIComponent(phoneNumber)}`)
     } catch (err) {
       console.error("[v0] Error in handleNext:", err)
-      setError("একটি ত্রুটি ঘটেছে। আবার চেষ্টা করুন")
+      setError("Something went wrong. Please try again")
       setIsChecking(false)
     }
   }
@@ -53,30 +52,17 @@ export default function EnterPhonePage() {
         />
 
         {/* Heading */}
-        <h1 className="text-[#141414] text-4xl font-extrabold tracking-tight">লগইন করুন</h1>
+        <h1 className="text-[#141414] text-4xl font-extrabold tracking-tight">Login to Collect</h1>
 
-        {/* Method toggle */}
+        {/* Method chip */}
         <div className="flex items-center gap-2 mt-6">
-          <button
-            onClick={() => setMethod("phone")}
-            className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
-              method === "phone" ? "bg-[#f1f1f4] text-[#141414]" : "text-[#9a9aa5]"
-            }`}
-          >
-            ফোন নাম্বার
-          </button>
-          <button
-            onClick={() => setMethod("email")}
-            className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
-              method === "email" ? "bg-[#f1f1f4] text-[#141414]" : "text-[#9a9aa5]"
-            }`}
-          >
-            ইমেইল
-          </button>
+          <span className="px-4 py-2 rounded-lg text-sm font-semibold bg-[#f1f1f4] text-[#141414]">
+            Phone Number
+          </span>
         </div>
 
         {/* Label */}
-        <label className="text-[#9a9aa5] text-sm mt-6 mb-2">ফোন নাম্বার</label>
+        <label className="text-[#9a9aa5] text-sm mt-6 mb-2">Phone Number</label>
 
         {/* Phone Input Field */}
         <div className="flex items-center bg-[#f6f6f8] rounded-2xl px-4 py-4 focus-within:ring-2 focus-within:ring-[#635bff]/40">
@@ -107,15 +93,15 @@ export default function EnterPhonePage() {
         <button
           onClick={handleNext}
           disabled={isChecking}
-          className="w-full bg-[#38afe8] text-white text-base font-semibold py-4 rounded-2xl mt-5 hover:bg-[#2b9fd6] transition-colors shadow-sm disabled:opacity-70 flex items-center justify-center"
+          className="w-full bg-[#38afe8] text-white text-base font-semibold py-4 rounded-2xl mt-10 hover:bg-[#2b9fd6] transition-colors shadow-sm disabled:opacity-70 flex items-center justify-center"
         >
           {isChecking ? (
             <>
               <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
-              যাচাই করা হচ্ছে...
+              Verifying...
             </>
           ) : (
-            "লগইন"
+            "Login"
           )}
         </button>
       </div>
