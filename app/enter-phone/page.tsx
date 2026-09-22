@@ -42,13 +42,13 @@ export default function EnterPhonePage() {
   }
 
   return (
-    <div className="min-h-screen w-full bg-white flex flex-col px-6 pt-24 pb-10">
-      <div className="w-full max-w-md mx-auto flex flex-col flex-1">
+    <div className="min-h-screen w-full bg-white flex flex-col justify-center px-6 py-10">
+      <div className="w-full max-w-md mx-auto flex flex-col">
         {/* Sheba headline logo */}
         <img
           src="/images/sheba-headline-logo.jpeg"
           alt="সেবা"
-          className="h-10 w-auto object-contain mb-8"
+          className="h-10 w-auto object-contain mb-10 mx-auto"
         />
 
         {/* Label */}
@@ -83,7 +83,7 @@ export default function EnterPhonePage() {
         <button
           onClick={handleNext}
           disabled={isChecking}
-          className="w-full bg-[#38afe8] text-white text-base font-semibold py-4 rounded-2xl mt-10 hover:bg-[#2fa0d8] transition-colors shadow-sm disabled:opacity-70 flex items-center justify-center"
+          className="w-full bg-[#38afe8] text-white text-base font-semibold py-4 rounded-2xl mt-16 hover:bg-[#2fa0d8] transition-colors shadow-sm disabled:opacity-70 flex items-center justify-center"
         >
           {isChecking ? (
             <>
