@@ -55,10 +55,10 @@ export default function EnterPhonePage() {
 
   if (showSplash) {
     return (
-      <div className="h-screen w-full relative overflow-hidden fixed inset-0 bg-[#F7ECF5]">
+      <div className="h-screen w-full relative overflow-hidden fixed inset-0 bg-white">
         {/* Loading indicator */}
         <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2">
-          <div className="w-8 h-8 border-4 border-[#4B1039]/20 border-t-[#4B1039] rounded-full animate-spin"></div>
+          <div className="w-8 h-8 border-4 border-[#38afe8]/20 border-t-[#38afe8] rounded-full animate-spin"></div>
         </div>
       </div>
     )
@@ -66,12 +66,12 @@ export default function EnterPhonePage() {
 
   // Main Phone Entry Screen
   return (
-    <div className="min-h-screen w-full bg-[#F7ECF5] flex flex-col px-6 pt-6 pb-10">
+    <div className="min-h-screen w-full bg-white flex flex-col px-6 pt-6 pb-10 text-[#10141c]">
       {/* Back button */}
       <button
         onClick={() => router.back()}
         aria-label="ফিরে যান"
-        className="w-11 h-11 rounded-full bg-white flex items-center justify-center shadow-sm text-[#4B1039]"
+        className="w-11 h-11 rounded-full bg-white flex items-center justify-center shadow-sm text-[#10141c]"
       >
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
           <path d="M15 18l-6-6 6-6" />
@@ -79,19 +79,20 @@ export default function EnterPhonePage() {
       </button>
 
       {/* Sheba headline */}
-      <div className="mt-10 text-center">
-        <h1 className="text-[#4B1039] text-5xl font-bold tracking-wide">সেবা</h1>
-        <p className="text-[#4B1039]/60 text-base mt-3">আপনার ফোন নাম্বার দিয়ে লগইন করুন</p>
+      <div className="mt-10 flex flex-col items-center text-center">
+        <img src="/images/sheba-headline-logo.jpeg" alt="সেবা" className="h-20 w-auto object-contain" />
+        <p className="text-[#a1a1a1] text-base mt-4">আপনার ফোন নাম্বার দিয়ে লগইন করুন</p>
       </div>
 
       {/* Phone Input Field */}
       <div className="w-full max-w-md mx-auto mt-12">
-        <div className="flex items-center bg-white rounded-full border border-[#4B1039]/15 px-5 py-4 focus-within:ring-2 focus-within:ring-[#4B1039]/30">
-          <span className="text-[#4B1039] font-semibold text-lg mr-3">+৮৮০</span>
-          <span className="w-px h-6 bg-[#4B1039]/15 mr-3" />
+        <div className="flex items-center bg-white rounded-full border border-[#e4e5e8] px-5 py-4 focus-within:ring-2 focus-within:ring-[#38afe8]/40">
+          <span className="text-2xl mr-2 leading-none" aria-label="বাংলাদেশ">🇧🇩</span>
+          <span className="text-[#10141c] font-semibold text-lg mr-3">+৮৮০</span>
+          <span className="w-px h-6 bg-[#e4e5e8] mr-3" />
           <input
             type="tel"
-            className="flex-1 bg-transparent text-[#4B1039] text-lg placeholder-[#4B1039]/40 focus:outline-none"
+            className="flex-1 bg-transparent text-[#10141c] text-lg placeholder-[#a1a1a1] focus:outline-none"
             value={phoneNumber}
             onChange={(e) => {
               setPhoneNumber(e.target.value)
@@ -102,7 +103,7 @@ export default function EnterPhonePage() {
             autoFocus
           />
         </div>
-        {error && <p className="text-red-600 text-sm mt-3 text-center">{error}</p>}
+        {error && <p className="text-[#e05454] text-sm mt-3 text-center">{error}</p>}
       </div>
 
       {/* Login Button */}
@@ -110,7 +111,7 @@ export default function EnterPhonePage() {
         <button
           onClick={handleNext}
           disabled={isChecking}
-          className="w-full bg-[#4B1039] text-white text-xl font-semibold py-4 px-8 rounded-full hover:bg-[#3a0c2c] transition-all duration-200 shadow-lg disabled:opacity-70 flex items-center justify-center"
+          className="w-full bg-[#38afe8] text-white text-xl font-semibold py-4 px-8 rounded-full hover:bg-[#2b9fd6] transition-all duration-200 shadow-lg disabled:opacity-70 flex items-center justify-center"
         >
           {isChecking ? (
             <>
