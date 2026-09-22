@@ -107,7 +107,7 @@ export default function EnterPhonePage() {
         <button
           onClick={handleNext}
           disabled={isChecking}
-          className="w-full bg-[#635bff] text-white text-base font-semibold py-4 rounded-2xl mt-5 hover:bg-[#524bdb] transition-colors shadow-sm disabled:opacity-70 flex items-center justify-center"
+          className="w-full bg-[#38afe8] text-white text-base font-semibold py-4 rounded-2xl mt-5 hover:bg-[#2b9fd6] transition-colors shadow-sm disabled:opacity-70 flex items-center justify-center"
         >
           {isChecking ? (
             <>
