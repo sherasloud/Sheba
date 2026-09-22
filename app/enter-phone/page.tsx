@@ -48,7 +48,7 @@ export default function EnterPhonePage() {
         <img
           src="/images/sheba-headline-logo.jpeg"
           alt="সেবা"
-          className="h-10 w-auto object-contain mb-10 mx-auto"
+          className="h-16 w-auto object-contain mb-12 mx-auto"
         />
 
         {/* Label */}
