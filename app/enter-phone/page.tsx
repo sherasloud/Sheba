@@ -45,6 +45,13 @@ export default function EnterPhonePage() {
   return (
     <div className="min-h-screen w-full bg-white flex flex-col px-6 pt-24 pb-10">
       <div className="w-full max-w-md mx-auto flex flex-col flex-1">
+        {/* Sheba headline logo */}
+        <img
+          src="/images/sheba-headline-logo.jpeg"
+          alt="সেবা"
+          className="h-10 w-auto object-contain mb-8"
+        />
+
         {/* Heading */}
         <h1 className="text-[#141414] text-4xl font-extrabold tracking-tight">লগইন করুন</h1>
 
