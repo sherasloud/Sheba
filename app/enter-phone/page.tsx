@@ -65,7 +65,7 @@ export default function EnterPhonePage() {
         <label className="text-[#9a9aa5] text-sm mt-6 mb-2">Phone Number</label>
 
         {/* Phone Input Field */}
-        <div className="flex items-center bg-[#f6f6f8] rounded-2xl px-4 py-4 focus-within:ring-2 focus-within:ring-[#635bff]/40">
+        <div className="flex items-center bg-[#f4f4f6] rounded-2xl px-4 py-4">
           {/* BD flag */}
           <span className="flex items-center justify-center w-7 h-5 rounded-sm bg-[#006a4e] mr-2 shrink-0">
             <span className="w-2.5 h-2.5 rounded-full bg-[#f42a41]" />
@@ -93,7 +93,7 @@ export default function EnterPhonePage() {
         <button
           onClick={handleNext}
           disabled={isChecking}
-          className="w-full bg-[#38afe8] text-white text-base font-semibold py-4 rounded-2xl mt-10 hover:bg-[#2b9fd6] transition-colors shadow-sm disabled:opacity-70 flex items-center justify-center"
+          className="w-full bg-[#635bff] text-white text-base font-semibold py-4 rounded-2xl mt-10 hover:bg-[#5249f0] transition-colors shadow-sm disabled:opacity-70 flex items-center justify-center"
         >
           {isChecking ? (
             <>
