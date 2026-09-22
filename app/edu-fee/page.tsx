@@ -13,6 +13,7 @@ const categoryLabels: Record<string, string> = {
 }
 
 export default function EduFeePage() {
+  const [step, setStep] = useState<"type" | "list">("type")
   const [selectedCategory, setSelectedCategory] = useState("schools")
   const [searchTerm, setSearchTerm] = useState("")
   const [institutions, setInstitutions] = useState<{ [key: string]: any[] }>({})
@@ -124,6 +125,55 @@ export default function EduFeePage() {
     loadStudents(institution.id)
   }
 
+  if (step === "type") {
+    return (
+      <div className="flex flex-col h-screen bg-white">
+        {/* Header */}
+        <div className="bg-white px-5 py-4">
+          <Link href="/" className="inline-flex" aria-label="ফিরে যান">
+            <ArrowLeft size={24} className="text-gray-800" />
+          </Link>
+        </div>
+
+        {/* Title */}
+        <h1 className="px-6 pt-6 pb-2 text-3xl font-bold text-blue-500 text-center text-balance leading-snug">
+          প্রতিষ্ঠান নির্বাচন করুন
+        </h1>
+
+        {/* Type options */}
+        <div className="flex-1 flex flex-col items-center justify-center gap-4 px-6">
+          {Object.entries(categoryLabels).map(([key, label]) => {
+            const active = selectedCategory === key
+            return (
+              <button
+                key={key}
+                onClick={() => setSelectedCategory(key)}
+                aria-pressed={active}
+                className={`w-full min-h-[64px] rounded-2xl text-3xl font-bold transition-colors ${
+                  active
+                    ? "bg-blue-500 text-white shadow-lg shadow-blue-500/30"
+                    : "bg-white text-gray-900 border border-gray-200 hover:border-blue-300"
+                }`}
+              >
+                {label}
+              </button>
+            )
+          })}
+        </div>
+
+        {/* Next button */}
+        <div className="px-6 pb-10 pt-4">
+          <button
+            onClick={() => setStep("list")}
+            className="w-full min-h-[56px] rounded-full bg-blue-500 text-white text-2xl font-medium hover:bg-blue-600 transition-colors"
+          >
+            Next
+          </button>
+        </div>
+      </div>
+    )
+  }
+
   if (loading) {
     return (
       <div className="flex flex-col h-screen bg-white items-center justify-center">
@@ -137,9 +187,18 @@ export default function EduFeePage() {
     <div className="flex flex-col h-screen bg-white">
       {/* Header */}
       <div className="bg-white border-b border-gray-200 px-5 py-4 flex items-center justify-between">
-        <Link href="/" className="flex-shrink-0">
+        <button
+          onClick={() => {
+            setStep("type")
+            setSelectedInstitution(null)
+            setStudents([])
+            setSearchTerm("")
+          }}
+          className="flex-shrink-0"
+          aria-label="ফিরে যান"
+        >
           <ArrowLeft size={24} className="text-gray-800" />
-        </Link>
+        </button>
         <h1 className="text-3xl font-bold text-blue-500 flex-1 text-center">শিক্ষা</h1>
         <div className="flex-shrink-0 w-6"></div>
       </div>

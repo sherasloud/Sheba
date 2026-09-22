@@ -186,10 +186,6 @@ export default function InboxPage() {
         <img src="/images/inbox-header-logo.png" alt="সেবা" className="h-10 w-[150px] object-contain" />
         <div className="w-11" />
       </header>
-      <div className="px-5 pb-4 pt-2">
-        <h1 className="text-3xl font-normal text-[#485163]">Inbox</h1>
-        <p className="mt-1 text-sm text-[#8a93a3]">আপনার লেনদেন ও নোটিফিকেশন</p>
-      </div>
 
       {/* Tabs */}
       <div className="flex gap-0 bg-white sticky top-0 z-10">
