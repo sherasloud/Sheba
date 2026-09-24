@@ -114,7 +114,7 @@ export default function EnterPhonePage() {
                 key={key}
                 type="button"
                 onClick={() => handleKey(key)}
-                className="h-14 rounded-2xl bg-[#f4f4f6] text-[#141414] text-2xl font-semibold active:bg-[#e6e6ec] transition-colors"
+                className="h-14 rounded-2xl text-[#141414] text-2xl font-semibold active:bg-[#f4f4f6] transition-colors"
               >
                 {key}
               </button>
@@ -124,7 +124,7 @@ export default function EnterPhonePage() {
             <button
               type="button"
               onClick={() => handleKey("0")}
-              className="h-14 rounded-2xl bg-[#f4f4f6] text-[#141414] text-2xl font-semibold active:bg-[#e6e6ec] transition-colors"
+              className="h-14 rounded-2xl text-[#141414] text-2xl font-semibold active:bg-[#f4f4f6] transition-colors"
             >
               0
             </button>
@@ -132,7 +132,7 @@ export default function EnterPhonePage() {
               type="button"
               onClick={handleBackspace}
               aria-label="Backspace"
-              className="h-14 rounded-2xl bg-[#f4f4f6] text-[#141414] flex items-center justify-center active:bg-[#e6e6ec] transition-colors"
+              className="h-14 rounded-2xl text-[#141414] flex items-center justify-center active:bg-[#f4f4f6] transition-colors"
             >
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z" />
