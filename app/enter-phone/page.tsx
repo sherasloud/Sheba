@@ -114,7 +114,7 @@ export default function EnterPhonePage() {
                 key={key}
                 type="button"
                 onClick={() => handleKey(key)}
-                className="h-14 rounded-2xl text-[#141414] text-2xl font-semibold active:bg-[#f4f4f6] transition-colors"
+                className="h-14 rounded-2xl text-[#141414] text-2xl font-normal active:bg-[#f4f4f6] transition-colors"
               >
                 {key}
               </button>
