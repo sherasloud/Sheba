@@ -67,7 +67,7 @@ export default function EnterPhonePage() {
         />
 
         {/* Label */}
-        <label className="text-[#9a9aa5] text-sm mb-2">Phone Number</label>
+        <label className="text-[#9a9aa5] text-sm mb-2 mt-24">Phone Number</label>
 
         {/* Phone Input Field */}
         <div className="flex items-center bg-[#f4f4f6] rounded-2xl px-4 py-2.5">
@@ -94,7 +94,7 @@ export default function EnterPhonePage() {
         <button
           onClick={handleNext}
           disabled={isChecking}
-          className="w-full bg-[#38afe8] text-white text-base font-semibold py-4 rounded-2xl mt-8 hover:bg-[#2fa0d8] transition-colors shadow-sm disabled:opacity-70 flex items-center justify-center"
+          className="w-full bg-[#38afe8] text-white text-base font-semibold py-4 rounded-2xl mt-14 hover:bg-[#2fa0d8] transition-colors shadow-sm disabled:opacity-70 flex items-center justify-center"
         >
           {isChecking ? (
             <>
@@ -107,7 +107,7 @@ export default function EnterPhonePage() {
         </button>
 
         {/* Numeric Keypad */}
-        <div className="mt-auto pt-8">
+        <div className="mt-auto pt-8 mb-10">
           <div className="grid grid-cols-3 gap-3">
             {keypadKeys.map((key) => (
               <button
