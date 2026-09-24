@@ -9,6 +9,19 @@ export default function EnterPhonePage() {
   const [isChecking, setIsChecking] = useState(false)
   const router = useRouter()
 
+  const handleKey = (digit: string) => {
+    setError("")
+    setPhoneNumber((prev) => {
+      if (prev.length >= 11) return prev
+      return prev + digit
+    })
+  }
+
+  const handleBackspace = () => {
+    setError("")
+    setPhoneNumber((prev) => prev.slice(0, -1))
+  }
+
   const handleNext = async () => {
     if (!phoneNumber) {
       setError("Please enter your phone number")
@@ -41,14 +54,16 @@ export default function EnterPhonePage() {
     }
   }
 
+  const keypadKeys = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
+
   return (
-    <div className="min-h-screen w-full bg-white flex flex-col justify-center px-6 py-10">
-      <div className="w-full max-w-md mx-auto flex flex-col">
+    <div className="min-h-screen w-full bg-white flex flex-col px-6 pt-10 pb-8">
+      <div className="w-full max-w-md mx-auto flex flex-col flex-1">
         {/* Sheba headline logo */}
         <img
           src="/images/sheba-headline-logo.jpeg"
           alt="সেবা"
-          className="h-16 w-auto object-contain mb-12 mx-auto"
+          className="h-24 w-auto object-contain mt-2 mb-10 mx-auto"
         />
 
         {/* Label */}
@@ -66,24 +81,20 @@ export default function EnterPhonePage() {
           <span className="text-[#141414] font-semibold text-base mr-3">+880</span>
           <input
             type="tel"
+            inputMode="none"
+            readOnly
             className="flex-1 min-w-0 bg-transparent text-[#141414] text-base placeholder-[#b6b6bf] focus:outline-none"
             value={phoneNumber}
-            onChange={(e) => {
-              setPhoneNumber(e.target.value)
-              setError("")
-            }}
             placeholder="017 123 4567"
-            maxLength={11}
-            autoFocus
           />
         </div>
         {error && <p className="text-red-600 text-sm mt-3">{error}</p>}
 
-        {/* Login Button */}
+        {/* Next Button */}
         <button
           onClick={handleNext}
           disabled={isChecking}
-          className="w-full bg-[#38afe8] text-white text-base font-semibold py-4 rounded-2xl mt-16 hover:bg-[#2fa0d8] transition-colors shadow-sm disabled:opacity-70 flex items-center justify-center"
+          className="w-full bg-[#38afe8] text-white text-base font-semibold py-4 rounded-2xl mt-8 hover:bg-[#2fa0d8] transition-colors shadow-sm disabled:opacity-70 flex items-center justify-center"
         >
           {isChecking ? (
             <>
@@ -94,6 +105,43 @@ export default function EnterPhonePage() {
             "Next"
           )}
         </button>
+
+        {/* Numeric Keypad */}
+        <div className="mt-auto pt-8">
+          <div className="grid grid-cols-3 gap-3">
+            {keypadKeys.map((key) => (
+              <button
+                key={key}
+                type="button"
+                onClick={() => handleKey(key)}
+                className="h-14 rounded-2xl bg-[#f4f4f6] text-[#141414] text-2xl font-semibold active:bg-[#e6e6ec] transition-colors"
+              >
+                {key}
+              </button>
+            ))}
+            {/* empty cell */}
+            <div />
+            <button
+              type="button"
+              onClick={() => handleKey("0")}
+              className="h-14 rounded-2xl bg-[#f4f4f6] text-[#141414] text-2xl font-semibold active:bg-[#e6e6ec] transition-colors"
+            >
+              0
+            </button>
+            <button
+              type="button"
+              onClick={handleBackspace}
+              aria-label="Backspace"
+              className="h-14 rounded-2xl bg-[#f4f4f6] text-[#141414] flex items-center justify-center active:bg-[#e6e6ec] transition-colors"
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z" />
+                <line x1="18" y1="9" x2="12" y2="15" />
+                <line x1="12" y1="9" x2="18" y2="15" />
+              </svg>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   )
