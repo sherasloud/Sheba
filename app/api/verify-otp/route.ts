@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { verifyOTP } from "@/lib/services/sms"
+import { verifyStoredOTP } from "@/lib/otp-store"
 import { db } from "@/lib/db"
 import { appUsers } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
@@ -18,8 +18,8 @@ export async function POST(request: NextRequest) {
 
     console.log('[v0] Verifying OTP for phone:', phone)
 
-    // Verify OTP using our SMS service
-    const result = await verifyOTP(phone, otp)
+    // Verify OTP against the Redis-backed store
+    const result = await verifyStoredOTP(phone, otp)
 
     if (!result.success) {
       return NextResponse.json(

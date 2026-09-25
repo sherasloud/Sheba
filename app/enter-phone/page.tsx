@@ -37,14 +37,22 @@ export default function EnterPhonePage() {
     setError("")
 
     try {
-      console.log("[v0] Phone verification for:", phoneNumber)
-
       sessionStorage.setItem("phoneNumber", phoneNumber)
       localStorage.setItem("phoneNumber", phoneNumber)
 
-      await new Promise((resolve) => setTimeout(resolve, 1500))
+      // Request an OTP over WhatsApp
+      const res = await fetch("/api/send-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone: phoneNumber }),
+      })
+      const result = await res.json()
 
-      console.log("[v0] Dial verification complete, moving to OTP")
+      if (!res.ok || !result.success) {
+        setError(result.message || "Failed to send OTP. Please try again")
+        setIsChecking(false)
+        return
+      }
 
       router.push(`/otp?phone=${encodeURIComponent(phoneNumber)}`)
     } catch (err) {

@@ -50,9 +50,23 @@ export default function OTPContent() {
     }
   }
 
-  const resendOTP = () => {
-    setTimeLeft(120)
+  const resendOTP = async () => {
     setError("")
+    try {
+      const res = await fetch("/api/send-otp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone: phoneNumber }),
+      })
+      const result = await res.json()
+      if (!res.ok || !result.success) {
+        setError(result.message || "OTP পাঠানো যায়নি। আবার চেষ্টা করুন।")
+        return
+      }
+      setTimeLeft(120)
+    } catch {
+      setError("নেটওয়ার্ক ত্রুটি। আবার চেষ্টা করুন।")
+    }
   }
 
   const verifyOTP = async (otpValue: string) => {
