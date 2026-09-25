@@ -1,0 +1,22 @@
+{
+  "name": "sheba-whatsapp-worker",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Always-on Baileys worker that sends WhatsApp messages (OTP + transactional) for the Sheba app.",
+  "main": "index.js",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@hapi/boom": "^10.0.1",
+    "baileys": "6.7.24",
+    "express": "^4.21.2",
+    "pino": "^9.5.0",
+    "qrcode": "^1.5.4",
+    "qrcode-terminal": "^0.12.0"
+  }
+}
