@@ -10,11 +10,12 @@ Sheba (Vercel)  --HTTP POST /send-->  This worker  --->  WhatsApp
 
 ## What it does
 
-- Connects to WhatsApp and prints a QR code to link your account (one time).
+- Connects to WhatsApp and supports QR or phone-number pairing.
 - Persists the session in `AUTH_DIR` so it stays logged in across restarts.
 - Exposes:
   - `GET /health` → `{ ready, hasQR }`
   - `GET /qr` → the pending QR as a PNG (only until linked)
+  - `POST /pairing-code` → request an 8-character linking code. Requires header `x-worker-secret`.
   - `POST /send` → send a message. Requires header `x-worker-secret`.
 
 ## Local run
@@ -26,7 +27,18 @@ npm install
 npm start
 ```
 
-Watch the terminal, then in WhatsApp go to **Settings → Linked Devices → Link a device** and scan the QR. Once you see `connection is OPEN`, it's ready.
+Watch the terminal, then link the account using either QR or a pairing code.
+
+For pairing code, keep the worker waiting for login and run:
+
+```bash
+curl -X POST https://<your-app>.up.railway.app/pairing-code \\
+  -H "Content-Type: application/json" \\
+  -H "x-worker-secret: YOUR_SECRET" \\
+  -d '{"phone":"8801XXXXXXXXX"}'
+```
+
+Open WhatsApp Business → **Settings → Linked devices → Link a device → Link with phone number instead**, enter the returned 8-character code, and wait for `connection is OPEN` in the worker logs. Do not include `+` or spaces in the phone value.
 
 Test it:
 
