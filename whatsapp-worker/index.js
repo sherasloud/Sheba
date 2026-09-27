@@ -11,6 +11,7 @@
  * Endpoints:
  *   GET  /health  -> { ready, hasQR }
  *   GET  /qr      -> current QR as a PNG (only while waiting to be linked)
+ *   POST /pairing-code -> { phone } (requires header x-worker-secret)
  *   POST /send    -> { to, message }  (requires header x-worker-secret)
  */
 
@@ -107,6 +108,29 @@ app.get("/qr", async (_req, res) => {
     res.send(png)
   } catch (err) {
     res.status(500).send("Failed to render QR")
+  }
+})
+
+app.post("/pairing-code", async (req, res) => {
+  if (req.headers["x-worker-secret"] !== SECRET) {
+    return res.status(401).json({ error: "Unauthorized" })
+  }
+  if (!sock || isReady) {
+    return res.status(409).json({ error: isReady ? "WhatsApp is already linked" : "WhatsApp connection is not ready yet" })
+  }
+
+  const digits = String(req.body?.phone || "").replace(/\D/g, "")
+  if (!/^\d{8,15}$/.test(digits)) {
+    return res.status(400).json({ error: "A valid phone number with country code is required" })
+  }
+
+  try {
+    const code = await sock.requestPairingCode(digits)
+    console.log(`[worker] Pairing code requested for ${digits.slice(0, 3)}***`)
+    res.json({ success: true, code })
+  } catch (err) {
+    console.error("[worker] Pairing code error:", err?.message)
+    res.status(500).json({ error: err?.message || "Failed to generate pairing code" })
   }
 })
 
