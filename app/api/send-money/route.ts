@@ -14,16 +14,38 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Trim phone numbers
-    const trimmedSenderPhone = senderPhone.trim()
-    const trimmedReceiverPhone = receiverPhone.trim()
+    // Normalize Bangladesh phone numbers before querying or writing records.
+    const normalizePhone = (value: string) => {
+      const digits = String(value).replace(/\D/g, '')
+      return digits.startsWith('0') ? `88${digits.slice(1)}` : digits
+    }
+
+    const trimmedSenderPhone = normalizePhone(senderPhone)
+    const trimmedReceiverPhone = normalizePhone(receiverPhone)
 
 
 
-    // Get sender from Neon database
-    const sender = await db.query.appUsers.findFirst({
-      where: eq(appUsers.phoneNumber, trimmedSenderPhone),
-    })
+    const phoneCandidates = (value: string) => {
+      const digits = String(value).replace(/\D/g, '')
+      return Array.from(new Set([
+        digits,
+        digits.startsWith('0') ? `88${digits.slice(1)}` : digits,
+        digits.startsWith('88') ? `0${digits.slice(2)}` : digits,
+      ]))
+    }
+
+    const findUserByPhone = async (value: string) => {
+      for (const candidate of phoneCandidates(value)) {
+        const user = await db.query.appUsers.findFirst({
+          where: eq(appUsers.phoneNumber, candidate),
+        })
+        if (user) return user
+      }
+      return null
+    }
+
+    // Get sender from Neon database, accepting local and international formats.
+    const sender = await findUserByPhone(senderPhone)
 
     if (!sender) {
 
@@ -52,9 +74,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get or create receiver
-    let receiver = await db.query.appUsers.findFirst({
-      where: eq(appUsers.phoneNumber, trimmedReceiverPhone),
-    })
+    let receiver = await findUserByPhone(receiverPhone)
 
     if (!receiver) {
 
