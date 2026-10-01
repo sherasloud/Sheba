@@ -31,13 +31,14 @@ export async function sendOTP(phoneNumber: string, otp: string): Promise<SMSResu
 
     const digits = String(phoneNumber).replace(/\D/g, "")
     const recipient = digits.startsWith("0") ? `88${digits.slice(1)}` : digits
-    const response = await fetch("https://api.automas.com.bd/smsapiv3", {
+    const response = await fetch("https://api.automas.com.bd/smsapiv4", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         api_key: apiKey,
         senderid: senderId,
         type: "text",
+        scheduledDateTime: "",
         msg: message,
         contacts: recipient,
       }),
@@ -45,14 +46,22 @@ export async function sendOTP(phoneNumber: string, otp: string): Promise<SMSResu
     })
 
     const result = await response.json().catch(() => null)
-    if (!response.ok) {
-      return { success: false, message: result?.message || `AutomAS request failed (${response.status})` }
+    const entries = Array.isArray(result?.response) ? result.response : []
+    const failedEntry = entries.find((entry: { status?: number }) => Number(entry.status) !== 0)
+
+    if (!response.ok || failedEntry) {
+      return {
+        success: false,
+        message: failedEntry
+          ? `AutomAS SMS failed with status ${failedEntry.status}`
+          : `AutomAS request failed (${response.status})`,
+      }
     }
 
     return {
       success: true,
-      message: result?.message || "OTP sent successfully",
-      messageId: result?.message_id || result?.msg_id,
+      message: "OTP sent successfully",
+      messageId: entries[0]?.id,
     }
   } catch (error: any) {
     console.error('[v0] Error sending OTP:', error.message)
