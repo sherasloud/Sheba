@@ -2,6 +2,7 @@ import { db } from '@/lib/db'
 import { appUsers, transactions, notifications } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
 import { NextRequest, NextResponse } from 'next/server'
+import { shebaSMS } from '@/lib/api/sheba-sms-service'
 
 export async function POST(request: NextRequest) {
   try {
@@ -175,6 +176,20 @@ export async function POST(request: NextRequest) {
     } catch (err) {
       console.error('[v0] Failed to save notification:', err)
     }
+
+    const smsResults = await Promise.all([
+      shebaSMS.sendTransactionSMS(trimmedSenderPhone, "transfer", amount, newSenderBalance, {
+        fee: 0,
+        transactionId,
+        label: "Send Money Successful",
+      }),
+      shebaSMS.sendTransactionSMS(trimmedReceiverPhone, "transfer", amount, newReceiverBalance, {
+        fee: 0,
+        transactionId: `${transactionId}_rcv`,
+        label: "Money Received Successfully",
+      }),
+    ])
+    console.log("[v0] Send money transaction SMS results:", smsResults.map((result) => ({ success: result.success, message: result.message })))
 
     return NextResponse.json(
       {
