@@ -38,23 +38,24 @@ export class ShebaSMSService {
   }
 
   async sendOTP(phoneNumber: string, otp: string) {
-    const message = `Your Sheba verification code is: ${otp}. Do not share this code with anyone. Valid for 5 minutes.`
+    const apiKey = process.env.AUTOMAS_API_KEY
+    const senderId = process.env.AUTOMAS_SENDER_ID
+    if (!apiKey || !senderId) return { success: false, error: "AutomAS credentials are not configured" }
+
+    const digits = String(phoneNumber).replace(/\D/g, "")
+    const recipient = digits.startsWith("88") ? `0${digits.slice(2)}` : digits
+    const params = new URLSearchParams({
+      apikey: apiKey,
+      sender: senderId,
+      msisdn: recipient,
+      smstext: `Sheba OTP: ${otp}. Valid for 5 minutes.`,
+    })
 
     try {
-      const response = await fetch(this.apiUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${this.apiKey}`,
-        },
-        body: JSON.stringify({
-          sender_id: this.senderId,
-          message: message,
-          recipient: phoneNumber,
-        }),
-      })
-
-      return await response.json()
+      const response = await fetch(`https://api.automas.com.bd/smsapiv3?${params.toString()}`, { cache: "no-store" })
+      const raw = await response.text()
+      const statusCode = Number(raw.trim())
+      return { success: response.ok && statusCode === 0, message: raw.trim() }
     } catch (error) {
       console.error("[v0] OTP SMS failed:", error)
       return { success: false, error }
