@@ -17,14 +17,19 @@ export class ShebaSMSService {
     const recipient = digits.startsWith("0") ? `88${digits.slice(1)}` : digits
 
     try {
-      const response = await fetch("https://api.automas.com.bd/smsapiv4", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ api_key: apiKey, senderid: senderId, type: "text", scheduledDateTime: "", msg: message, contacts: recipient }),
+      const params = new URLSearchParams({
+        apikey: apiKey,
+        sender: senderId,
+        msisdn: recipient,
+        smstext: message,
       })
-      const result = await response.json().catch(() => null)
-      const entry = Array.isArray(result?.response) ? result.response[0] : null
-      return { success: response.ok && Number(entry?.status) === 0, ...result, messageId: entry?.id }
+      const response = await fetch(`https://api.automas.com.bd/smsapiv3?${params.toString()}`, {
+        method: "GET",
+        cache: "no-store",
+      })
+      const raw = await response.text()
+      const statusCode = Number(raw.trim())
+      return { success: response.ok && statusCode === 0, message: raw.trim() }
     } catch (error) {
       console.error("[v0] Transaction SMS failed:", error)
       return { success: false, error }

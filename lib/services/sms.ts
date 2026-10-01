@@ -31,51 +31,29 @@ export async function sendOTP(phoneNumber: string, otp: string): Promise<SMSResu
 
     const digits = String(phoneNumber).replace(/\D/g, "")
     const recipient = digits.startsWith("0") ? `88${digits.slice(1)}` : digits
-    const response = await fetch("https://api.automas.com.bd/smsapiv4", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        api_key: apiKey,
-        senderid: senderId,
-        type: "text",
-        scheduledDateTime: "",
-        msg: message,
-        contacts: recipient,
-      }),
+    const params = new URLSearchParams({
+      apikey: apiKey,
+      sender: senderId,
+      msisdn: recipient,
+      smstext: message,
+    })
+    const response = await fetch(`https://api.automas.com.bd/smsapiv3?${params.toString()}`, {
+      method: "GET",
       cache: "no-store",
     })
 
-    const result = await response.json().catch(() => null)
-    const entries = Array.isArray(result?.response) ? result.response : []
-    const topLevelStatus = result?.status
-    const failedEntry = entries.find((entry: { status?: number | string }) => Number(entry.status) !== 0)
-    const providerAccepted = entries.length > 0
-      ? !failedEntry
-      : topLevelStatus !== undefined && Number(topLevelStatus) === 0
+    const raw = await response.text()
+    const statusCode = Number(raw.trim())
+    console.log("[v0] AutomAS SMS response:", { httpStatus: response.status, statusCode })
 
-    console.log("[v0] AutomAS response:", {
-      httpStatus: response.status,
-      topLevelStatus,
-      providerStatuses: entries.map((entry: { status?: number | string; id?: string }) => ({
-        status: entry.status,
-        id: entry.id,
-      })),
-    })
-
-    if (!response.ok || !providerAccepted) {
+    if (!response.ok || !Number.isFinite(statusCode) || statusCode !== 0) {
       return {
         success: false,
-        message: failedEntry
-          ? `AutomAS SMS failed with status ${failedEntry.status}`
-          : "AutomAS did not accept the SMS",
+        message: `AutomAS SMS failed with status ${raw.trim() || response.status}`,
       }
     }
 
-    return {
-      success: true,
-      message: "OTP accepted by AutomAS",
-      messageId: entries[0]?.id,
-    }
+    return { success: true, message: "OTP accepted by AutomAS" }
   } catch (error: any) {
     console.error('[v0] Error sending OTP:', error.message)
     return {
