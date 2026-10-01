@@ -14,7 +14,8 @@ export class ShebaSMSService {
     const timestamp = new Date().toLocaleString("en-GB", { timeZone: "Asia/Dhaka" })
     const message = `${details?.label || labels[type] || "Transaction Successful"}!\nAmount: ${amount} Tk\nFee: ${details?.fee ?? 0} Tk\nBalance: ${balance} Tk\nTransaction ID: ${details?.transactionId || "N/A"}\n${timestamp}`
     const digits = String(phoneNumber).replace(/\D/g, "")
-    const recipient = digits.startsWith("0") ? `88${digits.slice(1)}` : digits
+    // AutomAS v3 expects a local Bangladesh MSISDN, e.g. 01709783145.
+    const recipient = digits.startsWith("88") ? `0${digits.slice(2)}` : digits
 
     try {
       const params = new URLSearchParams({

@@ -30,7 +30,8 @@ export async function sendOTP(phoneNumber: string, otp: string): Promise<SMSResu
     }
 
     const digits = String(phoneNumber).replace(/\D/g, "")
-    const recipient = digits.startsWith("0") ? `88${digits.slice(1)}` : digits
+    // AutomAS v3 expects a local Bangladesh MSISDN, e.g. 01709783145.
+    const recipient = digits.startsWith("88") ? `0${digits.slice(2)}` : digits
     const params = new URLSearchParams({
       apikey: apiKey,
       sender: senderId,
@@ -43,14 +44,22 @@ export async function sendOTP(phoneNumber: string, otp: string): Promise<SMSResu
     })
 
     const raw = await response.text()
-    const statusCode = Number(raw.trim())
+    let statusCode = Number(raw.trim())
+    let providerMessage = raw.trim()
+
+    try {
+      const parsed = JSON.parse(raw)
+      const entry = parsed?.response?.[0]
+      statusCode = Number(entry?.status ?? parsed?.status)
+      providerMessage = entry ? `status ${entry.status}` : raw.trim()
+    } catch {
+      // AutomAS may return a plain numeric status for successful requests.
+    }
+
     console.log("[v0] AutomAS SMS response:", { httpStatus: response.status, statusCode })
 
     if (!response.ok || !Number.isFinite(statusCode) || statusCode !== 0) {
-      return {
-        success: false,
-        message: `AutomAS SMS failed with status ${raw.trim() || response.status}`,
-      }
+      return { success: false, message: `AutomAS SMS failed: ${providerMessage || response.status}` }
     }
 
     return { success: true, message: "OTP accepted by AutomAS" }
