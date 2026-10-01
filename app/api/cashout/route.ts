@@ -2,6 +2,7 @@ import { db } from '@/lib/db'
 import { appUsers, transactions, notifications } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
 import { NextRequest, NextResponse } from 'next/server'
+import { shebaSMS } from '@/lib/api/sheba-sms-service'
 
 export async function POST(request: NextRequest) {
   try {
@@ -176,6 +177,11 @@ export async function POST(request: NextRequest) {
     } catch (err) {
       console.error('[v0] Failed to save cashout notification:', err)
     }
+
+    await shebaSMS.sendTransactionSMS(trimmedSenderPhone, "cashout", amount, newSenderBalance, {
+      transactionId,
+      label: "Cash Out Successful",
+    })
 
     return NextResponse.json(
       {
