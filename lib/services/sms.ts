@@ -20,10 +20,7 @@ export async function sendOTP(phoneNumber: string, otp: string): Promise<SMSResu
     // Message content
     const message = `আপনার OTP কোড: ${otp}\nএই কোডটি 5 মিনিটের জন্য বৈধ।`
 
-    console.log('[v0] Attempting to send SMS:', {
-      to: phoneNumber,
-      message: message,
-    })
+    console.log('[v0] Attempting to send OTP SMS:', { to: phoneNumber })
 
     const apiKey = process.env.AUTOMAS_API_KEY
     const senderId = process.env.AUTOMAS_SENDER_ID
@@ -67,23 +64,13 @@ export async function sendOTP(phoneNumber: string, otp: string): Promise<SMSResu
 }
 
 /**
- * Verify OTP from database or demo OTP
+ * Verify OTP from the configured persistence layer.
  */
 export async function verifyOTP(
   phoneNumber: string,
   otp: string
 ): Promise<{ success: boolean; message: string }> {
   try {
-    // For demo purposes - allow any 6-digit OTP that matches the last 6 digits of phone
-    // In production, verify against database
-    
-    // DEMO: Accept OTP "123456" or "111111" for any phone number
-    const demoOTPs = ['123456', '111111', '000000']
-    if (demoOTPs.includes(otp)) {
-      console.log('[v0] Demo OTP verified for phone:', phoneNumber)
-      return { success: true, message: 'OTP verified successfully' }
-    }
-
     // Try to verify from Supabase if available
     try {
       const { createClient } = await import('@/lib/supabase/client')
