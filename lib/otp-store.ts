@@ -13,7 +13,6 @@ const OTP_TTL_SECONDS = 300 // code valid for 5 minutes
 const MAX_VERIFY_ATTEMPTS = 5 // wrong-guess limit per code
 const MAX_SENDS_PER_HOUR = 5 // how many codes a number can request per hour
 const RESEND_COOLDOWN_SECONDS = 60 // min gap between two sends
-const FIXED_OTP = "202609" // temporary support code; generated OTPs remain valid too
 
 const otpKey = (phone: string) => `otp:${phone}`
 const attemptsKey = (phone: string) => `otp_attempts:${phone}`
@@ -73,7 +72,7 @@ export async function verifyStoredOTP(phone: string, otp: string): Promise<Verif
     return { success: false, message: "অনেকবার ভুল হয়েছে। নতুন OTP নিন।" }
   }
 
-  if (String(stored) !== String(otp) && String(otp) !== FIXED_OTP) {
+  if (String(stored) !== String(otp)) {
     return { success: false, message: "ভুল OTP" }
   }
 

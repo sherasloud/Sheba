@@ -133,17 +133,20 @@ function SendMoneyContent() {
 
   const handleNextStep = async () => {
     if (step === 1) {
-      if (phoneNumber.length !== 11 || !/^\d+$/.test(phoneNumber)) {
+      const digits = phoneNumber.replace(/\D/g, "")
+      if (digits.length !== 11 || !/^\d+$/.test(digits)) {
         setError("সঠিক ১১ সংখ্যার ফোন নম্বর দিন")
         return
       }
+      setPhoneNumber(digits)
+
 
       // Check if recipient exists in Neon database
       try {
         const response = await fetch('/api/user-profile', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ phone: phoneNumber }),
+          body: JSON.stringify({ phone: digits }),
         })
         
         if (response.ok) {

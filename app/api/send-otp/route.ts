@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { generateAndStoreOTP } from "@/lib/otp-store"
-import { sendWhatsAppOTP } from "@/lib/services/whatsapp"
+import { sendOTP as sendSMSOTP } from "@/lib/services/sms"
 
 export async function POST(request: NextRequest) {
   try {
@@ -17,21 +17,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, message: generated.message }, { status: 429 })
     }
 
-    // Deliver the OTP over WhatsApp via the worker service
-    const sent = await sendWhatsAppOTP(phone, generated.otp)
+    // Deliver the OTP over AutomAS SMS.
+    const sent = await sendSMSOTP(phone, generated.otp)
 
     if (!sent.success) {
-      // Keep the entry flow usable while WhatsApp is being configured.
-      // The OTP remains in Redis, but verification will only succeed after delivery is restored.
-      console.warn("[v0] WhatsApp unavailable; continuing without delivery:", sent.message)
-      return NextResponse.json({
-        success: true,
-        message: "Continue to OTP verification",
-        data: { phone, expiresIn: 300 },
-      })
+      console.error("[v0] AutomAS SMS delivery failed:", sent.message)
+      return NextResponse.json(
+        { success: false, message: "OTP delivery failed. Please try again." },
+        { status: 502 },
+      )
     }
 
-    console.log("[v0] OTP sent via WhatsApp to:", phone)
+    console.log("[v0] OTP sent via AutomAS SMS to:", phone)
 
     return NextResponse.json({
       success: true,
