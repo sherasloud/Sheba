@@ -49,18 +49,28 @@ export async function sendOTP(phoneNumber: string, otp: string): Promise<SMSResu
     const entries = Array.isArray(result?.response) ? result.response : []
     const failedEntry = entries.find((entry: { status?: number }) => Number(entry.status) !== 0)
 
-    if (!response.ok || failedEntry) {
+    console.log("[v0] AutomAS response:", {
+      httpStatus: response.status,
+      providerStatuses: entries.map((entry: { status?: number; id?: string }) => ({
+        status: entry.status,
+        id: entry.id,
+      })),
+    })
+
+    if (!response.ok || failedEntry || entries.length === 0) {
       return {
         success: false,
         message: failedEntry
           ? `AutomAS SMS failed with status ${failedEntry.status}`
-          : `AutomAS request failed (${response.status})`,
+          : entries.length === 0
+            ? "AutomAS returned no delivery record"
+            : `AutomAS request failed (${response.status})`,
       }
     }
 
     return {
       success: true,
-      message: "OTP sent successfully",
+      message: "OTP accepted by AutomAS",
       messageId: entries[0]?.id,
     }
   } catch (error: any) {
