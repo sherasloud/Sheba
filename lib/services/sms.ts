@@ -18,7 +18,7 @@ interface SMSResult {
 export async function sendOTP(phoneNumber: string, otp: string): Promise<SMSResult> {
   try {
     // Message content
-    const message = `আপনার OTP কোড: ${otp}\nএই কোডটি 5 মিনিটের জন্য বৈধ।`
+    const message = `Sheba OTP: ${otp}. This code is valid for 5 minutes.`
 
     console.log('[v0] Attempting to send OTP SMS:', { to: phoneNumber })
 
@@ -47,24 +47,27 @@ export async function sendOTP(phoneNumber: string, otp: string): Promise<SMSResu
 
     const result = await response.json().catch(() => null)
     const entries = Array.isArray(result?.response) ? result.response : []
-    const failedEntry = entries.find((entry: { status?: number }) => Number(entry.status) !== 0)
+    const topLevelStatus = result?.status
+    const failedEntry = entries.find((entry: { status?: number | string }) => Number(entry.status) !== 0)
+    const providerAccepted = entries.length > 0
+      ? !failedEntry
+      : topLevelStatus !== undefined && Number(topLevelStatus) === 0
 
     console.log("[v0] AutomAS response:", {
       httpStatus: response.status,
-      providerStatuses: entries.map((entry: { status?: number; id?: string }) => ({
+      topLevelStatus,
+      providerStatuses: entries.map((entry: { status?: number | string; id?: string }) => ({
         status: entry.status,
         id: entry.id,
       })),
     })
 
-    if (!response.ok || failedEntry || entries.length === 0) {
+    if (!response.ok || !providerAccepted) {
       return {
         success: false,
         message: failedEntry
           ? `AutomAS SMS failed with status ${failedEntry.status}`
-          : entries.length === 0
-            ? "AutomAS returned no delivery record"
-            : `AutomAS request failed (${response.status})`,
+          : "AutomAS did not accept the SMS",
       }
     }
 
