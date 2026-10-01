@@ -25,39 +25,37 @@ export async function sendOTP(phoneNumber: string, otp: string): Promise<SMSResu
       message: message,
     })
 
-    // ========================
-    // YOUR MyGP SMS METHOD HERE
-    // ========================
-    // Example structure:
-    /*
-    const result = await myGPSendSMS({
-      toNumber: phoneNumber,
-      message: message,
-      fromNumber: process.env.MYGP_NUMBER
+    const apiKey = process.env.AUTOMAS_API_KEY
+    const senderId = process.env.AUTOMAS_SENDER_ID
+
+    if (!apiKey || !senderId) {
+      return { success: false, message: "AutomAS SMS credentials are not configured" }
+    }
+
+    const digits = String(phoneNumber).replace(/\D/g, "")
+    const recipient = digits.startsWith("0") ? `88${digits.slice(1)}` : digits
+    const response = await fetch("https://api.automas.com.bd/smsapiv3", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        api_key: apiKey,
+        senderid: senderId,
+        type: "text",
+        msg: message,
+        contacts: recipient,
+      }),
+      cache: "no-store",
     })
 
-    if (result.success) {
-      return {
-        success: true,
-        message: 'OTP sent successfully',
-        messageId: result.messageId
-      }
-    } else {
-      return {
-        success: false,
-        message: result.error || 'Failed to send SMS'
-      }
+    const result = await response.json().catch(() => null)
+    if (!response.ok) {
+      return { success: false, message: result?.message || `AutomAS request failed (${response.status})` }
     }
-    */
-
-    // PLACEHOLDER: Replace above with your actual implementation
-    // For now, we'll simulate success for testing
-    console.log('[v0] SMS sending - IMPLEMENT YOUR METHOD HERE')
 
     return {
       success: true,
-      message: 'OTP message configured (implement your SMS method)',
-      messageId: `msg_${Date.now()}`,
+      message: result?.message || "OTP sent successfully",
+      messageId: result?.message_id || result?.msg_id,
     }
   } catch (error: any) {
     console.error('[v0] Error sending OTP:', error.message)
