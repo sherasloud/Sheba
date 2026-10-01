@@ -1,13 +1,23 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 
 export default function EnterPhonePage() {
   const [phoneNumber, setPhoneNumber] = useState("")
   const [error, setError] = useState("")
   const [isChecking, setIsChecking] = useState(false)
+  const [deviceStatus, setDeviceStatus] = useState<"checking" | "allowed" | "blocked">("checking")
   const router = useRouter()
+
+  useEffect(() => {
+    const userAgent = navigator.userAgent.toLowerCase()
+    const isAndroid = userAgent.includes("android")
+    const isInstalledApp = window.matchMedia("(display-mode: standalone)").matches ||
+      (navigator as Navigator & { standalone?: boolean }).standalone === true
+
+    setDeviceStatus(isAndroid && isInstalledApp ? "allowed" : "blocked")
+  }, [])
 
   const handleKey = (digit: string) => {
     setError("")
@@ -23,6 +33,11 @@ export default function EnterPhonePage() {
   }
 
   const handleNext = async () => {
+    if (deviceStatus !== "allowed") {
+      setError("Sheba login only works in the installed Android app. Install Sheba from Chrome and open it from your home screen.")
+      return
+    }
+
     if (!phoneNumber) {
       setError("Please enter your phone number")
       return
@@ -63,6 +78,27 @@ export default function EnterPhonePage() {
   }
 
   const keypadKeys = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
+
+  if (deviceStatus === "checking") {
+    return <div className="min-h-screen w-full bg-white" aria-label="Checking device" />
+  }
+
+  if (deviceStatus === "blocked") {
+    return (
+      <main className="min-h-screen w-full bg-white flex items-center justify-center px-6 text-center">
+        <section className="w-full max-w-md">
+          <img src="/images/sheba-headline-logo.jpeg" alt="সেবা" className="h-24 w-auto object-contain mx-auto mb-8" />
+          <h1 className="text-[#141414] text-xl font-semibold mb-3">Android app required</h1>
+          <p className="text-[#6f7078] text-sm leading-6">
+            Sheba login is available only from the Sheba app installed on an Android phone from Chrome. Desktop and regular browser login are disabled.
+          </p>
+          <p className="text-[#6f7078] text-sm leading-6 mt-4">
+            Open Sheba in Chrome, choose “Add to Home screen”, then open Sheba from the new home-screen icon.
+          </p>
+        </section>
+      </main>
+    )
+  }
 
   return (
     <div className="min-h-screen w-full bg-white flex flex-col px-6 pt-10 pb-8">
