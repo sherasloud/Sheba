@@ -18,26 +18,49 @@ function localPhone(phoneNumber: string) {
   return digits.startsWith("88") ? `0${digits.slice(2)}` : digits
 }
 
+function internationalPhone(phoneNumber: string) {
+  const digits = phoneNumber.replace(/\D/g, "")
+  if (digits.startsWith("880")) return digits
+  if (digits.startsWith("0")) return `88${digits}`
+  return `880${digits}`
+}
+
 async function sendAutomasSMS(phoneNumber: string, message: string): Promise<SMSResult> {
-  const apiKey = process.env.AUTOMAS_API_KEY
-  const senderId = process.env.AUTOMAS_SENDER_ID
+  const apiKey = process.env.AUTOMAS_API_KEY || process.env.api_key || process.env.API_KEY
+  const senderId = process.env.AUTOMAS_SENDER_ID || "8809617642467"
   if (!apiKey || !senderId) return { success: false, message: "Automas SMS is not configured" }
 
-  const response = await fetch(AUTOmAS_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      api_key: apiKey,
-      senderid: senderId,
-      type: "text",
-      msg: message,
-      contacts: localPhone(phoneNumber),
-    }),
-    cache: "no-store",
-  })
-  const data = await response.json().catch(() => null)
-  if (!response.ok) return { success: false, message: "Automas SMS request failed", data }
-  return { success: true, message: "SMS sent successfully", data }
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), 15_000)
+  try {
+    const response = await fetch(AUTOmAS_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify({
+        api_key: apiKey,
+        senderid: senderId,
+        type: "text",
+        msg: message,
+        contacts: internationalPhone(phoneNumber),
+      }),
+      cache: "no-store",
+      signal: controller.signal,
+    })
+    const data = await response.json().catch(() => null)
+    const result = data as { status?: unknown; error?: unknown; message?: unknown } | null
+    const status = String(result?.status ?? "").toLowerCase()
+    const failed = !response.ok || ["0", "false", "failed", "error"].includes(status)
+    if (failed) {
+      const providerMessage = result?.error || result?.message || `HTTP ${response.status}`
+      console.error("[v0] Automas rejected SMS:", providerMessage)
+      return { success: false, message: `Automas SMS failed: ${String(providerMessage)}`, data }
+    }
+    return { success: true, message: "SMS sent successfully", data }
+  } catch (error: any) {
+    return { success: false, message: error?.name === "AbortError" ? "Automas SMS timed out" : "Could not reach Automas SMS" }
+  } finally {
+    clearTimeout(timeout)
+  }
 }
 
 /**
@@ -48,7 +71,7 @@ async function sendAutomasSMS(phoneNumber: string, message: string): Promise<SMS
 export async function sendOTP(phoneNumber: string, otp: string): Promise<SMSResult> {
   try {
     // Message content
-    const message = `আপনার OTP কোড: ${otp}\nএই কোডটি 5 মিনিটের জন্য বৈধ।`
+    const message = `Sheba OTP: ${otp}. This code is valid for 5 minutes.`
 
     console.log('[v0] Attempting to send SMS:', {
       to: phoneNumber,
@@ -101,16 +124,6 @@ export async function verifyOTP(
   otp: string
 ): Promise<{ success: boolean; message: string }> {
   try {
-    // For demo purposes - allow any 6-digit OTP that matches the last 6 digits of phone
-    // In production, verify against database
-    
-    // DEMO: Accept OTP "123456" or "111111" for any phone number
-    const demoOTPs = ['123456', '111111', '000000']
-    if (demoOTPs.includes(otp)) {
-      console.log('[v0] Demo OTP verified for phone:', phoneNumber)
-      return { success: true, message: 'OTP verified successfully' }
-    }
-
     // Try to verify from Supabase if available
     try {
       const { createClient } = await import('@/lib/supabase/client')
