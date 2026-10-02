@@ -121,7 +121,7 @@ export default function PinPage() {
         localStorage.setItem("appPinVerified", "true")
         localStorage.setItem("pinVerifiedTime", timestamp)
         localStorage.setItem("userName", data.user?.fullName || "")
-        localStorage.setItem("userBalance", data.user?.balance.toString() || "0")
+        localStorage.setItem("userBalance", String(data.user?.balance ?? 0))
         localStorage.setItem("userData", JSON.stringify({
           phoneNumber: data.user?.phoneNumber,
           fullName: data.user?.fullName,
@@ -130,15 +130,16 @@ export default function PinPage() {
         }))
 
         console.log("[v0] User data stored, redirecting to home")
+        setError("")
         // Existing user - redirect to home immediately
-        setTimeout(() => router.push("/"), 500)
+        router.push("/")
       } else {
         setError(data.message || "ভুল পিন। আবার চেষ্টা করুন।")
         setPin("")
       }
     } catch (err) {
       console.error("[v0] PIN verification error:", err)
-      setError("সার্ভারে সমস্যা। আবার চেষ্টা করুন।")
+      setError("PIN যাচাই করা যায়নি। আবার চেষ্টা করুন।")
       setPin("")
     } finally {
       setIsLoading(false)
