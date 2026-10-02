@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { ArrowLeft, Send, Download } from "lucide-react"
-import { getProfileByPhone } from "@/lib/supabase/data-service"
 import { ErrorBoundary } from "@/components/error-boundary"
 import { VerifiedBadge } from "@/components/verified-badge"
 
@@ -34,7 +33,7 @@ export default function TransactionHistoryPage() {
   const [userPhone, setUserPhone] = useState("")
   const [userName, setUserName] = useState("")
   const [filter, setFilter] = useState<"all" | "sent" | "received">("all")
-  const [verificationCache, setVerificationCache] = useState<Record<string, boolean>>({})
+  const [verificationCache] = useState<Record<string, boolean>>({})
 
   useEffect(() => {
     // Check authentication
@@ -46,19 +45,8 @@ export default function TransactionHistoryPage() {
 
     setUserPhone(phone)
     loadTransactions(phone)
-    loadUserName(phone)
   }, [router])
 
-  const loadUserName = async (phone: string) => {
-    try {
-      const profile = await getProfileByPhone(phone)
-      if (profile) {
-        setUserName(profile.name)
-      }
-    } catch {
-      // Ignore errors
-    }
-  }
 
   const loadTransactions = async (phone: string) => {
     setIsLoading(true)
@@ -101,10 +89,6 @@ export default function TransactionHistoryPage() {
           partnerVerified = false
         }
         
-        setVerificationCache(prev => ({
-          ...prev,
-          [partnerPhone]: partnerVerified
-        }))
       } catch {
         console.error("[v0] Error fetching verification status for:", partnerPhone)
         partnerVerified = false
@@ -133,7 +117,7 @@ export default function TransactionHistoryPage() {
       setFilteredTransactions(filtered)
     }
     processTransactions()
-  }, [transactions, filter, verificationCache])
+  }, [transactions, filter])
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
@@ -230,7 +214,7 @@ export default function TransactionHistoryPage() {
                     {/* Amount */}
                     <div className="text-right flex-shrink-0">
                       <p className={`font-bold text-lg ${amountColor}`}>
-                        {tx.isReceived ? "+" : "-"}৳{tx.amount.toLocaleString("bn-BD")}
+                        {tx.isReceived ? "+" : "-"}৳{Number(tx.amount || 0).toLocaleString("bn-BD")}
                       </p>
                       <p className="text-xs text-gray-500">
                         {tx.status === "completed" ? "সম্পন্ন" : "অপেক্ষমাণ"}
