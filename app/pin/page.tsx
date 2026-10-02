@@ -98,9 +98,9 @@ export default function PinPage() {
         body: JSON.stringify({ phone: phoneNumber, pin: enteredPin }),
       })
 
-      const data = await response.json()
+      const data = await response.json().catch(() => ({ success: false, message: "সার্ভার থেকে সঠিক উত্তর পাওয়া যায়নি।" }))
 
-      if (data.success) {
+      if (response.ok && data.success) {
         console.log("[v0] PIN verified successfully")
         console.log("[v0] User name from Neon:", data.user?.fullName)
         

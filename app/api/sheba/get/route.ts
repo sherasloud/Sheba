@@ -19,11 +19,16 @@ export async function POST(req: NextRequest) {
       success: true,
       provider: provider,
     })
-  } catch (error) {
-    console.error('[v0] Error getting provider:', error)
-    return NextResponse.json(
-      { error: 'Failed to get provider' },
-      { status: 500 }
-    )
+  } catch (error: any) {
+    const message = String(error?.message || error)
+    console.error('[v0] Error getting provider:', message)
+
+    // Older databases may not have the optional serviceProviders table yet.
+    // Treat that as “not a provider” instead of crashing the authenticated app.
+    if (message.includes('relation') && message.includes('serviceProviders')) {
+      return NextResponse.json({ success: false, provider: null, error: 'Provider profile is not configured' }, { status: 404 })
+    }
+
+    return NextResponse.json({ success: false, provider: null, error: 'Failed to get provider' }, { status: 500 })
   }
 }

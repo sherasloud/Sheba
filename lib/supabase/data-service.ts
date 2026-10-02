@@ -437,6 +437,7 @@ export function subscribeToBalanceUpdates(
   onUpdate: (newBalance: number) => void
 ) {
   const supabase = createClient()
+  if (!supabase) return () => {}
   
   const channel = supabase
     .channel(`balance-${phone}`)
@@ -448,7 +449,7 @@ export function subscribeToBalanceUpdates(
         table: "profiles",
         filter: `phone=eq.${phone}`,
       },
-      (payload) => {
+      (payload: { new?: { balance?: unknown } }) => {
         console.log("[v0] Balance update received:", payload)
         if (payload.new && typeof payload.new === "object" && "balance" in payload.new) {
           onUpdate(Number(payload.new.balance))

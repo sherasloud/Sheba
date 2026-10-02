@@ -7,8 +7,15 @@ export function createClient() {
   
   if (!url || !key) {
     console.warn("[v0] Supabase is not configured. Using fallback storage.")
-    return null as any // Return null instead of throwing
+    return null as any
   }
-  
-  return createBrowserClient(url, key)
+
+  try {
+    const parsedUrl = new URL(url)
+    if (!/^https?:$/.test(parsedUrl.protocol)) throw new Error("Invalid Supabase URL protocol")
+    return createBrowserClient(parsedUrl.toString(), key)
+  } catch {
+    console.warn("[v0] Supabase URL is invalid. Using Neon APIs instead.")
+    return null as any
+  }
 }
