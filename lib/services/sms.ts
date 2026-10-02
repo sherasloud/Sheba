@@ -12,6 +12,7 @@ interface SMSResult {
 }
 
 const AUTOmAS_URL = "https://api.automas.com.bd/smsapiv3"
+const AUTOmAS_JSON_URL = "https://api.automas.com.bd/smsapiv4"
 
 function localPhone(phoneNumber: string) {
   const digits = phoneNumber.replace(/\D/g, "")
@@ -54,11 +55,32 @@ async function sendAutomasSMS(phoneNumber: string, message: string): Promise<SMS
     const providerText = raw.toLowerCase()
     const status = String(result?.status ?? "").toLowerCase()
     const failed = !response.ok || ["0", "false", "failed", "error"].includes(status) || /invalid|insufficient|error|fail/.test(providerText)
-    if (failed) {
-      const providerMessage = result?.error || result?.message || raw || `HTTP ${response.status}`
-      return { success: false, message: `Automas SMS failed: ${String(providerMessage)}`, data }
+    if (!failed) return { success: true, message: "SMS sent successfully", data }
+
+    // Automas v3 can reject long/unicode messages depending on account settings.
+    // Retry once through the documented JSON endpoint before reporting failure.
+    const fallbackResponse = await fetch(AUTOmAS_JSON_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json, text/plain, */*" },
+      body: JSON.stringify({
+        api_key: apiKey,
+        senderid: senderId,
+        type: "text",
+        scheduledDateTime: "",
+        msg: message,
+        contacts: localPhone(phoneNumber),
+      }),
+      cache: "no-store",
+      signal: controller.signal,
+    })
+    const fallbackRaw = await fallbackResponse.text()
+    const fallbackText = fallbackRaw.toLowerCase()
+    if (fallbackResponse.ok && !/invalid|insufficient|error|fail/.test(fallbackText)) {
+      return { success: true, message: "SMS sent successfully", data: fallbackRaw }
     }
-    return { success: true, message: "SMS sent successfully", data }
+
+    const providerMessage = result?.error || result?.message || fallbackRaw || raw || `HTTP ${response.status}`
+    return { success: false, message: `Automas SMS failed: ${String(providerMessage)}`, data }
   } catch (error: any) {
     return { success: false, message: error?.name === "AbortError" ? "Automas SMS timed out" : "Could not reach Automas SMS" }
   } finally {
