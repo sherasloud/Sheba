@@ -6,9 +6,10 @@ import { shebaSMS } from '@/lib/api/sheba-sms-service'
 
 export async function POST(request: NextRequest) {
   try {
-    const { senderPhone, receiverPhone, amount } = await request.json()
+    const { senderPhone, receiverPhone, amount: rawAmount } = await request.json()
+    const amount = Number(rawAmount)
 
-    if (!senderPhone || !receiverPhone || !amount || amount <= 0) {
+    if (!senderPhone || !receiverPhone || !Number.isFinite(amount) || amount <= 0) {
       return NextResponse.json(
         { success: false, error: 'Invalid request parameters' },
         { status: 400 }
@@ -78,48 +79,49 @@ export async function POST(request: NextRequest) {
     let receiver = await findUserByPhone(receiverPhone)
 
     if (!receiver) {
-
-      // Auto-create receiver profile
-      const [newReceiver] = await db
-        .insert(appUsers)
-        .values({
-          phoneNumber: trimmedReceiverPhone,
-          fullName: `User ${trimmedReceiverPhone.slice(-4)}`,
-          pin: '123456', // Default PIN
-          balance: 0,
-          emailVerified: false,
-          accountType: 'personal',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        })
-        .returning()
-
-      receiver = newReceiver
+      return NextResponse.json(
+        { success: false, error: 'এই নম্বরে কোনো Sheba account পাওয়া যায়নি' },
+        { status: 404 },
+      )
     }
 
     // Perform transaction
+    const receiverBalance = Number(receiver.balance)
     const newSenderBalance = senderBalance - amount
-    const newReceiverBalance = Number(receiver.balance) + amount
+    const newReceiverBalance = receiverBalance + amount
 
-
-
-    // Update sender balance
-    await db
+    // Update by primary key. Phone numbers may be stored as 01... or 88...,
+    // so updating by the normalized phone can silently match zero rows.
+    const [updatedSender] = await db
       .update(appUsers)
-      .set({
-        balance: newSenderBalance,
-        updatedAt: new Date(),
-      })
-      .where(eq(appUsers.phoneNumber, trimmedSenderPhone))
+      .set({ balance: newSenderBalance, updatedAt: new Date() })
+      .where(eq(appUsers.id, sender.id))
+      .returning({ id: appUsers.id })
 
-    // Update receiver balance
-    await db
+    if (!updatedSender) {
+      return NextResponse.json(
+        { success: false, error: 'প্রেরকের ব্যালেন্স আপডেট করা যায়নি' },
+        { status: 500 },
+      )
+    }
+
+    const [updatedReceiver] = await db
       .update(appUsers)
-      .set({
-        balance: newReceiverBalance,
-        updatedAt: new Date(),
-      })
-      .where(eq(appUsers.phoneNumber, trimmedReceiverPhone))
+      .set({ balance: newReceiverBalance, updatedAt: new Date() })
+      .where(eq(appUsers.id, receiver.id))
+      .returning({ id: appUsers.id })
+
+    if (!updatedReceiver) {
+      // Compensate the sender if the receiver update cannot be committed.
+      await db
+        .update(appUsers)
+        .set({ balance: senderBalance, updatedAt: new Date() })
+        .where(eq(appUsers.id, sender.id))
+      return NextResponse.json(
+        { success: false, error: 'গ্রাহকের ব্যালেন্স আপডেট করা যায়নি' },
+        { status: 500 },
+      )
+    }
 
     const transactionId = `TXN${Date.now()}`
 
@@ -142,19 +144,14 @@ export async function POST(request: NextRequest) {
 
     // Save transaction record for RECEIVER
     try {
-      // Make sure receiver exists and get fresh data
-      const freshReceiver = await db.query.appUsers.findFirst({
-        where: eq(appUsers.phoneNumber, trimmedReceiverPhone),
-      })
-      
-      if (freshReceiver) {
+      if (receiver) {
         await db.insert(transactions).values({
           id: `${transactionId}_rcv`,
-          userid: freshReceiver.id,
+          userid: receiver.id,
           phonenumber: trimmedReceiverPhone,
           amount: amount,
-          balanceBefore: Number(freshReceiver.balance),
-          balanceAfter: Number(freshReceiver.balance) + amount,
+          balanceBefore: receiverBalance,
+          balanceAfter: newReceiverBalance,
           type: 'transfer',
           status: 'completed',
           description: `Received from ${trimmedSenderPhone}`,
@@ -182,11 +179,13 @@ export async function POST(request: NextRequest) {
         fee: 0,
         transactionId,
         label: "Send Money Successful",
+        userNumber: trimmedReceiverPhone,
       }),
       shebaSMS.sendTransactionSMS(trimmedReceiverPhone, "transfer", amount, newReceiverBalance, {
         fee: 0,
         transactionId: `${transactionId}_rcv`,
         label: "Money Received Successfully",
+        userNumber: trimmedSenderPhone,
       }),
     ])
     console.log("[v0] Send money transaction SMS results:", smsResults.map((result) => ({ success: result.success, message: result.message })))

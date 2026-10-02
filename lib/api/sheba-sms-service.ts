@@ -1,5 +1,5 @@
 export class ShebaSMSService {
-  async sendTransactionSMS(phoneNumber: string, type: string, amount: number, balance: number, details?: { fee?: number; transactionId?: string; label?: string }) {
+  async sendTransactionSMS(phoneNumber: string, type: string, amount: number, balance: number, details?: { fee?: number; transactionId?: string; label?: string; userNumber?: string }) {
     const apiKey = process.env.AUTOMAS_API_KEY
     const senderId = process.env.AUTOMAS_SENDER_ID
     if (!apiKey || !senderId) return { success: false, error: "AutomAS credentials are not configured" }
@@ -12,7 +12,7 @@ export class ShebaSMSService {
       recharge: "Recharge Successful",
     }
     const timestamp = new Date().toLocaleString("en-GB", { timeZone: "Asia/Dhaka" })
-    const message = `${details?.label || labels[type] || "Transaction Successful"}!\nAmount: ${amount} Tk\nFee: ${details?.fee ?? 0} Tk\nBalance: ${balance} Tk\nTransaction ID: ${details?.transactionId || "N/A"}\n${timestamp}`
+    const message = `${details?.label || labels[type] || "Transaction Successful"}!\nUser : ${details?.userNumber || phoneNumber}\nAmount : ${amount} Tk\nFee : ${details?.fee ?? 0} Tk\nBalance : ${balance} Tk\nTransaction ID : ${details?.transactionId || "N/A"}\n${timestamp}`
     const digits = String(phoneNumber).replace(/\D/g, "")
     // AutomAS v3 expects a local Bangladesh MSISDN, e.g. 01709783145.
     const recipient = digits.startsWith("88") ? `0${digits.slice(2)}` : digits
