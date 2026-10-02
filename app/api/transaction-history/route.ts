@@ -1,13 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
-import { transactions, appUsers } from '@/lib/db/schema'
-import { eq, desc, or, inArray } from 'drizzle-orm'
+import { transactions } from '@/lib/db/schema'
+import { eq, or, desc } from 'drizzle-orm'
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
-    const rawPhoneNumber = searchParams.get('phone')
-    const phoneNumber = rawPhoneNumber?.replace(/\D/g, '')
+    const phoneNumber = searchParams.get('phone')
 
     if (!phoneNumber) {
       return NextResponse.json(
@@ -16,54 +15,29 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const phoneCandidates = Array.from(new Set([
-      phoneNumber,
-      phoneNumber.startsWith('0') ? `88${phoneNumber.slice(1)}` : phoneNumber,
-      phoneNumber.startsWith('88') ? `0${phoneNumber.slice(2)}` : phoneNumber,
-    ]))
-    const account = await db.query.appUsers.findFirst({
-      where: (users, { or }) => or(...phoneCandidates.map((phone) => eq(users.phoneNumber, phone))),
-    })
-
-    if (!account) {
-      return NextResponse.json({ success: true, transactions: [], total: 0 })
-    }
-
-    // Include both the current user-id records and legacy records saved by phone.
+    // এই user এর সব transaction - sent এবং received দুটোই
     const userTransactions = await db.query.transactions.findMany({
       where: or(
-        eq(transactions.userid, account.id),
-        inArray(transactions.phonenumber, phoneCandidates),
+        eq(transactions.fromPhone, phoneNumber),
+        eq(transactions.toPhone, phoneNumber)
       ),
       orderBy: [desc(transactions.createdAt)],
     })
 
-    const formattedTransactions = userTransactions.map((txn) => {
-      const description = txn.description || ''
-      const received = /^received|^money received/i.test(description)
-      const partnerMatch = description.match(/(?:to|from)\s+([+\d\s-]+)/i)
-      const partnerPhone = partnerMatch?.[1]?.replace(/\D/g, '') || ''
-      const displayPartner = partnerPhone.startsWith('88') ? `0${partnerPhone.slice(2)}` : partnerPhone
-      const isAccountRecord = txn.userid === account.id
-      const isReceived = /^received|^money received/i.test(description)
-      const isSent = !isReceived && (isAccountRecord || phoneCandidates.includes(txn.phonenumber))
-      return {
-        id: txn.id,
-        type: isReceived ? 'received' : isSent ? 'sent' : 'received',
-        amount: Number(txn.amount),
-        otherPhone: displayPartner,
-        sender_phone: received ? displayPartner : phoneNumber,
-        receiver_phone: received ? phoneNumber : displayPartner,
-        transaction_type: received ? 'Money Received' : txn.type,
-        reference: txn.id,
-        status: txn.status || 'completed',
-        description,
-        date: txn.createdAt?.toISOString().split('T')[0],
-        time: txn.createdAt?.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
-        createdAt: txn.createdAt?.toISOString(),
-        created_at: txn.createdAt?.toISOString(),
-      }
-    })
+    const formattedTransactions = userTransactions.map((txn) => ({
+      id: txn.id,
+      type: txn.fromPhone === phoneNumber ? 'sent' : 'received',
+      amount: txn.amount,
+      otherPhone: txn.fromPhone === phoneNumber ? txn.toPhone : txn.fromPhone,
+      status: txn.status,
+      description: txn.description,
+      date: txn.createdAt?.toISOString().split('T')[0],
+      time: txn.createdAt?.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+      }),
+      createdAt: txn.createdAt?.toISOString(),
+    }))
 
     return NextResponse.json({
       success: true,

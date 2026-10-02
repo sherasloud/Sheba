@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { ArrowLeft, Send, Download } from "lucide-react"
+import { getTransactions, subscribeToTransactions, getProfileByPhone } from "@/lib/supabase/data-service"
 import { ErrorBoundary } from "@/components/error-boundary"
 import { VerifiedBadge } from "@/components/verified-badge"
 
@@ -15,8 +16,6 @@ interface Transaction {
   reference: string
   status: string
   created_at: string
-  type?: "sent" | "received"
-  otherPhone?: string
 }
 
 interface TransactionDisplayData extends Transaction {
@@ -33,6 +32,7 @@ export default function TransactionHistoryPage() {
   const [userPhone, setUserPhone] = useState("")
   const [userName, setUserName] = useState("")
   const [filter, setFilter] = useState<"all" | "sent" | "received">("all")
+  const [verificationCache, setVerificationCache] = useState<Record<string, boolean>>({})
 
   useEffect(() => {
     // Check authentication
@@ -44,45 +44,34 @@ export default function TransactionHistoryPage() {
 
     setUserPhone(phone)
     loadTransactions(phone)
+    loadUserName(phone)
+
+    // Subscribe to transaction updates
+    const unsubscribe = subscribeToTransactions(phone, (newTx) => {
+      setTransactions((prev) => [newTx, ...prev])
+    })
+
+    return () => {
+      unsubscribe()
+    }
   }, [router])
 
+  const loadUserName = async (phone: string) => {
+    try {
+      const profile = await getProfileByPhone(phone)
+      if (profile) {
+        setUserName(profile.name)
+      }
+    } catch {
+      // Ignore errors
+    }
+  }
 
   const loadTransactions = async (phone: string) => {
     setIsLoading(true)
     try {
-      const response = await fetch(`/api/transaction-history?phone=${encodeURIComponent(phone)}`, { cache: "no-store" })
-      const result = await response.json()
-
-      if (response.ok && result.success) {
-        setTransactions((result.transactions || []) as Transaction[])
-        return
-      }
-
-      // Keep the app compatible with records created by the older transaction API.
-      const legacyResponse = await fetch("/api/get-transactions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone }),
-        cache: "no-store",
-      })
-      const legacyResult = await legacyResponse.json()
-      if (!legacyResponse.ok || !legacyResult.success) {
-        throw new Error(result.message || legacyResult.message || "Failed to load transactions")
-      }
-
-      setTransactions(
-        (legacyResult.transactions || []).map((tx: any) => ({
-          id: String(tx.id),
-          sender_phone: tx.phonenumber,
-          receiver_phone: tx.phonenumber,
-          amount: Number(tx.amount || 0),
-          transaction_type: tx.type || "লেনদেন",
-          reference: String(tx.id),
-          status: tx.status || "completed",
-          created_at: tx.createdAt,
-          type: tx.type === "received" ? "received" : "sent",
-        })) as Transaction[],
-      )
+      const txns = await getTransactions(phone)
+      setTransactions(txns as Transaction[])
     } catch (error) {
       console.error("[v0] Error loading transactions:", error)
     } finally {
@@ -96,26 +85,48 @@ export default function TransactionHistoryPage() {
     return isReceived ? "Cash Came" : "Served Cash"
   }
 
-  const getTransactionDisplayData = (tx: Transaction): TransactionDisplayData => {
-    const normalizedUserPhone = userPhone.replace(/\D/g, '')
-    const normalizedReceiver = (tx.receiver_phone || '').replace(/\D/g, '')
-    const isReceived = tx.type === "received" || normalizedReceiver === normalizedUserPhone
-    const partnerPhone = (isReceived ? tx.sender_phone : tx.receiver_phone) || tx.otherPhone || ""
-
+  const getTransactionDisplayData = async (tx: Transaction): Promise<TransactionDisplayData> => {
+    const isReceived = tx.receiver_phone === userPhone
+    const partnerPhone = isReceived ? tx.sender_phone : tx.receiver_phone
+    
+    // Check cache first
+    let partnerVerified = verificationCache[partnerPhone]
+    if (partnerVerified === undefined) {
+      // Fetch if not in cache - use API for accurate verification status
+      try {
+        const response = await fetch(`/api/verification-status?phone=${encodeURIComponent(partnerPhone)}`)
+        const result = await response.json()
+        
+        if (response.ok && result.success && result.data) {
+          partnerVerified = result.data.isVerified === true
+        } else {
+          partnerVerified = false
+        }
+        
+        setVerificationCache(prev => ({
+          ...prev,
+          [partnerPhone]: partnerVerified
+        }))
+      } catch {
+        console.error("[v0] Error fetching verification status for:", partnerPhone)
+        partnerVerified = false
+      }
+    }
+    
     return {
       ...tx,
       isReceived,
       sourcePhone: partnerPhone,
       category: determineCategory(isReceived),
-      partnerVerified: false,
+      partnerVerified,
     }
   }
 
   const [filteredTransactions, setFilteredTransactions] = useState<TransactionDisplayData[]>([])
 
   useEffect(() => {
-    const processTransactions = () => {
-      const processed = transactions.map(getTransactionDisplayData)
+    const processTransactions = async () => {
+      const processed = await Promise.all(transactions.map(getTransactionDisplayData))
       const filtered = processed.filter((tx) => {
         if (filter === "sent") return !tx.isReceived
         if (filter === "received") return tx.isReceived
@@ -124,11 +135,10 @@ export default function TransactionHistoryPage() {
       setFilteredTransactions(filtered)
     }
     processTransactions()
-  }, [transactions, filter])
+  }, [transactions, filter, verificationCache])
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
-    if (Number.isNaN(date.getTime())) return "তারিখ পাওয়া যায়নি"
     const today = new Date()
     const yesterday = new Date(today)
     yesterday.setDate(yesterday.getDate() - 1)
@@ -222,7 +232,7 @@ export default function TransactionHistoryPage() {
                     {/* Amount */}
                     <div className="text-right flex-shrink-0">
                       <p className={`font-bold text-lg ${amountColor}`}>
-                        {tx.isReceived ? "+" : "-"}৳{Number(tx.amount || 0).toLocaleString("bn-BD")}
+                        {tx.isReceived ? "+" : "-"}৳{tx.amount.toLocaleString("bn-BD")}
                       </p>
                       <p className="text-xs text-gray-500">
                         {tx.status === "completed" ? "সম্পন্ন" : "অপেক্ষমাণ"}

@@ -14,13 +14,12 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Try the common Bangladesh formats used by the app and database.
-    const normalizedPhone = String(phone).replace(/\D/g, '')
-    const phonesToTry = Array.from(new Set([
-      normalizedPhone,
-      normalizedPhone.startsWith('0') ? `88${normalizedPhone.slice(1)}` : normalizedPhone,
-      normalizedPhone.startsWith('88') ? `0${normalizedPhone.slice(2)}` : normalizedPhone,
-    ]))
+    // Try multiple phone formats to find user
+    const phonesToTry = [
+      phone,
+      phone.replace(/^0/, '88'),
+      phone.replace(/^88/, '0'),
+    ]
 
     let user = null
     for (const phoneToTry of phonesToTry) {

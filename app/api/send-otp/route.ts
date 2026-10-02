@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { generateAndStoreOTP } from "@/lib/otp-store"
-import { sendOTP as sendSMSOTP } from "@/lib/services/sms"
+import { sendWhatsAppOTP } from "@/lib/services/whatsapp"
 
 export async function POST(request: NextRequest) {
   try {
@@ -17,18 +17,16 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, message: generated.message }, { status: 429 })
     }
 
-    // Deliver the OTP over AutomAS SMS.
-    const sent = await sendSMSOTP(phone, generated.otp)
-
+    // Deliver the OTP over WhatsApp via the worker service
+    const sent = await sendWhatsAppOTP(phone, generated.otp)
     if (!sent.success) {
-      console.error("[v0] AutomAS SMS delivery failed:", sent.message)
       return NextResponse.json(
-        { success: false, message: "OTP delivery failed. Please try again." },
+        { success: false, message: sent.message || "Failed to send OTP" },
         { status: 502 },
       )
     }
 
-    console.log("[v0] OTP sent via AutomAS SMS to:", phone)
+    console.log("[v0] OTP sent via WhatsApp to:", phone)
 
     return NextResponse.json({
       success: true,

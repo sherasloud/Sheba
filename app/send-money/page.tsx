@@ -9,6 +9,7 @@ import { VerifiedBadge } from "@/components/verified-badge"
 import {
   getProfileByPhone,
   updateBalance,
+  subscribeToBalanceUpdates,
   recordTransaction,
   supabaseSendMoney
 } from "@/lib/supabase/data-service"
@@ -107,6 +108,14 @@ function SendMoneyContent() {
 
     loadBalance()
 
+    // Subscribe to realtime balance updates from Supabase
+    let unsubscribe: (() => void) | null = null
+    if (currentPhone) {
+      unsubscribe = subscribeToBalanceUpdates(currentPhone, (newBalance) => {
+        setBalance(newBalance)
+      })
+    }
+
     if (fromQR && recipient && name) {
       setPhoneNumber(recipient)
       setRecipientName(name)
@@ -124,20 +133,17 @@ function SendMoneyContent() {
 
   const handleNextStep = async () => {
     if (step === 1) {
-      const digits = phoneNumber.replace(/\D/g, "")
-      if (digits.length !== 11 || !/^\d+$/.test(digits)) {
+      if (phoneNumber.length !== 11 || !/^\d+$/.test(phoneNumber)) {
         setError("সঠিক ১১ সংখ্যার ফোন নম্বর দিন")
         return
       }
-      setPhoneNumber(digits)
-
 
       // Check if recipient exists in Neon database
       try {
         const response = await fetch('/api/user-profile', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ phone: digits }),
+          body: JSON.stringify({ phone: phoneNumber }),
         })
         
         if (response.ok) {
@@ -267,27 +273,17 @@ function SendMoneyContent() {
         const txnId = result.transaction?.reference || `TXN${Date.now()}`
         setTransactionId(txnId)
         
-        // The transfer API already writes the transaction atomically. Keep this
-        // legacy client-side history write best-effort so it cannot turn a real
-        // successful transfer into a false failure screen.
-        try {
-          await recordTransaction(
-            senderPhone,
-            phoneNumber,
-            Number(amount),
-            "send_money",
-            txnId
-          )
-        } catch (historyError) {
-          console.error("[v0] Legacy transaction history write failed:", historyError)
-        }
-
-        // Refresh balance without changing a successful transfer into an error.
-        try {
-          await loadBalance()
-        } catch (balanceError) {
-          console.error("[v0] Balance refresh failed after transfer:", balanceError)
-        }
+        // Record transaction in database
+        await recordTransaction(
+          senderPhone,
+          phoneNumber,
+          Number(amount),
+          "send_money",
+          txnId
+        )
+        
+        // Refresh balance
+        await loadBalance()
         
         // Dispatch event for other components
         window.dispatchEvent(new CustomEvent("newTransaction", {
@@ -300,11 +296,10 @@ function SendMoneyContent() {
 
         setSuccess(true)
       } else {
-        setError(result.error || result.message || "লেনদেন ব্যর্থ হয়েছে। আবার চেষ্টা করুন।")
+        setError(result.error || "লেনদেন ব্যর্থ হয়েছে। আবার চেষ্টা করুন।")
       }
-    } catch (error) {
-      console.error("[v0] Send money request failed:", error)
-      setError("লেনদেন সম্পন্ন করা যায়নি। কোনো টাকা কাটা হয়নি—আবার চেষ্টা করুন।")
+    } catch {
+      setError("সার্ভারে সমস্যা। আবার চেষ্টা করুন।")
     } finally {
       setIsTransferring(false)
     }

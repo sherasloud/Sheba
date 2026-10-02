@@ -2,52 +2,28 @@ import { db } from '@/lib/db'
 import { appUsers, transactions, notifications } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
 import { NextRequest, NextResponse } from 'next/server'
-import { shebaSMS } from '@/lib/api/sheba-sms-service'
 
 export async function POST(request: NextRequest) {
   try {
-    const { senderPhone, receiverPhone, amount: rawAmount } = await request.json()
-    const amount = Number(rawAmount)
+    const { senderPhone, receiverPhone, amount } = await request.json()
 
-    if (!senderPhone || !receiverPhone || !Number.isFinite(amount) || amount <= 0) {
+    if (!senderPhone || !receiverPhone || !amount || amount <= 0) {
       return NextResponse.json(
         { success: false, error: 'Invalid request parameters' },
         { status: 400 }
       )
     }
 
-    // Normalize Bangladesh phone numbers before querying or writing records.
-    const normalizePhone = (value: string) => {
-      const digits = String(value).replace(/\D/g, '')
-      return digits.startsWith('0') ? `88${digits.slice(1)}` : digits
-    }
-
-    const trimmedSenderPhone = normalizePhone(senderPhone)
-    const trimmedReceiverPhone = normalizePhone(receiverPhone)
+    // Trim phone numbers
+    const trimmedSenderPhone = senderPhone.trim()
+    const trimmedReceiverPhone = receiverPhone.trim()
 
 
 
-    const phoneCandidates = (value: string) => {
-      const digits = String(value).replace(/\D/g, '')
-      return Array.from(new Set([
-        digits,
-        digits.startsWith('0') ? `88${digits.slice(1)}` : digits,
-        digits.startsWith('88') ? `0${digits.slice(2)}` : digits,
-      ]))
-    }
-
-    const findUserByPhone = async (value: string) => {
-      for (const candidate of phoneCandidates(value)) {
-        const user = await db.query.appUsers.findFirst({
-          where: eq(appUsers.phoneNumber, candidate),
-        })
-        if (user) return user
-      }
-      return null
-    }
-
-    // Get sender from Neon database, accepting local and international formats.
-    const sender = await findUserByPhone(senderPhone)
+    // Get sender from Neon database
+    const sender = await db.query.appUsers.findFirst({
+      where: eq(appUsers.phoneNumber, trimmedSenderPhone),
+    })
 
     if (!sender) {
 
@@ -76,52 +52,53 @@ export async function POST(request: NextRequest) {
     }
 
     // Get or create receiver
-    let receiver = await findUserByPhone(receiverPhone)
+    let receiver = await db.query.appUsers.findFirst({
+      where: eq(appUsers.phoneNumber, trimmedReceiverPhone),
+    })
 
     if (!receiver) {
-      return NextResponse.json(
-        { success: false, error: 'এই নম্বরে কোনো Sheba account পাওয়া যায়নি' },
-        { status: 404 },
-      )
+
+      // Auto-create receiver profile
+      const [newReceiver] = await db
+        .insert(appUsers)
+        .values({
+          phoneNumber: trimmedReceiverPhone,
+          fullName: `User ${trimmedReceiverPhone.slice(-4)}`,
+          pin: '123456', // Default PIN
+          balance: 0,
+          emailVerified: false,
+          accountType: 'personal',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        })
+        .returning()
+
+      receiver = newReceiver
     }
 
     // Perform transaction
-    const receiverBalance = Number(receiver.balance)
     const newSenderBalance = senderBalance - amount
-    const newReceiverBalance = receiverBalance + amount
+    const newReceiverBalance = Number(receiver.balance) + amount
 
-    // Update by primary key. Phone numbers may be stored as 01... or 88...,
-    // so updating by the normalized phone can silently match zero rows.
-    const [updatedSender] = await db
+
+
+    // Update sender balance
+    await db
       .update(appUsers)
-      .set({ balance: newSenderBalance, updatedAt: new Date() })
-      .where(eq(appUsers.id, sender.id))
-      .returning({ id: appUsers.id })
+      .set({
+        balance: newSenderBalance,
+        updatedAt: new Date(),
+      })
+      .where(eq(appUsers.phoneNumber, trimmedSenderPhone))
 
-    if (!updatedSender) {
-      return NextResponse.json(
-        { success: false, error: 'প্রেরকের ব্যালেন্স আপডেট করা যায়নি' },
-        { status: 500 },
-      )
-    }
-
-    const [updatedReceiver] = await db
+    // Update receiver balance
+    await db
       .update(appUsers)
-      .set({ balance: newReceiverBalance, updatedAt: new Date() })
-      .where(eq(appUsers.id, receiver.id))
-      .returning({ id: appUsers.id })
-
-    if (!updatedReceiver) {
-      // Compensate the sender if the receiver update cannot be committed.
-      await db
-        .update(appUsers)
-        .set({ balance: senderBalance, updatedAt: new Date() })
-        .where(eq(appUsers.id, sender.id))
-      return NextResponse.json(
-        { success: false, error: 'গ্রাহকের ব্যালেন্স আপডেট করা যায়নি' },
-        { status: 500 },
-      )
-    }
+      .set({
+        balance: newReceiverBalance,
+        updatedAt: new Date(),
+      })
+      .where(eq(appUsers.phoneNumber, trimmedReceiverPhone))
 
     const transactionId = `TXN${Date.now()}`
 
@@ -144,14 +121,19 @@ export async function POST(request: NextRequest) {
 
     // Save transaction record for RECEIVER
     try {
-      if (receiver) {
+      // Make sure receiver exists and get fresh data
+      const freshReceiver = await db.query.appUsers.findFirst({
+        where: eq(appUsers.phoneNumber, trimmedReceiverPhone),
+      })
+      
+      if (freshReceiver) {
         await db.insert(transactions).values({
           id: `${transactionId}_rcv`,
-          userid: receiver.id,
+          userid: freshReceiver.id,
           phonenumber: trimmedReceiverPhone,
           amount: amount,
-          balanceBefore: receiverBalance,
-          balanceAfter: newReceiverBalance,
+          balanceBefore: Number(freshReceiver.balance),
+          balanceAfter: Number(freshReceiver.balance) + amount,
           type: 'transfer',
           status: 'completed',
           description: `Received from ${trimmedSenderPhone}`,
@@ -173,22 +155,6 @@ export async function POST(request: NextRequest) {
     } catch (err) {
       console.error('[v0] Failed to save notification:', err)
     }
-
-    const smsResults = await Promise.all([
-      shebaSMS.sendTransactionSMS(trimmedSenderPhone, "transfer", amount, newSenderBalance, {
-        fee: 0,
-        transactionId,
-        label: "Send Money Successful",
-        userNumber: trimmedReceiverPhone,
-      }),
-      shebaSMS.sendTransactionSMS(trimmedReceiverPhone, "transfer", amount, newReceiverBalance, {
-        fee: 0,
-        transactionId: `${transactionId}_rcv`,
-        label: "Money Received Successfully",
-        userNumber: trimmedSenderPhone,
-      }),
-    ])
-    console.log("[v0] Send money transaction SMS results:", smsResults.map((result) => ({ success: result.success, message: result.message })))
 
     return NextResponse.json(
       {

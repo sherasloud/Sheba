@@ -1,66 +1,61 @@
 export class ShebaSMSService {
-  async sendTransactionSMS(phoneNumber: string, type: string, amount: number, balance: number, details?: { fee?: number; transactionId?: string; label?: string; userNumber?: string }) {
-    const apiKey = process.env.AUTOMAS_API_KEY
-    const senderId = process.env.AUTOMAS_SENDER_ID
-    if (!apiKey || !senderId) return { success: false, error: "AutomAS credentials are not configured" }
+  private apiUrl = process.env.SMS_GATEWAY_URL || "https://api.sms.net.bd/sendsms"
+  private apiKey = process.env.SMS_API_KEY || ""
+  private senderId = "SHEBA" // Your brand name
 
-    const labels: Record<string, string> = {
-      transfer: "Send Money Successful",
-      cashout: "Cash Out Successful",
-      payment: "Payment Successful",
-      cashin: "Add Money Successful",
-      recharge: "Recharge Successful",
+  async sendTransactionSMS(phoneNumber: string, type: string, amount: number, balance: number) {
+    const messages = {
+      recharge: `Dear Customer, Your mobile recharge of Tk.${amount} is successful. Current Sheba balance: Tk.${balance}. Thank you for using Sheba.`,
+      cashin: `Dear Customer, Cash In of Tk.${amount} successful. Your Sheba wallet balance: Tk.${balance}. Thank you for using Sheba.`,
+      cashout: `Dear Customer, Cash Out of Tk.${amount} successful. Your Sheba wallet balance: Tk.${balance}. Thank you for using Sheba.`,
+      transfer: `Dear Customer, Money transfer of Tk.${amount} successful. Your Sheba wallet balance: Tk.${balance}. Thank you for using Sheba.`,
+      payment: `Dear Customer, Bill payment of Tk.${amount} successful. Your Sheba wallet balance: Tk.${balance}. Thank you for using Sheba.`,
     }
-    const timestamp = new Date().toLocaleString("en-GB", { timeZone: "Asia/Dhaka" })
-    const formatDisplayPhone = (value: string) => {
-      const digits = String(value).replace(/\D/g, "")
-      return digits.startsWith("88") ? `0${digits.slice(2)}` : digits
-    }
-    const userNumber = formatDisplayPhone(details?.userNumber || phoneNumber)
-    const message = `${details?.label || labels[type] || "Transaction Successful"}!\nUser : ${userNumber}\nAmount : ${amount} ৳\nFee : ${details?.fee ?? 0} ৳\nBalance : ${balance} ৳\nTransaction ID : ${details?.transactionId || "N/A"}\n${timestamp}`
-    const digits = String(phoneNumber).replace(/\D/g, "")
-    // AutomAS v3 expects a local Bangladesh MSISDN, e.g. 01709783145.
-    const recipient = digits.startsWith("88") ? `0${digits.slice(2)}` : digits
+
+    const message =
+      messages[type] || `Transaction of Tk.${amount} successful. Balance: Tk.${balance}. Thank you for using Sheba.`
 
     try {
-      const params = new URLSearchParams({
-        apikey: apiKey,
-        sender: senderId,
-        msisdn: recipient,
-        smstext: message,
+      const response = await fetch(this.apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${this.apiKey}`,
+        },
+        body: JSON.stringify({
+          sender_id: this.senderId,
+          message: message,
+          recipient: phoneNumber,
+        }),
       })
-      const response = await fetch(`https://api.automas.com.bd/smsapiv3?${params.toString()}`, {
-        method: "GET",
-        cache: "no-store",
-      })
-      const raw = await response.text()
-      const statusCode = Number(raw.trim())
-      return { success: response.ok && statusCode === 0, message: raw.trim() }
+
+      const result = await response.json()
+      console.log("[v0] Sheba SMS sent:", result)
+      return result
     } catch (error) {
-      console.error("[v0] Transaction SMS failed:", error)
+      console.error("[v0] SMS sending failed:", error)
       return { success: false, error }
     }
   }
 
   async sendOTP(phoneNumber: string, otp: string) {
-    const apiKey = process.env.AUTOMAS_API_KEY
-    const senderId = process.env.AUTOMAS_SENDER_ID
-    if (!apiKey || !senderId) return { success: false, error: "AutomAS credentials are not configured" }
-
-    const digits = String(phoneNumber).replace(/\D/g, "")
-    const recipient = digits.startsWith("88") ? `0${digits.slice(2)}` : digits
-    const params = new URLSearchParams({
-      apikey: apiKey,
-      sender: senderId,
-      msisdn: recipient,
-      smstext: `Sheba OTP: ${otp}. Valid for 5 minutes.`,
-    })
+    const message = `Your Sheba verification code is: ${otp}. Do not share this code with anyone. Valid for 5 minutes.`
 
     try {
-      const response = await fetch(`https://api.automas.com.bd/smsapiv3?${params.toString()}`, { cache: "no-store" })
-      const raw = await response.text()
-      const statusCode = Number(raw.trim())
-      return { success: response.ok && statusCode === 0, message: raw.trim() }
+      const response = await fetch(this.apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${this.apiKey}`,
+        },
+        body: JSON.stringify({
+          sender_id: this.senderId,
+          message: message,
+          recipient: phoneNumber,
+        }),
+      })
+
+      return await response.json()
     } catch (error) {
       console.error("[v0] OTP SMS failed:", error)
       return { success: false, error }
