@@ -116,7 +116,7 @@ export async function sendTransactionSMS({
   const currency = "Tk"
   const user = localPhone(phoneNumber)
   const shortTransactionId = transactionId.slice(-18)
-  const message = `${label}\nUser:${user}\nAmount:${amount} ${currency}\nBalance:${balance} ${currency}\nTransaction ID:${shortTransactionId}`
+  const message = `${label}\nUser:${user}\nAmount:${amount} ${currency}\nBalance:${balance} ${currency}\nTransaction ID :\n${shortTransactionId}`
   try {
     return await sendAutomasSMS(phoneNumber, message)
   } catch (error: any) {
