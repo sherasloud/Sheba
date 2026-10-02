@@ -23,21 +23,37 @@ async function sendAutomasSMS(phoneNumber: string, message: string): Promise<SMS
   const senderId = process.env.AUTOMAS_SENDER_ID
   if (!apiKey || !senderId) return { success: false, message: "Automas SMS is not configured" }
 
-  const response = await fetch(AUTOmAS_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      api_key: apiKey,
-      senderid: senderId,
-      type: "text",
-      msg: message,
-      contacts: localPhone(phoneNumber),
-    }),
-    cache: "no-store",
-  })
-  const data = await response.json().catch(() => null)
-  if (!response.ok) return { success: false, message: "Automas SMS request failed", data }
-  return { success: true, message: "SMS sent successfully", data }
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), 15_000)
+  try {
+    const response = await fetch(AUTOmAS_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify({
+        api_key: apiKey,
+        senderid: senderId,
+        type: "text",
+        msg: message,
+        contacts: localPhone(phoneNumber),
+      }),
+      cache: "no-store",
+      signal: controller.signal,
+    })
+    const data = await response.json().catch(() => null)
+    const result = data as { status?: unknown; error?: unknown; message?: unknown } | null
+    const status = String(result?.status ?? "").toLowerCase()
+    const failed = !response.ok || ["0", "false", "failed", "error"].includes(status)
+    if (failed) {
+      const providerMessage = result?.error || result?.message || `HTTP ${response.status}`
+      console.error("[v0] Automas rejected SMS:", providerMessage)
+      return { success: false, message: `Automas SMS failed: ${String(providerMessage)}`, data }
+    }
+    return { success: true, message: "SMS sent successfully", data }
+  } catch (error: any) {
+    return { success: false, message: error?.name === "AbortError" ? "Automas SMS timed out" : "Could not reach Automas SMS" }
+  } finally {
+    clearTimeout(timeout)
+  }
 }
 
 /**
