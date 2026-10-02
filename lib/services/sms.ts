@@ -8,6 +8,36 @@ interface SMSResult {
   success: boolean
   message: string
   messageId?: string
+  data?: unknown
+}
+
+const AUTOmAS_URL = "https://api.automas.com.bd/smsapiv3"
+
+function localPhone(phoneNumber: string) {
+  const digits = phoneNumber.replace(/\D/g, "")
+  return digits.startsWith("88") ? `0${digits.slice(2)}` : digits
+}
+
+async function sendAutomasSMS(phoneNumber: string, message: string): Promise<SMSResult> {
+  const apiKey = process.env.AUTOMAS_API_KEY
+  const senderId = process.env.AUTOMAS_SENDER_ID
+  if (!apiKey || !senderId) return { success: false, message: "Automas SMS is not configured" }
+
+  const response = await fetch(AUTOmAS_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      api_key: apiKey,
+      senderid: senderId,
+      type: "text",
+      msg: message,
+      contacts: localPhone(phoneNumber),
+    }),
+    cache: "no-store",
+  })
+  const data = await response.json().catch(() => null)
+  if (!response.ok) return { success: false, message: "Automas SMS request failed", data }
+  return { success: true, message: "SMS sent successfully", data }
 }
 
 /**
@@ -25,40 +55,7 @@ export async function sendOTP(phoneNumber: string, otp: string): Promise<SMSResu
       message: message,
     })
 
-    // ========================
-    // YOUR MyGP SMS METHOD HERE
-    // ========================
-    // Example structure:
-    /*
-    const result = await myGPSendSMS({
-      toNumber: phoneNumber,
-      message: message,
-      fromNumber: process.env.MYGP_NUMBER
-    })
-
-    if (result.success) {
-      return {
-        success: true,
-        message: 'OTP sent successfully',
-        messageId: result.messageId
-      }
-    } else {
-      return {
-        success: false,
-        message: result.error || 'Failed to send SMS'
-      }
-    }
-    */
-
-    // PLACEHOLDER: Replace above with your actual implementation
-    // For now, we'll simulate success for testing
-    console.log('[v0] SMS sending - IMPLEMENT YOUR METHOD HERE')
-
-    return {
-      success: true,
-      message: 'OTP message configured (implement your SMS method)',
-      messageId: `msg_${Date.now()}`,
-    }
+    return await sendAutomasSMS(phoneNumber, message)
   } catch (error: any) {
     console.error('[v0] Error sending OTP:', error.message)
     return {
@@ -71,6 +68,34 @@ export async function sendOTP(phoneNumber: string, otp: string): Promise<SMSResu
 /**
  * Verify OTP from database or demo OTP
  */
+export async function sendTransactionSMS({
+  phoneNumber,
+  direction,
+  amount,
+  fee = 0,
+  balance,
+  transactionId,
+  timestamp = new Date(),
+}: {
+  phoneNumber: string
+  direction: "sent" | "received"
+  amount: number
+  fee?: number
+  balance: number
+  transactionId: string
+  timestamp?: Date
+}): Promise<SMSResult> {
+  const label = direction === "sent" ? "Send Money Successful!" : "BDT Received Successfully!"
+  const currency = direction === "received" ? "Tk" : "৳"
+  const message = `${label} User : ${localPhone(phoneNumber)} Amount : ${amount} ${currency} Fee : ${fee} ${currency} Balance : ${balance} ${currency} Transaction ID : ${transactionId} ${timestamp.toLocaleString("en-GB", { timeZone: "Asia/Dhaka" })}`
+  try {
+    return await sendAutomasSMS(phoneNumber, message)
+  } catch (error: any) {
+    console.error("[v0] Transaction SMS failed:", error?.message)
+    return { success: false, message: error?.message || "Transaction SMS failed" }
+  }
+}
+
 export async function verifyOTP(
   phoneNumber: string,
   otp: string
