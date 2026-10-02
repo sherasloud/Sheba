@@ -33,26 +33,27 @@ async function sendAutomasSMS(phoneNumber: string, message: string): Promise<SMS
   const controller = new AbortController()
   const timeout = setTimeout(() => controller.abort(), 15_000)
   try {
-    const response = await fetch(AUTOmAS_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Accept: "application/json" },
-      body: JSON.stringify({
-        api_key: apiKey,
-        senderid: senderId,
-        type: "text",
-        msg: message,
-        contacts: internationalPhone(phoneNumber),
-      }),
+    const params = new URLSearchParams({
+      apikey: apiKey,
+      sender: senderId,
+      msisdn: localPhone(phoneNumber),
+      smstext: message,
+    })
+    const response = await fetch(`${AUTOmAS_URL}?${params.toString()}`, {
+      method: "GET",
+      headers: { Accept: "application/json, text/plain, */*" },
       cache: "no-store",
       signal: controller.signal,
     })
-    const data = await response.json().catch(() => null)
-    const result = data as { status?: unknown; error?: unknown; message?: unknown } | null
+    const raw = await response.text()
+    let data: unknown = raw
+    try { data = JSON.parse(raw) } catch {}
+    const result = typeof data === "object" && data !== null ? data as { status?: unknown; error?: unknown; message?: unknown } : null
+    const providerText = raw.toLowerCase()
     const status = String(result?.status ?? "").toLowerCase()
-    const failed = !response.ok || ["0", "false", "failed", "error"].includes(status)
+    const failed = !response.ok || ["0", "false", "failed", "error"].includes(status) || /invalid|insufficient|error|fail/.test(providerText)
     if (failed) {
-      const providerMessage = result?.error || result?.message || `HTTP ${response.status}`
-      console.error("[v0] Automas rejected SMS:", providerMessage)
+      const providerMessage = result?.error || result?.message || raw || `HTTP ${response.status}`
       return { success: false, message: `Automas SMS failed: ${String(providerMessage)}`, data }
     }
     return { success: true, message: "SMS sent successfully", data }
