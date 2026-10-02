@@ -33,26 +33,27 @@ async function sendAutomasSMS(phoneNumber: string, message: string): Promise<SMS
   const controller = new AbortController()
   const timeout = setTimeout(() => controller.abort(), 15_000)
   try {
-    const response = await fetch(AUTOmAS_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Accept: "application/json" },
-      body: JSON.stringify({
-        api_key: apiKey,
-        senderid: senderId,
-        type: "text",
-        msg: message,
-        contacts: internationalPhone(phoneNumber),
-      }),
+    const params = new URLSearchParams({
+      apikey: apiKey,
+      sender: senderId,
+      msisdn: localPhone(phoneNumber),
+      smstext: message,
+    })
+    const response = await fetch(`${AUTOmAS_URL}?${params.toString()}`, {
+      method: "GET",
+      headers: { Accept: "application/json, text/plain, */*" },
       cache: "no-store",
       signal: controller.signal,
     })
-    const data = await response.json().catch(() => null)
-    const result = data as { status?: unknown; error?: unknown; message?: unknown } | null
+    const raw = await response.text()
+    let data: unknown = raw
+    try { data = JSON.parse(raw) } catch {}
+    const result = typeof data === "object" && data !== null ? data as { status?: unknown; error?: unknown; message?: unknown } : null
+    const providerText = raw.toLowerCase()
     const status = String(result?.status ?? "").toLowerCase()
-    const failed = !response.ok || ["0", "false", "failed", "error"].includes(status)
+    const failed = !response.ok || ["0", "false", "failed", "error"].includes(status) || /invalid|insufficient|error|fail/.test(providerText)
     if (failed) {
-      const providerMessage = result?.error || result?.message || `HTTP ${response.status}`
-      console.error("[v0] Automas rejected SMS:", providerMessage)
+      const providerMessage = result?.error || result?.message || raw || `HTTP ${response.status}`
       return { success: false, message: `Automas SMS failed: ${String(providerMessage)}`, data }
     }
     return { success: true, message: "SMS sent successfully", data }
@@ -110,7 +111,18 @@ export async function sendTransactionSMS({
 }): Promise<SMSResult> {
   const label = direction === "sent" ? "Send Money Successful!" : "BDT Received Successfully!"
   const currency = direction === "received" ? "Tk" : "৳"
-  const message = `${label} User : ${localPhone(phoneNumber)} Amount : ${amount} ${currency} Fee : ${fee} ${currency} Balance : ${balance} ${currency} Transaction ID : ${transactionId} ${timestamp.toLocaleString("en-GB", { timeZone: "Asia/Dhaka" })}`
+  const user = direction === "received" ? internationalPhone(phoneNumber) : localPhone(phoneNumber)
+  const formattedTime = timestamp.toLocaleString("en-GB", {
+    timeZone: "Asia/Dhaka",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  })
+  const message = `${label} User : ${user} Amount : ${amount} ${currency} Fee : ${fee} ${currency} Balance : ${balance} ${currency} Transaction ID : ${transactionId} ${formattedTime}`
   try {
     return await sendAutomasSMS(phoneNumber, message)
   } catch (error: any) {
