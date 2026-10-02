@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { ArrowLeft, Send, Download } from "lucide-react"
-import { getTransactions, subscribeToTransactions, getProfileByPhone } from "@/lib/supabase/data-service"
+import { getProfileByPhone } from "@/lib/supabase/data-service"
 import { ErrorBoundary } from "@/components/error-boundary"
 import { VerifiedBadge } from "@/components/verified-badge"
 
@@ -45,15 +45,6 @@ export default function TransactionHistoryPage() {
     setUserPhone(phone)
     loadTransactions(phone)
     loadUserName(phone)
-
-    // Subscribe to transaction updates
-    const unsubscribe = subscribeToTransactions(phone, (newTx) => {
-      setTransactions((prev) => [newTx, ...prev])
-    })
-
-    return () => {
-      unsubscribe()
-    }
   }, [router])
 
   const loadUserName = async (phone: string) => {
@@ -70,8 +61,10 @@ export default function TransactionHistoryPage() {
   const loadTransactions = async (phone: string) => {
     setIsLoading(true)
     try {
-      const txns = await getTransactions(phone)
-      setTransactions(txns as Transaction[])
+      const response = await fetch(`/api/transaction-history?phone=${encodeURIComponent(phone)}`)
+      const result = await response.json()
+      if (!response.ok || !result.success) throw new Error(result.message || "Failed to load transactions")
+      setTransactions((result.transactions || []) as Transaction[])
     } catch (error) {
       console.error("[v0] Error loading transactions:", error)
     } finally {
