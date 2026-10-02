@@ -4,7 +4,6 @@ import { useEffect, useState } from "react"
 import { CheckCircle, ArrowLeft, Home, Share2 } from "lucide-react"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
-import { realNotificationSystem } from "@/lib/real-notification-system"
 
 export default function SendMoneySuccessPage() {
   const searchParams = useSearchParams()
@@ -26,9 +25,6 @@ export default function SendMoneySuccessPage() {
       }
       setTransactionData(data)
 
-      // Trigger real notification for send money
-      realNotificationSystem.triggerTransactionNotification("sent", Number.parseInt(amount), phoneNumber)
-
       // Add to transaction history
       const newTransaction = {
         id: Date.now(),
@@ -39,17 +35,17 @@ export default function SendMoneySuccessPage() {
         time: new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }),
       }
 
-      // Update localStorage transactions
-      const existingTransactions = JSON.parse(localStorage.getItem("transactions") || "[]")
-      const updatedTransactions = [newTransaction, ...existingTransactions]
-      localStorage.setItem("transactions", JSON.stringify(updatedTransactions))
+      // Keep the receipt cache best-effort; the database remains the source of truth.
+      try {
+        const stored = localStorage.getItem("transactions")
+        const existingTransactions = stored ? JSON.parse(stored) : []
+        const safeTransactions = Array.isArray(existingTransactions) ? existingTransactions : []
+        localStorage.setItem("transactions", JSON.stringify([newTransaction, ...safeTransactions]))
+      } catch (storageError) {
+        console.error("[v0] Could not cache transaction receipt:", storageError)
+      }
 
-      // Dispatch custom event for real-time updates
-      window.dispatchEvent(
-        new CustomEvent("newTransaction", {
-          detail: newTransaction,
-        }),
-      )
+      window.dispatchEvent(new CustomEvent("newTransaction", { detail: newTransaction }))
     }
   }, [searchParams])
 
@@ -124,6 +120,13 @@ export default function SendMoneySuccessPage() {
             <Share2 size={20} className="mr-2" />
             Share Receipt
           </button>
+
+          <Link
+            href="/transactions"
+            className="w-full bg-[#29a9eb] text-white py-3 px-6 rounded-lg flex items-center justify-center font-medium"
+          >
+            Transactions দেখুন
+          </Link>
 
           <Link
             href="/send-money"

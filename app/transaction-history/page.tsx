@@ -50,10 +50,39 @@ export default function TransactionHistoryPage() {
   const loadTransactions = async (phone: string) => {
     setIsLoading(true)
     try {
-      const response = await fetch(`/api/transaction-history?phone=${encodeURIComponent(phone)}`)
+      const response = await fetch(`/api/transaction-history?phone=${encodeURIComponent(phone)}`, { cache: "no-store" })
       const result = await response.json()
-      if (!response.ok || !result.success) throw new Error(result.message || "Failed to load transactions")
-      setTransactions((result.transactions || []) as Transaction[])
+
+      if (response.ok && result.success) {
+        setTransactions((result.transactions || []) as Transaction[])
+        return
+      }
+
+      // Keep the app compatible with records created by the older transaction API.
+      const legacyResponse = await fetch("/api/get-transactions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone }),
+        cache: "no-store",
+      })
+      const legacyResult = await legacyResponse.json()
+      if (!legacyResponse.ok || !legacyResult.success) {
+        throw new Error(result.message || legacyResult.message || "Failed to load transactions")
+      }
+
+      setTransactions(
+        (legacyResult.transactions || []).map((tx: any) => ({
+          id: String(tx.id),
+          sender_phone: tx.phonenumber,
+          receiver_phone: tx.phonenumber,
+          amount: Number(tx.amount || 0),
+          transaction_type: tx.type || "লেনদেন",
+          reference: String(tx.id),
+          status: tx.status || "completed",
+          created_at: tx.createdAt,
+          type: tx.type === "received" ? "received" : "sent",
+        })) as Transaction[],
+      )
     } catch (error) {
       console.error("[v0] Error loading transactions:", error)
     } finally {
