@@ -2,6 +2,7 @@ import { db } from '@/lib/db'
 import { appUsers, transactions, notifications } from '@/lib/db/schema'
 import { eq } from 'drizzle-orm'
 import { NextRequest, NextResponse } from 'next/server'
+import { sendTransactionSMS } from '@/lib/services/sms'
 
 export async function POST(request: NextRequest) {
   try {
@@ -142,6 +143,23 @@ export async function POST(request: NextRequest) {
     } catch (txnError) {
       console.error('[v0] Failed to save receiver transaction:', txnError)
     }
+
+    await Promise.allSettled([
+      sendTransactionSMS({
+        phoneNumber: trimmedSenderPhone,
+        direction: 'sent',
+        amount: Number(amount),
+        balance: newSenderBalance,
+        transactionId,
+      }),
+      sendTransactionSMS({
+        phoneNumber: trimmedReceiverPhone,
+        direction: 'received',
+        amount: Number(amount),
+        balance: newReceiverBalance,
+        transactionId: `${transactionId}_rcv`,
+      }),
+    ])
 
     // Save notification to receiver directly
     try {
