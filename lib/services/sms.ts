@@ -146,7 +146,7 @@ export async function sendTransactionSMS({
     second: "2-digit",
     hour12: false,
   })
-  const message = `${label} User : ${user} Amount : ${amount} ${currency} Fee : ${fee} ${currency} Balance : ${balance} ${currency} Transaction ID : ${transactionId} ${formattedTime}`
+  const message = `${label}\nUser : ${user}\nAmount : ${amount} ${currency}\nFee : ${fee} ${currency}\nBalance : ${balance} ${currency}\nTransaction ID :\n${transactionId}\n${formattedTime}`
   try {
     return await sendAutomasSMS(phoneNumber, message)
   } catch (error: any) {
