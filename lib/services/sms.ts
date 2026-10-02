@@ -40,8 +40,8 @@ async function sendAutomasSMS(phoneNumber: string, message: string): Promise<SMS
       sender: senderId,
       msisdn: localPhone(phoneNumber),
       smstext: message,
-      type: "long",
-      smsformat: "8",
+      type: "text",
+      smsformat: "0",
     })
     const response = await fetch(`${AUTOmAS_URL}?${params.toString()}`, {
       method: "GET",
@@ -113,7 +113,7 @@ export async function sendTransactionSMS({
   timestamp?: Date
 }): Promise<SMSResult> {
   const label = direction === "sent" ? "Send Money Successful!" : "Money Received Successfully!"
-  const currency = "৳"
+  const currency = "Tk"
   const user = localPhone(phoneNumber)
   const formattedTime = timestamp.toLocaleString("en-GB", {
     timeZone: "Asia/Dhaka",
@@ -125,7 +125,7 @@ export async function sendTransactionSMS({
     second: "2-digit",
     hour12: false,
   })
-  const message = `${label}\nUser: ${user}\nAmount: ${amount} ${currency}\nBalance: ${balance} ${currency}\nTxn: ${transactionId}\n${formattedTime}`.slice(0, 300)
+  const message = `${label}\nUser : ${user}\nAmount : ${amount} ${currency}\nBalance : ${balance} ${currency}\nTransaction ID :\n${transactionId}\n${formattedTime}`
   try {
     return await sendAutomasSMS(phoneNumber, message)
   } catch (error: any) {
