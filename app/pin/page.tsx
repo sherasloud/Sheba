@@ -100,7 +100,7 @@ export default function PinPage() {
 
       const data = await response.json().catch(() => ({ success: false, message: "সার্ভার থেকে সঠিক উত্তর পাওয়া যায়নি।" }))
 
-      if (response.ok && data.success) {
+      if (data.success === true) {
         console.log("[v0] PIN verified successfully")
         console.log("[v0] User name from Neon:", data.user?.fullName)
         

@@ -15,7 +15,9 @@ const AUTOmAS_URL = "https://api.automas.com.bd/smsapiv3"
 
 function localPhone(phoneNumber: string) {
   const digits = phoneNumber.replace(/\D/g, "")
-  return digits.startsWith("88") ? `0${digits.slice(2)}` : digits
+  if (digits.startsWith("880")) return `0${digits.slice(3)}`
+  if (digits.startsWith("88")) return `0${digits.slice(2)}`
+  return digits
 }
 
 function internationalPhone(phoneNumber: string) {
@@ -38,8 +40,8 @@ async function sendAutomasSMS(phoneNumber: string, message: string): Promise<SMS
       sender: senderId,
       msisdn: localPhone(phoneNumber),
       smstext: message,
-      type: "long",
-      smsformat: "8",
+      type: "text",
+      smsformat: "0",
     })
     const response = await fetch(`${AUTOmAS_URL}?${params.toString()}`, {
       method: "GET",
