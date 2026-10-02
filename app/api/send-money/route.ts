@@ -79,23 +79,10 @@ export async function POST(request: NextRequest) {
     let receiver = await findUserByPhone(receiverPhone)
 
     if (!receiver) {
-
-      // Auto-create receiver profile
-      const [newReceiver] = await db
-        .insert(appUsers)
-        .values({
-          phoneNumber: trimmedReceiverPhone,
-          fullName: `User ${trimmedReceiverPhone.slice(-4)}`,
-          pin: '123456', // Default PIN
-          balance: 0,
-          emailVerified: false,
-          accountType: 'personal',
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        })
-        .returning()
-
-      receiver = newReceiver
+      return NextResponse.json(
+        { success: false, error: 'এই নম্বরে কোনো Sheba account পাওয়া যায়নি' },
+        { status: 404 },
+      )
     }
 
     // Perform transaction
