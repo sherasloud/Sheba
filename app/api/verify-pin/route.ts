@@ -15,7 +15,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Trim and normalize phone number
-    const trimmedPhone = phone.trim()
+    const rawPhone = String(phone).trim().replace(/\D/g, '')
+    const trimmedPhone = rawPhone.startsWith('880') ? `0${rawPhone.slice(3)}` : rawPhone
     console.log('[v0] Verifying PIN for phone:', trimmedPhone)
 
     // Verify PIN from Neon database

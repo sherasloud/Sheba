@@ -131,8 +131,8 @@ export default function PinPage() {
 
         console.log("[v0] User data stored, redirecting to home")
         setError("")
-        // Existing user - redirect to home immediately
-        router.push("/")
+        // Existing user - show the success destination immediately.
+        router.replace("/")
       } else {
         setError(data.message || "ভুল পিন। আবার চেষ্টা করুন।")
         setPin("")

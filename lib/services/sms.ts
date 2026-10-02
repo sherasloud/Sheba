@@ -134,8 +134,8 @@ export async function sendTransactionSMS({
   timestamp?: Date
 }): Promise<SMSResult> {
   const label = direction === "sent" ? "Send Money Successful!" : "BDT Received Successfully!"
-  const currency = direction === "received" ? "Tk" : "৳"
-  const user = direction === "received" ? internationalPhone(phoneNumber) : localPhone(phoneNumber)
+  const currency = "৳"
+  const user = localPhone(phoneNumber)
   const formattedTime = timestamp.toLocaleString("en-GB", {
     timeZone: "Asia/Dhaka",
     day: "2-digit",
