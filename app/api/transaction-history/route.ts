@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { transactions, appUsers } from '@/lib/db/schema'
-import { eq, desc } from 'drizzle-orm'
+import { eq, desc, or, inArray } from 'drizzle-orm'
 
 export async function GET(request: NextRequest) {
   try {
@@ -29,19 +29,26 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ success: true, transactions: [], total: 0 })
     }
 
+    // Include both the current user-id records and legacy records saved by phone.
     const userTransactions = await db.query.transactions.findMany({
-      where: eq(transactions.userid, account.id),
+      where: or(
+        eq(transactions.userid, account.id),
+        inArray(transactions.phonenumber, phoneCandidates),
+      ),
       orderBy: [desc(transactions.createdAt)],
     })
 
     const formattedTransactions = userTransactions.map((txn) => {
       const description = txn.description || ''
       const received = /^received|^money received/i.test(description)
-      const partnerMatch = description.match(/(?:to|from)\\s+(.+)$/i)
-      const partnerPhone = partnerMatch?.[1] || ''
+      const partnerMatch = description.match(/(?:to|from)\s+([+\d\s-]+)/i)
+      const partnerPhone = partnerMatch?.[1]?.replace(/\D/g, '') || ''
+      const isAccountRecord = txn.userid === account.id
+      const isReceived = /^received|^money received/i.test(description)
+      const isSent = !isReceived && (isAccountRecord || phoneCandidates.includes(txn.phonenumber))
       return {
         id: txn.id,
-        type: received ? 'received' : 'sent',
+        type: isReceived ? 'received' : isSent ? 'sent' : 'received',
         amount: Number(txn.amount),
         otherPhone: partnerPhone,
         sender_phone: received ? partnerPhone : phoneNumber,
