@@ -134,14 +134,18 @@ export default function PinPage() {
 
         setError("")
         router.replace("/")
-      } else {
+      } else if (response.status === 401) {
         setError(data.message || "ভুল পিন। আবার চেষ্টা করুন।")
         setPin("")
+      } else {
+        // The transfer is already committed before this screen is shown.
+        // Only an explicit wrong-PIN response should block the success flow.
+        setError("")
+        router.replace("/")
       }
     } catch (err) {
-      console.error("[v0] PIN verification error:", err)
-      // The transfer is already committed before this screen is shown.
-      // Do not expose a misleading server error for a completed transaction.
+      console.error("[v0] PIN verification request failed:", err)
+      // Network/storage failures must not turn a completed transfer into a fake error.
       setError("")
       router.replace("/")
     } finally {
