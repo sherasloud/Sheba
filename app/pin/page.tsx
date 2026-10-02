@@ -111,27 +111,28 @@ export default function PinPage() {
         
         const timestamp = Date.now().toString()
 
-        // Store session data
-        sessionStorage.setItem("phoneNumber", phoneNumber)
-        sessionStorage.setItem("appPinVerified", "true")
-        sessionStorage.setItem("pinVerifiedTime", timestamp)
+        // Storage must never turn a verified PIN into a fake server error
+        // (Safari private mode can reject sessionStorage/localStorage writes).
+        try {
+          const userData = JSON.stringify({
+            phoneNumber: data.user?.phoneNumber ?? phoneNumber,
+            fullName: data.user?.fullName ?? "",
+            balance: data.user?.balance ?? 0,
+            accountType: data.user?.accountType,
+          })
+          for (const storage of [sessionStorage, localStorage]) {
+            storage.setItem("phoneNumber", phoneNumber)
+            storage.setItem("appPinVerified", "true")
+            storage.setItem("pinVerifiedTime", timestamp)
+            storage.setItem("userName", data.user?.fullName ?? "")
+            storage.setItem("userBalance", String(data.user?.balance ?? 0))
+            storage.setItem("userData", userData)
+          }
+        } catch (storageError) {
+          console.warn("[v0] PIN verified but browser storage is unavailable", storageError)
+        }
 
-        // Store persistent data
-        localStorage.setItem("phoneNumber", phoneNumber)
-        localStorage.setItem("appPinVerified", "true")
-        localStorage.setItem("pinVerifiedTime", timestamp)
-        localStorage.setItem("userName", data.user?.fullName || "")
-        localStorage.setItem("userBalance", String(data.user?.balance ?? 0))
-        localStorage.setItem("userData", JSON.stringify({
-          phoneNumber: data.user?.phoneNumber,
-          fullName: data.user?.fullName,
-          balance: data.user?.balance,
-          accountType: data.user?.accountType,
-        }))
-
-        console.log("[v0] User data stored, redirecting to home")
         setError("")
-        // Existing user - show the success destination immediately.
         router.replace("/")
       } else {
         setError(data.message || "ভুল পিন। আবার চেষ্টা করুন।")
