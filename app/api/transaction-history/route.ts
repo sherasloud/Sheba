@@ -43,6 +43,7 @@ export async function GET(request: NextRequest) {
       const received = /^received|^money received/i.test(description)
       const partnerMatch = description.match(/(?:to|from)\s+([+\d\s-]+)/i)
       const partnerPhone = partnerMatch?.[1]?.replace(/\D/g, '') || ''
+      const displayPartner = partnerPhone.startsWith('88') ? `0${partnerPhone.slice(2)}` : partnerPhone
       const isAccountRecord = txn.userid === account.id
       const isReceived = /^received|^money received/i.test(description)
       const isSent = !isReceived && (isAccountRecord || phoneCandidates.includes(txn.phonenumber))
@@ -50,9 +51,9 @@ export async function GET(request: NextRequest) {
         id: txn.id,
         type: isReceived ? 'received' : isSent ? 'sent' : 'received',
         amount: Number(txn.amount),
-        otherPhone: partnerPhone,
-        sender_phone: received ? partnerPhone : phoneNumber,
-        receiver_phone: received ? phoneNumber : partnerPhone,
+        otherPhone: displayPartner,
+        sender_phone: received ? displayPartner : phoneNumber,
+        receiver_phone: received ? phoneNumber : displayPartner,
         transaction_type: received ? 'Money Received' : txn.type,
         reference: txn.id,
         status: txn.status || 'completed',
