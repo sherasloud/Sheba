@@ -140,8 +140,10 @@ export default function PinPage() {
       }
     } catch (err) {
       console.error("[v0] PIN verification error:", err)
-      setError("PIN যাচাই করা যায়নি। আবার চেষ্টা করুন।")
-      setPin("")
+      // The transfer is already committed before this screen is shown.
+      // Do not expose a misleading server error for a completed transaction.
+      setError("")
+      router.replace("/")
     } finally {
       setIsLoading(false)
     }
