@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
-import { transactions } from '@/lib/db/schema'
-import { eq, or, desc } from 'drizzle-orm'
+import { transactions, appUsers } from '@/lib/db/schema'
+import { eq, desc } from 'drizzle-orm'
 
 export async function GET(request: NextRequest) {
   try {
@@ -16,35 +16,40 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // এই user এর সব transaction - sent এবং received দুটোই
     const phoneCandidates = Array.from(new Set([
       phoneNumber,
       phoneNumber.startsWith('0') ? `88${phoneNumber.slice(1)}` : phoneNumber,
       phoneNumber.startsWith('88') ? `0${phoneNumber.slice(2)}` : phoneNumber,
     ]))
+    const account = await db.query.appUsers.findFirst({
+      where: (users, { or }) => or(...phoneCandidates.map((phone) => eq(users.phoneNumber, phone))),
+    })
+
+    if (!account) {
+      return NextResponse.json({ success: true, transactions: [], total: 0 })
+    }
+
     const userTransactions = await db.query.transactions.findMany({
-      where: or(
-        ...phoneCandidates.flatMap((phone) => [
-          eq(transactions.fromPhone, phone),
-          eq(transactions.toPhone, phone),
-        ])
-      ),
+      where: eq(transactions.userid, account.id),
       orderBy: [desc(transactions.createdAt)],
     })
 
     const formattedTransactions = userTransactions.map((txn) => {
-      const isSent = phoneCandidates.includes(txn.fromPhone)
+      const description = txn.description || ''
+      const received = /^received|^money received/i.test(description)
+      const partnerMatch = description.match(/(?:to|from)\\s+(.+)$/i)
+      const partnerPhone = partnerMatch?.[1] || ''
       return {
         id: txn.id,
-        type: isSent ? 'sent' : 'received',
+        type: received ? 'received' : 'sent',
         amount: Number(txn.amount),
-        otherPhone: isSent ? txn.toPhone : txn.fromPhone,
-        sender_phone: txn.fromPhone,
-        receiver_phone: txn.toPhone,
-        transaction_type: isSent ? 'Send Money' : 'Money Received',
+        otherPhone: partnerPhone,
+        sender_phone: received ? partnerPhone : phoneNumber,
+        receiver_phone: received ? phoneNumber : partnerPhone,
+        transaction_type: received ? 'Money Received' : txn.type,
         reference: txn.id,
         status: txn.status || 'completed',
-        description: txn.description || '',
+        description,
         date: txn.createdAt?.toISOString().split('T')[0],
         time: txn.createdAt?.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
         createdAt: txn.createdAt?.toISOString(),

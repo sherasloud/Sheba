@@ -79,7 +79,10 @@ export default function TransactionHistoryPage() {
   }
 
   const getTransactionDisplayData = async (tx: Transaction): Promise<TransactionDisplayData> => {
-    const isReceived = tx.receiver_phone === userPhone
+    const normalizedUserPhone = userPhone.replace(/\D/g, '')
+    const normalizedSender = tx.sender_phone?.replace(/\D/g, '')
+    const normalizedReceiver = tx.receiver_phone?.replace(/\D/g, '')
+    const isReceived = tx.type === "received" || (normalizedReceiver !== normalizedUserPhone && normalizedSender === normalizedUserPhone)
     const partnerPhone = isReceived ? tx.sender_phone : tx.receiver_phone
     
     // Check cache first
