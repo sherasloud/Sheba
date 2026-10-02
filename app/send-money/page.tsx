@@ -267,17 +267,27 @@ function SendMoneyContent() {
         const txnId = result.transaction?.reference || `TXN${Date.now()}`
         setTransactionId(txnId)
         
-        // Record transaction in database
-        await recordTransaction(
-          senderPhone,
-          phoneNumber,
-          Number(amount),
-          "send_money",
-          txnId
-        )
-        
-        // Refresh balance
-        await loadBalance()
+        // The transfer API already writes the transaction atomically. Keep this
+        // legacy client-side history write best-effort so it cannot turn a real
+        // successful transfer into a false failure screen.
+        try {
+          await recordTransaction(
+            senderPhone,
+            phoneNumber,
+            Number(amount),
+            "send_money",
+            txnId
+          )
+        } catch (historyError) {
+          console.error("[v0] Legacy transaction history write failed:", historyError)
+        }
+
+        // Refresh balance without changing a successful transfer into an error.
+        try {
+          await loadBalance()
+        } catch (balanceError) {
+          console.error("[v0] Balance refresh failed after transfer:", balanceError)
+        }
         
         // Dispatch event for other components
         window.dispatchEvent(new CustomEvent("newTransaction", {
@@ -290,7 +300,7 @@ function SendMoneyContent() {
 
         setSuccess(true)
       } else {
-        setError(result.error || "লেনদেন ব্যর্থ হয়েছে। আবার চেষ্টা করুন।")
+        setError(result.error || result.message || "লেনদেন ব্যর্থ হয়েছে। আবার চেষ্টা করুন।")
       }
     } catch (error) {
       console.error("[v0] Send money request failed:", error)
