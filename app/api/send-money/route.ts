@@ -135,7 +135,7 @@ export async function POST(request: NextRequest) {
           phonenumber: trimmedReceiverPhone,
           amount: numericAmount,
           balanceBefore: Number(freshReceiver.balance),
-          balanceAfter: Number(freshReceiver.balance) + amount,
+          balanceAfter: Number(freshReceiver.balance) + numericAmount,
           type: 'transfer',
           status: 'completed',
           description: `Received from ${trimmedSenderPhone}`,

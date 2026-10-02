@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { ArrowLeft } from "lucide-react"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
@@ -52,6 +52,7 @@ function SendMoneyContent() {
   const [transactionId, setTransactionId] = useState("")
   const [senderPhone, setSenderPhone] = useState("")
   const [recipientVerified, setRecipientVerified] = useState(false)
+  const transferSubmittedRef = useRef(false)
 
   const searchParams = useSearchParams()
   const recipient = searchParams.get("recipient")
@@ -219,6 +220,8 @@ function SendMoneyContent() {
       return
     }
 
+    if (transferSubmittedRef.current) return
+    transferSubmittedRef.current = true
     setIsTransferring(true)
     setError("")
 
@@ -244,12 +247,14 @@ function SendMoneyContent() {
 
         if (!pinData.verified || !pinResponse.ok) {
           setError(pinData.message || "ভুল পিন। আবার চেষ্টা করুন।")
+          transferSubmittedRef.current = false
           setIsTransferring(false)
           return
         }
       } catch (error) {
         console.error('[v0] Error verifying PIN:', error)
         setError("পিন যাচাইকরণ ব্যর্থ হয়েছে। আবার চেষ্টা করুন।")
+        transferSubmittedRef.current = false
         setIsTransferring(false)
         return
       }
@@ -286,9 +291,11 @@ function SendMoneyContent() {
           detail: { type: "send_money", amount: Number(amount), to: phoneNumber },
         }))
       } else {
+        transferSubmittedRef.current = false
         setError(result.error || "লেনদেন ব্যর্থ হয়েছে। আবার চেষ্টা করুন।")
       }
     } catch {
+      transferSubmittedRef.current = false
       setError("সার্ভারে সমস্যা। আবার চেষ্টা করুন।")
     } finally {
       setIsTransferring(false)
