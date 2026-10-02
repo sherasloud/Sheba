@@ -7,8 +7,9 @@ import { sendTransactionSMS } from '@/lib/services/sms'
 export async function POST(request: NextRequest) {
   try {
     const { senderPhone, receiverPhone, amount } = await request.json()
+    const numericAmount = Number(amount)
 
-    if (!senderPhone || !receiverPhone || !amount || amount <= 0) {
+    if (!senderPhone || !receiverPhone || !Number.isFinite(numericAmount) || numericAmount <= 0) {
       return NextResponse.json(
         { success: false, error: 'Invalid request parameters' },
         { status: 400 }
@@ -36,7 +37,7 @@ export async function POST(request: NextRequest) {
 
     // Check sender balance
     const senderBalance = Number(sender.balance)
-    if (senderBalance < amount) {
+    if (senderBalance < numericAmount) {
 
       return NextResponse.json(
         { success: false, error: 'অপর্যাপ্ত ব্যালেন্স' },
@@ -71,15 +72,15 @@ export async function POST(request: NextRequest) {
           accountType: 'personal',
           createdAt: new Date(),
           updatedAt: new Date(),
-        })
+        } as any)
         .returning()
 
       receiver = newReceiver
     }
 
     // Perform transaction
-    const newSenderBalance = senderBalance - amount
-    const newReceiverBalance = Number(receiver.balance) + amount
+    const newSenderBalance = senderBalance - numericAmount
+    const newReceiverBalance = Number(receiver.balance) + numericAmount
 
 
 
@@ -109,7 +110,7 @@ export async function POST(request: NextRequest) {
         id: transactionId,
         userid: sender.id,
         phonenumber: trimmedSenderPhone,
-        amount: amount,
+        amount: numericAmount,
         balanceBefore: senderBalance,
         balanceAfter: newSenderBalance,
         type: 'transfer',
@@ -132,7 +133,7 @@ export async function POST(request: NextRequest) {
           id: `${transactionId}_rcv`,
           userid: freshReceiver.id,
           phonenumber: trimmedReceiverPhone,
-          amount: amount,
+          amount: numericAmount,
           balanceBefore: Number(freshReceiver.balance),
           balanceAfter: Number(freshReceiver.balance) + amount,
           type: 'transfer',
