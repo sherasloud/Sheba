@@ -6,7 +6,8 @@ import { eq, or, desc } from 'drizzle-orm'
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
-    const phoneNumber = searchParams.get('phone')
+    const rawPhoneNumber = searchParams.get('phone')
+    const phoneNumber = rawPhoneNumber?.replace(/\D/g, '')
 
     if (!phoneNumber) {
       return NextResponse.json(
@@ -16,28 +17,40 @@ export async function GET(request: NextRequest) {
     }
 
     // এই user এর সব transaction - sent এবং received দুটোই
+    const phoneCandidates = Array.from(new Set([
+      phoneNumber,
+      phoneNumber.startsWith('0') ? `88${phoneNumber.slice(1)}` : phoneNumber,
+      phoneNumber.startsWith('88') ? `0${phoneNumber.slice(2)}` : phoneNumber,
+    ]))
     const userTransactions = await db.query.transactions.findMany({
       where: or(
-        eq(transactions.fromPhone, phoneNumber),
-        eq(transactions.toPhone, phoneNumber)
+        ...phoneCandidates.flatMap((phone) => [
+          eq(transactions.fromPhone, phone),
+          eq(transactions.toPhone, phone),
+        ])
       ),
       orderBy: [desc(transactions.createdAt)],
     })
 
-    const formattedTransactions = userTransactions.map((txn) => ({
-      id: txn.id,
-      type: txn.fromPhone === phoneNumber ? 'sent' : 'received',
-      amount: txn.amount,
-      otherPhone: txn.fromPhone === phoneNumber ? txn.toPhone : txn.fromPhone,
-      status: txn.status,
-      description: txn.description,
-      date: txn.createdAt?.toISOString().split('T')[0],
-      time: txn.createdAt?.toLocaleTimeString('en-US', {
-        hour: '2-digit',
-        minute: '2-digit',
-      }),
-      createdAt: txn.createdAt?.toISOString(),
-    }))
+    const formattedTransactions = userTransactions.map((txn) => {
+      const isSent = phoneCandidates.includes(txn.fromPhone)
+      return {
+        id: txn.id,
+        type: isSent ? 'sent' : 'received',
+        amount: Number(txn.amount),
+        otherPhone: isSent ? txn.toPhone : txn.fromPhone,
+        sender_phone: txn.fromPhone,
+        receiver_phone: txn.toPhone,
+        transaction_type: isSent ? 'Send Money' : 'Money Received',
+        reference: txn.id,
+        status: txn.status || 'completed',
+        description: txn.description || '',
+        date: txn.createdAt?.toISOString().split('T')[0],
+        time: txn.createdAt?.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+        createdAt: txn.createdAt?.toISOString(),
+        created_at: txn.createdAt?.toISOString(),
+      }
+    })
 
     return NextResponse.json({
       success: true,
