@@ -16,6 +16,8 @@ interface Transaction {
   reference: string
   status: string
   created_at: string
+  type?: "sent" | "received"
+  otherPhone?: string
 }
 
 interface TransactionDisplayData extends Transaction {
@@ -79,8 +81,11 @@ export default function TransactionHistoryPage() {
   }
 
   const getTransactionDisplayData = async (tx: Transaction): Promise<TransactionDisplayData> => {
-    const isReceived = tx.receiver_phone === userPhone
-    const partnerPhone = isReceived ? tx.sender_phone : tx.receiver_phone
+    const normalizedUserPhone = userPhone.replace(/\D/g, '')
+    const normalizedSender = tx.sender_phone?.replace(/\D/g, '')
+    const normalizedReceiver = tx.receiver_phone?.replace(/\D/g, '')
+    const isReceived = tx.type === "received" || normalizedReceiver === normalizedUserPhone
+    const partnerPhone = (isReceived ? tx.sender_phone : tx.receiver_phone) || tx.otherPhone || ""
     
     // Check cache first
     let partnerVerified = verificationCache[partnerPhone]
