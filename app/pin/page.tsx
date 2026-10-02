@@ -100,7 +100,7 @@ export default function PinPage() {
 
       const data = await response.json().catch(() => ({ success: false, message: "সার্ভার থেকে সঠিক উত্তর পাওয়া যায়নি।" }))
 
-      if (response.ok && data.success) {
+      if (data.success === true) {
         console.log("[v0] PIN verified successfully")
         console.log("[v0] User name from Neon:", data.user?.fullName)
         
@@ -111,34 +111,36 @@ export default function PinPage() {
         
         const timestamp = Date.now().toString()
 
-        // Store session data
-        sessionStorage.setItem("phoneNumber", phoneNumber)
-        sessionStorage.setItem("appPinVerified", "true")
-        sessionStorage.setItem("pinVerifiedTime", timestamp)
+        // Storage must never turn a verified PIN into a fake server error
+        // (Safari private mode can reject sessionStorage/localStorage writes).
+        try {
+          const userData = JSON.stringify({
+            phoneNumber: data.user?.phoneNumber ?? phoneNumber,
+            fullName: data.user?.fullName ?? "",
+            balance: data.user?.balance ?? 0,
+            accountType: data.user?.accountType,
+          })
+          for (const storage of [sessionStorage, localStorage]) {
+            storage.setItem("phoneNumber", phoneNumber)
+            storage.setItem("appPinVerified", "true")
+            storage.setItem("pinVerifiedTime", timestamp)
+            storage.setItem("userName", data.user?.fullName ?? "")
+            storage.setItem("userBalance", String(data.user?.balance ?? 0))
+            storage.setItem("userData", userData)
+          }
+        } catch (storageError) {
+          console.warn("[v0] PIN verified but browser storage is unavailable", storageError)
+        }
 
-        // Store persistent data
-        localStorage.setItem("phoneNumber", phoneNumber)
-        localStorage.setItem("appPinVerified", "true")
-        localStorage.setItem("pinVerifiedTime", timestamp)
-        localStorage.setItem("userName", data.user?.fullName || "")
-        localStorage.setItem("userBalance", data.user?.balance.toString() || "0")
-        localStorage.setItem("userData", JSON.stringify({
-          phoneNumber: data.user?.phoneNumber,
-          fullName: data.user?.fullName,
-          balance: data.user?.balance,
-          accountType: data.user?.accountType,
-        }))
-
-        console.log("[v0] User data stored, redirecting to home")
-        // Existing user - redirect to home immediately
-        setTimeout(() => router.push("/"), 500)
+        setError("")
+        router.replace("/")
       } else {
         setError(data.message || "ভুল পিন। আবার চেষ্টা করুন।")
         setPin("")
       }
     } catch (err) {
       console.error("[v0] PIN verification error:", err)
-      setError("সার্ভারে সমস্যা। আবার চেষ্টা করুন।")
+      setError("PIN যাচাই করা যায়নি। আবার চেষ্টা করুন।")
       setPin("")
     } finally {
       setIsLoading(false)

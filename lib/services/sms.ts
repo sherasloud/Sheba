@@ -12,11 +12,12 @@ interface SMSResult {
 }
 
 const AUTOmAS_URL = "https://api.automas.com.bd/smsapiv3"
-const AUTOmAS_JSON_URL = "https://api.automas.com.bd/smsapiv4"
 
 function localPhone(phoneNumber: string) {
   const digits = phoneNumber.replace(/\D/g, "")
-  return digits.startsWith("88") ? `0${digits.slice(2)}` : digits
+  if (digits.startsWith("880")) return `0${digits.slice(3)}`
+  if (digits.startsWith("88")) return `0${digits.slice(2)}`
+  return digits
 }
 
 function internationalPhone(phoneNumber: string) {
@@ -39,8 +40,8 @@ async function sendAutomasSMS(phoneNumber: string, message: string): Promise<SMS
       sender: senderId,
       msisdn: localPhone(phoneNumber),
       smstext: message,
-      type: "long",
-      smsformat: "8",
+      type: "text",
+      smsformat: "0",
     })
     const response = await fetch(`${AUTOmAS_URL}?${params.toString()}`, {
       method: "GET",
@@ -57,29 +58,7 @@ async function sendAutomasSMS(phoneNumber: string, message: string): Promise<SMS
     const failed = !response.ok || ["0", "false", "failed", "error"].includes(status) || /invalid|insufficient|error|fail/.test(providerText)
     if (!failed) return { success: true, message: "SMS sent successfully", data }
 
-    // Automas v3 can reject long/unicode messages depending on account settings.
-    // Retry once through the documented JSON endpoint before reporting failure.
-    const fallbackResponse = await fetch(AUTOmAS_JSON_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Accept: "application/json, text/plain, */*" },
-      body: JSON.stringify({
-        api_key: apiKey,
-        senderid: senderId,
-        type: "text",
-        scheduledDateTime: "",
-        msg: message,
-        contacts: localPhone(phoneNumber),
-      }),
-      cache: "no-store",
-      signal: controller.signal,
-    })
-    const fallbackRaw = await fallbackResponse.text()
-    const fallbackText = fallbackRaw.toLowerCase()
-    if (fallbackResponse.ok && !/invalid|insufficient|error|fail/.test(fallbackText)) {
-      return { success: true, message: "SMS sent successfully", data: fallbackRaw }
-    }
-
-    const providerMessage = result?.error || result?.message || fallbackRaw || raw || `HTTP ${response.status}`
+    const providerMessage = result?.error || result?.message || raw || `HTTP ${response.status}`
     return { success: false, message: `Automas SMS failed: ${String(providerMessage)}`, data }
   } catch (error: any) {
     return { success: false, message: error?.name === "AbortError" ? "Automas SMS timed out" : "Could not reach Automas SMS" }
@@ -134,8 +113,8 @@ export async function sendTransactionSMS({
   timestamp?: Date
 }): Promise<SMSResult> {
   const label = direction === "sent" ? "Send Money Successful!" : "BDT Received Successfully!"
-  const currency = direction === "received" ? "Tk" : "৳"
-  const user = direction === "received" ? internationalPhone(phoneNumber) : localPhone(phoneNumber)
+  const currency = "TK"
+  const user = localPhone(phoneNumber)
   const formattedTime = timestamp.toLocaleString("en-GB", {
     timeZone: "Asia/Dhaka",
     day: "2-digit",

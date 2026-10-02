@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { appUsers } from '@/lib/db/schema'
-import { eq } from 'drizzle-orm'
+import { eq, or } from 'drizzle-orm'
 
 export async function POST(request: NextRequest) {
   try {
@@ -15,14 +15,19 @@ export async function POST(request: NextRequest) {
     }
 
     // Trim and normalize phone number
-    const trimmedPhone = phone.trim()
+    const rawPhone = String(phone).trim().replace(/\D/g, '')
+    const trimmedPhone = rawPhone.startsWith('880') ? `0${rawPhone.slice(3)}` : rawPhone
+    const internationalPhone = trimmedPhone.startsWith('0') ? `88${trimmedPhone}` : trimmedPhone
     console.log('[v0] Verifying PIN for phone:', trimmedPhone)
 
-    // Verify PIN from Neon database
+    // Verify against both formats because older accounts may store 01... or 880...
     let user = null
     try {
       user = await db.query.appUsers.findFirst({
-        where: eq(appUsers.phoneNumber, trimmedPhone),
+        where: or(
+          eq(appUsers.phoneNumber, trimmedPhone),
+          eq(appUsers.phoneNumber, internationalPhone),
+        ),
       })
     } catch (dbError: any) {
       console.error('[v0] Database error:', dbError.message)
