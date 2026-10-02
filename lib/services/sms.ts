@@ -18,9 +18,16 @@ function localPhone(phoneNumber: string) {
   return digits.startsWith("88") ? `0${digits.slice(2)}` : digits
 }
 
+function internationalPhone(phoneNumber: string) {
+  const digits = phoneNumber.replace(/\D/g, "")
+  if (digits.startsWith("880")) return digits
+  if (digits.startsWith("0")) return `88${digits}`
+  return `880${digits}`
+}
+
 async function sendAutomasSMS(phoneNumber: string, message: string): Promise<SMSResult> {
-  const apiKey = process.env.AUTOMAS_API_KEY
-  const senderId = process.env.AUTOMAS_SENDER_ID
+  const apiKey = process.env.AUTOMAS_API_KEY || process.env.api_key || process.env.API_KEY
+  const senderId = process.env.AUTOMAS_SENDER_ID || "8809617642467"
   if (!apiKey || !senderId) return { success: false, message: "Automas SMS is not configured" }
 
   const controller = new AbortController()
@@ -34,7 +41,7 @@ async function sendAutomasSMS(phoneNumber: string, message: string): Promise<SMS
         senderid: senderId,
         type: "text",
         msg: message,
-        contacts: localPhone(phoneNumber),
+        contacts: internationalPhone(phoneNumber),
       }),
       cache: "no-store",
       signal: controller.signal,
@@ -64,7 +71,7 @@ async function sendAutomasSMS(phoneNumber: string, message: string): Promise<SMS
 export async function sendOTP(phoneNumber: string, otp: string): Promise<SMSResult> {
   try {
     // Message content
-    const message = `আপনার OTP কোড: ${otp}\nএই কোডটি 5 মিনিটের জন্য বৈধ।`
+    const message = `Sheba OTP: ${otp}. This code is valid for 5 minutes.`
 
     console.log('[v0] Attempting to send SMS:', {
       to: phoneNumber,
