@@ -101,16 +101,6 @@ export async function verifyOTP(
   otp: string
 ): Promise<{ success: boolean; message: string }> {
   try {
-    // For demo purposes - allow any 6-digit OTP that matches the last 6 digits of phone
-    // In production, verify against database
-    
-    // DEMO: Accept OTP "123456" or "111111" for any phone number
-    const demoOTPs = ['123456', '111111', '000000']
-    if (demoOTPs.includes(otp)) {
-      console.log('[v0] Demo OTP verified for phone:', phoneNumber)
-      return { success: true, message: 'OTP verified successfully' }
-    }
-
     // Try to verify from Supabase if available
     try {
       const { createClient } = await import('@/lib/supabase/client')
