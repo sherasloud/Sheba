@@ -9,7 +9,6 @@ import { VerifiedBadge } from "@/components/verified-badge"
 import {
   getProfileByPhone,
   updateBalance,
-  subscribeToBalanceUpdates,
   recordTransaction,
   supabaseSendMoney
 } from "@/lib/supabase/data-service"
@@ -107,14 +106,6 @@ function SendMoneyContent() {
     }
 
     loadBalance()
-
-    // Subscribe to realtime balance updates from Supabase
-    let unsubscribe: (() => void) | null = null
-    if (currentPhone) {
-      unsubscribe = subscribeToBalanceUpdates(currentPhone, (newBalance) => {
-        setBalance(newBalance)
-      })
-    }
 
     if (fromQR && recipient && name) {
       setPhoneNumber(recipient)
@@ -301,8 +292,9 @@ function SendMoneyContent() {
       } else {
         setError(result.error || "লেনদেন ব্যর্থ হয়েছে। আবার চেষ্টা করুন।")
       }
-    } catch {
-      setError("সার্ভারে সমস্যা। আবার চেষ্টা করুন।")
+    } catch (error) {
+      console.error("[v0] Send money request failed:", error)
+      setError("লেনদেন সম্পন্ন করা যায়নি। কোনো টাকা কাটা হয়নি—আবার চেষ্টা করুন।")
     } finally {
       setIsTransferring(false)
     }
