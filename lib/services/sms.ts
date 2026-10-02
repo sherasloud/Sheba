@@ -111,7 +111,18 @@ export async function sendTransactionSMS({
 }): Promise<SMSResult> {
   const label = direction === "sent" ? "Send Money Successful!" : "BDT Received Successfully!"
   const currency = direction === "received" ? "Tk" : "৳"
-  const message = `${label} User : ${localPhone(phoneNumber)} Amount : ${amount} ${currency} Fee : ${fee} ${currency} Balance : ${balance} ${currency} Transaction ID : ${transactionId} ${timestamp.toLocaleString("en-GB", { timeZone: "Asia/Dhaka" })}`
+  const user = direction === "received" ? internationalPhone(phoneNumber) : localPhone(phoneNumber)
+  const formattedTime = timestamp.toLocaleString("en-GB", {
+    timeZone: "Asia/Dhaka",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  })
+  const message = `${label} User : ${user} Amount : ${amount} ${currency} Fee : ${fee} ${currency} Balance : ${balance} ${currency} Transaction ID : ${transactionId} ${formattedTime}`
   try {
     return await sendAutomasSMS(phoneNumber, message)
   } catch (error: any) {
