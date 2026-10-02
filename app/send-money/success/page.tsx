@@ -122,7 +122,7 @@ export default function SendMoneySuccessPage() {
           </button>
 
           <Link
-            href="/transaction-history"
+            href="/transactions"
             className="w-full bg-[#29a9eb] text-white py-3 px-6 rounded-lg flex items-center justify-center font-medium"
           >
             Transactions দেখুন
