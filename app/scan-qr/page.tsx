@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import { ArrowLeft, QrCode, Share2, Download } from "lucide-react"
 import jsQR from "jsqr"
+import QRCode from "qrcode"
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import VerificationRequired from "@/components/verification-required"
@@ -128,76 +129,23 @@ function QRShare({ onBack, userName, phoneNumber }: { onBack: () => void; userNa
     setIsAdmin(adminUsers.includes(phoneNumber))
   }, [phoneNumber])
 
-  const generateQRCode = () => {
-    if (!canvasRef.current) return
+  const generateQRCode = async () => {
+    if (!canvasRef.current || !phoneNumber) return
 
-    const canvas = canvasRef.current
-    const ctx = canvas.getContext("2d")
-    if (!ctx) return
-
-    // Set canvas size
-    canvas.width = 300
-    canvas.height = 300
-
-    // Clear canvas
-    ctx.fillStyle = "white"
-    ctx.fillRect(0, 0, 300, 300)
-
-    // Create QR data
-    const qrData = {
+    const qrData = JSON.stringify({
       type: "sheba_receive_money",
       name: userName,
       phone: phoneNumber,
       account: `SHEBA${phoneNumber}`,
-      timestamp: new Date().toISOString(),
       version: "1.0",
-    }
+    })
 
-    // Simple QR pattern generation
-    const data = JSON.stringify(qrData)
-    const size = 25 // 25x25 grid
-    const cellSize = 300 / size
-
-    // Generate pattern based on data
-    ctx.fillStyle = "black"
-    for (let i = 0; i < size; i++) {
-      for (let j = 0; j < size; j++) {
-        const index = (i * size + j) % data.length
-        const charCode = data.charCodeAt(index)
-
-        // Create pattern based on character code
-        if (charCode % 2 === 0 || (i < 7 && j < 7) || (i < 7 && j > size - 8) || (i > size - 8 && j < 7)) {
-          ctx.fillRect(j * cellSize, i * cellSize, cellSize, cellSize)
-        }
-      }
-    }
-
-    // Add finder patterns (corners)
-    const finderSize = 7 * cellSize
-
-    // Top-left finder pattern
-    ctx.fillStyle = "black"
-    ctx.fillRect(0, 0, finderSize, finderSize)
-    ctx.fillStyle = "white"
-    ctx.fillRect(cellSize, cellSize, finderSize - 2 * cellSize, finderSize - 2 * cellSize)
-    ctx.fillStyle = "black"
-    ctx.fillRect(2 * cellSize, 2 * cellSize, finderSize - 4 * cellSize, finderSize - 4 * cellSize)
-
-    // Top-right finder pattern
-    ctx.fillStyle = "black"
-    ctx.fillRect(300 - finderSize, 0, finderSize, finderSize)
-    ctx.fillStyle = "white"
-    ctx.fillRect(300 - finderSize + cellSize, cellSize, finderSize - 2 * cellSize, finderSize - 2 * cellSize)
-    ctx.fillStyle = "black"
-    ctx.fillRect(300 - finderSize + 2 * cellSize, 2 * cellSize, finderSize - 4 * cellSize, finderSize - 4 * cellSize)
-
-    // Bottom-left finder pattern
-    ctx.fillStyle = "black"
-    ctx.fillRect(0, 300 - finderSize, finderSize, finderSize)
-    ctx.fillStyle = "white"
-    ctx.fillRect(cellSize, 300 - finderSize + cellSize, finderSize - 2 * cellSize, finderSize - 2 * cellSize)
-    ctx.fillStyle = "black"
-    ctx.fillRect(2 * cellSize, 300 - finderSize + 2 * cellSize, finderSize - 4 * cellSize, finderSize - 4 * cellSize)
+    await QRCode.toCanvas(canvasRef.current, qrData, {
+      width: 300,
+      margin: 2,
+      errorCorrectionLevel: "H",
+      color: { dark: "#111827", light: "#ffffff" },
+    })
   }
 
   const downloadQR = () => {

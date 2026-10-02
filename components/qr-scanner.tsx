@@ -2,95 +2,89 @@
 
 import { useState, useRef, useEffect } from "react"
 import { QrCode, X } from "lucide-react"
+import jsQR from "jsqr"
 
 interface QRScannerProps {
   onScan?: (data: string) => void
-  isOpen: boolean
-  onClose: () => void
+  isOpen?: boolean
+  onClose?: () => void
+  onBack?: () => void
 }
 
-export function QRScanner({ onScan, isOpen, onClose }: QRScannerProps) {
+export function QRScanner({ onScan, isOpen = true, onClose, onBack }: QRScannerProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [isScanning, setIsScanning] = useState(false)
   const [scanResult, setScanResult] = useState("")
   const [error, setError] = useState("")
+  const closeScanner = onClose ?? onBack
 
-  // Simple QR code decoder (for WiFi SSID detection)
-  const decodeQRCode = (imageData: ImageData): string | null => {
-    // This is a simplified version - in production, use a proper QR code library
-    // like jsqr or qr-scanner for actual QR code decoding
-    try {
-      const data = imageData.data
-      let qrString = ""
-      for (let i = 0; i < data.length; i += 4) {
-        const brightness = (data[i] + data[i + 1] + data[i + 2]) / 3
-        qrString += brightness > 128 ? "1" : "0"
-      }
-      return qrString
-    } catch {
-      return null
-    }
+  const stopCamera = () => {
+    const stream = videoRef.current?.srcObject as MediaStream | null
+    stream?.getTracks().forEach((track) => track.stop())
+    if (videoRef.current) videoRef.current.srcObject = null
   }
 
   useEffect(() => {
-    if (!isOpen) return
+    if (isOpen === false) return
+
+    let scanInterval: ReturnType<typeof setInterval> | undefined
+    let cancelled = false
 
     const startCamera = async () => {
       try {
+        if (!navigator.mediaDevices?.getUserMedia) throw new Error("unsupported")
         const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: "environment" },
+          video: { facingMode: { ideal: "environment" }, width: { ideal: 1280 }, height: { ideal: 720 } },
+          audio: false,
         })
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream
-          setIsScanning(true)
-          setError("")
-          startScanning()
+        if (cancelled || !videoRef.current) {
+          stream.getTracks().forEach((track) => track.stop())
+          return
         }
-      } catch (err) {
-        setError("Camera access denied. Please enable camera permissions.")
+        videoRef.current.srcObject = stream
+        await videoRef.current.play()
+        setIsScanning(true)
+        setError("")
+        scanInterval = setInterval(() => {
+          const video = videoRef.current
+          const canvas = canvasRef.current
+          const context = canvas?.getContext("2d", { willReadFrequently: true })
+          if (!video || !canvas || !context || video.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) return
+          const width = video.videoWidth || 640
+          const height = video.videoHeight || 480
+          canvas.width = width
+          canvas.height = height
+          context.drawImage(video, 0, 0, width, height)
+          const result = jsQR(context.getImageData(0, 0, width, height).data, width, height, { inversionAttempts: "attemptBoth" })
+          if (result?.data) {
+            setScanResult(result.data)
+            setIsScanning(false)
+            if (scanInterval) clearInterval(scanInterval)
+            onScan?.(result.data)
+            stopCamera()
+          }
+        }, 150)
+      } catch {
+        setError("Camera access denied. Please enable camera permission and try again.")
         setIsScanning(false)
       }
     }
 
-    const startScanning = () => {
-      const scanInterval = setInterval(() => {
-        if (videoRef.current && canvasRef.current) {
-          const context = canvasRef.current.getContext("2d")
-          if (context) {
-            context.drawImage(videoRef.current, 0, 0, 300, 300)
-            const imageData = context.getImageData(0, 0, 300, 300)
-            
-            // In production, use a real QR library
-            // For now, detect WiFi QR by checking for specific patterns
-            const qrPattern = decodeQRCode(imageData)
-            if (qrPattern && qrPattern.length > 100) {
-              setScanResult("WiFi_QR_Detected")
-              if (onScan) {
-                onScan("WiFi_QR_Detected")
-              }
-              setIsScanning(false)
-              clearInterval(scanInterval)
-            }
-          }
-        }
-      }, 500)
-
-      return () => clearInterval(scanInterval)
-    }
-
     startCamera()
+    return () => {
+      cancelled = true
+      if (scanInterval) clearInterval(scanInterval)
+      stopCamera()
+    }
   }, [isOpen, onScan])
 
   const handleClose = () => {
     setIsScanning(false)
     setScanResult("")
     setError("")
-    if (videoRef.current?.srcObject) {
-      const tracks = (videoRef.current.srcObject as MediaStream).getTracks()
-      tracks.forEach((track) => track.stop())
-    }
-    onClose()
+    stopCamera()
+    closeScanner?.()
   }
 
   if (!isOpen) return null
@@ -132,7 +126,7 @@ export function QRScanner({ onScan, isOpen, onClose }: QRScannerProps) {
           <div className="absolute inset-0 flex items-center justify-center">
             <div className="text-center">
               <div className="text-white text-sm font-medium mb-2">
-                {isScanning ? "Scanning for WiFi QR..." : "Point at QR code"}
+                {isScanning ? "Scanning live for QR code..." : "Point at a QR code"}
               </div>
             </div>
           </div>
@@ -141,8 +135,8 @@ export function QRScanner({ onScan, isOpen, onClose }: QRScannerProps) {
         {/* Results */}
         {scanResult && (
           <div className="bg-green-600 text-white p-4 rounded-lg mb-4 text-center">
-            <p className="font-bold mb-2">WiFi QR Detected!</p>
-            <p className="text-sm mb-4">Connecting to WiFi...</p>
+            <p className="font-bold mb-2">QR code detected</p>
+            <p className="text-sm mb-4 break-all">{scanResult}</p>
             <button
               onClick={handleClose}
               className="w-full py-2 bg-white text-green-600 rounded-full font-bold hover:bg-gray-100 transition-all"
@@ -160,8 +154,8 @@ export function QRScanner({ onScan, isOpen, onClose }: QRScannerProps) {
 
         {/* Instructions */}
         <div className="bg-gray-800 text-white p-4 rounded-lg text-center text-sm">
-          <p className="mb-2">📱 Point your camera at a WiFi QR code</p>
-          <p>The app will auto-detect and connect</p>
+          <p className="mb-2">Point your camera at any QR code</p>
+          <p>The scanner detects it in real time</p>
         </div>
       </div>
     </div>
