@@ -157,15 +157,10 @@ export async function POST(request: NextRequest) {
 
     // Save transaction record for RECEIVER
     try {
-      // Make sure receiver exists and get fresh data
-      const freshReceiver = await db.query.appUsers.findFirst({
-        where: eq(appUsers.phoneNumber, trimmedReceiverPhone),
-      })
-      
-      if (freshReceiver) {
+      if (receiver) {
         await db.insert(transactions).values({
           id: `${transactionId}_rcv`,
-          userid: freshReceiver.id,
+          userid: receiver.id,
           phonenumber: trimmedReceiverPhone,
           amount: amount,
           balanceBefore: receiverBalance,
@@ -197,11 +192,13 @@ export async function POST(request: NextRequest) {
         fee: 0,
         transactionId,
         label: "Send Money Successful",
+        userNumber: trimmedReceiverPhone,
       }),
       shebaSMS.sendTransactionSMS(trimmedReceiverPhone, "transfer", amount, newReceiverBalance, {
         fee: 0,
         transactionId: `${transactionId}_rcv`,
         label: "Money Received Successfully",
+        userNumber: trimmedSenderPhone,
       }),
     ])
     console.log("[v0] Send money transaction SMS results:", smsResults.map((result) => ({ success: result.success, message: result.message })))
