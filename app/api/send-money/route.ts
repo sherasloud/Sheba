@@ -144,7 +144,7 @@ export async function POST(request: NextRequest) {
       console.error('[v0] Failed to save receiver transaction:', txnError)
     }
 
-    await Promise.allSettled([
+    await Promise.all([
       sendTransactionSMS({
         phoneNumber: trimmedSenderPhone,
         direction: 'sent',

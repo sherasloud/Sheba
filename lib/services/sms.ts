@@ -38,6 +38,8 @@ async function sendAutomasSMS(phoneNumber: string, message: string): Promise<SMS
       sender: senderId,
       msisdn: localPhone(phoneNumber),
       smstext: message,
+      type: "long",
+      smsformat: "8",
     })
     const response = await fetch(`${AUTOmAS_URL}?${params.toString()}`, {
       method: "GET",
