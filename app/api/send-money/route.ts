@@ -145,18 +145,20 @@ export async function POST(request: NextRequest) {
       console.error('[v0] Failed to save receiver transaction:', txnError)
     }
 
-    await Promise.all([
+    // SMS is a notification only. Never turn a completed transfer into a
+    // fake server error because the SMS provider is slow or unavailable.
+    void Promise.allSettled([
       sendTransactionSMS({
         phoneNumber: trimmedSenderPhone,
         direction: 'sent',
-        amount: Number(amount),
+        amount: numericAmount,
         balance: newSenderBalance,
         transactionId,
       }),
       sendTransactionSMS({
         phoneNumber: trimmedReceiverPhone,
         direction: 'received',
-        amount: Number(amount),
+        amount: numericAmount,
         balance: newReceiverBalance,
         transactionId: `${transactionId}_rcv`,
       }),
@@ -167,7 +169,7 @@ export async function POST(request: NextRequest) {
       await db.insert(notifications).values({
         id: `notif_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
         phonenumber: trimmedReceiverPhone.trim(),
-        message: `${sender.fullName || 'User'} আপনাকে ৳${amount} পাঠিয়েছে`,
+        message: `${sender.fullName || 'User'} আপনাকে ৳${numericAmount} পাঠিয়েছে`,
         type: 'transfer',
         isRead: false,
       } as any)
@@ -183,7 +185,7 @@ export async function POST(request: NextRequest) {
           reference: transactionId,
           senderPhone: trimmedSenderPhone,
           receiverPhone: trimmedReceiverPhone,
-          amount,
+          amount: numericAmount,
         },
         newSenderBalance,
         newReceiverBalance,

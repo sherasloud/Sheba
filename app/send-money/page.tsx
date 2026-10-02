@@ -272,29 +272,19 @@ function SendMoneyContent() {
       if (result.success) {
         const txnId = result.transaction?.reference || `TXN${Date.now()}`
         setTransactionId(txnId)
-        
-        // Record transaction in database
-        await recordTransaction(
-          senderPhone,
-          phoneNumber,
-          Number(amount),
-          "send_money",
-          txnId
-        )
-        
-        // Refresh balance
-        await loadBalance()
-        
-        // Dispatch event for other components
-        window.dispatchEvent(new CustomEvent("newTransaction", {
-          detail: {
-            type: "send_money",
-            amount: Number(amount),
-            to: phoneNumber,
-          }
-        }))
-
+        // The transfer is already committed. Show success immediately; these
+        // follow-up tasks must never replace it with a fake server error.
         setSuccess(true)
+
+        void recordTransaction(senderPhone, phoneNumber, Number(amount), "send_money", txnId).catch((error) => {
+          console.error("[v0] Transaction history recording failed:", error)
+        })
+        void loadBalance().catch((error) => {
+          console.error("[v0] Balance refresh failed after successful transfer:", error)
+        })
+        window.dispatchEvent(new CustomEvent("newTransaction", {
+          detail: { type: "send_money", amount: Number(amount), to: phoneNumber },
+        }))
       } else {
         setError(result.error || "লেনদেন ব্যর্থ হয়েছে। আবার চেষ্টা করুন।")
       }
