@@ -33,7 +33,6 @@ export default function TransactionHistoryPage() {
   const [userPhone, setUserPhone] = useState("")
   const [userName, setUserName] = useState("")
   const [filter, setFilter] = useState<"all" | "sent" | "received">("all")
-  const [verificationCache] = useState<Record<string, boolean>>({})
 
   useEffect(() => {
     // Check authentication
@@ -68,47 +67,26 @@ export default function TransactionHistoryPage() {
     return isReceived ? "Cash Came" : "Served Cash"
   }
 
-  const getTransactionDisplayData = async (tx: Transaction): Promise<TransactionDisplayData> => {
+  const getTransactionDisplayData = (tx: Transaction): TransactionDisplayData => {
     const normalizedUserPhone = userPhone.replace(/\D/g, '')
-    const normalizedSender = tx.sender_phone?.replace(/\D/g, '')
-    const normalizedReceiver = tx.receiver_phone?.replace(/\D/g, '')
+    const normalizedReceiver = (tx.receiver_phone || '').replace(/\D/g, '')
     const isReceived = tx.type === "received" || normalizedReceiver === normalizedUserPhone
     const partnerPhone = (isReceived ? tx.sender_phone : tx.receiver_phone) || tx.otherPhone || ""
-    
-    // Check cache first
-    let partnerVerified = verificationCache[partnerPhone]
-    if (partnerVerified === undefined) {
-      // Fetch if not in cache - use API for accurate verification status
-      try {
-        const response = await fetch(`/api/verification-status?phone=${encodeURIComponent(partnerPhone)}`)
-        const result = await response.json()
-        
-        if (response.ok && result.success && result.data) {
-          partnerVerified = result.data.isVerified === true
-        } else {
-          partnerVerified = false
-        }
-        
-      } catch {
-        console.error("[v0] Error fetching verification status for:", partnerPhone)
-        partnerVerified = false
-      }
-    }
-    
+
     return {
       ...tx,
       isReceived,
       sourcePhone: partnerPhone,
       category: determineCategory(isReceived),
-      partnerVerified,
+      partnerVerified: false,
     }
   }
 
   const [filteredTransactions, setFilteredTransactions] = useState<TransactionDisplayData[]>([])
 
   useEffect(() => {
-    const processTransactions = async () => {
-      const processed = await Promise.all(transactions.map(getTransactionDisplayData))
+    const processTransactions = () => {
+      const processed = transactions.map(getTransactionDisplayData)
       const filtered = processed.filter((tx) => {
         if (filter === "sent") return !tx.isReceived
         if (filter === "received") return tx.isReceived
@@ -121,6 +99,7 @@ export default function TransactionHistoryPage() {
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
+    if (Number.isNaN(date.getTime())) return "তারিখ পাওয়া যায়নি"
     const today = new Date()
     const yesterday = new Date(today)
     yesterday.setDate(yesterday.getDate() - 1)
