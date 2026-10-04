@@ -148,7 +148,7 @@ export async function POST(request: NextRequest) {
     // SMS is a notification only. Never turn a completed transfer into a
     // fake server error because the SMS provider is slow or unavailable.
     if (numericAmount >= 100) {
-      void Promise.allSettled([
+      await Promise.allSettled([
         sendTransactionSMS({
           phoneNumber: trimmedSenderPhone,
           userPhoneNumber: trimmedReceiverPhone,
