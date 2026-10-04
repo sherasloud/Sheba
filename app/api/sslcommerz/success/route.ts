@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { updateUserBalance, getUserBalance } from "@/lib/api/supabase-balance-service"
-import { shebaSMS } from "@/lib/api/sheba-sms-service"
+import { sendTransactionSMS } from "@/lib/services/sms"
 
 export async function POST(request: Request) {
   try {
@@ -56,7 +56,14 @@ export async function POST(request: Request) {
 
     // Send SMS notification
     try {
-      await shebaSMS.sendTransactionSMS(phoneNumber, "cashin", amountNumeric, newBalance)
+      const smsResult = await sendTransactionSMS({
+      phoneNumber,
+      direction: "received",
+      amount: amountNumeric,
+      balance: newBalance,
+      transactionId: tran_id,
+    })
+    if (!smsResult.success) console.error("[v0] SMS provider rejected card success notification:", smsResult.message)
     } catch (error) {
       console.error("[v0] SMS notification failed:", error)
     }
