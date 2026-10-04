@@ -5,20 +5,22 @@ import { and, eq } from "drizzle-orm"
 
 export async function POST(request: NextRequest) {
   try {
-    const { phone, nidNumber } = await request.json()
-    const normalizedPhone = String(phone || "").replace(/\D/g, "")
+    const { nidNumber } = await request.json()
     const normalizedNid = String(nidNumber || "").replace(/\D/g, "")
 
-    if (!/^01\d{9}$/.test(normalizedPhone) || !/^\d{10,17}$/.test(normalizedNid)) {
-      return NextResponse.json({ matched: false, error: "Valid phone and NID are required" }, { status: 400 })
+    if (!/^\d{10,17}$/.test(normalizedNid)) {
+      return NextResponse.json({ matched: false, error: "Valid NID is required" }, { status: 400 })
     }
 
     const user = await db.query.appUsers.findFirst({
-      where: and(eq(appUsers.phoneNumber, normalizedPhone), eq(appUsers.nidNumber, normalizedNid)),
-      columns: { id: true },
+      where: eq(appUsers.nidNumber, normalizedNid),
+      columns: { id: true, phoneNumber: true },
     })
 
-    return NextResponse.json({ matched: Boolean(user) })
+    if (!user) return NextResponse.json({ matched: false })
+    const phone = user.phoneNumber
+    const maskedPhone = `${phone.slice(0, 3)}*****${phone.slice(-2)}`
+    return NextResponse.json({ matched: true, userId: user.id, phoneNumber: phone, maskedPhone })
   } catch (error) {
     console.error("[v0] Identity match failed:", error)
     return NextResponse.json({ matched: false, error: "Identity verification unavailable" }, { status: 500 })
