@@ -23,7 +23,7 @@ export async function POST(request: Request) {
     }
 
     const invoiceNumber = `SHEBA-${phoneNumber}-${Date.now()}-${cryptoRandomSuffix()}`
-    const origin = new URL(request.url).origin
+    const origin = getPublicOrigin(request)
     const form = new URLSearchParams({
       merchantId,
       store_id: storeId,
@@ -60,6 +60,17 @@ export async function POST(request: Request) {
     console.error("[v0] PayStation initiate error", error)
     return NextResponse.json({ success: false, message: "Unable to start payment" }, { status: 500 })
   }
+}
+
+function getPublicOrigin(request: Request) {
+  const configuredOrigin = process.env.NEXT_PUBLIC_APP_URL || process.env.APP_URL
+  if (configuredOrigin) return configuredOrigin.replace(/\/$/, "")
+
+  const forwardedHost = request.headers.get("x-forwarded-host")
+  const forwardedProto = request.headers.get("x-forwarded-proto") || "https"
+  if (forwardedHost) return `${forwardedProto}://${forwardedHost}`
+
+  return new URL(request.url).origin
 }
 
 function cryptoRandomSuffix() {
