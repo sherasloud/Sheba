@@ -204,8 +204,13 @@ export default function AddMoneyPage() {
       return
     }
 
-    setStep(4) // Go to details step
     setError("")
+    if (selectedMethod === "card") {
+      void startPayStationCheckout()
+      return
+    }
+
+    setStep(4) // Bank details step
   }
 
   const validateBankDetails = () => {
