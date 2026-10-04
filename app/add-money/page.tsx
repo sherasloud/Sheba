@@ -198,14 +198,19 @@ export default function AddMoneyPage() {
       return
     }
 
-    // Check card balance for card method
-    if (selectedMethod === "card" && Number(amount) > cardBalance) {
+  // Card selection and amount are sufficient to start the real gateway checkout.
+  // Do not send card details or PIN through this page before redirecting.
+  if (selectedMethod === "card") {
+    if (Number(amount) > cardBalance) {
       setError(`Insufficient card balance. Please try a lower amount`)
       return
     }
-
-    setStep(4) // Go to details step
     setError("")
+    void startPayStationCheckout()
+    return
+  }
+
+  setStep(4) // Bank details step
   }
 
   const validateBankDetails = () => {
