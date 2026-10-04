@@ -44,10 +44,16 @@ export default function AddMoneyPage() {
   })
 
   useEffect(() => {
-    const paymentStatus = new URLSearchParams(window.location.search).get("payment")
+    const params = new URLSearchParams(window.location.search)
+    const paymentStatus = params.get("payment")
     if (paymentStatus === "success") {
-      const returnedAmount = localStorage.getItem("paystationAmount")
-      if (returnedAmount) setAmount(returnedAmount)
+      const invoice = params.get("invoice") || localStorage.getItem("paystationInvoice") || ""
+      const returnedAmount = params.get("amount") || localStorage.getItem("paystationAmount") || "0"
+      setAmount(returnedAmount)
+      setSelectedMethod("card")
+      setSelectedCardType("PayStation")
+      setTransactionId(invoice)
+      setError("")
       setSuccess(true)
       localStorage.removeItem("paystationAmount")
       localStorage.removeItem("paystationInvoice")
@@ -522,16 +528,16 @@ export default function AddMoneyPage() {
 
   if (success) {
     return (
-      <div className="flex flex-col h-screen bg-white">
-        <div className="bg-[#29a9eb] text-white p-4 flex items-center">
+      <div className="flex min-h-[100dvh] flex-col overflow-y-auto bg-white">
+        <div className="flex items-center bg-[#29a9eb] p-4 text-white sm:px-6">
           <button onClick={() => router.push("/")} className="mr-4">
             <ArrowLeft size={24} />
           </button>
           <div className="text-xl font-medium">Add Money</div>
         </div>
 
-        <div className="flex flex-col items-center justify-center flex-1 p-6">
-          <div className="w-20 h-20 bg-[#29a9eb] rounded-full flex items-center justify-center mb-6">
+        <div className="flex flex-1 flex-col items-center justify-center px-4 py-10 sm:px-6">
+          <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-[#29a9eb]">
             <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M20 6L9 17L4 12" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
@@ -563,7 +569,7 @@ export default function AddMoneyPage() {
             )}
             <div className="flex justify-between">
               <span className="text-[#38afe8]">Transaction ID:</span>
-              <span className="font-bold">{Math.random().toString(36).substring(2, 10).toUpperCase()}</span>
+              <span className="max-w-[60%] break-all text-right font-bold">{transactionId || "—"}</span>
             </div>
           </div>
 

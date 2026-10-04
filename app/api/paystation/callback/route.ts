@@ -46,7 +46,7 @@ export async function GET(request: Request) {
     return NextResponse.redirect(new URL(`/add-money?payment=pending&invoice=${encodeURIComponent(invoiceNumber)}`, publicOrigin))
   }
 
-  return NextResponse.redirect(new URL(`/add-money?payment=success&invoice=${encodeURIComponent(invoiceNumber)}`, publicOrigin))
+  return NextResponse.redirect(new URL(`/add-money?payment=success&invoice=${encodeURIComponent(invoiceNumber)}&amount=${encodeURIComponent(String(verifiedAmount))}`, publicOrigin))
 }
 
 function getPublicOrigin(request: Request) {
