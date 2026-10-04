@@ -97,6 +97,7 @@ export async function sendOTP(phoneNumber: string, otp: string): Promise<SMSResu
  */
 export async function sendTransactionSMS({
   phoneNumber,
+  userPhoneNumber,
   direction,
   amount,
   fee = 0,
@@ -105,6 +106,7 @@ export async function sendTransactionSMS({
   timestamp = new Date(),
 }: {
   phoneNumber: string
+  userPhoneNumber: string
   direction: "sent" | "received"
   amount: number
   fee?: number
@@ -114,7 +116,7 @@ export async function sendTransactionSMS({
 }): Promise<SMSResult> {
   const label = direction === "sent" ? "Send Money Successful!" : "Money Received Successfully!"
   const currency = "Tk"
-  const user = localPhone(phoneNumber)
+  const user = localPhone(userPhoneNumber)
   const formattedTime = timestamp.toLocaleString("en-GB", {
     timeZone: "Asia/Dhaka",
     day: "2-digit",
