@@ -1,6 +1,6 @@
 import Link from "next/link"
 
-const heroImage = "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Unknown-57-6PpezpxXDdFIaa7sj77bVTb5IBHCNN.jpg"
+const heroImage = "/images/sheba-dashboard-reference.jpg"
 
 export default function ShebaWebsite() {
   return (
