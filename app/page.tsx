@@ -500,7 +500,7 @@ export default function AppPage() {
 
   return (
     <div
-      className="mx-auto flex min-h-[100dvh] w-full max-w-[1180px] flex-col relative overflow-x-hidden overflow-y-visible bg-white text-[#142033] shadow-sm md:min-h-[calc(100vh-2rem)] md:my-4 md:rounded-3xl"
+      className="mx-auto flex min-h-[100dvh] w-full max-w-[390px] flex-col relative overflow-x-hidden overflow-y-visible bg-white text-[#142033] shadow-sm md:min-h-[calc(100vh-2rem)] md:my-4 md:rounded-3xl md:border md:border-slate-200 md:shadow-lg"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
       <div className="h-4 bg-white" />
