@@ -78,8 +78,9 @@ function ManageAccountsContent() {
     fetchLatestUsers()
   }, [router])
 
-  const handleSearch = async () => {
-    if (!searchPhone || searchPhone.length !== 11) {
+  const handleSearch = async (phoneOverride?: string) => {
+    const phoneToSearch = phoneOverride || searchPhone
+    if (!phoneToSearch || phoneToSearch.length !== 11) {
       setError("সঠিক ১১ সংখ্যার ফোন নম্বর দিন")
       return
     }
@@ -92,7 +93,7 @@ function ManageAccountsContent() {
       const response = await fetch('/api/user-profile', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone: searchPhone }),
+        body: JSON.stringify({ phone: phoneToSearch }),
       })
 
       if (!response.ok) throw new Error('Failed to fetch user')
@@ -103,7 +104,7 @@ function ManageAccountsContent() {
           name: data.user.fullName,
           phone: data.user.phoneNumber,
           account_type: data.user.accountType,
-          balance: data.user.balance,
+          balance: Number(data.user.balance ?? 0),
           isVerified: data.user.isVerified,
         })
       } else {
@@ -300,7 +301,7 @@ function ManageAccountsContent() {
                   className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-blue-50 cursor-pointer transition"
                   onClick={() => {
                     setSearchPhone(user.phoneNumber)
-                    handleSearch()
+                    handleSearch(user.phoneNumber)
                   }}
                 >
                   <div className="flex-1">
@@ -336,10 +337,10 @@ function ManageAccountsContent() {
               value={searchPhone}
               onChange={(e) => setSearchPhone(e.target.value)}
               className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1FBFFF]"
-              maxLength="11"
+              maxLength={11}
             />
             <button
-              onClick={handleSearch}
+              onClick={() => handleSearch()}
               disabled={loading}
               className="px-6 py-2 bg-[#1FBFFF] text-white rounded-lg font-medium hover:bg-[#1fa5eb] disabled:opacity-50"
             >
@@ -700,7 +701,7 @@ function ManageAccountsContent() {
                 <option value="Children" className="bg-white text-gray-900">শিশু সহায়তা</option>
                 <option value="Health" className="bg-white text-gray-900">স্বাস্থ্য</option>
                 <option value="Education" className="bg-white text-gray-900">শিক্ষা</option>
-                <option value="Emergency" className="bg-white text-gray-900">জ��ুরি সহায়তা</option>
+                <option value="Emergency" className="bg-white text-gray-900">জ��ু���ি সহায়তা</option>
                 <option value="Environment" className="bg-white text-gray-900">পরিবেশ</option>
               </select>
               <button
