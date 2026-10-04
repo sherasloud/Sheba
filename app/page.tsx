@@ -500,7 +500,7 @@ export default function AppPage() {
 
   return (
     <div
-      className="mx-auto flex min-h-screen w-full max-w-[1180px] flex-col relative overflow-hidden bg-white text-[#142033] shadow-sm md:min-h-[calc(100vh-2rem)] md:my-4 md:rounded-3xl"
+      className="mx-auto flex min-h-[100dvh] w-full max-w-[1180px] flex-col relative overflow-x-hidden overflow-y-visible bg-white text-[#142033] shadow-sm md:min-h-[calc(100vh-2rem)] md:my-4 md:rounded-3xl"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
       <div className="h-4 bg-white" />
@@ -528,7 +528,7 @@ export default function AppPage() {
   </div>
       </header>
 
-      <main className="flex-1 overflow-y-auto bg-white px-4 pb-40 pt-8">
+      <main className="min-h-0 flex-1 overflow-y-visible bg-white px-4 pb-[calc(7rem+env(safe-area-inset-bottom))] pt-8">
         <div className="relative mb-9 overflow-hidden rounded-[22px] shadow-[0_8px_22px_rgba(30,64,88,0.12)] select-none" onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}>
           <Link href={allBanners[currentBannerIndex].link} className="block">
             <img
