@@ -95,8 +95,8 @@ export default function ForgotPinPage() {
       <div className="flex flex-1 flex-col">
         {step === 1 && (
           <>
-            <div className="mb-2 text-2xl font-normal text-[#10141c]">Forgot Your PIN?</div>
-            <div className="mb-6 text-[#8c96a3]">Enter your phone number to reset your PIN</div>
+            <div className="mb-2 text-2xl font-normal text-[#10141c]">পিন রিসেট করুন</div>
+            <div className="mb-6 text-[#8c96a3]">আপনার ফোন নম্বর দিন</div>
 
             <div className="space-y-4">
               <div>
@@ -110,12 +110,6 @@ export default function ForgotPinPage() {
                   maxLength={11}
                 />
               </div>
-            </div>
-
-            <div className="mt-6 rounded-2xl border border-[#b9e6fb] bg-[#f2fbff] p-4">
-              <p className="text-blue-800 text-sm">
-                We'll verify your identity using your NID number and send an OTP to reset your PIN.
-              </p>
             </div>
 
             {error && (
@@ -132,8 +126,8 @@ export default function ForgotPinPage() {
 
         {step === 2 && (
           <>
-            <div className="mb-2 text-2xl font-normal text-[#10141c]">Verify Identity</div>
-            <div className="mb-6 text-[#8c96a3]">Enter your NID number for verification</div>
+            <div className="mb-2 text-2xl font-normal text-[#10141c]">পরিচয় যাচাই করুন</div>
+            <div className="mb-6 text-[#8c96a3]">আপনার NID নম্বর দিন</div>
 
             <div className="space-y-4">
               <div>
@@ -146,12 +140,6 @@ export default function ForgotPinPage() {
                   placeholder="Enter your NID number"
                 />
               </div>
-            </div>
-
-            <div className="mt-6 rounded-2xl border border-[#f7e2a6] bg-[#fffaf0] p-4">
-              <p className="text-yellow-800 text-sm">
-                <strong>Security:</strong> Your NID number must match the one used during account creation.
-              </p>
             </div>
 
             {error && (
@@ -168,8 +156,8 @@ export default function ForgotPinPage() {
 
         {step === 3 && (
           <>
-            <div className="mb-2 text-2xl font-normal text-[#10141c]">Enter OTP</div>
-            <div className="mb-6 text-[#8c96a3]">Enter the OTP sent to {phoneNumber}</div>
+            <div className="mb-2 text-2xl font-normal text-[#10141c]">OTP দিন</div>
+            <div className="mb-6 text-[#8c96a3]">{phoneNumber}-এ পাঠানো OTP দিন</div>
 
             <div className="space-y-4">
               <div>
@@ -197,12 +185,6 @@ export default function ForgotPinPage() {
               </div>
             )}
 
-            <div className="mt-6 rounded-2xl border border-[#b9e6fb] bg-[#f2fbff] p-4">
-              <p className="text-blue-800 text-sm">
-                Didn't receive the OTP? <button className="underline">Resend OTP</button>
-              </p>
-            </div>
-
             <button onClick={handleOtpVerify} className="mt-auto rounded-full bg-[#38afe8] p-4 text-xl text-white shadow-sm transition-transform active:scale-[0.98]">
               Verify OTP
             </button>
@@ -211,8 +193,8 @@ export default function ForgotPinPage() {
 
         {step === 4 && (
           <>
-            <div className="mb-2 text-2xl font-normal text-[#10141c]">Create New PIN</div>
-            <div className="mb-6 text-[#8c96a3]">Choose a new 6-digit PIN for your account</div>
+            <div className="mb-2 text-2xl font-normal text-[#10141c]">নতুন PIN তৈরি করুন</div>
+            <div className="mb-6 text-[#8c96a3]">আপনার নতুন ৬ সংখ্যার PIN দিন</div>
 
             <div className="space-y-4">
               <div>
@@ -238,15 +220,6 @@ export default function ForgotPinPage() {
                   maxLength={6}
                 />
               </div>
-            </div>
-
-            <div className="mt-6 rounded-2xl border border-[#f7e2a6] bg-[#fffaf0] p-4">
-              <p className="text-yellow-800 text-sm">
-                <strong>Security Tips:</strong>
-                <br />• Use a unique PIN that you haven't used elsewhere
-                <br />• Don't share your PIN with anyone
-                <br />• Avoid using obvious numbers like 123456
-              </p>
             </div>
 
             {error && (
