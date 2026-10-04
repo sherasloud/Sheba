@@ -5,9 +5,9 @@ import { eq } from 'drizzle-orm'
 
 export async function POST(request: NextRequest) {
   try {
-    const { phone, name, pin, accountType = 'personal' } = await request.json()
+    const { phone, name, pin, accountType = 'personal', nidNumber, nidVerified = false } = await request.json()
 
-    if (!phone || !name || !pin) {
+    if (!phone || !name || !pin || !nidNumber || !nidVerified) {
       return NextResponse.json(
         { error: 'Phone, name, and PIN required' },
         { status: 400 }
@@ -80,9 +80,11 @@ export async function POST(request: NextRequest) {
     const newUser = {
       id: userId,
       phoneNumber: phone,
+      nidNumber: String(nidNumber).replace(/\D/g, ""),
+      nidVerified: true,
       fullName: name,
       pin,
-      balance: 0n, // নতুন users এর balance 0
+      balance: 0, // নতুন users এর balance 0
       accountType: accountType, // ব্যবহার করা accountType
       createdAt: new Date(),
       updatedAt: new Date(),

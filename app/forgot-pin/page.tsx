@@ -27,8 +27,8 @@ export default function ForgotPinPage() {
     setStep(2)
   }
 
-  const handleNidSubmit = () => {
-    if (!nidNumber) {
+  const handleNidSubmit = async () => {
+  if (!nidNumber) {
       setError("Please enter your NID number")
       return
     }
@@ -37,8 +37,25 @@ export default function ForgotPinPage() {
       return
     }
 
-    // Generate and send OTP
-    const otp = Math.floor(100000 + Math.random() * 900000).toString()
+  setError("")
+  try {
+    const response = await fetch("/api/identity/match", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ phone: phoneNumber, nidNumber }),
+    })
+    const result = await response.json()
+    if (!response.ok || !result.matched) {
+      setError("এই Phone Number ও NID-এর সঙ্গে কোনো Sheba account পাওয়া যায়নি")
+      return
+    }
+  } catch {
+    setError("পরিচয় যাচাই করা যাচ্ছে না। পরে আবার চেষ্টা করুন।")
+    return
+  }
+
+  // Generate and send OTP
+  const otp = Math.floor(100000 + Math.random() * 900000).toString()
     setSentOtp(otp)
     setSuccess(`OTP sent to ${phoneNumber}: ${otp}`)
     setStep(3)
