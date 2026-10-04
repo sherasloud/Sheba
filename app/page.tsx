@@ -500,12 +500,12 @@ export default function AppPage() {
 
   return (
     <div
-      className="mx-auto flex min-h-[100dvh] w-full max-w-[390px] flex-col relative overflow-x-hidden overflow-y-visible bg-white text-[#142033] shadow-sm md:min-h-[calc(100vh-2rem)] md:my-4 md:rounded-3xl md:border md:border-slate-200 md:shadow-lg"
+      className="mx-auto flex min-h-[100dvh] w-full max-w-[390px] flex-col relative overflow-x-hidden overflow-y-auto bg-white text-[#142033] shadow-sm md:min-h-[calc(100vh-2rem)] md:my-4 md:rounded-3xl md:border md:border-slate-200 md:shadow-lg"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
-      <div className="h-4 bg-white" />
+      <div className="h-[max(1rem,env(safe-area-inset-top))] bg-white" />
 
-      <header className="bg-white px-5 pb-10 pt-1">
+      <header className="bg-white px-5 pb-10 pt-2">
         <div className="flex items-center justify-between">
           <div className="w-10" />
           <img src="/images/sheba-headline-logo.jpeg" alt="সেবা" className="h-11 w-auto object-contain" />
