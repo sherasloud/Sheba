@@ -188,8 +188,8 @@ export default function AddMoneyPage() {
       return
     }
 
-    if (Number(amount) < 1) {
-      setError("Minimum amount is Tk1")
+    if (Number(amount) < 10) {
+      setError("Minimum amount is Tk10")
       return
     }
 
@@ -198,19 +198,14 @@ export default function AddMoneyPage() {
       return
     }
 
-  // Card selection and amount are sufficient to start the real gateway checkout.
-  // Do not send card details or PIN through this page before redirecting.
-  if (selectedMethod === "card") {
-    if (Number(amount) > cardBalance) {
+    // Check card balance for card method
+    if (selectedMethod === "card" && Number(amount) > cardBalance) {
       setError(`Insufficient card balance. Please try a lower amount`)
       return
     }
-    setError("")
-    void startPayStationCheckout()
-    return
-  }
 
-  setStep(4) // Bank details step
+    setStep(4) // Go to details step
+    setError("")
   }
 
   const validateBankDetails = () => {

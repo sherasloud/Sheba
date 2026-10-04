@@ -10,7 +10,7 @@ export async function POST(request: Request) {
     const userName = String(body.userName || "Customer").trim()
     const userEmail = String(body.userEmail || "customer@sheba.com").trim()
 
-    if (!Number.isFinite(amount) || amount < 1 || amount > 50000 || !phoneNumber) {
+    if (!Number.isFinite(amount) || amount < 10 || amount > 50000 || !phoneNumber) {
       return NextResponse.json({ success: false, message: "Invalid amount or phone number" }, { status: 400 })
     }
 
@@ -23,7 +23,7 @@ export async function POST(request: Request) {
     }
 
     const invoiceNumber = `SHEBA-${phoneNumber}-${Date.now()}-${cryptoRandomSuffix()}`
-    const origin = getPublicOrigin(request)
+    const origin = new URL(request.url).origin
     const form = new URLSearchParams({
       merchantId,
       store_id: storeId,
@@ -60,17 +60,6 @@ export async function POST(request: Request) {
     console.error("[v0] PayStation initiate error", error)
     return NextResponse.json({ success: false, message: "Unable to start payment" }, { status: 500 })
   }
-}
-
-function getPublicOrigin(request: Request) {
-  const configuredOrigin = "https://shebab.vercel.app"
-  if (configuredOrigin) return configuredOrigin
-
-  const forwardedHost = request.headers.get("x-forwarded-host")
-  const forwardedProto = request.headers.get("x-forwarded-proto") || "https"
-  if (forwardedHost) return `${forwardedProto}://${forwardedHost}`
-
-  return new URL(request.url).origin
 }
 
 function cryptoRandomSuffix() {
