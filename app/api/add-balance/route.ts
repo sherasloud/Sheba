@@ -5,9 +5,10 @@ import { eq } from 'drizzle-orm'
 
 export async function POST(request: NextRequest) {
   try {
-    const { phone, amount } = await request.json()
+    const { phone, amount: rawAmount } = await request.json()
+    const amount = Number(rawAmount)
 
-    if (!phone || !amount || amount <= 0) {
+    if (!phone || !Number.isSafeInteger(amount) || amount <= 0) {
       return NextResponse.json(
         { success: false, error: 'Phone and positive amount required' },
         { status: 400 }
@@ -55,7 +56,7 @@ export async function POST(request: NextRequest) {
     await db
       .update(appUsers)
       .set({
-        balance: BigInt(balanceAfter),
+        balance: balanceAfter,
         updatedAt: new Date(),
       })
       .where(eq(appUsers.phoneNumber, user.phoneNumber))
