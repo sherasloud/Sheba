@@ -6,9 +6,14 @@ export function middleware(request: NextRequest) {
   if (hostname === "shebabd.org" || hostname === "www.shebabd.org") {
     const pathname = request.nextUrl.pathname
     if (pathname === "/" || pathname === "/blog") {
-      const response = NextResponse.rewrite(new URL(pathname === "/" ? "/website" : "/website/blog", request.url))
-      return response
+      return NextResponse.rewrite(new URL(pathname === "/" ? "/website" : "/website/blog", request.url))
     }
+
+    if (pathname === "/website" || pathname === "/website/blog") {
+      return NextResponse.next()
+    }
+
+    return NextResponse.redirect(new URL("/", request.url))
   }
 
   const response = NextResponse.next()
@@ -17,5 +22,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/recharge/:path*", "/", "/blog"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|images|icons|api).*)", "/recharge/:path*"],
 }
