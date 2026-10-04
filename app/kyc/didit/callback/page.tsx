@@ -10,11 +10,16 @@ export default function DiditCallbackPage() {
   useEffect(() => {
     const status = (searchParams.get("status") || "").toLowerCase()
     const sessionId = searchParams.get("verificationSessionId") || ""
-    if (status === "approved" || status === "completed" || status === "success") {
+    const approved = status === "approved" || status === "completed" || status === "success"
+    if (approved) {
       sessionStorage.setItem("diditKycApproved", "true")
       sessionStorage.setItem("diditSessionId", sessionId)
     } else {
       sessionStorage.removeItem("diditKycApproved")
+    }
+    if (window.parent !== window) {
+      window.parent.postMessage({ type: "didit-kyc-result", status: approved ? "approved" : status || "pending", sessionId }, window.location.origin)
+      return
     }
     router.replace(`/onboarding?kyc=${status || "pending"}`)
   }, [router, searchParams])

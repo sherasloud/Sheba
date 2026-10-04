@@ -21,6 +21,23 @@ export default function OnboardingPage() {
   const [nidType, setNidType] = useState("nid")
   const [nidNumber, setNidNumber] = useState("")
   const [kycLoading, setKycLoading] = useState(false)
+  const [kycUrl, setKycUrl] = useState("")
+
+  useEffect(() => {
+    const handleKycMessage = (event: MessageEvent) => {
+      if (event.origin !== window.location.origin || event.data?.type !== "didit-kyc-result") return
+      setKycUrl("")
+      if (event.data.status === "approved") {
+        sessionStorage.setItem("diditKycApproved", "true")
+        if (event.data.sessionId) sessionStorage.setItem("diditSessionId", event.data.sessionId)
+        setStep(4)
+      } else {
+        setError("পরিচয় যাচাই সম্পন্ন হয়নি। আবার চেষ্টা করুন।")
+      }
+    }
+    window.addEventListener("message", handleKycMessage)
+    return () => window.removeEventListener("message", handleKycMessage)
+  }, [])
 
   useEffect(() => {
     if (sessionStorage.getItem("diditKycApproved") === "true") setStep(4)
@@ -42,7 +59,8 @@ export default function OnboardingPage() {
       const data = await response.json()
       if (!response.ok || !data.url) throw new Error(data.error || "KYC session failed")
       sessionStorage.setItem("pendingKyc", JSON.stringify({ nidType, nidNumber }))
-      window.location.assign(data.url)
+      if (data.sessionId) sessionStorage.setItem("diditSessionId", data.sessionId)
+      setKycUrl(data.url)
     } catch (error) {
       setError(error instanceof Error ? error.message : "যাচাই শুরু করা যায়নি")
     } finally {
@@ -351,6 +369,16 @@ export default function OnboardingPage() {
               {kycLoading ? "যাচাই শুরু হচ্ছে..." : "NID ও Facial Verification"}
             </button>
           </div>
+        )}
+
+        {kycUrl && (
+          <section className="fixed inset-0 z-50 flex min-h-[100dvh] flex-col bg-white" aria-label="Identity verification">
+            <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3">
+              <h2 className="text-base font-medium text-gray-800">পরিচয় যাচাই</h2>
+              <button type="button" onClick={() => setKycUrl("")} className="rounded-full px-3 py-1 text-sm text-gray-500">বন্ধ করুন</button>
+            </div>
+            <iframe src={kycUrl} title="Didit identity verification" className="min-h-0 flex-1 border-0" allow="camera; microphone" />
+          </section>
         )}
 
         {/* Step 4: Create PIN */}
