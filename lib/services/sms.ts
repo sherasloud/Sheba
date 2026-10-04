@@ -102,6 +102,7 @@ export async function sendTransactionSMS({
   fee = 0,
   balance,
   transactionId,
+  peerPhone,
   timestamp = new Date(),
 }: {
   phoneNumber: string
@@ -110,6 +111,7 @@ export async function sendTransactionSMS({
   fee?: number
   balance: number
   transactionId: string
+  peerPhone?: string
   timestamp?: Date
 }): Promise<SMSResult> {
   const label = direction === "sent" ? "Send Money Successful!" : "Money Received Successfully!"
@@ -125,7 +127,7 @@ export async function sendTransactionSMS({
     second: "2-digit",
     hour12: false,
   })
-  const message = `${label}\nUser : ${user}\nAmount : ${amount} ${currency}\nBalance : ${balance} ${currency}\nTransaction ID :\n${transactionId}\n${formattedTime}`
+  const message = `${label}\nUser : ${localPhone(peerPhone || phoneNumber)}\nAmount : ${amount} ${currency}\nBalance : ${balance} ${currency}\nTransaction ID :\n${transactionId}\n${formattedTime}`
   try {
     return await sendAutomasSMS(phoneNumber, message)
   } catch (error: any) {

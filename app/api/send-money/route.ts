@@ -154,6 +154,7 @@ export async function POST(request: NextRequest) {
         amount: numericAmount,
         balance: newSenderBalance,
         transactionId,
+        peerPhone: trimmedReceiverPhone,
       }),
       sendTransactionSMS({
         phoneNumber: trimmedReceiverPhone,
@@ -161,6 +162,7 @@ export async function POST(request: NextRequest) {
         amount: numericAmount,
         balance: newReceiverBalance,
         transactionId: `${transactionId}_rcv`,
+        peerPhone: trimmedSenderPhone,
       }),
     ])
 
