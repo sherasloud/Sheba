@@ -505,7 +505,7 @@ export default function AppPage() {
     >
       <div className="h-[max(1rem,env(safe-area-inset-top))] bg-white" />
 
-      <header className="bg-white px-5 pb-10 pt-2">
+      <header className="sticky top-0 z-20 bg-white px-5 pb-10 pt-2 shadow-sm">
         <div className="flex items-center justify-between">
           <div className="w-10" />
           <img src="/images/sheba-headline-logo.jpeg" alt="সেবা" className="h-11 w-auto object-contain" />
@@ -515,13 +515,13 @@ export default function AppPage() {
           </button>
         </div>
 
-  <div className="relative mt-4 flex items-start gap-4 px-9">
-  <button type="button" onClick={handleProfileClick} className="-translate-y-1 flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#36a9e1] text-lg font-semibold text-white">
+  <div className="mt-4 flex items-center gap-4 px-9">
+  <button type="button" onClick={handleProfileClick} className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#36a9e1] text-lg font-semibold text-white">
   {profilePic || selectedPhoto ? <img src={profilePic || selectedPhoto || "/placeholder.svg"} alt="Profile" className="h-full w-full object-cover" /> : userName.slice(0, 2).toUpperCase()}
   </button>
-  <div className="min-w-0">
-  <p className="flex h-14 items-center truncate text-2xl font-normal text-[#485163]">{userName}</p>
-  <button type="button" onClick={toggleBalance} className="absolute left-0 right-0 top-[3.75rem] whitespace-nowrap text-center text-[clamp(1.15rem,7vw,2.25rem)] font-normal tracking-normal text-[#142033]" aria-label="Toggle balance">
+  <div className="min-w-0 flex-1">
+  <p className="truncate text-2xl font-normal leading-tight text-[#485163]">{userName}</p>
+  <button type="button" onClick={toggleBalance} className="mt-2 block max-w-full truncate whitespace-nowrap text-left text-[clamp(1.15rem,7vw,2.25rem)] font-normal leading-tight tracking-normal text-[#142033]" aria-label="Toggle balance">
   {showBalance ? `${formatBalance(balance)} ৳` : "•••••• ৳"}
   </button>
   </div>
