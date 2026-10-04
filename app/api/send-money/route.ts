@@ -150,6 +150,7 @@ export async function POST(request: NextRequest) {
     void Promise.allSettled([
       sendTransactionSMS({
         phoneNumber: trimmedSenderPhone,
+        userPhoneNumber: trimmedReceiverPhone,
         direction: 'sent',
         amount: numericAmount,
         balance: newSenderBalance,
@@ -157,6 +158,7 @@ export async function POST(request: NextRequest) {
       }),
       sendTransactionSMS({
         phoneNumber: trimmedReceiverPhone,
+        userPhoneNumber: trimmedSenderPhone,
         direction: 'received',
         amount: numericAmount,
         balance: newReceiverBalance,
