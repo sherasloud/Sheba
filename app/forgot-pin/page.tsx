@@ -87,45 +87,32 @@ export default function ForgotPinPage() {
             <ArrowLeft size={28} />
           </Link>
         </div>
-        <div className="flex flex-col items-center pt-10 pb-12">
-          <img src="/images/sheba-headline-logo.jpeg" alt="সেবা" className="h-20 w-auto object-contain" />
-          <h1 className="mt-10 text-center text-3xl font-normal text-[#38afe8]">পিন ভুলে গেছেন?</h1>
+        <div className="flex flex-col items-center pt-8 sm:pt-10">
+          <img src="/images/sheba-headline-logo.jpeg" alt="সেবা" className="h-14 w-auto object-contain sm:h-20" />
+          <h1 className="mt-8 text-center text-[2.35rem] font-normal leading-tight text-[#38afe8] sm:mt-10 sm:text-5xl">পিন ভুলে গেছেন?</h1>
         </div>
 
       <div className="flex flex-1 flex-col">
         {step === 1 && (
           <>
-            <div className="mb-2 text-2xl font-normal text-[#10141c]">Forgot Your PIN?</div>
-            <div className="mb-6 text-[#8c96a3]">Enter your phone number to reset your PIN</div>
-
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium mb-2">Phone Number</label>
-                <input
-                  type="tel"
-                  className="w-full rounded-2xl border border-[#b9e6fb] bg-white p-4 text-lg outline-none focus:border-[#38afe8] focus:ring-2 focus:ring-[#b9e6fb]"
-                  value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
-                  placeholder="01XXXXXXXXX"
-                  maxLength={11}
-                />
-              </div>
+            <div className="flex flex-1 flex-col pt-24 sm:pt-36">
+              <label htmlFor="nid-number" className="sr-only">NID Number</label>
+              <input
+                id="nid-number"
+                type="text"
+                inputMode="numeric"
+                className="w-full border-0 border-b-2 border-[#b9e6fb] bg-transparent px-0 py-3 text-center text-[2rem] font-light text-[#8dcdf2] outline-none placeholder:text-[#8dcdf2] focus:border-[#38afe8] sm:text-5xl"
+                value={nidNumber}
+                onChange={(e) => setNidNumber(e.target.value.replace(/\D/g, '').slice(0, 17))}
+                placeholder="NID Number"
+                maxLength={17}
+              />
             </div>
 
-            <div className="mt-6 rounded-2xl border border-[#b9e6fb] bg-[#f2fbff] p-4">
-              <p className="text-blue-800 text-sm">
-                We'll verify your identity using your NID number and send an OTP to reset your PIN.
-              </p>
-            </div>
+            {error && <p className="mt-4 text-center text-sm text-red-600">{error}</p>}
 
-            {error && (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-4 mt-4">
-                <p className="text-red-800 text-sm">{error}</p>
-              </div>
-            )}
-
-            <button onClick={handlePhoneSubmit} className="mt-auto rounded-full bg-[#38afe8] p-4 text-xl text-white shadow-sm transition-transform active:scale-[0.98]">
-              Continue
+            <button onClick={handleNidSubmit} className="mt-auto rounded-full bg-[#38afe8] px-6 py-4 text-2xl font-light text-white shadow-sm transition-transform active:scale-[0.98] sm:py-5 sm:text-3xl">
+              Confirm
             </button>
           </>
         )}
