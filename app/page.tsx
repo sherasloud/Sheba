@@ -500,12 +500,12 @@ export default function AppPage() {
 
   return (
     <div
-      className="mx-auto flex min-h-[100dvh] w-full max-w-[390px] flex-col relative overflow-x-hidden bg-white text-[#142033] shadow-sm md:min-h-[calc(100vh-2rem)] md:my-4 md:rounded-3xl md:border md:border-slate-200 md:shadow-lg"
+      className="mx-auto flex min-h-screen w-full max-w-[1180px] flex-col relative overflow-hidden bg-white text-[#142033] shadow-sm md:min-h-[calc(100vh-2rem)] md:my-4 md:rounded-3xl"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
-      <div className="h-[max(1.5rem,env(safe-area-inset-top))] bg-white" />
+      <div className="h-4 bg-white" />
 
-      <header className="relative z-10 bg-white px-5 pb-10 pt-4 shadow-sm">
+      <header className="bg-white px-5 pb-10 pt-1">
         <div className="flex items-center justify-between">
           <div className="w-10" />
           <img src="/images/sheba-headline-logo.jpeg" alt="সেবা" className="h-11 w-auto object-contain" />
@@ -515,20 +515,20 @@ export default function AppPage() {
           </button>
         </div>
 
-  <div className="mt-4 flex items-center gap-4 px-9">
-  <button type="button" onClick={handleProfileClick} className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#36a9e1] text-lg font-semibold text-white">
+  <div className="relative mt-4 flex items-start gap-4 px-9">
+  <button type="button" onClick={handleProfileClick} className="-translate-y-1 flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#36a9e1] text-lg font-semibold text-white">
   {profilePic || selectedPhoto ? <img src={profilePic || selectedPhoto || "/placeholder.svg"} alt="Profile" className="h-full w-full object-cover" /> : userName.slice(0, 2).toUpperCase()}
   </button>
-  <div className="min-w-0 flex-1">
-  <p className="truncate text-2xl font-normal leading-tight text-[#485163]">{userName}</p>
-  <button type="button" onClick={toggleBalance} className="mt-2 block max-w-full truncate whitespace-nowrap text-left text-[clamp(1.15rem,7vw,2.25rem)] font-normal leading-tight tracking-normal text-[#142033]" aria-label="Toggle balance">
+  <div className="min-w-0">
+  <p className="flex h-14 items-center truncate text-2xl font-normal text-[#485163]">{userName}</p>
+  <button type="button" onClick={toggleBalance} className="absolute left-0 right-0 top-[3.75rem] whitespace-nowrap text-center text-[clamp(1.15rem,7vw,2.25rem)] font-normal tracking-normal text-[#142033]" aria-label="Toggle balance">
   {showBalance ? `${formatBalance(balance)} ৳` : "•••••• ৳"}
   </button>
   </div>
   </div>
       </header>
 
-      <main className="min-h-0 flex-1 overflow-y-visible bg-white px-4 pb-[calc(7rem+env(safe-area-inset-bottom))] pt-8">
+      <main className="flex-1 overflow-y-auto bg-white px-4 pb-40 pt-8">
         <div className="relative mb-9 overflow-hidden rounded-[22px] shadow-[0_8px_22px_rgba(30,64,88,0.12)] select-none" onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}>
           <Link href={allBanners[currentBannerIndex].link} className="block">
             <img

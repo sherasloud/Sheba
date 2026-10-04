@@ -44,16 +44,10 @@ export default function AddMoneyPage() {
   })
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search)
-    const paymentStatus = params.get("payment")
+    const paymentStatus = new URLSearchParams(window.location.search).get("payment")
     if (paymentStatus === "success") {
-      const invoice = params.get("invoice") || localStorage.getItem("paystationInvoice") || ""
-      const returnedAmount = params.get("amount") || localStorage.getItem("paystationAmount") || "0"
-      setAmount(returnedAmount)
-      setSelectedMethod("card")
-      setSelectedCardType("PayStation")
-      setTransactionId(invoice)
-      setError("")
+      const returnedAmount = localStorage.getItem("paystationAmount")
+      if (returnedAmount) setAmount(returnedAmount)
       setSuccess(true)
       localStorage.removeItem("paystationAmount")
       localStorage.removeItem("paystationInvoice")
@@ -528,16 +522,16 @@ export default function AddMoneyPage() {
 
   if (success) {
     return (
-      <div className="flex min-h-[100dvh] flex-col overflow-y-auto bg-white">
-        <div className="flex items-center bg-[#29a9eb] p-4 text-white sm:px-6">
+      <div className="flex flex-col h-screen bg-white">
+        <div className="bg-[#29a9eb] text-white p-4 flex items-center">
           <button onClick={() => router.push("/")} className="mr-4">
             <ArrowLeft size={24} />
           </button>
           <div className="text-xl font-medium">Add Money</div>
         </div>
 
-        <div className="flex flex-1 flex-col items-center justify-center px-4 py-10 sm:px-6">
-          <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-[#29a9eb]">
+        <div className="flex flex-col items-center justify-center flex-1 p-6">
+          <div className="w-20 h-20 bg-[#29a9eb] rounded-full flex items-center justify-center mb-6">
             <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M20 6L9 17L4 12" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
@@ -569,7 +563,7 @@ export default function AddMoneyPage() {
             )}
             <div className="flex justify-between">
               <span className="text-[#38afe8]">Transaction ID:</span>
-              <span className="max-w-[60%] break-all text-right font-bold">{transactionId || "—"}</span>
+              <span className="font-bold">{Math.random().toString(36).substring(2, 10).toUpperCase()}</span>
             </div>
           </div>
 
@@ -582,7 +576,7 @@ export default function AddMoneyPage() {
   }
 
   return (
-    <div className="flex min-h-[100dvh] flex-col overflow-x-hidden overflow-y-auto bg-white text-[#38afe8]">
+    <div className="flex h-[100dvh] flex-col overflow-hidden bg-white text-[#38afe8]">
       <div className="flex items-center bg-white px-5 py-5">
         <button onClick={() => router.push("/")} className="text-[#38afe8]" aria-label="Back">
           <ArrowLeft size={24} />
@@ -592,7 +586,7 @@ export default function AddMoneyPage() {
       </div>
 
       {step === 1 && (
-  <div className="min-h-0 flex-1 overflow-y-visible bg-white px-4 pb-[calc(2rem+env(safe-area-inset-bottom))] pt-6 sm:px-8">
+  <div className="flex flex-1 flex-col overflow-y-auto bg-white px-5 pb-8 pt-6">
   <div className="space-y-4">
   <button
   onClick={() => handleMethodSelect("card")}
@@ -622,8 +616,8 @@ export default function AddMoneyPage() {
       )}
 
       {step === 2 && selectedMethod === "card" && (
-        <div className="flex min-h-0 flex-1 flex-col items-center overflow-y-visible bg-white px-4 pb-8 pt-8 sm:px-8 sm:pt-10">
-          <h1 className="mb-12 text-center text-2xl font-normal text-[#38afe8] sm:mb-24 sm:text-4xl">কার্ড সিলেক্ট করুন</h1>
+        <div className="flex flex-1 flex-col items-center overflow-y-auto bg-white px-6 pb-8 pt-10">
+          <h1 className="mb-24 text-center text-4xl font-normal text-[#38afe8]">কার্ড সিলেক্ট করুন</h1>
 
           <div className="flex w-full max-w-xs flex-col items-center gap-10">
             {cardProviders.map((provider) => (
@@ -649,7 +643,7 @@ export default function AddMoneyPage() {
       )}
 
       {step === 3 && (
-        <div className="min-h-0 flex-1 overflow-y-visible bg-white px-4 pb-8 pt-8 sm:px-8 sm:pt-16">
+        <div className="flex flex-1 flex-col overflow-y-auto bg-white px-8 pb-8 pt-16">
           {selectedMethod === "card" ? (
             <>
               <h1 className="mb-24 text-center text-[3.25rem] font-normal leading-tight text-[#38afe8]">এমাউন্ট লিখুন</h1>
