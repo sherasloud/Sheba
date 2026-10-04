@@ -582,7 +582,7 @@ export default function AddMoneyPage() {
   }
 
   return (
-    <div className="flex h-[100dvh] flex-col overflow-hidden bg-white text-[#38afe8]">
+    <div className="flex min-h-[100dvh] flex-col overflow-x-hidden overflow-y-auto bg-white text-[#38afe8]">
       <div className="flex items-center bg-white px-5 py-5">
         <button onClick={() => router.push("/")} className="text-[#38afe8]" aria-label="Back">
           <ArrowLeft size={24} />
@@ -592,7 +592,7 @@ export default function AddMoneyPage() {
       </div>
 
       {step === 1 && (
-  <div className="flex flex-1 flex-col overflow-y-auto bg-white px-5 pb-8 pt-6">
+  <div className="min-h-0 flex-1 overflow-y-visible bg-white px-4 pb-[calc(2rem+env(safe-area-inset-bottom))] pt-6 sm:px-8">
   <div className="space-y-4">
   <button
   onClick={() => handleMethodSelect("card")}
@@ -622,8 +622,8 @@ export default function AddMoneyPage() {
       )}
 
       {step === 2 && selectedMethod === "card" && (
-        <div className="flex flex-1 flex-col items-center overflow-y-auto bg-white px-6 pb-8 pt-10">
-          <h1 className="mb-24 text-center text-4xl font-normal text-[#38afe8]">কার্ড সিলেক্ট করুন</h1>
+        <div className="flex min-h-0 flex-1 flex-col items-center overflow-y-visible bg-white px-4 pb-8 pt-8 sm:px-8 sm:pt-10">
+          <h1 className="mb-12 text-center text-2xl font-normal text-[#38afe8] sm:mb-24 sm:text-4xl">কার্ড সিলেক্ট করুন</h1>
 
           <div className="flex w-full max-w-xs flex-col items-center gap-10">
             {cardProviders.map((provider) => (
@@ -649,7 +649,7 @@ export default function AddMoneyPage() {
       )}
 
       {step === 3 && (
-        <div className="flex flex-1 flex-col overflow-y-auto bg-white px-8 pb-8 pt-16">
+        <div className="min-h-0 flex-1 overflow-y-visible bg-white px-4 pb-8 pt-8 sm:px-8 sm:pt-16">
           {selectedMethod === "card" ? (
             <>
               <h1 className="mb-24 text-center text-[3.25rem] font-normal leading-tight text-[#38afe8]">এমাউন্ট লিখুন</h1>
