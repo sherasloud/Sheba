@@ -101,7 +101,7 @@ export default function ForgotPinPage() {
                 id="nid-number"
                 type="text"
                 inputMode="numeric"
-                className="w-full border-0 border-b-2 border-[#b9e6fb] bg-transparent px-0 py-3 text-center text-[2rem] font-light text-[#8dcdf2] outline-none placeholder:text-[#8dcdf2] focus:border-[#38afe8] sm:text-5xl"
+                className="w-full rounded-2xl border-2 border-[#b9e6fb] bg-transparent px-4 py-3 text-center text-[2rem] font-light text-[#8dcdf2] outline-none placeholder:text-[#8dcdf2] focus:border-[#38afe8] focus:ring-2 focus:ring-[#b9e6fb] sm:text-5xl"
                 value={nidNumber}
                 onChange={(e) => setNidNumber(e.target.value.replace(/\D/g, '').slice(0, 17))}
                 placeholder="NID Number"
@@ -111,7 +111,7 @@ export default function ForgotPinPage() {
 
             {error && <p className="mt-4 text-center text-sm text-red-600">{error}</p>}
 
-            <button onClick={handleNidSubmit} className="mt-auto rounded-full bg-[#38afe8] px-6 py-4 text-2xl font-light text-white shadow-sm transition-transform active:scale-[0.98] sm:py-5 sm:text-3xl">
+            <button onClick={handleNidSubmit} className="mt-auto rounded-2xl bg-[#38afe8] px-6 py-4 text-2xl font-light text-white shadow-sm transition-transform active:scale-[0.98] sm:py-5 sm:text-3xl">
               Confirm
             </button>
           </>
