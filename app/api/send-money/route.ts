@@ -147,26 +147,22 @@ export async function POST(request: NextRequest) {
 
     // SMS is a notification only. Never turn a completed transfer into a
     // fake server error because the SMS provider is slow or unavailable.
-    if (numericAmount >= 100) {
-      void Promise.allSettled([
-        sendTransactionSMS({
-          phoneNumber: trimmedSenderPhone,
-          userPhoneNumber: trimmedReceiverPhone,
-          direction: 'sent',
-          amount: numericAmount,
-          balance: newSenderBalance,
-          transactionId,
-        }),
-        sendTransactionSMS({
-          phoneNumber: trimmedReceiverPhone,
-          userPhoneNumber: trimmedSenderPhone,
-          direction: 'received',
-          amount: numericAmount,
-          balance: newReceiverBalance,
-          transactionId: `${transactionId}_rcv`,
-        }),
-      ])
-    }
+    void Promise.allSettled([
+      sendTransactionSMS({
+        phoneNumber: trimmedSenderPhone,
+        direction: 'sent',
+        amount: numericAmount,
+        balance: newSenderBalance,
+        transactionId,
+      }),
+      sendTransactionSMS({
+        phoneNumber: trimmedReceiverPhone,
+        direction: 'received',
+        amount: numericAmount,
+        balance: newReceiverBalance,
+        transactionId: `${transactionId}_rcv`,
+      }),
+    ])
 
     // Save notification to receiver directly
     try {
