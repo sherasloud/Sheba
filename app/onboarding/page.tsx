@@ -193,6 +193,8 @@ export default function OnboardingPage() {
             accountType: accountType, // State, Personal, Business, Institution
             nidType,
             documentNumber,
+            nidNumber: nidType === "nid" ? documentNumber : undefined,
+            nidVerified: sessionStorage.getItem("diditKycApproved") === "true",
             kycSessionId: sessionStorage.getItem("diditSessionId") || "",
           }),
       })

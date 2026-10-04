@@ -82,6 +82,8 @@ export const verification = pgTable('verification', {
 export const appUsers = pgTable('appUsers', {
   id: text('id').primaryKey(),
   phoneNumber: text('phoneNumber').notNull().unique(),
+  nidNumber: text('nidNumber').unique(),
+  nidVerified: boolean('nidVerified').notNull().default(false),
   fullName: text('fullName'),
   pin: text('pin'),
   balance: bigint('balance', { mode: 'number' }).default(0),
