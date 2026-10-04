@@ -80,26 +80,30 @@ export default function ForgotPinPage() {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-white">
-      <div className="bg-[#29a9eb] text-white p-4 flex items-center">
-        <Link href="/" className="mr-4">
-          <ArrowLeft size={24} />
-        </Link>
-        <div className="text-xl font-medium">Reset PIN</div>
-      </div>
+    <main className="min-h-[100dvh] overflow-y-auto bg-white text-[#10141c]">
+      <div className="mx-auto flex min-h-[100dvh] w-full max-w-[390px] flex-col px-6 pb-8 pt-6">
+        <div className="flex items-center">
+          <Link href="/" className="text-[#38afe8]" aria-label="Back to PIN">
+            <ArrowLeft size={28} />
+          </Link>
+        </div>
+        <div className="flex flex-col items-center pt-10 pb-12">
+          <img src="/images/sheba-headline-logo.jpeg" alt="সেবা" className="h-20 w-auto object-contain" />
+          <h1 className="mt-10 text-center text-3xl font-normal text-[#38afe8]">পিন ভুলে গেছেন?</h1>
+        </div>
 
-      <div className="p-6 flex flex-col flex-1">
+      <div className="flex flex-1 flex-col">
         {step === 1 && (
           <>
-            <div className="text-2xl font-bold mb-2">Forgot Your PIN?</div>
-            <div className="text-gray-600 mb-6">Enter your phone number to reset your PIN</div>
+            <div className="mb-2 text-2xl font-normal text-[#10141c]">পিন রিসেট করুন</div>
+            <div className="mb-6 text-[#8c96a3]">আপনার ফোন নম্বর দিন</div>
 
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium mb-2">Phone Number</label>
                 <input
                   type="tel"
-                  className="w-full border rounded-md p-4"
+                  className="w-full rounded-2xl border border-[#b9e6fb] bg-white p-4 text-lg outline-none focus:border-[#38afe8] focus:ring-2 focus:ring-[#b9e6fb]"
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(e.target.value)}
                   placeholder="01XXXXXXXXX"
@@ -108,19 +112,13 @@ export default function ForgotPinPage() {
               </div>
             </div>
 
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-6">
-              <p className="text-blue-800 text-sm">
-                We'll verify your identity using your NID number and send an OTP to reset your PIN.
-              </p>
-            </div>
-
             {error && (
               <div className="bg-red-50 border border-red-200 rounded-lg p-4 mt-4">
                 <p className="text-red-800 text-sm">{error}</p>
               </div>
             )}
 
-            <button onClick={handlePhoneSubmit} className="bg-[#29a9eb] text-white p-4 rounded-md mt-auto">
+            <button onClick={handlePhoneSubmit} className="mt-auto rounded-full bg-[#38afe8] p-4 text-xl text-white shadow-sm transition-transform active:scale-[0.98]">
               Continue
             </button>
           </>
@@ -128,26 +126,20 @@ export default function ForgotPinPage() {
 
         {step === 2 && (
           <>
-            <div className="text-2xl font-bold mb-2">Verify Identity</div>
-            <div className="text-gray-600 mb-6">Enter your NID number for verification</div>
+            <div className="mb-2 text-2xl font-normal text-[#10141c]">পরিচয় যাচাই করুন</div>
+            <div className="mb-6 text-[#8c96a3]">আপনার NID নম্বর দিন</div>
 
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium mb-2">National ID Number</label>
                 <input
                   type="text"
-                  className="w-full border rounded-md p-4"
+                  className="w-full rounded-2xl border border-[#b9e6fb] bg-white p-4 text-lg outline-none focus:border-[#38afe8] focus:ring-2 focus:ring-[#b9e6fb]"
                   value={nidNumber}
                   onChange={(e) => setNidNumber(e.target.value)}
                   placeholder="Enter your NID number"
                 />
               </div>
-            </div>
-
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mt-6">
-              <p className="text-yellow-800 text-sm">
-                <strong>Security:</strong> Your NID number must match the one used during account creation.
-              </p>
             </div>
 
             {error && (
@@ -156,7 +148,7 @@ export default function ForgotPinPage() {
               </div>
             )}
 
-            <button onClick={handleNidSubmit} className="bg-[#29a9eb] text-white p-4 rounded-md mt-auto">
+            <button onClick={handleNidSubmit} className="mt-auto rounded-full bg-[#38afe8] p-4 text-xl text-white shadow-sm transition-transform active:scale-[0.98]">
               Verify & Send OTP
             </button>
           </>
@@ -164,8 +156,8 @@ export default function ForgotPinPage() {
 
         {step === 3 && (
           <>
-            <div className="text-2xl font-bold mb-2">Enter OTP</div>
-            <div className="text-gray-600 mb-6">Enter the OTP sent to {phoneNumber}</div>
+            <div className="mb-2 text-2xl font-normal text-[#10141c]">OTP দিন</div>
+            <div className="mb-6 text-[#8c96a3]">{phoneNumber}-এ পাঠানো OTP দিন</div>
 
             <div className="space-y-4">
               <div>
@@ -193,13 +185,7 @@ export default function ForgotPinPage() {
               </div>
             )}
 
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-6">
-              <p className="text-blue-800 text-sm">
-                Didn't receive the OTP? <button className="underline">Resend OTP</button>
-              </p>
-            </div>
-
-            <button onClick={handleOtpVerify} className="bg-[#29a9eb] text-white p-4 rounded-md mt-auto">
+            <button onClick={handleOtpVerify} className="mt-auto rounded-full bg-[#38afe8] p-4 text-xl text-white shadow-sm transition-transform active:scale-[0.98]">
               Verify OTP
             </button>
           </>
@@ -207,8 +193,8 @@ export default function ForgotPinPage() {
 
         {step === 4 && (
           <>
-            <div className="text-2xl font-bold mb-2">Create New PIN</div>
-            <div className="text-gray-600 mb-6">Choose a new 6-digit PIN for your account</div>
+            <div className="mb-2 text-2xl font-normal text-[#10141c]">নতুন PIN তৈরি করুন</div>
+            <div className="mb-6 text-[#8c96a3]">আপনার নতুন ৬ সংখ্যার PIN দিন</div>
 
             <div className="space-y-4">
               <div>
@@ -236,22 +222,13 @@ export default function ForgotPinPage() {
               </div>
             </div>
 
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mt-6">
-              <p className="text-yellow-800 text-sm">
-                <strong>Security Tips:</strong>
-                <br />• Use a unique PIN that you haven't used elsewhere
-                <br />• Don't share your PIN with anyone
-                <br />• Avoid using obvious numbers like 123456
-              </p>
-            </div>
-
             {error && (
               <div className="bg-red-50 border border-red-200 rounded-lg p-4 mt-4">
                 <p className="text-red-800 text-sm">{error}</p>
               </div>
             )}
 
-            <button onClick={handlePinReset} className="bg-[#29a9eb] text-white p-4 rounded-md mt-auto">
+            <button onClick={handlePinReset} className="mt-auto rounded-full bg-[#38afe8] p-4 text-xl text-white shadow-sm transition-transform active:scale-[0.98]">
               Reset PIN
             </button>
           </>
@@ -264,7 +241,7 @@ export default function ForgotPinPage() {
                 <CheckCircle size={40} className="text-white" />
               </div>
 
-              <h2 className="text-2xl font-bold mb-2">PIN Reset Successful!</h2>
+              <h2 className="mb-2 text-2xl font-normal text-[#10141c]">PIN Reset Successful!</h2>
               <p className="text-gray-600 mb-6 text-center">Your PIN has been updated successfully</p>
 
               <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6 w-full">
@@ -273,13 +250,14 @@ export default function ForgotPinPage() {
                 </p>
               </div>
 
-              <Link href="/login" className="bg-[#29a9eb] text-white py-3 px-6 rounded-md w-full text-center">
+              <Link href="/login" className="w-full rounded-full bg-[#38afe8] px-6 py-3 text-center text-white">
                 Login Now
               </Link>
             </div>
           </>
         )}
       </div>
-    </div>
+      </div>
+    </main>
   )
 }

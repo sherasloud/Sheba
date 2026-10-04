@@ -18,6 +18,37 @@ export default function OnboardingPage() {
   const [confirmPin, setConfirmPin] = useState("")
   const [accountType, setAccountType] = useState("personal")
   const [isAdmin, setIsAdmin] = useState(false)
+  const [nidType, setNidType] = useState("nid")
+  const [nidNumber, setNidNumber] = useState("")
+  const [kycLoading, setKycLoading] = useState(false)
+
+  useEffect(() => {
+    if (sessionStorage.getItem("diditKycApproved") === "true") setStep(4)
+  }, [])
+
+  const startKyc = async () => {
+    if (!/^\d{10,17}$/.test(nidNumber)) {
+      setError("সঠিক ১০-১৭ সংখ্যার NID নম্বর দিন")
+      return
+    }
+    setKycLoading(true)
+    setError("")
+    try {
+      const response = await fetch("/api/kyc/didit/session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone: phoneNumber, nidType, nidNumber }),
+      })
+      const data = await response.json()
+      if (!response.ok || !data.url) throw new Error(data.error || "KYC session failed")
+      sessionStorage.setItem("pendingKyc", JSON.stringify({ nidType, nidNumber }))
+      window.location.assign(data.url)
+    } catch (error) {
+      setError(error instanceof Error ? error.message : "যাচাই শুরু করা যায়নি")
+    } finally {
+      setKycLoading(false)
+    }
+  }
 
   // Skip phone step if coming from OTP
   useEffect(() => {
@@ -137,12 +168,15 @@ export default function OnboardingPage() {
       const response = await fetch('/api/create-neon-account', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          phone: phoneNumber,
-          name: fullName.trim(),
-          pin,
-          accountType: accountType, // State, Personal, Business, Institution
-        }),
+          body: JSON.stringify({
+            phone: phoneNumber,
+            name: fullName.trim(),
+            pin,
+            accountType: accountType, // State, Personal, Business, Institution
+            nidType,
+            nidNumber,
+            kycSessionId: sessionStorage.getItem("diditSessionId") || "",
+          }),
       })
 
       const result = await response.json()
@@ -301,8 +335,26 @@ export default function OnboardingPage() {
           </div>
         )}
 
-        {/* Step 3: Create PIN */}
+        {/* Step 3: Identity verification */}
         {step === 3 && (
+          <div className="flex h-full flex-col gap-4">
+            <h2 className="text-xl font-bold text-gray-800">পরিচয় যাচাই করুন</h2>
+            <p className="text-sm text-gray-500">NID, document upload এবং facial liveness Didit secure verification-এ সম্পন্ন হবে।</p>
+            <select value={nidType} onChange={(e) => setNidType(e.target.value)} className="w-full rounded-xl border-2 border-gray-200 p-4">
+              <option value="nid">জাতীয় পরিচয়পত্র (NID)</option>
+              <option value="passport">Passport</option>
+              <option value="driving_license">Driving License</option>
+            </select>
+            <input type="text" inputMode="numeric" value={nidNumber} onChange={(e) => setNidNumber(e.target.value.replace(/\\D/g, '').slice(0, 17))} placeholder="NID Number" className="w-full rounded-xl border-2 border-gray-200 p-4" maxLength={17} />
+            {error && <p className="text-sm text-red-500">{error}</p>}
+            <button onClick={startKyc} disabled={kycLoading || nidNumber.length < 10} className="mt-auto w-full rounded-full bg-[#1FBFFF] py-4 text-lg font-medium text-white disabled:opacity-50">
+              {kycLoading ? "যাচাই শুরু হচ্ছে..." : "NID ও Facial Verification"}
+            </button>
+          </div>
+        )}
+
+        {/* Step 4: Create PIN */}
+        {step === 4 && (
           <div className="flex flex-col h-full">
             <div className="flex items-center mb-6">
               <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
@@ -349,8 +401,8 @@ export default function OnboardingPage() {
           </div>
         )}
 
-        {/* Step 4: Confirm PIN */}
-        {step === 4 && (
+        {/* Step 5: Confirm PIN */}
+        {step === 5 && (
           <div className="flex flex-col h-full">
             <div className="flex items-center mb-6">
               <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
@@ -397,8 +449,8 @@ export default function OnboardingPage() {
           </div>
         )}
 
-        {/* Step 5: Success */}
-        {step === 5 && (
+        {/* Step 6: Success */}
+        {step === 6 && (
           <div className="flex flex-col items-center justify-center h-full">
             <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mb-6">
               <CheckCircle className="w-10 h-10 text-green-500" />
