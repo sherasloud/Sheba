@@ -19,7 +19,7 @@ export default function OnboardingPage() {
   const [accountType, setAccountType] = useState("personal")
   const [isAdmin, setIsAdmin] = useState(false)
   const [nidType, setNidType] = useState("nid")
-  const [nidNumber, setNidNumber] = useState("")
+  const [documentNumber, setDocumentNumber] = useState("")
   const [kycLoading, setKycLoading] = useState(false)
   const [kycUrl, setKycUrl] = useState("")
 
@@ -44,8 +44,8 @@ export default function OnboardingPage() {
   }, [])
 
   const startKyc = async () => {
-    if (!/^\d{10,17}$/.test(nidNumber)) {
-      setError("সঠিক ১০-১৭ সংখ্যার NID নম্বর দিন")
+    if (!/^[A-Za-z0-9-]{5,25}$/.test(documentNumber)) {
+      setError("সঠিক document number দিন")
       return
     }
     setKycLoading(true)
@@ -54,11 +54,11 @@ export default function OnboardingPage() {
       const response = await fetch("/api/kyc/didit/session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone: phoneNumber, nidType, nidNumber }),
+        body: JSON.stringify({ phone: phoneNumber, nidType, documentNumber }),
       })
       const data = await response.json()
       if (!response.ok || !data.url) throw new Error(data.error || "KYC session failed")
-      sessionStorage.setItem("pendingKyc", JSON.stringify({ nidType, nidNumber }))
+      sessionStorage.setItem("pendingKyc", JSON.stringify({ nidType, documentNumber }))
       if (data.sessionId) sessionStorage.setItem("diditSessionId", data.sessionId)
       setKycUrl(data.url)
     } catch (error) {
@@ -192,7 +192,7 @@ export default function OnboardingPage() {
             pin,
             accountType: accountType, // State, Personal, Business, Institution
             nidType,
-            nidNumber,
+            documentNumber,
             kycSessionId: sessionStorage.getItem("diditSessionId") || "",
           }),
       })
@@ -359,14 +359,15 @@ export default function OnboardingPage() {
             <h2 className="text-xl font-bold text-gray-800">পরিচয় যাচাই করুন</h2>
             <p className="text-sm text-gray-500">NID, document upload এবং facial liveness Didit secure verification-এ সম্পন্ন হবে।</p>
             <select value={nidType} onChange={(e) => setNidType(e.target.value)} className="w-full rounded-xl border-2 border-gray-200 p-4">
-              <option value="nid">জাতীয় পরিচয়পত্র (NID)</option>
-              <option value="passport">Passport</option>
-              <option value="driving_license">Driving License</option>
+<option value="nid">জাতীয় পরিচয়পত্র (NID)</option>
+  <option value="driving_license">Driving License</option>
+  <option value="passport">Passport</option>
+  <option value="student_id">Student ID</option>
             </select>
-            <input type="text" inputMode="numeric" value={nidNumber} onChange={(e) => setNidNumber(e.target.value.replace(/\\D/g, '').slice(0, 17))} placeholder="NID Number" className="w-full rounded-xl border-2 border-gray-200 p-4" maxLength={17} />
+            <input type="text" inputMode="text" value={documentNumber} onChange={(e) => setDocumentNumber(e.target.value.replace(/[^A-Za-z0-9-]/g, '').slice(0, 25))} placeholder={nidType === "nid" ? "NID Number" : nidType === "driving_license" ? "Driving License Number" : nidType === "passport" ? "Passport Number" : "Student ID Number"} className="w-full rounded-xl border-2 border-gray-200 p-4" maxLength={25} />
             {error && <p className="text-sm text-red-500">{error}</p>}
-            <button onClick={startKyc} disabled={kycLoading || nidNumber.length < 10} className="mt-auto w-full rounded-full bg-[#1FBFFF] py-4 text-lg font-medium text-white disabled:opacity-50">
-              {kycLoading ? "যাচাই শুরু হচ্ছে..." : "NID ও Facial Verification"}
+            <button onClick={startKyc} disabled={kycLoading || documentNumber.length < 5} className="mt-auto w-full rounded-full bg-[#1FBFFF] py-4 text-lg font-medium text-white disabled:opacity-50">
+              {kycLoading ? "যাচাই শুরু হচ্ছে..." : "Document ও Facial Verification"}
             </button>
           </div>
         )}
