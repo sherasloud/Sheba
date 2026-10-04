@@ -199,7 +199,7 @@ export default function PinPage() {
       </div>
 
       {/* Number Pad */}
-      <div className="px-4 pb-8 sm:px-6 sm:pb-10">
+      <div className="mt-8 px-4 pb-8 sm:mt-0 sm:px-6 sm:pb-10">
         <div className="mx-auto grid w-full max-w-sm grid-cols-3 justify-items-center gap-y-3 px-4 sm:gap-y-6 sm:px-8">
           {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((number) => (
             <button
