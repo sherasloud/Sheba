@@ -163,21 +163,21 @@ export default function PinPage() {
   }
 
   return (
-    <div className="fixed inset-0 h-[100dvh] w-full overflow-hidden bg-white text-[#10141c]">
-  {/* Header */}
-  <div className="h-16" />
+    <main className="min-h-[100dvh] w-full overflow-y-auto overscroll-contain bg-white text-[#10141c]">
+      {/* Header */}
+      <div className="h-4 sm:h-16" />
 
       {/* Sheba Logo at Top */}
-      <div className="flex flex-col items-center pt-20 pb-10">
-        <img src="/images/sheba-headline-logo.jpeg" alt="সেবা" className="h-20 w-auto object-contain" />
+      <div className="flex flex-col items-center px-4 pb-6 pt-4 sm:pb-10 sm:pt-20">
+        <img src="/images/sheba-headline-logo.jpeg" alt="সেবা" className="h-14 w-auto object-contain sm:h-20" />
       </div>
 
       {/* PIN Input Section */}
-      <div className="flex flex-col items-center px-6">
-        <div className="mb-8">
-          <p className="mb-4 text-center text-4xl font-bold text-[#10141c]">পিন দিন</p>
-          <p className="text-center text-xl text-[#a1a1a1]">অ্যাকাউন্টে প্রবেশ করতে পিন লিখুন</p>
-          <div className="mt-8 flex justify-center gap-7">
+      <div className="flex flex-col items-center px-4 sm:px-6">
+        <div className="mb-5 sm:mb-8">
+          <p className="mb-3 text-center text-3xl font-bold text-[#10141c] sm:mb-4 sm:text-4xl">পিন দিন</p>
+          <p className="text-center text-base text-[#a1a1a1] sm:text-xl">অ্যাকাউন্টে প্রবেশ করতে পিন লিখুন</p>
+          <div className="mt-5 flex justify-center gap-4 sm:mt-8 sm:gap-7">
             {[0, 1, 2, 3, 4, 5].map((index) => (
               <div
                 key={index}
@@ -187,25 +187,25 @@ export default function PinPage() {
               />
             ))}
           </div>
-          {error && <p className="mt-5 text-center text-xl text-[#e05454]">{error}</p>}
+          {error && <p className="mt-4 max-w-sm text-center text-base text-[#e05454] sm:mt-5 sm:text-xl">{error}</p>}
         </div>
 
         <button
           onClick={() => router.push("/forgot-pin")}
-          className="mb-8 text-lg font-semibold text-[#38afe8] no-underline"
+          className="mb-5 text-base font-semibold text-[#38afe8] no-underline sm:mb-8 sm:text-lg"
         >
           পিন ভুলে গেছেন?
         </button>
       </div>
 
       {/* Number Pad */}
-      <div className="px-6 pb-8">
-        <div className="mx-auto grid w-full max-w-sm grid-cols-3 justify-items-center gap-y-6 px-8">
+      <div className="px-4 pb-8 sm:px-6 sm:pb-10">
+        <div className="mx-auto grid w-full max-w-sm grid-cols-3 justify-items-center gap-y-3 px-4 sm:gap-y-6 sm:px-8">
           {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((number) => (
             <button
               key={number}
               onClick={() => handlePinInput(number.toString())}
-              className="flex h-16 w-16 items-center justify-center text-3xl font-medium text-[#10141c] transition-colors hover:text-[#38afe8] active:scale-95"
+              className="flex h-14 w-14 items-center justify-center text-3xl font-medium text-[#10141c] transition-colors hover:text-[#38afe8] active:scale-95"
               disabled={isLoading}
             >
               {number}
@@ -216,7 +216,7 @@ export default function PinPage() {
 
           <button
             onClick={() => handlePinInput("0")}
-            className="flex h-16 w-16 items-center justify-center text-3xl font-medium text-[#10141c] transition-colors hover:text-[#38afe8] active:scale-95"
+            className="flex h-14 w-14 items-center justify-center text-3xl font-medium text-[#10141c] transition-colors hover:text-[#38afe8] active:scale-95"
             disabled={isLoading}
           >
             0
@@ -252,8 +252,9 @@ export default function PinPage() {
       <style jsx global>{`
   html, body {
   width: 100% !important;
-  height: 100% !important;
-  overflow: hidden !important;
+  min-height: 100% !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
   margin: 0 !important;
   padding: 0 !important;
   }
@@ -267,6 +268,6 @@ export default function PinPage() {
           -ms-overflow-style: none !important;
         }
       `}</style>
-    </div>
+    </main>
   )
 }
