@@ -1,6 +1,6 @@
 import Link from "next/link"
 
-const heroImage = "/images/sheba-dashboard-reference.jpg"
+const heroImage = "https://i.postimg.cc/0NLNqDL9/Unknown-57.jpg"
 
 export default function ShebaWebsite() {
   return (
