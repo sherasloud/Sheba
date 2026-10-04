@@ -188,8 +188,8 @@ export default function AddMoneyPage() {
       return
     }
 
-    if (Number(amount) < 10) {
-      setError("Minimum amount is Tk10")
+    if (Number(amount) < 1) {
+      setError("Minimum amount is Tk1")
       return
     }
 
