@@ -36,7 +36,7 @@ export async function GET(request: Request) {
     return NextResponse.redirect(new URL(`/add-money?payment=failed`, publicOrigin))
   }
 
-  const creditResponse = await fetch(new URL("/api/add-money", url.origin), {
+  const creditResponse = await fetch(new URL("/api/add-money", publicOrigin), {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ phoneNumber, amount: verifiedAmount, method: "paystation", cardType: "PayStation" }),
@@ -50,8 +50,8 @@ export async function GET(request: Request) {
 }
 
 function getPublicOrigin(request: Request) {
-  const configuredOrigin = process.env.NEXT_PUBLIC_APP_URL || process.env.APP_URL
-  if (configuredOrigin) return configuredOrigin.replace(/\/$/, "")
+  const configuredOrigin = "https://shebab.vercel.app"
+  if (configuredOrigin) return configuredOrigin
 
   const forwardedHost = request.headers.get("x-forwarded-host")
   const forwardedProto = request.headers.get("x-forwarded-proto") || "https"

@@ -10,7 +10,7 @@ export async function POST(request: Request) {
     const userName = String(body.userName || "Customer").trim()
     const userEmail = String(body.userEmail || "customer@sheba.com").trim()
 
-    if (!Number.isFinite(amount) || amount < 10 || amount > 50000 || !phoneNumber) {
+    if (!Number.isFinite(amount) || amount < 1 || amount > 50000 || !phoneNumber) {
       return NextResponse.json({ success: false, message: "Invalid amount or phone number" }, { status: 400 })
     }
 
@@ -63,8 +63,8 @@ export async function POST(request: Request) {
 }
 
 function getPublicOrigin(request: Request) {
-  const configuredOrigin = process.env.NEXT_PUBLIC_APP_URL || process.env.APP_URL
-  if (configuredOrigin) return configuredOrigin.replace(/\/$/, "")
+  const configuredOrigin = "https://shebab.vercel.app"
+  if (configuredOrigin) return configuredOrigin
 
   const forwardedHost = request.headers.get("x-forwarded-host")
   const forwardedProto = request.headers.get("x-forwarded-proto") || "https"
