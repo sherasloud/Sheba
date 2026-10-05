@@ -664,9 +664,10 @@ if (Number(amount) > 9000000) {
                   placeholder="0"
                   inputMode="numeric"
                 />
+                <span className="shrink-0 text-[clamp(4rem,18vw,7rem)] font-normal leading-none text-black">৳</span>
               </div>
               {error && <div className="mb-4 text-center text-red-500">{error}</div>}
-              <div className="mt-auto flex justify-center"><button className="mobile-button w-full max-w-sm rounded-full py-5 text-5xl font-normal" onClick={handleAmountNext}>Next</button></div>
+              <div className="mt-auto flex justify-center"><button type="button" className="mobile-button w-full max-w-sm rounded-full py-5 text-5xl font-normal" onClick={handleAmountNext}>Next</button></div>
             </>
           ) : (
             <>
@@ -682,9 +683,10 @@ if (Number(amount) > 9000000) {
                   onChange={(e) => setAmount(e.target.value.replace(/[^0-9]/g, ""))}
                   placeholder="0"
                 />
+                <span className="shrink-0 text-[clamp(4rem,18vw,7rem)] font-normal leading-none text-black">৳</span>
               </div>
               {error && <div className="mb-4 text-center text-red-500">{error}</div>}
-              <div className="mt-auto flex justify-center"><button className="mobile-button w-full max-w-sm rounded-full py-5 text-5xl font-normal" onClick={handleAmountNext}>Next</button></div>
+              <div className="mt-auto flex justify-center"><button type="button" className="mobile-button w-full max-w-sm rounded-full py-5 text-5xl font-normal" onClick={handleAmountNext}>Next</button></div>
             </>
           )}
         </div>
