@@ -1,18 +1,18 @@
 import { NextResponse } from 'next/server'
 
 const sohojXPayBillProviders = [
-  { id: "sohoj-desco-postpaid", name: "DESCO POSTPAID", fullName: "Dhaka Electric Supply Company", category: "Electricity", number: "DESCO_POSTPAID", source: "SohojXPay", enabled: true, icon: "/images/desco-logo-updated.jpeg", isImage: true },
-  { id: "sohoj-desco-prepaid", name: "DESCO PREPAID", fullName: "Dhaka Electric Supply Company", category: "Electricity", number: "DESCO_PREPAID", source: "SohojXPay", enabled: true, icon: "/images/desco-logo-updated.jpeg", isImage: true },
-  { id: "sohoj-west-zone-postpaid", name: "WEST ZONE POSTPAID", fullName: "West Zone Power Distribution Company", category: "Electricity", number: "WZPDCL_POSTPAID", source: "SohojXPay", enabled: true, icon: "/images/wzpdcl-logo.jpeg", isImage: true },
-  { id: "sohoj-nesco-postpaid", name: "NESCO POSTPAID", fullName: "Northern Electricity Supply Company", category: "Electricity", number: "NESCO_POSTPAID", source: "SohojXPay", enabled: true, icon: "/images/nesco-logo.jpeg", isImage: true },
-  { id: "sohoj-nesco-prepaid", name: "NESCO PREPAID", fullName: "Northern Electricity Supply Company", category: "Electricity", number: "NESCO_PREPAID", source: "SohojXPay", enabled: true, icon: "/images/nesco-logo.jpeg", isImage: true },
-  { id: "sohoj-reb-postpaid", name: "REB POSTPAID", fullName: "Rural Electrification Board / Palli Bidyut", category: "Electricity", number: "REB_POSTPAID", source: "SohojXPay", enabled: true, icon: "/images/reb-logo.jpeg", isImage: true },
-  { id: "sohoj-dhaka-wasa", name: "DHAKA WASA", fullName: "Dhaka Water Supply and Sewerage Authority", category: "Water", number: "DWASA", source: "SohojXPay", enabled: true, icon: "/images/wasa-logo.jpg", isImage: true },
-  { id: "sohoj-rajshahi-wasa", name: "RAJSHAHI WASA", fullName: "Rajshahi Water Supply and Sewerage Authority", category: "Water", number: "RJWASA", source: "SohojXPay", enabled: true, icon: "/images/rajshahi-wasa-logo.jpeg", isImage: true },
-  { id: "sohoj-chattogram-wasa", name: "CHATTOGRAM WASA", fullName: "Chattogram Water Supply and Sewerage Authority", category: "Water", number: "CTGWASA", source: "SohojXPay", enabled: true, icon: "/images/chattogram-wasa-logo.jpeg", isImage: true },
-  { id: "sohoj-titas", name: "TITAS GAS", fullName: "Titas Gas Transmission and Distribution Company", category: "Gas", number: "TITAS", source: "SohojXPay", enabled: true, icon: "/images/titas-gas-logo.jpeg", isImage: true },
-  { id: "sohoj-jalalabad", name: "JALALABAD GAS", fullName: "Jalalabad Gas Transmission and Distribution System", category: "Gas", number: "JALALABAD_GAS", source: "SohojXPay", enabled: true, icon: "/images/jalalabad-gas-logo.jpeg", isImage: true },
-  { id: "sohoj-bakhrabad", name: "BAKHRABAD GAS", fullName: "Bakhrabad Gas Distribution Company", category: "Gas", number: "BGDCL", source: "SohojXPay", enabled: true, icon: "/images/bakhrabad-gas-logo.jpeg", isImage: true },
+  { id: "sohoj-desco-postpaid", name: "DESCO POSTPAID", fullName: "Dhaka Electric Supply Company", category: "Electricity", number: "DESCO_POSTPAID", source: "", enabled: true, icon: "/images/desco-logo-updated.jpeg", isImage: true },
+  { id: "sohoj-desco-prepaid", name: "DESCO PREPAID", fullName: "Dhaka Electric Supply Company", category: "Electricity", number: "DESCO_PREPAID", source: "", enabled: true, icon: "/images/desco-logo-updated.jpeg", isImage: true },
+  { id: "sohoj-west-zone-postpaid", name: "WEST ZONE POSTPAID", fullName: "West Zone Power Distribution Company", category: "Electricity", number: "WZPDCL_POSTPAID", source: "", enabled: true, icon: "/images/wzpdcl-logo-updated.jpeg", isImage: true },
+  { id: "sohoj-nesco-postpaid", name: "NESCO POSTPAID", fullName: "Northern Electricity Supply Company", category: "Electricity", number: "NESCO_POSTPAID", source: "", enabled: true, icon: "/images/nesco-logo.jpeg", isImage: true },
+  { id: "sohoj-nesco-prepaid", name: "NESCO PREPAID", fullName: "Northern Electricity Supply Company", category: "Electricity", number: "NESCO_PREPAID", source: "", enabled: true, icon: "/images/nesco-logo.jpeg", isImage: true },
+  { id: "sohoj-reb-postpaid", name: "REB POSTPAID", fullName: "Rural Electrification Board / Palli Bidyut", category: "Electricity", number: "REB_POSTPAID", source: "", enabled: true, icon: "/images/reb-logo.jpeg", isImage: true },
+  { id: "sohoj-dhaka-wasa", name: "DHAKA WASA", fullName: "Dhaka Water Supply and Sewerage Authority", category: "Water", number: "DWASA", source: "", enabled: true, icon: "/images/wasa-logo.jpg", isImage: true },
+  { id: "sohoj-rajshahi-wasa", name: "RAJSHAHI WASA", fullName: "Rajshahi Water Supply and Sewerage Authority", category: "Water", number: "RJWASA", source: "", enabled: true, icon: "/images/rajshahi-wasa-logo.jpeg", isImage: true },
+  { id: "sohoj-chattogram-wasa", name: "CHATTOGRAM WASA", fullName: "Chattogram Water Supply and Sewerage Authority", category: "Water", number: "CTGWASA", source: "", enabled: true, icon: "/images/chattogram-wasa-logo.jpeg", isImage: true },
+  { id: "sohoj-titas", name: "TITAS GAS", fullName: "Titas Gas Transmission and Distribution Company", category: "Gas", number: "TITAS", source: "", enabled: true, icon: "/images/titas-gas-logo.jpeg", isImage: true },
+  { id: "sohoj-jalalabad", name: "JALALABAD GAS", fullName: "Jalalabad Gas Transmission and Distribution System", category: "Gas", number: "JALALABAD_GAS", source: "", enabled: true, icon: "/images/jalalabad-gas-logo.jpeg", isImage: true },
+  { id: "sohoj-bakhrabad", name: "BAKHRABAD GAS", fullName: "Bakhrabad Gas Distribution Company", category: "Gas", number: "BGDCL", source: "", enabled: true, icon: "/images/bakhrabad-gas-logo.jpeg", isImage: true },
 ]
 
 

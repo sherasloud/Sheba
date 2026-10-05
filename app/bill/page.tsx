@@ -94,7 +94,7 @@ export default function BillPage() {
     setError("")
 
     setIsLoading(false)
-    setError(`${selectedProvider.name} real-time bill inquiry এখনো connected নয়। SohojXPay provider API enable হলে এখানে আসল bill amount, due date এবং customer তথ্য দেখাবে।`)
+    setError(`${selectedProvider.name} এর real-time bill inquiry এখনো connected নয়। Provider API enable হলে এখানে আসল bill amount, due date এবং customer তথ্য দেখাবে।`)
   }
 
   const handlePayBill = () => {
