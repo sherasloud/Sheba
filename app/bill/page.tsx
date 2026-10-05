@@ -368,7 +368,7 @@ export default function BillPage() {
           <button
             onClick={handleBillInquiry}
             disabled={isLoading}
-            className="mt-[173px] bg-[#29a9eb] text-white p-4 rounded-md disabled:bg-gray-400"
+            className="mt-[77px] bg-[#29a9eb] text-white p-4 rounded-md disabled:bg-gray-400"
           >
             {isLoading ? "Checking Bill..." : "Check Bill"}
           </button>

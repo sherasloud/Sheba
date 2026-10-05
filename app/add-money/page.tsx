@@ -653,7 +653,7 @@ if (Number(amount) > 9000000) {
           {selectedMethod === "card" ? (
             <>
               <h1 className="mb-24 text-center text-[3.25rem] font-normal leading-tight text-[#38afe8]">এমাউন্ট লিখুন</h1>
-              <div className="mb-16 flex w-full items-center justify-center gap-0 text-black">
+              <div className="mb-16 flex w-full items-center justify-center gap-[1ch] text-black">
                 <input
                   type="text"
                   aria-label="Amount"
@@ -672,7 +672,7 @@ if (Number(amount) > 9000000) {
           ) : (
             <>
               <h1 className="mb-24 text-center text-[3.25rem] font-normal leading-tight text-[#38afe8]">এমাউন্ট লিখুন</h1>
-              <div className="mb-16 flex w-full items-center justify-center gap-0 text-black">
+              <div className="mb-16 flex w-full items-center justify-center gap-[1ch] text-black">
                 <input
                   type="text"
                   aria-label="Amount"
