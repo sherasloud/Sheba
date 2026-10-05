@@ -277,7 +277,7 @@ export default function BillPage() {
             <div className="min-w-0 flex-1">
               <div className="truncate text-base font-semibold text-[#142033]">{provider.name}</div>
               <div className="mt-1 truncate text-xs text-slate-500">{provider.fullName || "Electricity service provider"}</div>
-              {provider.source === "EkPay" && !provider.enabled && <div className="mt-2 text-[11px] font-medium text-amber-700">Integration pending</div>}
+              {provider.source && <div className={`mt-2 text-[11px] font-medium ${provider.enabled ? "text-emerald-700" : "text-amber-700"}`}>{provider.enabled ? `${provider.source} provider` : `${provider.source} integration pending`}</div>}
             </div>
             <span className="text-lg text-slate-300 transition group-hover:text-[#29a9eb]">›</span>
           </button>

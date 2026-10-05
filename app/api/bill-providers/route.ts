@@ -1,5 +1,20 @@
 import { NextResponse } from 'next/server'
 
+const sohojXPayBillProviders = [
+  { id: "sohoj-desco-postpaid", name: "DESCO POSTPAID", fullName: "Dhaka Electric Supply Company", category: "Electricity", number: "DESCO_POSTPAID", source: "SohojXPay", enabled: true },
+  { id: "sohoj-desco-prepaid", name: "DESCO PREPAID", fullName: "Dhaka Electric Supply Company", category: "Electricity", number: "DESCO_PREPAID", source: "SohojXPay", enabled: true },
+  { id: "sohoj-west-zone-postpaid", name: "WEST ZONE POSTPAID", fullName: "West Zone Power Distribution Company", category: "Electricity", number: "WZPDCL_POSTPAID", source: "SohojXPay", enabled: true },
+  { id: "sohoj-nesco-postpaid", name: "NESCO POSTPAID", fullName: "Northern Electricity Supply Company", category: "Electricity", number: "NESCO_POSTPAID", source: "SohojXPay", enabled: true },
+  { id: "sohoj-nesco-prepaid", name: "NESCO PREPAID", fullName: "Northern Electricity Supply Company", category: "Electricity", number: "NESCO_PREPAID", source: "SohojXPay", enabled: true },
+  { id: "sohoj-reb-postpaid", name: "REB POSTPAID", fullName: "Rural Electrification Board / Palli Bidyut", category: "Electricity", number: "REB_POSTPAID", source: "SohojXPay", enabled: true },
+  { id: "sohoj-dhaka-wasa", name: "DHAKA WASA", fullName: "Dhaka Water Supply and Sewerage Authority", category: "Water", number: "DWASA", source: "SohojXPay", enabled: true, icon: "/images/wasa-logo.jpg", isImage: true },
+  { id: "sohoj-khulna-wasa", name: "KHULNA WASA", fullName: "Khulna Water Supply and Sewerage Authority", category: "Water", number: "KHLWASA", source: "SohojXPay", enabled: true, icon: "/images/khulna-wasa.jpg", isImage: true },
+  { id: "sohoj-rajshahi-wasa", name: "RAJSHAHI WASA", fullName: "Rajshahi Water Supply and Sewerage Authority", category: "Water", number: "RJWASA", source: "SohojXPay", enabled: true, icon: "/images/wasa-logo.jpg", isImage: true },
+  { id: "sohoj-titas", name: "TITAS GAS", fullName: "Titas Gas Transmission and Distribution Company", category: "Gas", number: "TITAS", source: "SohojXPay", enabled: true },
+  { id: "sohoj-jalalabad", name: "JALALABAD GAS", fullName: "Jalalabad Gas Transmission and Distribution System", category: "Gas", number: "JALALABAD_GAS", source: "SohojXPay", enabled: true },
+  { id: "sohoj-bakhrabad", name: "BAKHRABAD GAS", fullName: "Bakhrabad Gas Distribution Company", category: "Gas", number: "BGDCL", source: "SohojXPay", enabled: true },
+]
+
 const ekPayBillProviders = [
   { id: "desco-postpaid", name: "DESCO POSTPAID", fullName: "Dhaka Electric Supply Company", category: "Electricity", number: "DESCO_POSTPAID", source: "EkPay", enabled: false },
   { id: "desco-prepaid", name: "DESCO PREPAID", fullName: "Dhaka Electric Supply Company", category: "Electricity", number: "DESCO_PREPAID", source: "EkPay", enabled: false },
@@ -19,7 +34,7 @@ let billProvidersStore: any[] = []
 
 export async function GET() {
   try {
-    return NextResponse.json({ providers: [...ekPayBillProviders, ...billProvidersStore], success: true })
+    return NextResponse.json({ providers: [...sohojXPayBillProviders, ...(process.env.SOHOJXPAY_API_KEY ? [] : ekPayBillProviders), ...billProvidersStore], success: true })
   } catch (error) {
     console.error('[v0] Error fetching bill providers:', error)
     return NextResponse.json(
