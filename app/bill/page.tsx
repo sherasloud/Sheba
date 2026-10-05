@@ -46,8 +46,9 @@ export default function BillPage() {
         const data = await response.json()
         const grouped: { [key: string]: any[] } = {}
         data.providers?.forEach((p: any) => {
-          if (!grouped[p.category]) grouped[p.category] = []
-          grouped[p.category].push(p)
+          const category = String(p.category).toLowerCase()
+          if (!grouped[category]) grouped[category] = []
+          grouped[category].push(p)
         })
         setProviders(grouped)
       }
@@ -92,28 +93,8 @@ export default function BillPage() {
     setIsLoading(true)
     setError("")
 
-    // Generate mock bill data immediately
-    const mockBill = {
-      accountNumber: billDetails.accountNumber,
-      customerName: "John Doe",
-      amount: Math.floor(Math.random() * 5000) + 500,
-      dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString(),
-      billMonth: new Date().toLocaleDateString("en-US", { month: "long", year: "numeric" }),
-      issueDate: new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toLocaleDateString(),
-      status: Math.random() > 0.3 ? "Due" : "Overdue",
-      lateFee: Math.random() > 0.7 ? Math.floor(Math.random() * 200) + 50 : 0,
-    }
-
-    setBillInfo(mockBill)
-    setBillDetails({
-      ...billDetails,
-      customerName: mockBill.customerName,
-      amount: mockBill.amount.toString(),
-      dueDate: mockBill.dueDate,
-      billMonth: mockBill.billMonth,
-    })
     setIsLoading(false)
-    setStep(4)
+    setError(`${selectedProvider.name} real-time bill inquiry এখনো connected নয়। EkPay merchant/API access ও provider enable হওয়ার পর এখানে আসল bill amount, due date এবং customer তথ্য দেখাবে।`)
   }
 
   const handlePayBill = () => {
@@ -333,10 +314,11 @@ export default function BillPage() {
                     <span className="text-white text-lg">{provider.icon}</span>
                   )}
                 </div>
-                <div className="flex-1">
-                  <h3 className="font-medium">{provider.name}</h3>
-                  <p className="text-sm text-gray-500">{provider.fullName}</p>
-                </div>
+                  <div className="flex-1">
+                    <div className="font-semibold">{provider.name}</div>
+                    {provider.fullName && <div className="text-sm text-gray-600">{provider.fullName}</div>}
+                    {provider.source === "EkPay" && !provider.enabled && <div className="mt-1 text-xs text-amber-700">EkPay merchant access pending</div>}
+                  </div>
               </button>
             ))}
           </div>
