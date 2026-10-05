@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { ArrowLeft, CheckCircle, AlertTriangle, Search, Lightbulb, Droplets, Flame } from "lucide-react"
+import { ArrowLeft, CheckCircle, AlertTriangle, Search } from "lucide-react"
 import { useRouter } from "next/navigation"
 
 const billProviders: { [key: string]: any[] } = {}
@@ -224,31 +224,27 @@ export default function BillPage() {
   return (
     <div className="flex flex-col h-screen bg-white">
       {step === 1 && (
-        <div className="flex-1 overflow-y-auto bg-white px-6 pb-12 pt-6">
-          <div className="mb-20 flex items-center">
-            <button onClick={() => router.push("/")} className="flex items-center gap-2 text-[#142033]" aria-label="Back to home">
-              <ArrowLeft size={28} strokeWidth={1.8} />
-              <span className="text-base font-medium">Back</span>
+        <div className="flex-1 overflow-y-auto px-6 pb-10 pt-5">
+          <div className="mb-8 flex items-center">
+            <button onClick={() => router.push("/")} className="text-[#142033]" aria-label="Back to home">
+              <ArrowLeft size={34} strokeWidth={1.8} />
             </button>
           </div>
+          <h1 className="mb-28 text-center text-6xl font-normal text-[#29a9eb]">বিল পে</h1>
 
-          <div className="mx-auto flex max-w-md flex-col items-center">
-            <h1 className="mb-24 text-center text-6xl font-normal tracking-tight text-[#36aaf0]">বিল পরিশোধ</h1>
-
-            <div className="flex w-full flex-col gap-20">
-              <button onClick={() => handleCategorySelect("electricity")} className="flex flex-col items-center gap-5 bg-transparent text-center transition-transform hover:scale-[1.02]">
-                <Lightbulb className="h-16 w-16 fill-yellow-300 text-yellow-500" strokeWidth={1.5} />
-                <h2 className="text-3xl font-normal text-[#142033]">বিদ্যুৎ বিল</h2>
-              </button>
-              <button onClick={() => handleCategorySelect("water")} className="flex flex-col items-center gap-5 bg-transparent text-center transition-transform hover:scale-[1.02]">
-                <Droplets className="h-16 w-16 fill-[#bceeff] text-[#1e9edb]" strokeWidth={1.5} />
-                <h2 className="text-3xl font-normal text-[#36aaf0]">পানি বিল</h2>
-              </button>
-              <button onClick={() => handleCategorySelect("gas")} className="flex flex-col items-center gap-5 bg-transparent text-center transition-transform hover:scale-[1.02]">
-                <Flame className="h-16 w-16 fill-orange-300 text-orange-500" strokeWidth={1.5} />
-                <h2 className="text-3xl font-normal text-orange-500">গ্যাস বিল</h2>
-              </button>
-            </div>
+          <div className="space-y-32">
+            <button onClick={() => handleCategorySelect("electricity")} className="flex w-full flex-col items-center gap-5 border-0 bg-transparent text-center transition-transform hover:scale-[1.02]">
+              <div className="flex items-center justify-center text-[76px] leading-none">💡</div>
+              <h3 className="text-4xl font-normal text-foreground">বিদ্যুৎ বিল</h3>
+            </button>
+            <button onClick={() => handleCategorySelect("water")} className="flex w-full flex-col items-center gap-5 border-0 bg-transparent text-center transition-transform hover:scale-[1.02]">
+              <div className="flex items-center justify-center text-[76px] leading-none">💧</div>
+              <h3 className="text-4xl font-normal text-[#29a9eb]">পানি বিল</h3>
+            </button>
+            <button onClick={() => handleCategorySelect("gas")} className="flex w-full flex-col items-center gap-5 border-0 bg-transparent text-center transition-transform hover:scale-[1.02]">
+              <div className="flex items-center justify-center text-[76px] leading-none">🔥</div>
+              <h3 className="text-4xl font-normal text-orange-500">গ্যাস বিল</h3>
+            </button>
           </div>
         </div>
       )}
