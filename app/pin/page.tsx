@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 
 export default function PinPage() {
@@ -11,11 +11,14 @@ export default function PinPage() {
   const [userName, setUserName] = useState("")
   const [checkingUser, setCheckingUser] = useState(true)
   const [isNewUser, setIsNewUser] = useState(false)
+  const initializedRef = useRef(false)
   const router = useRouter()
   const searchParams = useSearchParams()
 
   useEffect(() => {
     const initPage = async () => {
+      if (initializedRef.current) return
+      initializedRef.current = true
       // Always start a fresh PIN attempt when the app is reopened.
       setPin("")
       setError("")
@@ -133,6 +136,13 @@ export default function PinPage() {
         }
 
         setError("")
+        try {
+          localStorage.setItem("appPinVerified", "true")
+          localStorage.setItem("pinVerifiedTime", timestamp)
+          localStorage.setItem("phoneNumber", data.user?.phoneNumber ?? phoneNumber)
+        } catch (storageError) {
+          console.warn("[v0] Could not persist PIN session", storageError)
+        }
         router.replace("/")
       } else if (response.status === 401) {
         setError(data.message || "ভুল পিন। আবার চেষ্টা করুন।")

@@ -224,6 +224,22 @@ const SettingsPage = () => {
           </Link>
         </div>
 
+        {/* Sheba Website */}
+        <div className="border-2 border-[#29a9eb] rounded-lg p-4">
+          <a
+            href="https://shebabd.org"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-between hover:bg-blue-50 p-3 rounded transition-all"
+          >
+            <div>
+              <div className="font-bold text-[#142033]">Sheba Website</div>
+              <div className="text-sm text-gray-500">shebabd.org</div>
+            </div>
+            <div className="text-[#29a9eb] font-bold text-xl">→</div>
+          </a>
+        </div>
+
         {/* Facebook Link */}
         <div className="bg-gradient-to-r from-blue-500 to-blue-600 border-2 border-blue-500 rounded-lg p-4">
           <a

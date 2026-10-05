@@ -1,4 +1,7 @@
 import { NextResponse } from "next/server"
+import { db } from "@/lib/db"
+import { appUsers, transactions } from "@/lib/db/schema"
+import { eq } from "drizzle-orm"
 
 async function handleCallback(request: Request) {
   const url = new URL(request.url)
@@ -34,14 +37,39 @@ async function handleCallback(request: Request) {
     return NextResponse.redirect(new URL(`/add-money?payment=failed`, url.origin))
   }
 
-  const creditResponse = await fetch(new URL("/api/add-money", url.origin), {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ phoneNumber, amount: verifiedAmount, method: "paystation", cardType: "PayStation" }),
+  const paymentTransactionId = `PAYSTATION-${invoiceNumber}`
+  const existingPayment = await db.query.transactions.findFirst({
+    where: eq(transactions.id, paymentTransactionId),
   })
-  if (!creditResponse.ok) {
-    console.error("[v0] PayStation verified but wallet credit failed", { invoiceNumber, phoneNumber })
-    return NextResponse.redirect(new URL(`/add-money?payment=pending&invoice=${encodeURIComponent(invoiceNumber)}`, url.origin))
+
+  if (!existingPayment) {
+    const credited = await db.transaction(async (tx) => {
+      const user = await tx.query.appUsers.findFirst({
+        where: eq(appUsers.phoneNumber, String(phoneNumber).trim()),
+      })
+      if (!user) return false
+
+      const currentBalance = Number(user.balance ?? 0)
+      const nextBalance = currentBalance + verifiedAmount
+      await tx.update(appUsers).set({ balance: nextBalance, updatedAt: new Date() }).where(eq(appUsers.id, user.id))
+      await tx.insert(transactions).values({
+        id: paymentTransactionId,
+        userid: user.id,
+        phonenumber: String(phoneNumber).trim(),
+        amount: verifiedAmount,
+        balanceBefore: currentBalance,
+        balanceAfter: nextBalance,
+        type: "add_money",
+        status: "completed",
+        description: `PayStation card top-up ${invoiceNumber}`,
+      })
+      return true
+    })
+
+    if (!credited) {
+      console.error("[v0] PayStation user not found", { invoiceNumber, phoneNumber })
+      return NextResponse.redirect(new URL(`/add-money?payment=pending&invoice=${encodeURIComponent(invoiceNumber)}`, url.origin))
+    }
   }
 
   return NextResponse.redirect(new URL(`/add-money?payment=success&invoice=${encodeURIComponent(invoiceNumber)}`, url.origin))

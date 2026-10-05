@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
         fullName: u.fullName,
         accountType: u.accountType,
         createdAt: u.createdAt,
-        balance: u.balance,
+        balance: Number(u.balance ?? 0),
       })),
     })
   } catch (error) {

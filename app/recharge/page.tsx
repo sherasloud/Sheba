@@ -214,13 +214,17 @@ export default function RechargePage() {
   const [userBalance, setUserBalance] = useState(0)
 
   useEffect(() => {
-    // Set default values for testing
     setIsVerified(true)
-    setUserPhone("01709783145")
-    setUserBalance(99979997979999)
-    setIsAdmin(true)
-    setAdminBalance(99979997979999)
     setDailyRemaining(5000)
+    try {
+      const storedUser = JSON.parse(window.localStorage.getItem("userData") || "null")
+      const phone = storedUser?.phoneNumber || storedUser?.phone || ""
+      if (phone) setUserPhone(String(phone))
+      if (storedUser?.balance != null) setUserBalance(Number(storedUser.balance))
+      setIsAdmin(storedUser?.accountType === "admin")
+    } catch {
+      setUserPhone("")
+    }
 
     const handleError = (event: ErrorEvent) => {
       if (event.message && event.message.includes("btoa")) {
