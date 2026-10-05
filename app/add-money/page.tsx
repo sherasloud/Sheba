@@ -104,11 +104,16 @@ export default function AddMoneyPage() {
 
   const handleMethodSelect = (method: string) => {
     setSelectedMethod(method)
-    if (method === "card") {
-      setStep(2) // Go to card type selection
-    } else {
-      setStep(3) // Go directly to amount for bank
+    setError("")
+  }
+
+  const handleMethodNext = () => {
+    if (!selectedMethod) {
+      setError("Please select Card or Bank Account")
+      return
     }
+
+    setStep(selectedMethod === "card" ? 2 : 3)
     setError("")
   }
 
@@ -148,7 +153,7 @@ export default function AddMoneyPage() {
       cancel_url: `${typeof window !== 'undefined' ? window.location.origin : ''}/add-money`,
       cus_name: "Customer",
       cus_email: "customer@sheba.com",
-      cus_phone: "01000000000",
+      cus_phone: "01700000000",
       cus_add1: "Dhaka",
       ship_name: "Customer",
       ship_add1: "Dhaka",
@@ -583,7 +588,10 @@ if (Number(amount) > 9000000) {
   <div className="flex flex-1 flex-col overflow-y-auto bg-white px-5 pb-8 pt-6">
   <div className="space-y-4">
   <button
-  onClick={() => handleMethodSelect("card")}
+  onClick={() => {
+    handleMethodSelect("card")
+    setStep(2)
+  }}
   className="flex w-full items-center rounded-xl border border-[#edf0f3] bg-white px-4 py-4 text-left shadow-[0_3px_12px_rgba(20,32,51,0.05)] transition-colors hover:border-[#38afe8]"
   >
     <div className="mr-4 flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-[#e8f7fd] text-[#249fe0]"><CreditCard size={22} strokeWidth={1.8} /></div>
@@ -594,7 +602,10 @@ if (Number(amount) > 9000000) {
 
   </button>
   <button
-  onClick={() => handleMethodSelect("bank")}
+  onClick={() => {
+    handleMethodSelect("bank")
+    setStep(3)
+  }}
   className="flex w-full items-center rounded-xl border border-[#edf0f3] bg-white px-4 py-4 text-left shadow-[0_3px_12px_rgba(20,32,51,0.05)] transition-colors hover:border-[#38afe8]"
   >
     <div className="mr-4 flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-[#eaf8ef] text-[#2da35a]"><Building2 size={22} strokeWidth={1.8} /></div>
@@ -606,6 +617,7 @@ if (Number(amount) > 9000000) {
   </button>
   </div>
 
+  {error && <div className="mt-4 text-center text-red-500">{error}</div>}
   </div>
       )}
 
@@ -641,17 +653,18 @@ if (Number(amount) > 9000000) {
           {selectedMethod === "card" ? (
             <>
               <h1 className="mb-24 text-center text-[3.25rem] font-normal leading-tight text-[#38afe8]">এমাউন্ট লিখুন</h1>
-              <div className="mb-24 flex w-full items-center justify-center gap-2 text-black">
+              <div className="mb-16 flex w-full items-center justify-center gap-0 text-black">
                 <input
                   type="text"
                   aria-label="Amount"
-                  className="w-full min-w-0 flex-1 border-0 bg-transparent p-0 text-center text-[5rem] font-normal leading-none text-black outline-none placeholder:text-black"
+                  className="h-auto w-[1ch] shrink-0 border-0 bg-transparent p-0 text-right text-[clamp(3.5rem,15vw,6rem)] font-normal leading-none text-black outline-none placeholder:text-black"
+                  style={{ width: `${Math.max(amount.length, 1)}ch`, fontSize: "clamp(3.5rem, 15vw, 6rem)", lineHeight: "1", fontWeight: 400 }}
                   value={amount}
                 onChange={(e) => setAmount(e.target.value.replace(/[^0-9]/g, ""))}
                 placeholder="0"
                   inputMode="numeric"
                 />
-                <span className="shrink-0 text-[5rem] font-normal leading-none">৳</span>
+                <span className="shrink-0 text-[clamp(3.5rem,15vw,6rem)] font-normal leading-none">৳</span>
               </div>
               {error && <div className="mb-4 text-center text-red-500">{error}</div>}
               <div className="flex justify-center"><button className="mobile-button w-full max-w-sm rounded-full py-5 text-5xl font-normal" onClick={handleAmountNext}>Next</button></div>
@@ -659,17 +672,18 @@ if (Number(amount) > 9000000) {
           ) : (
             <>
               <h1 className="mb-24 text-center text-[3.25rem] font-normal leading-tight text-[#38afe8]">এমাউন্ট লিখুন</h1>
-              <div className="mb-10 flex w-full items-center justify-center gap-2 text-black">
+              <div className="mb-16 flex w-full items-center justify-center gap-0 text-black">
                 <input
                   type="text"
                   aria-label="Amount"
                   inputMode="numeric"
-                  className="h-24 min-w-0 flex-1 rounded-2xl border-0 bg-transparent p-0 text-center text-[5rem] font-normal leading-none text-black outline-none placeholder:text-black"
+                  className="h-auto w-[1ch] shrink-0 border-0 bg-transparent p-0 text-right text-[clamp(3.5rem,15vw,6rem)] font-normal leading-none text-black outline-none placeholder:text-black"
+                  style={{ width: `${Math.max(amount.length, 1)}ch`, fontSize: "clamp(3.5rem, 15vw, 6rem)", lineHeight: "1", fontWeight: 400 }}
                   value={amount}
                   onChange={(e) => setAmount(e.target.value.replace(/[^0-9]/g, ""))}
                   placeholder="0"
                 />
-                <span className="shrink-0 text-[5rem] font-normal leading-none">৳</span>
+                <span className="shrink-0 text-[clamp(3.5rem,15vw,6rem)] font-normal leading-none">৳</span>
               </div>
               {error && <div className="mb-4 text-center text-red-500">{error}</div>}
               <div className="mt-auto flex justify-center"><button className="mobile-button w-full max-w-sm rounded-full py-5 text-4xl font-normal" onClick={handleAmountNext}>Next</button></div>

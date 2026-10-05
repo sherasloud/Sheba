@@ -10,7 +10,7 @@ export async function POST(request: Request) {
     const userName = String(body.userName || "Customer").trim()
     const userEmail = String(body.userEmail || "customer@sheba.com").trim()
 
-    if (!Number.isFinite(amount) || amount < 10 || amount > 50000 || !phoneNumber) {
+    if (!Number.isFinite(amount) || amount < 10 || amount > 9000000 || !phoneNumber) {
       return NextResponse.json({ success: false, message: "Invalid amount or phone number" }, { status: 400 })
     }
 
