@@ -215,69 +215,6 @@ a:active {
   transform: scale(0.98);
 }
 
-/* Sheba payment theme: white, sky blue, navy, and soft blue surfaces. */
-:root {
-  --sheba-blue: #29a9eb;
-  --sheba-navy: #142033;
-  --sheba-surface: #f5fbff;
-  --sheba-line: #d9eef9;
-}
-
-html,
-body {
-  background: var(--sheba-surface) !important;
-  color: var(--sheba-navy);
-}
-
-body {
-  font-family: var(--font-sans), Inter, sans-serif;
-}
-
-.mobile-container {
-  background: #ffffff;
-  color: var(--sheba-navy);
-  border-color: var(--sheba-line);
-}
-
-button,
-.btn,
-a {
-  -webkit-tap-highlight-color: rgba(41, 169, 235, 0.16);
-}
-
-input,
-textarea,
-select {
-  border-color: var(--sheba-line) !important;
-  background-color: #ffffff;
-  color: var(--sheba-navy);
-}
-
-input:focus,
-textarea:focus,
-select:focus {
-  border-color: var(--sheba-blue) !important;
-  outline-color: var(--sheba-blue);
-}
-
-.bg-blue-500,
-.bg-blue-600,
-.bg-primary {
-  background-color: var(--sheba-blue) !important;
-}
-
-.text-blue-500,
-.text-blue-600,
-.text-primary {
-  color: var(--sheba-blue) !important;
-}
-
-.border-blue-500,
-.border-blue-600,
-.border-primary {
-  border-color: var(--sheba-blue) !important;
-}
-
 /* Enhanced input fields with better mobile keyboard support */
 input,
 textarea,
