@@ -97,7 +97,7 @@ export default function BillPage() {
     setError(`${selectedProvider.name} এর real-time bill inquiry এখনো connected নয়। Provider API enable হলে এখানে আসল bill amount, due date এবং customer তথ্য দেখাবে।`)
   }
 
-  const handlePayBill = () => {
+  const handlePayBill = async () => {
     if (!pin || pin.length !== 6) {
       setError("অনুগ্রহ করে ৬ সংখ্যার পিন লিখুন")
       return
@@ -109,39 +109,63 @@ export default function BillPage() {
       return
     }
 
-    const totalAmount = Number(billDetails.amount) + (billInfo?.lateFee || 0)
+    const totalAmount = Number(billInfo.amount) + (billInfo?.lateFee || 0)
 
     if (totalAmount > balance) {
       setError("Insufficient balance!")
       return
     }
 
-    // Update balance immediately
-    const newBalance = balance - totalAmount
-    setBalance(newBalance)
-    localStorage.setItem("userBalance", newBalance.toString())
+    setIsLoading(true)
+    setError("")
 
-    // Add transaction to history
-    const transaction = {
-      id: Date.now(),
-      type: "বিল পরিশোধ",
-      amount: -totalAmount,
-      to: selectedProvider.name,
-      date: new Date().toLocaleDateString(),
-      time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-      details: {
-        category: selectedCategory,
-        accountNumber: billDetails.accountNumber,
-        billMonth: billDetails.billMonth,
-        providerNumber: billDetails.providerNumber,
-      },
+    try {
+      const response = await fetch("/api/sohojxpay/bills", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          accountNumber: billDetails.accountNumber,
+          providerCode: selectedProvider.number,
+          category: selectedCategory,
+          amount: totalAmount,
+          contactNumber: billDetails.providerNumber,
+        }),
+      })
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || "Payment was not accepted")
+      }
+
+      const newBalance = balance - totalAmount
+      setBalance(newBalance)
+      localStorage.setItem("userBalance", newBalance.toString())
+
+      const transaction = {
+        id: Date.now(),
+        type: "বিল পরিশোধ",
+        amount: -totalAmount,
+        to: selectedProvider.name,
+        date: new Date().toLocaleDateString(),
+        time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        details: {
+          category: selectedCategory,
+          accountNumber: billDetails.accountNumber,
+          billMonth: billDetails.billMonth,
+          providerNumber: billDetails.providerNumber,
+          providerTransactionId: result.transactionId,
+        },
+      }
+
+      const transactions = JSON.parse(localStorage.getItem("transactions") || "[]")
+      transactions.push(transaction)
+      localStorage.setItem("transactions", JSON.stringify(transactions))
+      setSuccess(true)
+    } catch (paymentError) {
+      setError(paymentError instanceof Error ? paymentError.message : "Payment failed")
+    } finally {
+      setIsLoading(false)
     }
-
-    const transactions = JSON.parse(localStorage.getItem("transactions") || "[]")
-    transactions.push(transaction)
-    localStorage.setItem("transactions", JSON.stringify(transactions))
-
-    setSuccess(true)
   }
 
   const filteredProviders = selectedCategory && providers[selectedCategory]
