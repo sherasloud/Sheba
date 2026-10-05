@@ -312,8 +312,6 @@ export default function BillPage() {
   <p><strong>প্রদানকারী:</strong> {selectedProvider.name}</p>
   <p className="mt-2"><strong>বিভাগ:</strong> {selectedCategory === "electricity" ? "বিদ্যুৎ" : selectedCategory === "water" ? "পানি" : selectedCategory === "gas" ? "গ্যাস" : selectedCategory === "internet" ? "��ন্টারনেট" : "মোব��ইল"}</p>
   </div>
-            <p className="text-sm text-blue-900"><strong>প্রদানকারী:</strong> {selectedProvider.name}</p>
-            <p className="text-sm text-blue-900"><strong>বিভাগ:</strong> {selectedCategory === "electricity" ? "বিদ্যুৎ" : selectedCategory === "water" ? "পানি" : selectedCategory === "gas" ? "গ্যাস" : selectedCategory === "internet" ? "ইন্টা��নেট" : "মোবাইল"}</p>
   <p className="mt-2"><strong>প্রদানকারীর কোড:</strong> {selectedProvider?.number}</p>
   </div>
 
