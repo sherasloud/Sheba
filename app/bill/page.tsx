@@ -344,61 +344,8 @@ export default function BillPage() {
                 onChange={(e) => setBillDetails({ ...billDetails, providerNumber: e.target.value })}
                 placeholder={`যেমন: ${selectedProvider?.number || "09666123456"}`}
               />
-              <p className="text-xs text-gray-500 mt-1">আপনার বিল প্রদানকারীর দেওয়া নম্বরটি লিখুন। এটি ড্যাশবোর্ড অ্যাক্সেসের জন্য প্রয়োজন হতে পারে।</p>
             </div>
 
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-              <div className="flex items-start">
-                <AlertTriangle size={20} className="text-yellow-600 mr-3 mt-0.5" />
-                <div>
-                  <p className="text-yellow-800 text-sm font-medium mb-1">গুরুত্বপূর্ণ</p>
-                  <p className="text-yellow-700 text-xs">
-                    আপনার বিল অনুযায়ী সঠিক {selectedCategory === "electricity" ? "মিটার/গ্রাহক নম্বর" : selectedCategory === "mobile" ? "মোবাইল নম্বর" : "অ্যাকাউন্ট নম্বর"} লিখুন। ভুল নম্বর দিলে ভুল অ্যাকাউন্টে পেমেন্ট হতে পারে।
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <h3 className="font-medium text-blue-800 mb-2">আপনার নম্বরটি কোথায় পাবেন:</h3>
-              <ul className="text-sm text-blue-700 space-y-1">
-                {selectedCategory === "electricity" && (
-                  <>
-                    <li>• আপনার বিদ্যুৎ বিল দেখুন</li>
-                    <li>• গ্রাহক নম্বর বা অ্যাকাউন্ট নম্বর খুঁজুন</li>
-                    <li>• সাধারণত ৮-১২ সংখ্যার হয়</li>
-                  </>
-                )}
-                {selectedCategory === "water" && (
-                  <>
-                    <li>• আপনার পানি বিল দেখুন</li>
-                    <li>• গ্রাহক নম্বর খুঁজুন</li>
-                    <li>• সাধারণত বিলের উপরে লেখা থাকে</li>
-                  </>
-                )}
-                {selectedCategory === "gas" && (
-                  <>
-                    <li>• আপনার গ্যাস বিল দেখুন</li>
-                    <li>• অ্যাকাউন্ট নম্বর খুঁজুন</li>
-                    <li>• সাধারণত ১০-১৫ সংখ্যার হয়</li>
-                  </>
-                )}
-                {selectedCategory === "internet" && (
-                  <>
-                    <li>• আপনার ইন্টারনেট বিল দেখুন</li>
-                    <li>• গ্রাহক আইডি বা অ্যাকাউন্ট নম্বর খুঁজুন</li>
-                    <li>• নিশ্চিত না হলে সেবাদাতার সঙ্গে যোগাযোগ করুন</li>
-                  </>
-                )}
-                {selectedCategory === "mobile" && (
-                  <>
-                    <li>• আপনার পোস্টপেইড মোবাইল নম্বর লিখুন</li>
-                    <li>• নম্বরটি ০১ দিয়ে শুরু হয়ে ১১ সংখ্যার হতে হবে</li>
-                    <li>• নিশ্চিত করতে মোবাইল বিল দেখুন</li>
-                  </>
-                )}
-              </ul>
-            </div>
           </div>
 
           {error && (
