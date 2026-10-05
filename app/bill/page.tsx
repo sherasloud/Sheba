@@ -286,10 +286,9 @@ export default function BillPage() {
   </div>
   <div className="min-w-0 flex-1">
   <div className="truncate text-base font-semibold text-[#142033]">{provider.name}</div>
-  <div className="mt-1 truncate text-xs text-slate-500">{provider.fullName || "বিদ্যুৎ সেবা প্রদানকারী"}</div>
+  <div className="mt-1 truncate text-xs text-slate-500">{provider.fullName || "বিদ্যুৎ সেব�� প্রদানকারী"}</div>
   {provider.source && <div className="mt-2 text-[11px] font-medium text-[#36aaf0]">{provider.source} প্রদানকারী</div>}
   </div>
-  <span className="text-xl text-[#b9e5fb] transition group-hover:text-[#36aaf0]">›</span>
   </button>
   ))}
   </div>
