@@ -647,11 +647,11 @@ export default function AddMoneyPage() {
           {selectedMethod === "card" ? (
             <>
               <h1 className="mb-24 text-center text-[3.25rem] font-normal leading-tight text-[#38afe8]">এমাউন্ট লিখুন</h1>
-              <div className="mb-24 flex items-center justify-center gap-1 text-black">
+              <div className="mb-24 flex w-full items-center justify-center gap-2 text-black">
                 <input
                   type="text"
                   aria-label="Amount"
-                  className="w-auto min-w-0 max-w-[78vw] border-0 bg-transparent p-0 text-center text-[clamp(3.5rem,10vw,4rem)] font-normal leading-none text-black outline-none placeholder:text-black"
+                  className="min-w-0 flex-1 border-0 bg-transparent p-0 text-center text-6xl font-normal leading-none text-black outline-none placeholder:text-black"
                   value={amount}
                 onChange={(e) => setAmount(e.target.value.replace(/[^0-9]/g, ""))}
                 placeholder="0"
@@ -665,7 +665,7 @@ export default function AddMoneyPage() {
           ) : (
             <>
               <h1 className="mb-24 text-center text-[3.25rem] font-normal leading-tight text-[#38afe8]">এমাউন্ট লিখুন</h1>
-              <div className="mb-10 flex items-center justify-center gap-1 text-black">
+              <div className="mb-10 flex w-full items-center justify-center gap-2 text-black">
                 <input
                   type="text"
                   aria-label="Amount"
