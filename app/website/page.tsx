@@ -1,13 +1,17 @@
 "use client"
 
-import { useEffect } from "react"
+import { useLayoutEffect } from "react"
 import Link from "next/link"
 
 const heroImage = "https://i.postimg.cc/0NLNqDL9/Unknown-57.jpg"
 
 export default function ShebaWebsite() {
-  useEffect(() => {
-    if (!window.location.hash) window.scrollTo({ top: 0, left: 0, behavior: "instant" })
+  useLayoutEffect(() => {
+    if (window.location.hash) return
+    window.history.scrollRestoration = "manual"
+    window.scrollTo(0, 0)
+    const frame = window.requestAnimationFrame(() => window.scrollTo(0, 0))
+    return () => window.cancelAnimationFrame(frame)
   }, [])
 
   return (
