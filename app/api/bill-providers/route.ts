@@ -13,6 +13,8 @@ const sohojXPayBillProviders = [
   { id: "sohoj-titas", name: "TITAS GAS", fullName: "Titas Gas Transmission and Distribution Company", category: "Gas", number: "TITAS", source: "", enabled: true, icon: "/images/titas-gas-logo.jpeg", isImage: true },
   { id: "sohoj-jalalabad", name: "JALALABAD GAS", fullName: "Jalalabad Gas Transmission and Distribution System", category: "Gas", number: "JALALABAD_GAS", source: "", enabled: true, icon: "/images/jalalabad-gas-logo.jpeg", isImage: true },
   { id: "sohoj-bakhrabad", name: "BAKHRABAD GAS", fullName: "Bakhrabad Gas Distribution Company", category: "Gas", number: "BGDCL", source: "", enabled: true, icon: "/images/bakhrabad-gas-logo.jpeg", isImage: true },
+  { id: "sohoj-karnaphuli", name: "KARNAPHULI GAS", fullName: "Karnaphuli Gas Distribution Company Limited", category: "Gas", number: "KGDCL", source: "", enabled: true, icon: "/images/karnaphuli-gas-logo.jpeg", isImage: true },
+  { id: "sohoj-sundarban", name: "SUNDARBAN GAS", fullName: "Sundarban Gas Company Limited", category: "Gas", number: "SGCL", source: "", enabled: true, icon: "/images/sundarban-gas-logo.jpeg", isImage: true },
 ]
 
 
