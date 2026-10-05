@@ -649,7 +649,7 @@ if (Number(amount) > 9000000) {
       )}
 
       {step === 3 && (
-        <div className="flex flex-1 flex-col overflow-y-auto bg-white px-8 pb-8 pt-16">
+        <div className="flex min-h-full flex-1 flex-col overflow-y-auto bg-white px-6 pb-8 pt-16">
           {selectedMethod === "card" ? (
             <>
               <h1 className="mb-24 text-center text-[3.25rem] font-normal leading-tight text-[#38afe8]">এমাউন্ট লিখুন</h1>
@@ -666,12 +666,12 @@ if (Number(amount) > 9000000) {
                 <span className="shrink-0 text-[5rem] font-normal leading-none">৳</span>
               </div>
               {error && <div className="mb-4 text-center text-red-500">{error}</div>}
-              <div className="flex justify-center"><button className="mobile-button w-full max-w-sm rounded-full py-5 text-5xl font-normal" onClick={handleAmountNext}>Next</button></div>
+              <div className="mt-auto flex justify-center"><button className="mobile-button w-full max-w-sm rounded-full py-5 text-5xl font-normal" onClick={handleAmountNext}>Next</button></div>
             </>
           ) : (
             <>
               <h1 className="mb-24 text-center text-[3.25rem] font-normal leading-tight text-[#38afe8]">এমাউন্ট লিখুন</h1>
-              <div className="mb-10 flex w-full items-center justify-center gap-2 text-black">
+              <div className="mb-24 flex w-full items-center justify-center gap-2 text-black">
                 <input
                   type="text"
                   aria-label="Amount"
@@ -684,7 +684,7 @@ if (Number(amount) > 9000000) {
                 <span className="shrink-0 text-[5rem] font-normal leading-none">৳</span>
               </div>
               {error && <div className="mb-4 text-center text-red-500">{error}</div>}
-              <div className="mt-auto flex justify-center"><button className="mobile-button w-full max-w-sm rounded-full py-5 text-4xl font-normal" onClick={handleAmountNext}>Next</button></div>
+              <div className="mt-auto flex justify-center"><button className="mobile-button w-full max-w-sm rounded-full py-5 text-5xl font-normal" onClick={handleAmountNext}>Next</button></div>
             </>
           )}
         </div>
