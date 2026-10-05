@@ -173,11 +173,11 @@ export default function BillPage() {
 
           <div className="bg-gray-100 w-full rounded-lg p-4 mb-6">
             <div className="flex justify-between mb-2">
-              <span className="text-gray-600">Provider:</span>
+              <span className="text-gray-600">বিল প্রদানকারী:</span>
               <span className="font-bold">{selectedProvider.name}</span>
             </div>
             <div className="flex justify-between mb-2">
-              <span className="text-gray-600">Account Number:</span>
+              <span className="text-gray-600">অ্যাকাউন্ট নম্বর:</span>
               <span className="font-bold">{billDetails.accountNumber}</span>
             </div>
             <div className="flex justify-between mb-2">
@@ -258,8 +258,8 @@ export default function BillPage() {
   </button>
   <div className="mb-16 text-center">
   <p className="mb-4 text-5xl font-normal tracking-tight text-[#36aaf0] sm:text-6xl">বিল পরিশোধ</p>
-  <h1 className="text-2xl font-medium text-[#142033] sm:text-3xl">Choose your provider</h1>
-  <p className="mt-3 text-sm leading-6 text-slate-500">Select the electricity account you want to pay.</p>
+  <h1 className="text-2xl font-medium text-[#142033] sm:text-3xl">বিল প্রদানকারী নির্বাচন করুন</h1>
+  <p className="mt-3 text-sm leading-6 text-slate-500">যে বিদ্যুৎ অ্যাকাউন্টের বিল পরিশোধ করতে চান, সেটি নির্বাচন করুন।</p>
   </div>
   <div className="relative mb-8">
   <Search size={19} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[#36aaf0]" />
@@ -286,15 +286,27 @@ export default function BillPage() {
   )}
 
       {step === 3 && (
-        <div className="p-6 flex flex-col flex-1">
-          <div className="text-2xl font-bold mb-2">বিল বিস্তারিত</div>
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+  <div className="flex flex-1 flex-col bg-white px-6 pb-10 pt-6 sm:px-10">
+  <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col">
+  <button onClick={() => setStep(2)} className="mb-14 flex w-fit items-center gap-2 text-sm font-medium text-[#142033]" aria-label="বিল প্রদানকারী নির্বাচনে ফিরে যান">
+  <ArrowLeft size={22} strokeWidth={1.8} />
+  ফিরে যান
+  </button>
+  <div className="mb-10 text-center">
+  <p className="mb-4 text-5xl font-normal tracking-tight text-[#36aaf0] sm:text-6xl">বিল পরিশোধ</p>
+  <h1 className="text-2xl font-medium text-[#142033] sm:text-3xl">বিলের বিস্তারিত দিন</h1>
+  <p className="mt-3 text-sm leading-6 text-slate-500">আপনার বিলের তথ্য দিয়ে পরবর্তী ধাপে এগিয়ে যান।</p>
+  </div>
+  <div className="mb-8 border-y border-[#e5f2f8] py-5 text-sm text-[#142033]">
+  <p><strong>প্রদানকারী:</strong> {selectedProvider.name}</p>
+  <p className="mt-2"><strong>বিভাগ:</strong> {selectedCategory === "electricity" ? "বিদ্যুৎ" : selectedCategory === "water" ? "পানি" : selectedCategory === "gas" ? "গ্যাস" : selectedCategory === "internet" ? "ইন্টারনেট" : "মোবাইল"}</p>
+  </div>
             <p className="text-sm text-blue-900"><strong>প্রদানকারী:</strong> {selectedProvider.name}</p>
-            <p className="text-sm text-blue-900"><strong>বিভাগ:</strong> {selectedCategory === "electricity" ? "বিদ্যুৎ" : selectedCategory === "water" ? "পানি" : selectedCategory === "gas" ? "গ্যাস" : selectedCategory === "internet" ? "ইন্টারনেট" : "মোবাইল"}</p>
-            <p className="text-sm text-blue-900"><strong>প্রদানকারীর নম্বর:</strong> {selectedProvider?.number}</p>
-          </div>
+            <p className="text-sm text-blue-900"><strong>বিভাগ:</strong> {selectedCategory === "electricity" ? "বিদ্যুৎ" : selectedCategory === "water" ? "পানি" : selectedCategory === "gas" ? "গ্যাস" : selectedCategory === "internet" ? "ইন্টা��নেট" : "মোবাইল"}</p>
+  <p className="mt-2"><strong>প্রদানকারীর কোড:</strong> {selectedProvider?.number}</p>
+  </div>
 
-          <div className="space-y-4">
+  <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium mb-2">
                 {selectedCategory === "electricity"
@@ -413,17 +425,18 @@ export default function BillPage() {
 
       {step === 4 && billInfo && (
         <div className="p-6 flex flex-col flex-1">
-          <div className="text-2xl font-bold mb-2">Bill Information</div>
-          <div className="text-gray-600 mb-6">Review your bill details</div>
+<div className="mb-4 text-center text-5xl font-normal tracking-tight text-[#36aaf0]">বিল পরিশোধ</div>
+  <div className="mb-2 text-center text-2xl font-medium text-[#142033]">বিলের বিস্তারিত</div>
+  <div className="mb-6 text-center text-gray-600">আপনার বিলের তথ্য যাচাই করুন</div>
 
           <div className="bg-gray-100 rounded-lg p-4 mb-6">
             <div className="space-y-3">
               <div className="flex justify-between">
-                <span className="text-gray-600">Provider:</span>
+                <span className="text-gray-600">বিল প্রদানকারী:</span>
                 <span className="font-bold">{selectedProvider.name}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Account Number:</span>
+                <span className="text-gray-600">অ্যাকাউন্ট নম্বর:</span>
                 <span className="font-bold">{billInfo.accountNumber}</span>
               </div>
               <div className="flex justify-between">
