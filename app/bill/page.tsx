@@ -250,39 +250,36 @@ export default function BillPage() {
       )}
 
   {step === 2 && (
-  <div className="flex flex-1 flex-col bg-[#f7fbfe] px-5 pb-8 pt-5 sm:px-8">
-    <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col">
-      <button onClick={() => setStep(1)} className="mb-8 flex w-fit items-center gap-2 text-sm font-medium text-[#142033]" aria-label="Back to bill categories">
-        <ArrowLeft size={20} strokeWidth={1.8} />
-        Back
-      </button>
-      <div className="mb-8 flex items-end justify-between gap-4">
-        <div>
-          <p className="mb-2 text-sm font-semibold uppercase tracking-[0.18em] text-[#29a9eb]">Electricity bill</p>
-          <h1 className="text-3xl font-semibold tracking-tight text-[#142033] sm:text-4xl">Choose your provider</h1>
-          <p className="mt-2 text-sm leading-6 text-slate-500">Select the electricity account you want to pay.</p>
-        </div>
-        <span className="hidden rounded-full bg-white px-4 py-2 text-xs font-medium text-slate-500 shadow-sm sm:inline-flex">6 providers</span>
-      </div>
-      <div className="relative mb-6">
-        <Search size={19} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
-        <input type="text" placeholder="Search DESCO, NESCO, REB..." className="h-14 w-full rounded-2xl border-0 bg-white pl-12 pr-4 text-sm shadow-[0_8px_24px_rgba(20,32,51,0.06)] outline-none ring-1 ring-[#d9eef9] transition focus:ring-2 focus:ring-[#29a9eb]" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
-      </div>
-      <div className="grid gap-3 sm:grid-cols-2">
-        {filteredProviders.map((provider, index) => (
-          <button key={index} onClick={() => handleProviderSelect(provider)} className="group flex min-h-[104px] items-center gap-4 rounded-2xl bg-white p-4 text-left shadow-[0_8px_24px_rgba(20,32,51,0.05)] ring-1 ring-[#e5f2f8] transition hover:-translate-y-0.5 hover:ring-[#29a9eb]">
-            <div className={`flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl ${provider.color || "bg-[#29a9eb]"}`}>
-              {provider.isImage ? <img src={provider.icon || "/placeholder.svg"} alt={`${provider.name} logo`} className="h-14 w-14 object-contain" /> : <span className="text-xl text-white">{provider.icon}</span>}
-            </div>
-            <div className="min-w-0 flex-1">
-              <div className="truncate text-base font-semibold text-[#142033]">{provider.name}</div>
-              <div className="mt-1 truncate text-xs text-slate-500">{provider.fullName || "Electricity service provider"}</div>
-              {provider.source && <div className={`mt-2 text-[11px] font-medium ${provider.enabled ? "text-emerald-700" : "text-amber-700"}`}>{provider.enabled ? `${provider.source} provider` : `${provider.source} integration pending`}</div>}
-            </div>
-            <span className="text-lg text-slate-300 transition group-hover:text-[#29a9eb]">›</span>
-          </button>
-        ))}
-      </div>
+  <div className="flex flex-1 flex-col bg-white px-6 pb-10 pt-6 sm:px-10">
+  <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col">
+  <button onClick={() => setStep(1)} className="mb-14 flex w-fit items-center gap-2 text-sm font-medium text-[#142033]" aria-label="Back to bill categories">
+  <ArrowLeft size={22} strokeWidth={1.8} />
+  Back
+  </button>
+  <div className="mb-16 text-center">
+  <p className="mb-4 text-5xl font-normal tracking-tight text-[#36aaf0] sm:text-6xl">বিল পরিশোধ</p>
+  <h1 className="text-2xl font-medium text-[#142033] sm:text-3xl">Choose your provider</h1>
+  <p className="mt-3 text-sm leading-6 text-slate-500">Select the electricity account you want to pay.</p>
+  </div>
+  <div className="relative mb-8">
+  <Search size={19} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[#36aaf0]" />
+  <input type="text" placeholder="Search DESCO, NESCO, REB..." className="h-14 w-full rounded-none border border-[#b9e5fb] bg-white pl-12 pr-4 text-sm text-[#142033] outline-none transition focus:border-[#36aaf0]" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+  </div>
+  <div className="flex flex-col divide-y divide-[#e5f2f8] border-y border-[#e5f2f8]">
+  {filteredProviders.map((provider, index) => (
+  <button key={index} onClick={() => handleProviderSelect(provider)} className="group flex min-h-[100px] items-center gap-4 bg-white px-2 py-5 text-left transition hover:bg-[#f7fcff]">
+  <div className={`flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full ${provider.color || "bg-[#36aaf0]"}`}>
+  {provider.isImage ? <img src={provider.icon || "/placeholder.svg"} alt={`${provider.name} logo`} className="h-14 w-14 object-contain" /> : <span className="text-xl text-white">{provider.icon}</span>}
+  </div>
+  <div className="min-w-0 flex-1">
+  <div className="truncate text-base font-semibold text-[#142033]">{provider.name}</div>
+  <div className="mt-1 truncate text-xs text-slate-500">{provider.fullName || "Electricity service provider"}</div>
+  {provider.source && <div className="mt-2 text-[11px] font-medium text-[#36aaf0]">{provider.source} provider</div>}
+  </div>
+  <span className="text-xl text-[#b9e5fb] transition group-hover:text-[#36aaf0]">›</span>
+  </button>
+  ))}
+  </div>
       {filteredProviders.length === 0 && searchQuery && <div className="py-12 text-center text-sm text-slate-500">No providers found for &quot;{searchQuery}&quot;</div>}
     </div>
   </div>
@@ -327,7 +324,7 @@ export default function BillPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">বিল প্রদানকারীর নম্বর / ড্যাশবোর্ড অ্যাক্সেস নম্বর</label>
+              <label className="block text-sm font-medium mb-2">বিল প্রদানকারীর নম্বর / ড্যাশবোর্ড অ্যাক্সেস নম্��র</label>
               <input
                 type="tel"
                 className="w-full border rounded-md p-3"
