@@ -588,7 +588,10 @@ if (Number(amount) > 9000000) {
   <div className="flex flex-1 flex-col overflow-y-auto bg-white px-5 pb-8 pt-6">
   <div className="space-y-4">
   <button
-  onClick={() => handleMethodSelect("card")}
+  onClick={() => {
+    handleMethodSelect("card")
+    setStep(2)
+  }}
   className="flex w-full items-center rounded-xl border border-[#edf0f3] bg-white px-4 py-4 text-left shadow-[0_3px_12px_rgba(20,32,51,0.05)] transition-colors hover:border-[#38afe8]"
   >
     <div className="mr-4 flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-[#e8f7fd] text-[#249fe0]"><CreditCard size={22} strokeWidth={1.8} /></div>
@@ -599,7 +602,10 @@ if (Number(amount) > 9000000) {
 
   </button>
   <button
-  onClick={() => handleMethodSelect("bank")}
+  onClick={() => {
+    handleMethodSelect("bank")
+    setStep(3)
+  }}
   className="flex w-full items-center rounded-xl border border-[#edf0f3] bg-white px-4 py-4 text-left shadow-[0_3px_12px_rgba(20,32,51,0.05)] transition-colors hover:border-[#38afe8]"
   >
     <div className="mr-4 flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-[#eaf8ef] text-[#2da35a]"><Building2 size={22} strokeWidth={1.8} /></div>
@@ -612,13 +618,6 @@ if (Number(amount) > 9000000) {
   </div>
 
   {error && <div className="mt-4 text-center text-red-500">{error}</div>}
-  <button
-    type="button"
-    onClick={handleMethodNext}
-    className="mobile-button mt-8 w-full rounded-full py-5 text-3xl font-normal"
-  >
-    Next
-  </button>
   </div>
       )}
 
