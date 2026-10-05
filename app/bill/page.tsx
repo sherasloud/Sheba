@@ -99,7 +99,7 @@ export default function BillPage() {
 
   const handlePayBill = () => {
     if (!pin || pin.length !== 6) {
-      setError("Please enter your 6-digit PIN")
+      setError("অনুগ্রহ করে ৬ সংখ্যার পিন লিখুন")
       return
     }
 
@@ -124,7 +124,7 @@ export default function BillPage() {
     // Add transaction to history
     const transaction = {
       id: Date.now(),
-      type: "Bill Payment",
+      type: "বিল পরিশোধ",
       amount: -totalAmount,
       to: selectedProvider.name,
       date: new Date().toLocaleDateString(),
@@ -160,7 +160,7 @@ export default function BillPage() {
           <button onClick={() => router.push("/")} className="mr-4">
             <ArrowLeft size={24} />
           </button>
-          <div className="text-xl font-medium">Bill Payment</div>
+          <div className="text-xl font-medium">বিল পরিশোধ</div>
         </div>
 
         <div className="flex flex-col items-center justify-center flex-1 p-6">
@@ -181,7 +181,7 @@ export default function BillPage() {
               <span className="font-bold">{billDetails.accountNumber}</span>
             </div>
             <div className="flex justify-between mb-2">
-              <span className="text-gray-600">Bill Amount:</span>
+              <span className="text-gray-600">বিলের পরিমাণ:</span>
               <span className="font-bold">Tk{billDetails.amount}</span>
             </div>
             {billInfo?.lateFee > 0 && (
@@ -263,7 +263,7 @@ export default function BillPage() {
   </div>
   <div className="relative mb-8">
   <Search size={19} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[#36aaf0]" />
-  <input type="text" placeholder="Search DESCO, NESCO, REB..." className="h-14 w-full rounded-none border border-[#b9e5fb] bg-white pl-12 pr-4 text-sm text-[#142033] outline-none transition focus:border-[#36aaf0]" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+  <input type="text" placeholder="DESCO, NESCO, REB খুঁজুন..." className="h-14 w-full rounded-none border border-[#b9e5fb] bg-white pl-12 pr-4 text-sm text-[#142033] outline-none transition focus:border-[#36aaf0]" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
   </div>
   <div className="flex flex-col divide-y divide-[#e5f2f8] border-y border-[#e5f2f8]">
   {filteredProviders.map((provider, index) => (
@@ -273,14 +273,14 @@ export default function BillPage() {
   </div>
   <div className="min-w-0 flex-1">
   <div className="truncate text-base font-semibold text-[#142033]">{provider.name}</div>
-  <div className="mt-1 truncate text-xs text-slate-500">{provider.fullName || "Electricity service provider"}</div>
-  {provider.source && <div className="mt-2 text-[11px] font-medium text-[#36aaf0]">{provider.source} provider</div>}
+  <div className="mt-1 truncate text-xs text-slate-500">{provider.fullName || "বিদ্যুৎ সেবা প্রদানকারী"}</div>
+  {provider.source && <div className="mt-2 text-[11px] font-medium text-[#36aaf0]">{provider.source} প্রদানকারী</div>}
   </div>
   <span className="text-xl text-[#b9e5fb] transition group-hover:text-[#36aaf0]">›</span>
   </button>
   ))}
   </div>
-      {filteredProviders.length === 0 && searchQuery && <div className="py-12 text-center text-sm text-slate-500">No providers found for &quot;{searchQuery}&quot;</div>}
+      {filteredProviders.length === 0 && searchQuery && <div className="py-12 text-center text-sm text-slate-500">&quot;{searchQuery}&quot;-এর কোনো প্রদানকারী পাওয়া যায়নি</div>}
     </div>
   </div>
   )}
@@ -351,56 +351,50 @@ export default function BillPage() {
               <div className="flex items-start">
                 <AlertTriangle size={20} className="text-yellow-600 mr-3 mt-0.5" />
                 <div>
-                  <p className="text-yellow-800 text-sm font-medium mb-1">Important</p>
+                  <p className="text-yellow-800 text-sm font-medium mb-1">গুরুত্বপূর্ণ</p>
                   <p className="text-yellow-700 text-xs">
-                    Make sure to enter the correct{" "}
-                    {selectedCategory === "electricity"
-                      ? "meter/customer number"
-                      : selectedCategory === "mobile"
-                        ? "mobile number"
-                        : "account number"}{" "}
-                    as shown on your bill. Incorrect numbers may result in payment to wrong account.
+                    আপনার বিল অনুযায়ী সঠিক {selectedCategory === "electricity" ? "মিটার/গ্রাহক নম্বর" : selectedCategory === "mobile" ? "মোবাইল নম্বর" : "অ্যাকাউন্ট নম্বর"} লিখুন। ভুল নম্বর দিলে ভুল অ্যাকাউন্টে পেমেন্ট হতে পারে।
                   </p>
                 </div>
               </div>
             </div>
 
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <h3 className="font-medium text-blue-800 mb-2">📋 Where to find your number:</h3>
+              <h3 className="font-medium text-blue-800 mb-2">আপনার নম্বরটি কোথায় পাবেন:</h3>
               <ul className="text-sm text-blue-700 space-y-1">
                 {selectedCategory === "electricity" && (
                   <>
-                    <li>• Check your electricity bill</li>
-                    <li>• Look for "Customer Number" or "Account Number"</li>
-                    <li>• Usually 8-12 digits long</li>
+                    <li>• আপনার বিদ্যুৎ বিল দেখুন</li>
+                    <li>• গ্রাহক নম্বর বা অ্যাকাউন্ট নম্বর খুঁজুন</li>
+                    <li>• সাধারণত ৮-১২ সংখ্যার হয়</li>
                   </>
                 )}
                 {selectedCategory === "water" && (
                   <>
-                    <li>• Check your water bill</li>
-                    <li>• Look for "Customer Number"</li>
-                    <li>• Usually printed at the top of the bill</li>
+                    <li>• আপনার পানি বিল দেখুন</li>
+                    <li>• গ্রাহক নম্বর খুঁজুন</li>
+                    <li>• সাধারণত বিলের উপরে লেখা থাকে</li>
                   </>
                 )}
                 {selectedCategory === "gas" && (
                   <>
-                    <li>• Check your gas bill</li>
-                    <li>• Look for "Account Number"</li>
-                    <li>• Usually 10-15 digits long</li>
+                    <li>• আপনার গ্যাস বিল দেখুন</li>
+                    <li>• অ্যাকাউন্ট নম্বর খুঁজুন</li>
+                    <li>• সাধারণত ১০-১৫ সংখ্যার হয়</li>
                   </>
                 )}
                 {selectedCategory === "internet" && (
                   <>
-                    <li>• Check your internet bill</li>
-                    <li>• Look for "Customer ID" or "Account Number"</li>
-                    <li>• Contact your ISP if unsure</li>
+                    <li>• আপনার ইন্টারনেট বিল দেখুন</li>
+                    <li>• গ্রাহক আইডি বা অ্যাকাউন্ট নম্বর খুঁজুন</li>
+                    <li>• নিশ্চিত না হলে সেবাদাতার সঙ্গে যোগাযোগ করুন</li>
                   </>
                 )}
                 {selectedCategory === "mobile" && (
                   <>
-                    <li>• Your postpaid mobile number</li>
-                    <li>• Must be 11 digits starting with 01</li>
-                    <li>• Check your mobile bill for confirmation</li>
+                    <li>• আপনার পোস্টপেইড মোবাইল নম্বর লিখুন</li>
+                    <li>• নম্বরটি ০১ দিয়ে শুরু হয়ে ১১ সংখ্যার হতে হবে</li>
+                    <li>• নিশ্চিত করতে মোবাইল বিল দেখুন</li>
                   </>
                 )}
               </ul>
@@ -465,7 +459,7 @@ export default function BillPage() {
               </div>
               <div className="border-t pt-3">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Bill Amount:</span>
+                  <span className="text-gray-600">বিলের পরিমাণ:</span>
                   <span className="font-bold">Tk{billInfo.amount}</span>
                 </div>
                 {billInfo.lateFee > 0 && (
