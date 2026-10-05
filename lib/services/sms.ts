@@ -116,8 +116,8 @@ export async function sendTransactionSMS({
 }): Promise<SMSResult> {
   const label = direction === "sent" ? "Send Money Successful!" : "Money Received Successfully!"
   const currency = "Tk"
-  const formattedAmount = amount.toLocaleString("en-US")
-  const formattedBalance = balance.toLocaleString("en-US")
+  const formattedAmount = String(amount)
+  const formattedBalance = String(balance)
   const formattedTime = timestamp.toLocaleString("en-GB", {
     timeZone: "Asia/Dhaka",
     day: "2-digit",
