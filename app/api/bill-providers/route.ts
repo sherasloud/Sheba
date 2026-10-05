@@ -10,9 +10,9 @@ const sohojXPayBillProviders = [
   { id: "sohoj-dhaka-wasa", name: "DHAKA WASA", fullName: "Dhaka Water Supply and Sewerage Authority", category: "Water", number: "DWASA", source: "SohojXPay", enabled: true, icon: "/images/wasa-logo.jpg", isImage: true },
   { id: "sohoj-rajshahi-wasa", name: "RAJSHAHI WASA", fullName: "Rajshahi Water Supply and Sewerage Authority", category: "Water", number: "RJWASA", source: "SohojXPay", enabled: true, icon: "/images/rajshahi-wasa-logo.jpeg", isImage: true },
   { id: "sohoj-chattogram-wasa", name: "CHATTOGRAM WASA", fullName: "Chattogram Water Supply and Sewerage Authority", category: "Water", number: "CTGWASA", source: "SohojXPay", enabled: true, icon: "/images/chattogram-wasa-logo.jpeg", isImage: true },
-  { id: "sohoj-titas", name: "TITAS GAS", fullName: "Titas Gas Transmission and Distribution Company", category: "Gas", number: "TITAS", source: "SohojXPay", enabled: true },
-  { id: "sohoj-jalalabad", name: "JALALABAD GAS", fullName: "Jalalabad Gas Transmission and Distribution System", category: "Gas", number: "JALALABAD_GAS", source: "SohojXPay", enabled: true },
-  { id: "sohoj-bakhrabad", name: "BAKHRABAD GAS", fullName: "Bakhrabad Gas Distribution Company", category: "Gas", number: "BGDCL", source: "SohojXPay", enabled: true },
+  { id: "sohoj-titas", name: "TITAS GAS", fullName: "Titas Gas Transmission and Distribution Company", category: "Gas", number: "TITAS", source: "SohojXPay", enabled: true, icon: "/images/titas-gas-logo.jpeg", isImage: true },
+  { id: "sohoj-jalalabad", name: "JALALABAD GAS", fullName: "Jalalabad Gas Transmission and Distribution System", category: "Gas", number: "JALALABAD_GAS", source: "SohojXPay", enabled: true, icon: "/images/jalalabad-gas-logo.jpeg", isImage: true },
+  { id: "sohoj-bakhrabad", name: "BAKHRABAD GAS", fullName: "Bakhrabad Gas Distribution Company", category: "Gas", number: "BGDCL", source: "SohojXPay", enabled: true, icon: "/images/bakhrabad-gas-logo.jpeg", isImage: true },
 ]
 
 
