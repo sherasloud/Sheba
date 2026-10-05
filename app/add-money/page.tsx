@@ -193,8 +193,8 @@ export default function AddMoneyPage() {
       return
     }
 
-    if (Number(amount) > 50000) {
-      setError("Maximum amount is Tk50,000 per transaction")
+if (Number(amount) > 9000000) {
+  setError("Maximum amount is Tk90,00,000 per transaction")
       return
     }
 
@@ -651,7 +651,7 @@ export default function AddMoneyPage() {
                 <input
                   type="text"
                   aria-label="Amount"
-                  className="min-w-0 flex-1 border-0 bg-transparent p-0 text-center text-[5rem] font-normal leading-none text-black outline-none placeholder:text-black"
+                  className="w-full min-w-0 flex-1 border-0 bg-transparent p-0 text-center text-[clamp(4rem,18vw,5rem)] font-normal leading-none text-black outline-none placeholder:text-black"
                   value={amount}
                 onChange={(e) => setAmount(e.target.value.replace(/[^0-9]/g, ""))}
                 placeholder="0"
