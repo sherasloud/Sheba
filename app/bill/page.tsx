@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { ArrowLeft, CheckCircle, AlertTriangle, Search } from "lucide-react"
+import { ArrowLeft, CheckCircle, AlertTriangle } from "lucide-react"
 import { useRouter } from "next/navigation"
 
 const billProviders: { [key: string]: any[] } = {}
@@ -25,7 +25,6 @@ export default function BillPage() {
   const [balance, setBalance] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
   const [billInfo, setBillInfo] = useState<any>(null)
-  const [searchQuery, setSearchQuery] = useState("")
   const [providers, setProviders] = useState<{ [key: string]: any[] }>({})
 
   useEffect(() => {
@@ -97,7 +96,7 @@ export default function BillPage() {
     setError(`${selectedProvider.name} এর real-time bill inquiry এখনো connected নয়। Provider API enable হলে এখানে আসল bill amount, due date এবং customer তথ্য দেখাবে।`)
   }
 
-  const handlePayBill = () => {
+  const handlePayBill = async () => {
     if (!pin || pin.length !== 6) {
       setError("অনুগ্রহ করে ৬ সংখ্যার পিন লিখুন")
       return
@@ -109,48 +108,66 @@ export default function BillPage() {
       return
     }
 
-    const totalAmount = Number(billDetails.amount) + (billInfo?.lateFee || 0)
+    const totalAmount = Number(billInfo.amount) + (billInfo?.lateFee || 0)
 
     if (totalAmount > balance) {
       setError("Insufficient balance!")
       return
     }
 
-    // Update balance immediately
-    const newBalance = balance - totalAmount
-    setBalance(newBalance)
-    localStorage.setItem("userBalance", newBalance.toString())
+    setIsLoading(true)
+    setError("")
 
-    // Add transaction to history
-    const transaction = {
-      id: Date.now(),
-      type: "বিল পরিশোধ",
-      amount: -totalAmount,
-      to: selectedProvider.name,
-      date: new Date().toLocaleDateString(),
-      time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-      details: {
-        category: selectedCategory,
-        accountNumber: billDetails.accountNumber,
-        billMonth: billDetails.billMonth,
-        providerNumber: billDetails.providerNumber,
-      },
+    try {
+      const response = await fetch("/api/sohojxpay/bills", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          accountNumber: billDetails.accountNumber,
+          providerCode: selectedProvider.number,
+          category: selectedCategory,
+          amount: totalAmount,
+          contactNumber: billDetails.providerNumber,
+        }),
+      })
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(result.error || "Payment was not accepted")
+      }
+
+      const newBalance = balance - totalAmount
+      setBalance(newBalance)
+      localStorage.setItem("userBalance", newBalance.toString())
+
+      const transaction = {
+        id: Date.now(),
+        type: "বিল পরিশোধ",
+        amount: -totalAmount,
+        to: selectedProvider.name,
+        date: new Date().toLocaleDateString(),
+        time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        details: {
+          category: selectedCategory,
+          accountNumber: billDetails.accountNumber,
+          billMonth: billDetails.billMonth,
+          providerNumber: billDetails.providerNumber,
+          providerTransactionId: result.transactionId,
+        },
+      }
+
+      const transactions = JSON.parse(localStorage.getItem("transactions") || "[]")
+      transactions.push(transaction)
+      localStorage.setItem("transactions", JSON.stringify(transactions))
+      setSuccess(true)
+    } catch (paymentError) {
+      setError(paymentError instanceof Error ? paymentError.message : "Payment failed")
+    } finally {
+      setIsLoading(false)
     }
-
-    const transactions = JSON.parse(localStorage.getItem("transactions") || "[]")
-    transactions.push(transaction)
-    localStorage.setItem("transactions", JSON.stringify(transactions))
-
-    setSuccess(true)
   }
 
-  const filteredProviders = selectedCategory && providers[selectedCategory]
-    ? providers[selectedCategory].filter(
-        (provider) =>
-          provider.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          (provider.fullName && provider.fullName.toLowerCase().includes(searchQuery.toLowerCase())),
-      )
-    : []
+  const filteredProviders = selectedCategory && providers[selectedCategory] ? providers[selectedCategory] : []
 
   // Success screen
   if (success) {
@@ -261,26 +278,20 @@ export default function BillPage() {
   <h1 className="text-2xl font-medium text-[#142033] sm:text-3xl">বিল প্রদানকারী নির্বাচন করুন</h1>
   <p className="mt-3 text-sm leading-6 text-slate-500">যে বিদ্যুৎ অ্যাকাউন্টের বিল পরিশোধ করতে চান, সেটি নির্বাচন করুন।</p>
   </div>
-  <div className="relative mb-8">
-  <Search size={19} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[#36aaf0]" />
-  <input type="text" placeholder="DESCO, NESCO, REB খুঁজুন..." className="h-14 w-full rounded-none border border-[#b9e5fb] bg-white pl-12 pr-4 text-sm text-[#142033] outline-none transition focus:border-[#36aaf0]" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
-  </div>
-  <div className="flex flex-col divide-y divide-[#e5f2f8] border-y border-[#e5f2f8]">
+  <div className="flex flex-col">
   {filteredProviders.map((provider, index) => (
-  <button key={index} onClick={() => handleProviderSelect(provider)} className="group flex min-h-[100px] items-center gap-4 bg-white px-2 py-5 text-left transition hover:bg-[#f7fcff]">
-  <div className={`flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full ${provider.color || "bg-[#36aaf0]"}`}>
+  <button key={index} onClick={() => handleProviderSelect(provider)} className="group flex min-h-[100px] items-center gap-4 border-0 bg-white px-2 py-5 text-left transition hover:bg-[#f7fcff]">
+  <div className={`flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden bg-transparent ${provider.id === "sohoj-west-zone-postpaid" ? "rounded-full" : "rounded-none"}`}>
   {provider.isImage ? <img src={provider.icon || "/placeholder.svg"} alt={`${provider.name} logo`} className="h-14 w-14 object-contain" /> : <span className="text-xl text-white">{provider.icon}</span>}
   </div>
   <div className="min-w-0 flex-1">
   <div className="truncate text-base font-semibold text-[#142033]">{provider.name}</div>
-  <div className="mt-1 truncate text-xs text-slate-500">{provider.fullName || "বিদ্যুৎ সেবা প্রদানকারী"}</div>
+  <div className="mt-1 truncate text-xs text-slate-500">{provider.fullName || "বিদ্যুৎ সেব�� প্রদানকারী"}</div>
   {provider.source && <div className="mt-2 text-[11px] font-medium text-[#36aaf0]">{provider.source} প্রদানকারী</div>}
   </div>
-  <span className="text-xl text-[#b9e5fb] transition group-hover:text-[#36aaf0]">›</span>
   </button>
   ))}
   </div>
-      {filteredProviders.length === 0 && searchQuery && <div className="py-12 text-center text-sm text-slate-500">&quot;{searchQuery}&quot;-এর কোনো প্রদানকারী পাওয়া যায়নি</div>}
     </div>
   </div>
   )}
@@ -299,7 +310,7 @@ export default function BillPage() {
   </div>
   <div className="mb-8 border-y border-[#e5f2f8] py-5 text-sm text-[#142033]">
   <p><strong>প্রদানকারী:</strong> {selectedProvider.name}</p>
-  <p className="mt-2"><strong>বিভাগ:</strong> {selectedCategory === "electricity" ? "বিদ্যুৎ" : selectedCategory === "water" ? "পানি" : selectedCategory === "gas" ? "গ্যাস" : selectedCategory === "internet" ? "ইন্টারনেট" : "মোবাইল"}</p>
+  <p className="mt-2"><strong>বিভাগ:</strong> {selectedCategory === "electricity" ? "বিদ্যুৎ" : selectedCategory === "water" ? "পানি" : selectedCategory === "gas" ? "গ্যাস" : selectedCategory === "internet" ? "��ন্টারনেট" : "মোব��ইল"}</p>
   </div>
             <p className="text-sm text-blue-900"><strong>প্রদানকারী:</strong> {selectedProvider.name}</p>
             <p className="text-sm text-blue-900"><strong>বিভাগ:</strong> {selectedCategory === "electricity" ? "বিদ্যুৎ" : selectedCategory === "water" ? "পানি" : selectedCategory === "gas" ? "গ্যাস" : selectedCategory === "internet" ? "ইন্টা��নেট" : "মোবাইল"}</p>
@@ -357,7 +368,7 @@ export default function BillPage() {
           <button
             onClick={handleBillInquiry}
             disabled={isLoading}
-            className="bg-[#29a9eb] text-white p-4 rounded-md mt-auto disabled:bg-gray-400"
+            className="mt-[173px] bg-[#29a9eb] text-white p-4 rounded-md disabled:bg-gray-400"
           >
             {isLoading ? "Checking Bill..." : "Check Bill"}
           </button>
