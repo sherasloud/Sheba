@@ -94,7 +94,7 @@ export default function BillPage() {
     setError("")
 
     setIsLoading(false)
-    setError(`${selectedProvider.name} real-time bill inquiry এখনো connected নয়। EkPay merchant/API access ও provider enable হওয়ার পর এখানে আসল bill amount, due date এবং customer তথ্য দেখাবে।`)
+    setError(`${selectedProvider.name} real-time bill inquiry এখনো connected নয়। SohojXPay provider API enable হলে এখানে আসল bill amount, due date এবং customer তথ্য দেখাবে।`)
   }
 
   const handlePayBill = () => {
@@ -327,7 +327,7 @@ export default function BillPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">প্রদানকারীর নম্ব��� / ড্যাশবোর্ড অ্যাক্সেস নম্বর</label>
+              <label className="block text-sm font-medium mb-2">প্রদানকারীর নম্ব��� / ড্যাশবোর্ড অ্যা��্সেস নম্বর</label>
               <input
                 type="tel"
                 className="w-full border rounded-md p-3"
