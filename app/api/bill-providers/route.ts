@@ -1,14 +1,15 @@
 import { NextResponse } from 'next/server'
 
 const ekPayBillProviders = [
-  { id: "desco", name: "DESCO", fullName: "Dhaka Electric Supply Company", category: "Electricity", number: "DESCO", source: "EkPay", enabled: false },
-  { id: "dpdc", name: "DPDC", fullName: "Dhaka Power Distribution Company", category: "Electricity", number: "DPDC", source: "EkPay", enabled: false },
-  { id: "nesco", name: "NESCO", fullName: "Northern Electricity Supply Company", category: "Electricity", number: "NESCO", source: "EkPay", enabled: false },
-  { id: "wzpdcl", name: "WZPDCL", fullName: "West Zone Power Distribution Company", category: "Electricity", number: "WZPDCL", source: "EkPay", enabled: false },
-  { id: "reb", name: "REB/PBS", fullName: "Rural Electrification Board / Palli Bidyut", category: "Electricity", number: "REB", source: "EkPay", enabled: false },
-  { id: "dwasa", name: "DHAKA WASA", fullName: "Dhaka Water Supply and Sewerage Authority", category: "Water", number: "DWASA", source: "EkPay", enabled: false },
-  { id: "khulnawasa", name: "KHULNA WASA", fullName: "Khulna Water Supply and Sewerage Authority", category: "Water", number: "KHLWASA", source: "EkPay", enabled: false },
-  { id: "rajshahiwasa", name: "RAJSHAHI WASA", fullName: "Rajshahi Water Supply and Sewerage Authority", category: "Water", number: "RJWASA", source: "EkPay", enabled: false },
+  { id: "desco-postpaid", name: "DESCO POSTPAID", fullName: "Dhaka Electric Supply Company", category: "Electricity", number: "DESCO_POSTPAID", source: "EkPay", enabled: false },
+  { id: "desco-prepaid", name: "DESCO PREPAID", fullName: "Dhaka Electric Supply Company", category: "Electricity", number: "DESCO_PREPAID", source: "EkPay", enabled: false },
+  { id: "west-zone-postpaid", name: "WEST ZONE POSTPAID", fullName: "West Zone Power Distribution Company", category: "Electricity", number: "WZPDCL_POSTPAID", source: "EkPay", enabled: false },
+  { id: "nesco-postpaid", name: "NESCO POSTPAID", fullName: "Northern Electricity Supply Company", category: "Electricity", number: "NESCO_POSTPAID", source: "EkPay", enabled: false },
+  { id: "nesco-prepaid", name: "NESCO PREPAID", fullName: "Northern Electricity Supply Company", category: "Electricity", number: "NESCO_PREPAID", source: "EkPay", enabled: false },
+  { id: "reb-postpaid", name: "REB POSTPAID", fullName: "Rural Electrification Board / Palli Bidyut", category: "Electricity", number: "REB_POSTPAID", source: "EkPay", enabled: false },
+  { id: "dwasa", name: "DHAKA WASA", fullName: "Dhaka Water Supply and Sewerage Authority", category: "Water", number: "DWASA", source: "EkPay", enabled: false, icon: "/images/wasa-logo.jpg", isImage: true },
+  { id: "khulnawasa", name: "KHULNA WASA", fullName: "Khulna Water Supply and Sewerage Authority", category: "Water", number: "KHLWASA", source: "EkPay", enabled: false, icon: "/images/khulna-wasa.jpg", isImage: true },
+  { id: "rajshahiwasa", name: "RAJSHAHI WASA", fullName: "Rajshahi Water Supply and Sewerage Authority", category: "Water", number: "RJWASA", source: "EkPay", enabled: false, icon: "/images/wasa-logo.jpg", isImage: true },
   { id: "titas", name: "Titas Gas", fullName: "Titas Gas Transmission and Distribution Company", category: "Gas", number: "TITAS", source: "EkPay", enabled: false },
   { id: "jalalabadgas", name: "Jalalabad Gas", fullName: "Jalalabad Gas Transmission and Distribution System", category: "Gas", number: "JALALABAD_GAS", source: "EkPay", enabled: false },
   { id: "bgdcl", name: "Bakhrabad Gas", fullName: "Bakhrabad Gas Distribution Company", category: "Gas", number: "BGDCL", source: "EkPay", enabled: false },

@@ -299,7 +299,7 @@ export default function BillPage() {
               <button
                 key={index}
                 onClick={() => handleProviderSelect(provider)}
-                className="w-full border rounded-lg p-4 flex items-center hover:bg-gray-50 transition-colors text-left"
+                className="w-full rounded-lg p-4 flex items-center hover:bg-gray-50 transition-colors text-left"
               >
                 <div
                   className={`w-12 h-12 ${provider.color} rounded-full flex items-center justify-center mr-4 overflow-hidden`}
@@ -307,8 +307,8 @@ export default function BillPage() {
                   {provider.isImage ? (
                     <img
                       src={provider.icon || "/placeholder.svg"}
-                      alt={provider.name}
-                      className="w-10 h-10 object-contain"
+                      alt={`${provider.name} logo`}
+                      className="h-12 w-12 object-contain"
                     />
                   ) : (
                     <span className="text-white text-lg">{provider.icon}</span>
