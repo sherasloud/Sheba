@@ -249,69 +249,44 @@ export default function BillPage() {
         </div>
       )}
 
-      {step === 2 && (
-        <div className="p-6 flex flex-col flex-1">
-          <div className="text-2xl font-bold mb-2">
-            {selectedCategory === "electricity"
-              ? "Electricity Providers"
-              : selectedCategory === "water"
-                ? "Water Providers"
-                : selectedCategory === "gas"
-                  ? "Gas Providers"
-                  : selectedCategory === "internet"
-                    ? "Internet Providers"
-                    : "Mobile Providers"}
-          </div>
-          <div className="text-gray-600 mb-6">Select your service provider</div>
-
-          {/* Search Bar */}
-          <div className="relative mb-6">
-            <Search size={20} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search providers..."
-              className="w-full pl-10 pr-4 py-3 border rounded-lg"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
-
-          <div className="space-y-3 flex-1 overflow-y-auto">
-            {filteredProviders.map((provider, index) => (
-              <button
-                key={index}
-                onClick={() => handleProviderSelect(provider)}
-                className="w-full rounded-lg p-4 flex items-center hover:bg-gray-50 transition-colors text-left"
-              >
-                <div
-                  className={`w-12 h-12 ${provider.color} rounded-full flex items-center justify-center mr-4 overflow-hidden`}
-                >
-                  {provider.isImage ? (
-                    <img
-                      src={provider.icon || "/placeholder.svg"}
-                      alt={`${provider.name} logo`}
-                      className="h-12 w-12 object-contain"
-                    />
-                  ) : (
-                    <span className="text-white text-lg">{provider.icon}</span>
-                  )}
-                </div>
-                  <div className="flex-1">
-                    <div className="font-semibold">{provider.name}</div>
-                    {provider.fullName && <div className="text-sm text-gray-600">{provider.fullName}</div>}
-                    {provider.source === "EkPay" && !provider.enabled && <div className="mt-1 text-xs text-amber-700">EkPay merchant access pending</div>}
-                  </div>
-              </button>
-            ))}
-          </div>
-
-          {filteredProviders.length === 0 && searchQuery && (
-            <div className="text-center py-8">
-              <div className="text-gray-500">No providers found for "{searchQuery}"</div>
-            </div>
-          )}
+  {step === 2 && (
+  <div className="flex flex-1 flex-col bg-[#f7fbfe] px-5 pb-8 pt-5 sm:px-8">
+    <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col">
+      <button onClick={() => setStep(1)} className="mb-8 flex w-fit items-center gap-2 text-sm font-medium text-[#142033]" aria-label="Back to bill categories">
+        <ArrowLeft size={20} strokeWidth={1.8} />
+        Back
+      </button>
+      <div className="mb-8 flex items-end justify-between gap-4">
+        <div>
+          <p className="mb-2 text-sm font-semibold uppercase tracking-[0.18em] text-[#29a9eb]">Electricity bill</p>
+          <h1 className="text-3xl font-semibold tracking-tight text-[#142033] sm:text-4xl">Choose your provider</h1>
+          <p className="mt-2 text-sm leading-6 text-slate-500">Select the electricity account you want to pay.</p>
         </div>
-      )}
+        <span className="hidden rounded-full bg-white px-4 py-2 text-xs font-medium text-slate-500 shadow-sm sm:inline-flex">6 providers</span>
+      </div>
+      <div className="relative mb-6">
+        <Search size={19} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+        <input type="text" placeholder="Search DESCO, NESCO, REB..." className="h-14 w-full rounded-2xl border-0 bg-white pl-12 pr-4 text-sm shadow-[0_8px_24px_rgba(20,32,51,0.06)] outline-none ring-1 ring-[#d9eef9] transition focus:ring-2 focus:ring-[#29a9eb]" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+      </div>
+      <div className="grid gap-3 sm:grid-cols-2">
+        {filteredProviders.map((provider, index) => (
+          <button key={index} onClick={() => handleProviderSelect(provider)} className="group flex min-h-[104px] items-center gap-4 rounded-2xl bg-white p-4 text-left shadow-[0_8px_24px_rgba(20,32,51,0.05)] ring-1 ring-[#e5f2f8] transition hover:-translate-y-0.5 hover:ring-[#29a9eb]">
+            <div className={`flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl ${provider.color || "bg-[#29a9eb]"}`}>
+              {provider.isImage ? <img src={provider.icon || "/placeholder.svg"} alt={`${provider.name} logo`} className="h-14 w-14 object-contain" /> : <span className="text-xl text-white">{provider.icon}</span>}
+            </div>
+            <div className="min-w-0 flex-1">
+              <div className="truncate text-base font-semibold text-[#142033]">{provider.name}</div>
+              <div className="mt-1 truncate text-xs text-slate-500">{provider.fullName || "Electricity service provider"}</div>
+              {provider.source === "EkPay" && !provider.enabled && <div className="mt-2 text-[11px] font-medium text-amber-700">Integration pending</div>}
+            </div>
+            <span className="text-lg text-slate-300 transition group-hover:text-[#29a9eb]">›</span>
+          </button>
+        ))}
+      </div>
+      {filteredProviders.length === 0 && searchQuery && <div className="py-12 text-center text-sm text-slate-500">No providers found for &quot;{searchQuery}&quot;</div>}
+    </div>
+  </div>
+  )}
 
       {step === 3 && (
         <div className="p-6 flex flex-col flex-1">
