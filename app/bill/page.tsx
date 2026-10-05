@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { ArrowLeft, CheckCircle, AlertTriangle, Search } from "lucide-react"
+import { ArrowLeft, CheckCircle, AlertTriangle } from "lucide-react"
 import { useRouter } from "next/navigation"
 
 const billProviders: { [key: string]: any[] } = {}
@@ -25,7 +25,6 @@ export default function BillPage() {
   const [balance, setBalance] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
   const [billInfo, setBillInfo] = useState<any>(null)
-  const [searchQuery, setSearchQuery] = useState("")
   const [providers, setProviders] = useState<{ [key: string]: any[] }>({})
 
   useEffect(() => {
@@ -168,13 +167,7 @@ export default function BillPage() {
     }
   }
 
-  const filteredProviders = selectedCategory && providers[selectedCategory]
-    ? providers[selectedCategory].filter(
-        (provider) =>
-          provider.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          (provider.fullName && provider.fullName.toLowerCase().includes(searchQuery.toLowerCase())),
-      )
-    : []
+  const filteredProviders = selectedCategory && providers[selectedCategory] ? providers[selectedCategory] : []
 
   // Success screen
   if (success) {
@@ -285,15 +278,11 @@ export default function BillPage() {
   <h1 className="text-2xl font-medium text-[#142033] sm:text-3xl">বিল প্রদানকারী নির্বাচন করুন</h1>
   <p className="mt-3 text-sm leading-6 text-slate-500">যে বিদ্যুৎ অ্যাকাউন্টের বিল পরিশোধ করতে চান, সেটি নির্বাচন করুন।</p>
   </div>
-  <div className="relative mb-8">
-  <Search size={19} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-[#36aaf0]" />
-  <input type="text" placeholder="DESCO, NESCO, REB খুঁজুন..." className="h-14 w-full rounded-none border border-[#b9e5fb] bg-white pl-12 pr-4 text-sm text-[#142033] outline-none transition focus:border-[#36aaf0]" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
-  </div>
-  <div className="flex flex-col divide-y divide-[#e5f2f8] border-y border-[#e5f2f8]">
+  <div className="flex flex-col">
   {filteredProviders.map((provider, index) => (
-  <button key={index} onClick={() => handleProviderSelect(provider)} className="group flex min-h-[100px] items-center gap-4 bg-white px-2 py-5 text-left transition hover:bg-[#f7fcff]">
-  <div className={`flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-full ${provider.color || "bg-[#36aaf0]"}`}>
-  {provider.isImage ? <img src={provider.icon || "/placeholder.svg"} alt={`${provider.name} logo`} className="h-14 w-14 object-contain" /> : <span className="text-xl text-white">{provider.icon}</span>}
+  <button key={index} onClick={() => handleProviderSelect(provider)} className="group flex min-h-[100px] items-center gap-4 border-0 bg-white px-2 py-5 text-left transition hover:bg-[#f7fcff]">
+  <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden bg-transparent">
+  {provider.isImage ? <img src={provider.icon || "/placeholder.svg"} alt={`${provider.name} logo`} className="h-14 w-14 rounded-none object-contain" /> : <span className="text-xl text-white">{provider.icon}</span>}
   </div>
   <div className="min-w-0 flex-1">
   <div className="truncate text-base font-semibold text-[#142033]">{provider.name}</div>
@@ -304,7 +293,6 @@ export default function BillPage() {
   </button>
   ))}
   </div>
-      {filteredProviders.length === 0 && searchQuery && <div className="py-12 text-center text-sm text-slate-500">&quot;{searchQuery}&quot;-এর কোনো প্রদানকারী পাওয়া যায়নি</div>}
     </div>
   </div>
   )}
