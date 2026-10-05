@@ -104,11 +104,16 @@ export default function AddMoneyPage() {
 
   const handleMethodSelect = (method: string) => {
     setSelectedMethod(method)
-    if (method === "card") {
-      setStep(2) // Go to card type selection
-    } else {
-      setStep(3) // Go directly to amount for bank
+    setError("")
+  }
+
+  const handleMethodNext = () => {
+    if (!selectedMethod) {
+      setError("Please select Card or Bank Account")
+      return
     }
+
+    setStep(selectedMethod === "card" ? 2 : 3)
     setError("")
   }
 
@@ -606,6 +611,14 @@ if (Number(amount) > 9000000) {
   </button>
   </div>
 
+  {error && <div className="mt-4 text-center text-red-500">{error}</div>}
+  <button
+    type="button"
+    onClick={handleMethodNext}
+    className="mobile-button mt-8 w-full rounded-full py-5 text-3xl font-normal"
+  >
+    Next
+  </button>
   </div>
       )}
 
