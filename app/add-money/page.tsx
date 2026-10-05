@@ -645,7 +645,7 @@ if (Number(amount) > 9000000) {
                 <input
                   type="text"
                   aria-label="Amount"
-                  className="h-24 w-[9ch] shrink-0 border-0 bg-transparent p-0 text-center text-[5rem] font-normal leading-none text-black outline-none placeholder:text-black"
+                  className="h-24 w-[9ch] shrink-0 border-0 bg-transparent p-0 text-center text-[5rem] font-normal leading-none text-black outline-none placeholder:text-black" style={{ fontSize: "5rem" }}
                   value={amount}
                 onChange={(e) => setAmount(e.target.value.replace(/[^0-9]/g, ""))}
                 placeholder="0"
@@ -664,7 +664,7 @@ if (Number(amount) > 9000000) {
                   type="text"
                   aria-label="Amount"
                   inputMode="numeric"
-                  className="h-24 min-w-0 flex-1 rounded-2xl border-0 bg-transparent p-0 text-center text-[5rem] font-normal leading-none text-black outline-none placeholder:text-black"
+                  className="h-24 min-w-0 flex-1 rounded-2xl border-0 bg-transparent p-0 text-center text-[5rem] font-normal leading-none text-black outline-none placeholder:text-black" style={{ fontSize: "5rem" }}
                   value={amount}
                   onChange={(e) => setAmount(e.target.value.replace(/[^0-9]/g, ""))}
                   placeholder="0"
