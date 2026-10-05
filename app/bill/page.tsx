@@ -281,6 +281,9 @@ export default function BillPage() {
   <div className="flex flex-col">
   {filteredProviders.map((provider, index) => (
   <button key={index} onClick={() => handleProviderSelect(provider)} className="group flex min-h-[100px] items-center gap-4 border-0 bg-white px-2 py-5 text-left transition hover:bg-[#f7fcff]">
+  <div className={`flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden bg-transparent ${provider.id === "sohoj-west-zone-postpaid" ? "rounded-full" : "rounded-none"}`}>
+  {provider.isImage ? <img src={provider.icon || "/placeholder.svg"} alt={`${provider.name} logo`} className="h-14 w-14 object-contain" /> : <span className="text-xl text-white">{provider.icon}</span>}
+  </div>
   <div className="min-w-0 flex-1">
   <div className="truncate text-base font-semibold text-[#142033]">{provider.name}</div>
   <div className="mt-1 truncate text-xs text-slate-500">{provider.fullName || "বিদ্যুৎ সেবা প্রদানকারী"}</div>
