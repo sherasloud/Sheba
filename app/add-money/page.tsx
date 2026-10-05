@@ -198,12 +198,6 @@ if (Number(amount) > 9000000) {
       return
     }
 
-    // Check card balance for card method
-    if (selectedMethod === "card" && Number(amount) > cardBalance) {
-      setError(`Insufficient card balance. Please try a lower amount`)
-      return
-    }
-
     setError("")
     if (selectedMethod === "card") {
       void startPayStationCheckout()
@@ -651,7 +645,7 @@ if (Number(amount) > 9000000) {
                 <input
                   type="text"
                   aria-label="Amount"
-                  className="w-full min-w-0 flex-1 border-0 bg-transparent p-0 text-center text-[clamp(4rem,18vw,5rem)] font-normal leading-none text-black outline-none placeholder:text-black"
+                  className="w-full min-w-0 flex-1 border-0 bg-transparent p-0 text-center text-[5rem] font-normal leading-none text-black outline-none placeholder:text-black"
                   value={amount}
                 onChange={(e) => setAmount(e.target.value.replace(/[^0-9]/g, ""))}
                 placeholder="0"
