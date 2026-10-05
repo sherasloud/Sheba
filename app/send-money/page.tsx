@@ -471,7 +471,7 @@ function SendMoneyContent() {
     {amount && (
       <div className="text-center mb-6 py-4 bg-sky-50 rounded-lg">
         <p className="text-gray-600 text-xs mb-1">Amount</p>
-        <p className="text-4xl font-bold text-sky-500">৳ {Number(amount).toLocaleString()}</p>
+        <p className="text-[10rem] font-normal leading-none text-sky-500" style={{ fontSize: "10rem", lineHeight: "1" }}>৳ {Number(amount).toLocaleString()}</p>
       </div>
     )}
 
