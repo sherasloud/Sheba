@@ -1,8 +1,15 @@
+"use client"
+
+import { useEffect } from "react"
 import Link from "next/link"
 
 const heroImage = "https://i.postimg.cc/0NLNqDL9/Unknown-57.jpg"
 
 export default function ShebaWebsite() {
+  useEffect(() => {
+    if (!window.location.hash) window.scrollTo({ top: 0, left: 0, behavior: "instant" })
+  }, [])
+
   return (
     <main className="w-full min-h-screen overflow-visible bg-[#fbfdff] text-[#172033]">
       <header className="relative z-20 border-b border-[#e7f2f8] bg-white/95">
