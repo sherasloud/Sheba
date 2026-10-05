@@ -327,7 +327,7 @@ export default function BillPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2">প্রদানকারীর নম্ব��� / ড্যাশবোর্ড অ্যা��্সেস নম্বর</label>
+              <label className="block text-sm font-medium mb-2">বিল প্রদানকারীর নম্বর / ড্যাশবোর্ড অ্যাক্সেস নম্বর</label>
               <input
                 type="tel"
                 className="w-full border rounded-md p-3"
@@ -335,7 +335,7 @@ export default function BillPage() {
                 onChange={(e) => setBillDetails({ ...billDetails, providerNumber: e.target.value })}
                 placeholder={`যেমন: ${selectedProvider?.number || "09666123456"}`}
               />
-              <p className="text-xs text-gray-500 mt-1">প্রদানকারীর নম্বর লিখুন যা আপনার ড্যাশবোর্ড অ্যাক্সেস এর জন্য প্রয়োজন</p>
+              <p className="text-xs text-gray-500 mt-1">আপনার বিল প্রদানকারীর দেওয়া নম্বরটি লিখুন। এটি ড্যাশবোর্ড অ্যাক্সেসের জন্য প্রয়োজন হতে পারে।</p>
             </div>
 
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
