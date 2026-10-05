@@ -204,7 +204,7 @@ if (Number(amount) > 9000000) {
     }
 
     setError("")
-    if (selectedMethod === "card") {
+    if (selectedMethod === "card" || selectedMethod === "bank") {
       void startPayStationCheckout()
       return
     }
