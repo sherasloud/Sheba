@@ -310,7 +310,7 @@ export default function BillPage() {
   </div>
   <div className="mb-8 border-y border-[#e5f2f8] py-5 text-sm text-[#142033]">
   <p><strong>প্রদানকারী:</strong> {selectedProvider.name}</p>
-  <p className="mt-2"><strong>বিভাগ:</strong> {selectedCategory === "electricity" ? "বিদ্যুৎ" : selectedCategory === "water" ? "পানি" : selectedCategory === "gas" ? "গ্যাস" : selectedCategory === "internet" ? "��ন্টারনেট" : "মোবাইল"}</p>
+  <p className="mt-2"><strong>বিভাগ:</strong> {selectedCategory === "electricity" ? "বিদ্যুৎ" : selectedCategory === "water" ? "পানি" : selectedCategory === "gas" ? "গ্যাস" : selectedCategory === "internet" ? "��ন্টারনেট" : "মোব��ইল"}</p>
   </div>
             <p className="text-sm text-blue-900"><strong>প্রদানকারী:</strong> {selectedProvider.name}</p>
             <p className="text-sm text-blue-900"><strong>বিভাগ:</strong> {selectedCategory === "electricity" ? "বিদ্যুৎ" : selectedCategory === "water" ? "পানি" : selectedCategory === "gas" ? "গ্যাস" : selectedCategory === "internet" ? "ইন্টা��নেট" : "মোবাইল"}</p>
@@ -368,7 +368,7 @@ export default function BillPage() {
           <button
             onClick={handleBillInquiry}
             disabled={isLoading}
-            className="mt-[432px] bg-[#29a9eb] text-white p-4 rounded-md disabled:bg-gray-400"
+            className="mt-[173px] bg-[#29a9eb] text-white p-4 rounded-md disabled:bg-gray-400"
           >
             {isLoading ? "Checking Bill..." : "Check Bill"}
           </button>
