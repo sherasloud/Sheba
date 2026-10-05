@@ -148,7 +148,7 @@ export default function AddMoneyPage() {
       cancel_url: `${typeof window !== 'undefined' ? window.location.origin : ''}/add-money`,
       cus_name: "Customer",
       cus_email: "customer@sheba.com",
-      cus_phone: "01000000000",
+      cus_phone: "01700000000",
       cus_add1: "Dhaka",
       ship_name: "Customer",
       ship_add1: "Dhaka",
@@ -645,7 +645,7 @@ if (Number(amount) > 9000000) {
                 <input
                   type="text"
                   aria-label="Amount"
-                  className="w-full min-w-0 flex-1 border-0 bg-transparent p-0 text-center text-[5rem] font-normal leading-none text-black outline-none placeholder:text-black"
+                  className="h-24 w-[9ch] shrink-0 border-0 bg-transparent p-0 text-center text-[5rem] font-normal leading-none text-black outline-none placeholder:text-black"
                   value={amount}
                 onChange={(e) => setAmount(e.target.value.replace(/[^0-9]/g, ""))}
                 placeholder="0"
