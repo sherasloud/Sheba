@@ -523,9 +523,12 @@ if (Number(amount) > 9000000) {
     return (
       <div className="flex min-h-[100dvh] flex-col bg-white text-[#38afe8]">
         <main className="flex flex-1 flex-col items-center justify-center px-6 py-10 text-center">
-          <p className="mb-5 text-3xl font-normal tracking-tight sm:text-5xl">Sheba</p>
-          <h1 className="mb-4 text-5xl font-normal tracking-tight sm:text-7xl">Add Money</h1>
-          <p className="mb-16 text-3xl font-normal sm:text-5xl">করা হয়েছে!</p>
+          <div className="mb-7 flex h-24 w-24 items-center justify-center rounded-full bg-[#e8f7fd]">
+            <Check size={56} strokeWidth={2.5} className="text-[#38afe8]" aria-hidden="true" />
+          </div>
+          <p className="mb-3 text-2xl font-normal tracking-tight sm:text-4xl">Sheba</p>
+          <h1 className="mb-3 text-4xl font-normal tracking-tight sm:text-6xl">Add Money</h1>
+          <p className="mb-12 text-2xl font-normal sm:text-4xl">সফল হয়েছে!</p>
 
           <div className="mb-10 flex flex-col items-center gap-2">
             <span className="text-2xl font-normal sm:text-4xl">Amount</span>
