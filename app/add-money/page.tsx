@@ -536,7 +536,11 @@ if (Number(amount) > 9000000) {
           </div>
 
           <div className="mb-8 w-full max-w-sm rounded-xl border border-[#e5f4fb] bg-[#f9fdff] p-5 text-left">
-            <div className="flex justify-between gap-4 pt-3 text-sm">
+            <div className="flex justify-between gap-4 text-sm">
+              <span>Date &amp; Time</span>
+              <span className="text-right font-medium text-[#188dc9]">{new Date().toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" })}</span>
+            </div>
+            <div className="mt-3 flex justify-between gap-4 border-t border-[#e5f4fb] pt-3 text-sm">
               <span>Balance</span>
               <span className="font-medium text-[#188dc9]">৳{(balance + Number(amount || 0)).toLocaleString("en-US")}</span>
             </div>
