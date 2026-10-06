@@ -14,6 +14,7 @@ import HomeScreen from './screens/Home/HomeScreen';
 import VerificationScreen from './screens/Verification/VerificationScreen';
 import AddMoneyScreen from './screens/AddMoney/AddMoneyScreen';
 import SendMoneyScreen from './screens/SendMoney/SendMoneyScreen';
+import ScanQRScreen from './screens/money/ScanQRScreen';
 import SettingsScreen from './screens/Settings/SettingsScreen';
 import TransactionHistoryScreen from './screens/TransactionHistory/TransactionHistoryScreen';
 
@@ -67,6 +68,8 @@ const AppTabs = () => (
           iconName = focused ? 'wallet' : 'wallet-outline';
         } else if (route.name === 'SendMoney') {
           iconName = focused ? 'send' : 'send-outline';
+        } else if (route.name === 'ScanQR') {
+          iconName = focused ? 'qr-code' : 'qr-code-outline';
         } else if (route.name === 'Verification') {
           iconName = focused ? 'shield-checkmark' : 'shield-checkmark-outline';
         } else if (route.name === 'Settings') {
@@ -90,6 +93,11 @@ const AppTabs = () => (
       name="SendMoney"
       component={SendMoneyScreen}
       options={{ title: 'টাকা পাঠান' }}
+    />
+    <Tab.Screen
+      name="ScanQR"
+      component={ScanQRScreen}
+      options={{ title: 'QR স্ক্যান' }}
     />
     <Tab.Screen
       name="Verification"

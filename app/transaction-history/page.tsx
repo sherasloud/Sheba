@@ -199,7 +199,8 @@ export default function TransactionHistoryPage() {
               {filteredTransactions.map((tx) => {
                 const lastFourDigits = tx.sourcePhone.slice(-4)
                 const transactionText = JSON.stringify(tx)
-                const isAddMoney = /add money|add-money|paystation|paypos|deposit/i.test(transactionText)
+                const transactionType = String((tx as typeof tx & { type?: string }).type || tx.transaction_type || "")
+                const isAddMoney = /add money|add-money|paystation|paypos|deposit/i.test(`${transactionText} ${transactionType}`)
                 const amountColor = isAddMoney ? "text-[#38afe8]" : tx.isReceived ? "text-green-600" : "text-red-600"
                 const amountBgColor = isAddMoney ? "bg-[#e8f7fd]" : tx.isReceived ? "bg-green-50" : "bg-red-50"
                 const directionLabel = isAddMoney ? "Add Money" : tx.isReceived ? `থেকে: ${tx.sourcePhone}` : `কাছে: ${tx.sourcePhone}`
@@ -211,14 +212,14 @@ export default function TransactionHistoryPage() {
                   >
                     {/* Icon */}
                     <div className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 ${amountBgColor}`}>
-                      <Send size={20} className={tx.isReceived ? "text-green-600" : "text-red-600"} />
+                      <Send size={20} className={isAddMoney ? "text-[#38afe8]" : tx.isReceived ? "text-green-600" : "text-red-600"} />
                     </div>
 
                     {/* Details */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <p className="font-semibold text-gray-800">
-                          {isAddMoney ? "Add Money" : tx.transaction_type || "লেনদেন"}
+                          {isAddMoney ? "Add Money" : transactionType || "লেনদেন"}
                         </p>
                         <VerifiedBadge isVerified={tx.partnerVerified || false} size="sm" />
                       </div>

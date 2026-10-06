@@ -23,6 +23,7 @@ export default function AddMoneyPage() {
   const [error, setError] = useState("")
   const [success, setSuccess] = useState(false)
   const [balance, setBalance] = useState(0)
+  const [beforeBalance, setBeforeBalance] = useState(0)
   const [cardBalance, setCardBalance] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
   const [transactionIdCopied, setTransactionIdCopied] = useState(false)
@@ -51,6 +52,7 @@ export default function AddMoneyPage() {
       setSuccess(true)
       localStorage.removeItem("paystationAmount")
       localStorage.removeItem("paystationInvoice")
+      localStorage.removeItem("addMoneyBeforeBalance")
       window.history.replaceState({}, "", "/add-money")
     } else if (paymentStatus === "failed") {
       setError("PayStation payment failed. Please try again.")
@@ -70,8 +72,10 @@ export default function AddMoneyPage() {
     }
 
     const fetchBalance = async () => {
-      const currentPhone = localStorage.getItem("phoneNumber")
-      if (currentPhone) {
+  const currentPhone = localStorage.getItem("phoneNumber")
+  const storedBeforeBalance = localStorage.getItem("addMoneyBeforeBalance")
+  if (storedBeforeBalance) setBeforeBalance(Number(storedBeforeBalance))
+  if (currentPhone) {
         try {
           const response = await fetch(`/api/balance?phone=${currentPhone}`)
           const data = await response.json()
@@ -289,7 +293,9 @@ if (Number(amount) > 9000000) {
   }
 
   const startPayStationCheckout = async () => {
-    const currentPhone = localStorage.getItem("phoneNumber")
+  const currentPhone = localStorage.getItem("phoneNumber")
+  localStorage.setItem("addMoneyBeforeBalance", String(balance))
+  setBeforeBalance(balance)
     if (!currentPhone) {
       setError("Phone number not found. Please log in again.")
       return
@@ -543,7 +549,7 @@ if (Number(amount) > 9000000) {
             </div>
             <div className="mt-3 flex justify-between gap-4 border-t border-[#e5f4fb] pt-3 text-sm">
               <span>Balance</span>
-              <span className="font-medium text-[#188dc9]">{(balance + Number(amount || 0)).toLocaleString("en-US")} ৳</span>
+              <span className="font-medium text-[#188dc9]">{(beforeBalance + Number(amount || 0)).toLocaleString("en-US")} ৳</span>
             </div>
           </div>
 
@@ -634,18 +640,18 @@ if (Number(amount) > 9000000) {
           {selectedMethod === "card" ? (
             <>
               <h1 className="mb-24 text-center text-[3.25rem] font-normal leading-tight text-[#38afe8]">এমাউন্ট লিখুন</h1>
-              <div className="mb-16 flex w-full items-center justify-center gap-[1ch] text-black">
+              <div className="mb-16 flex min-h-24 w-full items-center justify-center gap-2 overflow-visible text-black">
                 <input
                   type="text"
                   aria-label="Amount"
-                  className="h-auto w-[1ch] shrink-0 border-0 bg-transparent p-0 text-right text-[clamp(3.5rem,15vw,6rem)] font-normal leading-none text-black outline-none placeholder:text-black"
-                  style={{ width: `${Math.max(amount.length, 1)}ch`, fontSize: "clamp(3.5rem, 15vw, 6rem)", lineHeight: "1", fontWeight: 400 }}
+                  className="add-money-amount-input h-24 shrink-0 border-0 bg-transparent p-0 text-right font-normal leading-none text-black outline-none placeholder:text-black"
+                  style={{ width: `${Math.max(amount.length, 1)}ch`, lineHeight: "1", fontWeight: 400 }}
                   value={amount}
                 onChange={(e) => setAmount(e.target.value.replace(/[^0-9]/g, ""))}
                 placeholder="0"
                   inputMode="numeric"
                 />
-                <span className="shrink-0 text-[clamp(3.5rem,15vw,6rem)] font-normal leading-none">৳</span>
+                <span className="add-money-amount-currency shrink-0 font-normal leading-none">৳</span>
               </div>
               {error && <div className="mb-4 text-center text-red-500">{error}</div>}
               <div className="flex justify-center"><button className="mobile-button w-full max-w-sm rounded-full py-5 text-5xl font-normal" onClick={handleAmountNext}>Next</button></div>
@@ -658,13 +664,13 @@ if (Number(amount) > 9000000) {
                   type="text"
                   aria-label="Amount"
                   inputMode="numeric"
-                  className="h-auto w-[1ch] shrink-0 border-0 bg-transparent p-0 text-right text-[clamp(3.5rem,15vw,6rem)] font-normal leading-none text-black outline-none placeholder:text-black"
-                  style={{ width: `${Math.max(amount.length, 1)}ch`, fontSize: "clamp(3.5rem, 15vw, 6rem)", lineHeight: "1", fontWeight: 400 }}
+                  className="h-auto w-[1ch] shrink-0 border-0 bg-transparent p-0 text-right font-normal leading-none text-black outline-none placeholder:text-black"
+                  style={{ width: `${Math.max(amount.length, 1)}ch`, fontSize: "72px", lineHeight: "1", fontWeight: 400 }}
                   value={amount}
                   onChange={(e) => setAmount(e.target.value.replace(/[^0-9]/g, ""))}
                   placeholder="0"
                 />
-                <span className="shrink-0 text-[clamp(3.5rem,15vw,6rem)] font-normal leading-none">৳</span>
+                <span className="add-money-amount-currency shrink-0 font-normal leading-none">৳</span>
               </div>
               {error && <div className="mb-4 text-center text-red-500">{error}</div>}
               <div className="mt-auto flex justify-center"><button className="mobile-button w-full max-w-sm rounded-full py-5 text-4xl font-normal" onClick={handleAmountNext}>Next</button></div>
