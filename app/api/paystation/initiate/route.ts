@@ -24,7 +24,7 @@ export async function POST(request: Request) {
 
     const invoiceNumber = `SHEBA-${phoneNumber}-${Date.now()}-${cryptoRandomSuffix()}`
     const origin = new URL(request.url).origin
-    const callbackUrl = process.env.PAYSTATION_CALLBACK_URL || `${origin}/api/paystation/callback`
+    const callbackUrl = `${process.env.NEXT_PUBLIC_APP_URL || "https://shebabd.vercel.app"}/api/paystation/callback`
     const form = new URLSearchParams({
       merchantId,
       store_id: storeId,
