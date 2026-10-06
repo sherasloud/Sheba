@@ -644,14 +644,14 @@ if (Number(amount) > 9000000) {
                 <input
                   type="text"
                   aria-label="Amount"
-                  className="h-auto w-[1ch] shrink-0 border-0 bg-transparent p-0 text-right text-[clamp(3.5rem,15vw,6rem)] font-normal leading-none text-black outline-none placeholder:text-black"
-                  style={{ width: `${Math.max(amount.length, 1)}ch`, fontSize: "clamp(3.5rem, 15vw, 6rem)", lineHeight: "1", fontWeight: 400 }}
+                  className="h-auto w-[1ch] shrink-0 border-0 bg-transparent p-0 text-right text-5xl font-normal leading-none text-black outline-none placeholder:text-black sm:text-7xl"
+                  style={{ width: `${Math.max(amount.length, 1)}ch`, lineHeight: "1", fontWeight: 400 }}
                   value={amount}
                 onChange={(e) => setAmount(e.target.value.replace(/[^0-9]/g, ""))}
                 placeholder="0"
                   inputMode="numeric"
                 />
-                <span className="shrink-0 text-[clamp(3.5rem,15vw,6rem)] font-normal leading-none">৳</span>
+                <span className="shrink-0 text-5xl font-normal leading-none sm:text-7xl">৳</span>
               </div>
               {error && <div className="mb-4 text-center text-red-500">{error}</div>}
               <div className="flex justify-center"><button className="mobile-button w-full max-w-sm rounded-full py-5 text-5xl font-normal" onClick={handleAmountNext}>Next</button></div>
@@ -664,13 +664,13 @@ if (Number(amount) > 9000000) {
                   type="text"
                   aria-label="Amount"
                   inputMode="numeric"
-                  className="h-auto w-[1ch] shrink-0 border-0 bg-transparent p-0 text-right text-[clamp(3.5rem,15vw,6rem)] font-normal leading-none text-black outline-none placeholder:text-black"
-                  style={{ width: `${Math.max(amount.length, 1)}ch`, fontSize: "clamp(3.5rem, 15vw, 6rem)", lineHeight: "1", fontWeight: 400 }}
+                  className="h-auto w-[1ch] shrink-0 border-0 bg-transparent p-0 text-right text-5xl font-normal leading-none text-black outline-none placeholder:text-black sm:text-7xl"
+                  style={{ width: `${Math.max(amount.length, 1)}ch`, lineHeight: "1", fontWeight: 400 }}
                   value={amount}
                   onChange={(e) => setAmount(e.target.value.replace(/[^0-9]/g, ""))}
                   placeholder="0"
                 />
-                <span className="shrink-0 text-[clamp(3.5rem,15vw,6rem)] font-normal leading-none">৳</span>
+                <span className="shrink-0 text-5xl font-normal leading-none sm:text-7xl">৳</span>
               </div>
               {error && <div className="mb-4 text-center text-red-500">{error}</div>}
               <div className="mt-auto flex justify-center"><button className="mobile-button w-full max-w-sm rounded-full py-5 text-4xl font-normal" onClick={handleAmountNext}>Next</button></div>
