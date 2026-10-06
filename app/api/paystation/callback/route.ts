@@ -32,10 +32,20 @@ async function handleCallback(request: Request, callbackData: Record<string, unk
     cache: "no-store",
   })
   const verification = await verificationResponse.json().catch(() => null)
-  const verifiedStatus = String(
-    verification?.trx_status || verification?.transaction_status || verification?.payment_status || verification?.status || verification?.data?.status || "",
-  ).toLowerCase()
-  if (!verificationResponse.ok || !["success", "successful", "completed", "paid", "complete"].includes(verifiedStatus)) {
+  const statusCandidates = [
+    verification?.trx_status,
+    verification?.transaction_status,
+    verification?.payment_status,
+    verification?.status,
+    verification?.data?.trx_status,
+    verification?.data?.transaction_status,
+    verification?.data?.payment_status,
+    verification?.data?.status,
+    verification?.result?.status,
+  ].filter(Boolean).map((value) => String(value).trim().toLowerCase())
+  const verifiedStatus = statusCandidates[0] || ""
+  const successfulStatuses = new Set(["success", "successful", "completed", "complete", "paid", "approved", "verified", "1"])
+  if (!verificationResponse.ok || !statusCandidates.some((value) => successfulStatuses.has(value))) {
     console.error("[v0] PayStation verification failed", { invoiceNumber, verifiedStatus })
     return NextResponse.redirect(new URL(`${process.env.NEXT_PUBLIC_APP_URL || "https://shebabd.vercel.app"}/add-money?payment=failed&invoice=${encodeURIComponent(invoiceNumber)}`, url.origin))
   }

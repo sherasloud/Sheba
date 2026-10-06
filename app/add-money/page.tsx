@@ -52,7 +52,7 @@ export default function AddMoneyPage() {
       localStorage.removeItem("paystationAmount")
       localStorage.removeItem("paystationInvoice")
     } else if (paymentStatus === "failed") {
-      setError("PayStation payment failed. Please try again.")
+      setError("Payment failed. No money was added to your Sheba balance. Please try again.")
     } else if (paymentStatus === "pending") {
       setError("Payment received. Wallet credit is being verified.")
     }
