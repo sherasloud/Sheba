@@ -198,12 +198,11 @@ export default function TransactionHistoryPage() {
             <div className="space-y-3">
               {filteredTransactions.map((tx) => {
                 const lastFourDigits = tx.sourcePhone.slice(-4)
-                // Green for received (+), Red for sent (-)
-                const amountColor = tx.isReceived ? "text-green-600" : "text-red-600"
-                const amountBgColor = tx.isReceived ? "bg-green-50" : "bg-red-50"
-                
-                // Direction label
-                const directionLabel = tx.isReceived ? `থেকে: ${tx.sourcePhone}` : `কাছে: ${tx.sourcePhone}`
+                const transactionText = JSON.stringify(tx)
+                const isAddMoney = /add money|add-money|paystation|paypos|deposit/i.test(transactionText)
+                const amountColor = isAddMoney ? "text-[#38afe8]" : tx.isReceived ? "text-green-600" : "text-red-600"
+                const amountBgColor = isAddMoney ? "bg-[#e8f7fd]" : tx.isReceived ? "bg-green-50" : "bg-red-50"
+                const directionLabel = isAddMoney ? "Add Money" : tx.isReceived ? `থেকে: ${tx.sourcePhone}` : `কাছে: ${tx.sourcePhone}`
 
                 return (
                   <div
@@ -219,7 +218,7 @@ export default function TransactionHistoryPage() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <p className="font-semibold text-gray-800">
-                          {tx.transaction_type || "লেনদেন"}
+                          {isAddMoney ? "Add Money" : tx.transaction_type || "লেনদেন"}
                         </p>
                         <VerifiedBadge isVerified={tx.partnerVerified || false} size="sm" />
                       </div>
@@ -232,7 +231,7 @@ export default function TransactionHistoryPage() {
                     {/* Amount */}
                     <div className="text-right flex-shrink-0">
                       <p className={`font-bold text-lg ${amountColor}`}>
-                        {tx.isReceived ? "+" : "-"}৳{tx.amount.toLocaleString("bn-BD")}
+                        {isAddMoney || tx.isReceived ? "+" : "-"}{tx.amount.toLocaleString("bn-BD")} ৳
                       </p>
                       <p className="text-xs text-gray-500">
                         {tx.status === "completed" ? "সম্পন্ন" : "অপেক্ষমাণ"}
