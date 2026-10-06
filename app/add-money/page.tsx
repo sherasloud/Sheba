@@ -23,6 +23,7 @@ export default function AddMoneyPage() {
   const [error, setError] = useState("")
   const [success, setSuccess] = useState(false)
   const [balance, setBalance] = useState(0)
+  const [beforeBalance, setBeforeBalance] = useState(0)
   const [cardBalance, setCardBalance] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
   const [transactionIdCopied, setTransactionIdCopied] = useState(false)
@@ -51,6 +52,7 @@ export default function AddMoneyPage() {
       setSuccess(true)
       localStorage.removeItem("paystationAmount")
       localStorage.removeItem("paystationInvoice")
+      localStorage.removeItem("addMoneyBeforeBalance")
       window.history.replaceState({}, "", "/add-money")
     } else if (paymentStatus === "failed") {
       setError("PayStation payment failed. Please try again.")
@@ -70,8 +72,10 @@ export default function AddMoneyPage() {
     }
 
     const fetchBalance = async () => {
-      const currentPhone = localStorage.getItem("phoneNumber")
-      if (currentPhone) {
+  const currentPhone = localStorage.getItem("phoneNumber")
+  const storedBeforeBalance = localStorage.getItem("addMoneyBeforeBalance")
+  if (storedBeforeBalance) setBeforeBalance(Number(storedBeforeBalance))
+  if (currentPhone) {
         try {
           const response = await fetch(`/api/balance?phone=${currentPhone}`)
           const data = await response.json()
@@ -289,7 +293,9 @@ if (Number(amount) > 9000000) {
   }
 
   const startPayStationCheckout = async () => {
-    const currentPhone = localStorage.getItem("phoneNumber")
+  const currentPhone = localStorage.getItem("phoneNumber")
+  localStorage.setItem("addMoneyBeforeBalance", String(balance))
+  setBeforeBalance(balance)
     if (!currentPhone) {
       setError("Phone number not found. Please log in again.")
       return
@@ -543,7 +549,7 @@ if (Number(amount) > 9000000) {
             </div>
             <div className="mt-3 flex justify-between gap-4 border-t border-[#e5f4fb] pt-3 text-sm">
               <span>Balance</span>
-              <span className="font-medium text-[#188dc9]">{(balance + Number(amount || 0)).toLocaleString("en-US")} ৳</span>
+              <span className="font-medium text-[#188dc9]">{(beforeBalance + Number(amount || 0)).toLocaleString("en-US")} ৳</span>
             </div>
           </div>
 
