@@ -3,11 +3,18 @@ import { db } from "@/lib/db"
 import { appUsers, transactions } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 
-async function handleCallback(request: Request) {
+async function handleCallback(request: Request, callbackData: Record<string, unknown> = {}) {
   const url = new URL(request.url)
-  const status = (url.searchParams.get("status") || url.searchParams.get("payment_status") || url.searchParams.get("transaction_status") || "").toLowerCase()
-  const invoiceNumber = url.searchParams.get("invoice_number") || url.searchParams.get("invoiceNumber") || url.searchParams.get("invoice") || ""
-  const transactionId = url.searchParams.get("trx_id") || url.searchParams.get("trxId") || url.searchParams.get("transaction_id") || ""
+  const getValue = (...keys: string[]) => {
+    for (const key of keys) {
+      const value = callbackData[key] ?? url.searchParams.get(key)
+      if (value !== undefined && value !== null && String(value).trim()) return String(value).trim()
+    }
+    return ""
+  }
+  const status = getValue("status", "payment_status", "transaction_status").toLowerCase()
+  const invoiceNumber = getValue("invoice_number", "invoiceNumber", "invoice")
+  const transactionId = getValue("trx_id", "trxId", "transaction_id", "transactionId")
 
   if (status !== "success" && status !== "successful" && status !== "completed") {
     return NextResponse.redirect(new URL(`/add-money?payment=failed&invoice=${encodeURIComponent(invoiceNumber)}`, url.origin))
@@ -18,16 +25,49 @@ async function handleCallback(request: Request) {
     return NextResponse.redirect(new URL(`/add-money?payment=failed`, url.origin))
   }
 
-  const verificationResponse = await fetch("https://api.paystation.com.bd/transaction-status", {
-    method: "POST",
-    headers: { Accept: "application/json", "Content-Type": "application/json", merchantId },
-    body: JSON.stringify({ invoice_number: invoiceNumber }),
-    cache: "no-store",
-  })
-  const verification = await verificationResponse.json().catch(() => null)
-  const verifiedStatus = String(verification?.trx_status || verification?.status || "").toLowerCase()
-  if (!verificationResponse.ok || verifiedStatus !== "success") {
-    console.error("[v0] PayStation verification failed", { invoiceNumber, verifiedStatus })
+  const verificationRequests = transactionId
+    ? [
+        fetch("https://api.paystation.com.bd/v2/transaction-status", {
+          method: "POST",
+          headers: { Accept: "application/json", "Content-Type": "application/json", merchantId },
+          body: JSON.stringify({ trxId: transactionId }),
+          cache: "no-store",
+        }),
+        fetch("https://api.paystation.com.bd/transaction-status", {
+          method: "POST",
+          headers: { Accept: "application/json", "Content-Type": "application/json", merchantId },
+          body: JSON.stringify({ invoice_number: invoiceNumber }),
+          cache: "no-store",
+        }),
+      ]
+    : [
+        fetch("https://api.paystation.com.bd/transaction-status", {
+          method: "POST",
+          headers: { Accept: "application/json", "Content-Type": "application/json", merchantId },
+          body: JSON.stringify({ invoice_number: invoiceNumber }),
+          cache: "no-store",
+        }),
+      ]
+
+  let verificationResponse: Response | undefined
+  let verification: any = null
+  for (const candidate of verificationRequests) {
+    const response = await candidate
+    const payload = await response.json().catch(() => null)
+    const payloadData = payload?.data || payload?.result || payload
+    const candidateStatus = String(payloadData?.trx_status || payloadData?.transaction_status || payloadData?.payment_status || payloadData?.status || "").trim().toLowerCase()
+    if (response.ok && ["success", "successful", "completed", "complete", "paid", "approved"].includes(candidateStatus)) {
+      verificationResponse = response
+      verification = payloadData
+      break
+    }
+    verificationResponse = response
+    verification = payloadData
+  }
+
+  const verifiedStatus = String(verification?.trx_status || verification?.transaction_status || verification?.payment_status || verification?.status || "").toLowerCase()
+  if (!verificationResponse?.ok || !["success", "successful", "completed", "complete", "paid", "approved"].includes(verifiedStatus)) {
+    console.error("[v0] PayStation verification failed", { invoiceNumber, transactionId, verifiedStatus, verification })
     return NextResponse.redirect(new URL(`/add-money?payment=failed&invoice=${encodeURIComponent(invoiceNumber)}`, url.origin))
   }
 
@@ -81,14 +121,19 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   const body = await request.text()
-  const url = new URL(request.url)
-  const params = new URLSearchParams(body)
-  const callbackFields = ["status", "payment_status", "transaction_status", "invoice_number", "invoiceNumber", "invoice", "trx_id", "trxId", "transaction_id", "cust_phone", "phoneNumber", "payment_amount", "amount"]
-  for (const key of callbackFields) {
-    const value = params.get(key)
-    if (value !== null) url.searchParams.set(key, value)
+  const contentType = request.headers.get("content-type") || ""
+  if (contentType.includes("application/json")) {
+    try {
+      return handleCallback(request, JSON.parse(body))
+    } catch {
+      return NextResponse.json({ success: false, message: "Invalid callback payload" }, { status: 400 })
+    }
   }
-  return handleCallback(new Request(url, { method: "GET" }))
+
+  const params = new URLSearchParams(body)
+  const callbackData: Record<string, string> = {}
+  for (const [key, value] of params.entries()) callbackData[key] = value
+  return handleCallback(request, callbackData)
 }
 
 export const runtime = "nodejs"
