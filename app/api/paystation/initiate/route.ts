@@ -24,6 +24,7 @@ export async function POST(request: Request) {
 
     const invoiceNumber = `SHEBA-${phoneNumber}-${Date.now()}-${cryptoRandomSuffix()}`
     const origin = new URL(request.url).origin
+    const callbackUrl = process.env.PAYSTATION_CALLBACK_URL || `${origin}/api/paystation/callback`
     const form = new URLSearchParams({
       merchantId,
       store_id: storeId,
@@ -33,7 +34,7 @@ export async function POST(request: Request) {
       cust_name: userName,
       cust_phone: phoneNumber,
       cust_email: userEmail,
-      callback_url: `${origin}/api/paystation/callback`,
+      callback_url: callbackUrl,
     })
 
     const response = await fetch(PAYSTATION_API_URL, {
