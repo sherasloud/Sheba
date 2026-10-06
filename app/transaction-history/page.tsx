@@ -200,11 +200,12 @@ export default function TransactionHistoryPage() {
                 const lastFourDigits = tx.sourcePhone.slice(-4)
                 // Green for received (+), Red for sent (-)
                 const transactionText = JSON.stringify(tx)
-  const isPayStationAddMoney = /paystation|paypos/i.test(transactionText) || /sheba/i.test(`${tx.sender_phone || ""} ${tx.receiver_phone || ""}`) && /payment/i.test(tx.transaction_type || "")
-                const isAddMoney = isPayStationAddMoney || /add money|add-money|যোগ|deposit/i.test(tx.transaction_type || "")
+                const transactionType = String((tx as TransactionDisplayData & { type?: string }).type || (tx as TransactionDisplayData & { transaction_type?: string }).transaction_type || "")
+                const isPayStationAddMoney = /paystation|paypos/i.test(transactionText)
+                const isAddMoney = isPayStationAddMoney || /add money|add-money|যোগ|deposit/i.test(transactionType)
                 const amountColor = isAddMoney ? "text-[#36ace7]" : tx.isReceived ? "text-green-600" : "text-red-600"
                 const amountBgColor = isAddMoney ? "bg-[#eaf8ff]" : tx.isReceived ? "bg-green-50" : "bg-red-50"
-                const amountLabel = isAddMoney ? "Add Money" : tx.transaction_type || "লেনদেন"
+                const amountLabel = isAddMoney ? "Add Money" : transactionType || "লেনদেন"
                 
                 // Direction label
                 const directionLabel = isAddMoney ? "Add Money" : tx.isReceived ? `থেকে: ${tx.sourcePhone}` : `কাছে: ${tx.sourcePhone}`
