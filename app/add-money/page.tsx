@@ -536,13 +536,9 @@ if (Number(amount) > 9000000) {
           </div>
 
           <div className="mb-8 w-full max-w-sm rounded-xl border border-[#e5f4fb] bg-[#f9fdff] p-5 text-left">
-            <div className="flex justify-between gap-4 border-b border-[#e5f4fb] pb-3 text-sm">
-              <span>Method</span>
-              <span className="font-medium text-[#188dc9]">{selectedMethod === "card" ? `${selectedCardType} Card` : bankDetails.bankName}</span>
-            </div>
             <div className="flex justify-between gap-4 pt-3 text-sm">
-              <span>Sheba Balance</span>
-              <span className="font-medium text-[#188dc9]">৳{balance.toLocaleString("en-US")}</span>
+              <span>Balance</span>
+              <span className="font-medium text-[#188dc9]">৳{(balance + Number(amount || 0)).toLocaleString("en-US")}</span>
             </div>
           </div>
 
