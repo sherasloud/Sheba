@@ -86,6 +86,7 @@ export default function PINLockScreen() {
       // Save PIN to secure storage
       try {
         await SecureStore.setItemAsync('userPin', pin)
+        await SecureStore.setItemAsync('pinSet', 'true')
         setPINSet(true)
         setAuthenticated(true, 'temp-user-id')
         navigation.reset({
