@@ -58,9 +58,11 @@ export default function OnboardingPage() {
       })
       const data = await response.json()
       if (!response.ok || !data.url) throw new Error(data.error || "KYC session failed")
+      const verificationUrl = new URL(data.url)
+      if (!verificationUrl.hostname.endsWith("didit.me")) throw new Error("Invalid Didit verification URL")
       sessionStorage.setItem("pendingKyc", JSON.stringify({ nidType, documentNumber }))
       if (data.sessionId) sessionStorage.setItem("diditSessionId", data.sessionId)
-      setKycUrl(data.url)
+      setKycUrl(verificationUrl.toString())
     } catch (error) {
       setError(error instanceof Error ? error.message : "যাচাই শুরু করা যায়নি")
     } finally {
@@ -380,7 +382,7 @@ export default function OnboardingPage() {
               <h2 className="text-base font-medium text-gray-800">পরিচয় যাচাই</h2>
               <button type="button" onClick={() => setKycUrl("")} className="rounded-full px-3 py-1 text-sm text-gray-500">বন্ধ করুন</button>
             </div>
-            <iframe src={kycUrl} title="Didit identity verification" className="min-h-0 flex-1 border-0" allow="camera; microphone" />
+            <iframe src={kycUrl} title="Didit identity verification" className="min-h-0 w-full flex-1 border-0" allow="camera; microphone; fullscreen" referrerPolicy="strict-origin-when-cross-origin" />
           </section>
         )}
 
