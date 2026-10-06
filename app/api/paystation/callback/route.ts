@@ -16,7 +16,8 @@ async function handleCallback(request: Request, callbackData: Record<string, unk
   const invoiceNumber = getValue("invoice_number", "invoiceNumber", "invoice")
   const transactionId = getValue("trx_id", "trxId", "transaction_id", "transactionId")
 
-  if (!["success", "successful", "completed", "paid", "complete"].includes(status)) {
+  const failedStatuses = new Set(["failed", "fail", "cancelled", "canceled", "declined", "rejected", "expired", "0"])
+  if (failedStatuses.has(status)) {
     return NextResponse.redirect(new URL(`${process.env.NEXT_PUBLIC_APP_URL || "https://shebabd.vercel.app"}/add-money?payment=failed&invoice=${encodeURIComponent(invoiceNumber)}`, url.origin))
   }
 
@@ -42,7 +43,12 @@ async function handleCallback(request: Request, callbackData: Record<string, unk
     verification?.data?.payment_status,
     verification?.data?.status,
     verification?.result?.status,
-  ].filter(Boolean).map((value) => String(value).trim().toLowerCase())
+    verification?.message,
+    verification?.result?.message,
+  ].filter(Boolean).map((value) => {
+    if (value === true) return "1"
+    return String(value).trim().toLowerCase()
+  })
   const verifiedStatus = statusCandidates[0] || ""
   const successfulStatuses = new Set(["success", "successful", "completed", "complete", "paid", "approved", "verified", "1"])
   if (!verificationResponse.ok || !statusCandidates.some((value) => successfulStatuses.has(value))) {
