@@ -106,7 +106,7 @@ export async function sendTransactionSMS({
   timestamp = new Date(),
 }: {
   phoneNumber: string
-  direction: "sent" | "received"
+  direction: "sent" | "received" | "add_money"
   amount: number
   fee?: number
   balance: number
@@ -114,7 +114,7 @@ export async function sendTransactionSMS({
   peerPhone?: string
   timestamp?: Date
 }): Promise<SMSResult> {
-  const label = direction === "sent" ? "Send Money Successful!" : "Money Received Successfully!"
+  const label = direction === "sent" ? "Send Money Successful!" : direction === "add_money" ? "Add Money Successful!" : "Money Received Successfully!"
   const currency = "Tk"
   const formattedAmount = String(amount)
   const formattedBalance = String(balance)
