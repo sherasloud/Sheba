@@ -90,13 +90,12 @@ export function QRScanner({ onScan, isOpen = true, onClose, onBack }: QRScannerP
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-90 flex flex-col items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/75 p-4 backdrop-blur-sm">
       <div className="w-full max-w-sm">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-white text-2xl font-bold flex items-center gap-2">
-            <QrCode className="w-6 h-6" />
-            QR Scanner
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="flex items-center gap-2 text-lg font-semibold text-white">
+            <QrCode className="h-5 w-5" />
+            Scan QR
           </h2>
           <button
             onClick={handleClose}
