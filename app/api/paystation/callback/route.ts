@@ -3,64 +3,38 @@ import { db } from "@/lib/db"
 import { appUsers, transactions } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 
-async function handleCallback(request: Request, callbackData: Record<string, unknown> = {}) {
+async function handleCallback(request: Request) {
   const url = new URL(request.url)
-  const getValue = (...keys: string[]) => {
-    for (const key of keys) {
-      const value = callbackData[key] ?? url.searchParams.get(key)
-      if (value !== undefined && value !== null && String(value).trim()) return String(value).trim()
-    }
-    return ""
-  }
-  const status = getValue("status", "payment_status", "transaction_status", "trx_status", "paymentStatus").toLowerCase()
-  const invoiceNumber = getValue("invoice_number", "invoiceNumber", "invoice")
-  const transactionId = getValue("trx_id", "trxId", "transaction_id", "transactionId")
+  const status = (url.searchParams.get("status") || url.searchParams.get("payment_status") || url.searchParams.get("transaction_status") || "").toLowerCase()
+  const invoiceNumber = url.searchParams.get("invoice_number") || url.searchParams.get("invoiceNumber") || url.searchParams.get("invoice") || ""
+  const transactionId = url.searchParams.get("trx_id") || url.searchParams.get("trxId") || url.searchParams.get("transaction_id") || ""
 
-  const failedStatuses = new Set(["failed", "fail", "cancelled", "canceled", "declined", "rejected", "expired", "0"])
-  if (failedStatuses.has(status)) {
-    return NextResponse.redirect(new URL(`${process.env.NEXT_PUBLIC_APP_URL || "https://shebabd.vercel.app"}/add-money?payment=failed&invoice=${encodeURIComponent(invoiceNumber)}`, url.origin))
+  if (status !== "success" && status !== "successful" && status !== "completed") {
+    return NextResponse.redirect(new URL(`/add-money?payment=failed&invoice=${encodeURIComponent(invoiceNumber)}`, url.origin))
   }
 
   const merchantId = process.env.PAYSTATION_MERCHANT_ID
   if (!merchantId || !invoiceNumber) {
-    return NextResponse.redirect(new URL(`${process.env.NEXT_PUBLIC_APP_URL || "https://shebabd.vercel.app"}/add-money?payment=failed`, url.origin))
+    return NextResponse.redirect(new URL(`/add-money?payment=failed`, url.origin))
   }
 
   const verificationResponse = await fetch("https://api.paystation.com.bd/transaction-status", {
     method: "POST",
     headers: { Accept: "application/json", "Content-Type": "application/json", merchantId },
-    body: JSON.stringify({ merchantId, invoice_number: invoiceNumber, trx_id: transactionId }),
+    body: JSON.stringify({ invoice_number: invoiceNumber }),
     cache: "no-store",
   })
   const verification = await verificationResponse.json().catch(() => null)
-  const statusCandidates = [
-    verification?.trx_status,
-    verification?.transaction_status,
-    verification?.payment_status,
-    verification?.status,
-    verification?.data?.trx_status,
-    verification?.data?.transaction_status,
-    verification?.data?.payment_status,
-    verification?.data?.status,
-    verification?.result?.status,
-    verification?.message,
-    verification?.result?.message,
-  ].filter(Boolean).map((value) => {
-    if (value === true) return "1"
-    return String(value).trim().toLowerCase()
-  })
-  const verifiedStatus = statusCandidates[0] || ""
-  const successfulStatuses = new Set(["success", "successful", "completed", "complete", "paid", "approved", "verified", "1"])
-  if (!verificationResponse.ok || !statusCandidates.some((value) => successfulStatuses.has(value))) {
+  const verifiedStatus = String(verification?.trx_status || verification?.status || "").toLowerCase()
+  if (!verificationResponse.ok || verifiedStatus !== "success") {
     console.error("[v0] PayStation verification failed", { invoiceNumber, verifiedStatus })
-    return NextResponse.redirect(new URL(`${process.env.NEXT_PUBLIC_APP_URL || "https://shebabd.vercel.app"}/add-money?payment=failed&invoice=${encodeURIComponent(invoiceNumber)}`, url.origin))
+    return NextResponse.redirect(new URL(`/add-money?payment=failed&invoice=${encodeURIComponent(invoiceNumber)}`, url.origin))
   }
 
-  const verifiedData = verification?.data || verification
-  const phoneNumber = verifiedData?.cust_phone || verifiedData?.customer_phone || getValue("cust_phone", "phoneNumber") || invoiceNumber.match(/^SHEBA-(\d{10,15})-/)?.[1]
-  const verifiedAmount = Number(verifiedData?.payment_amount || verifiedData?.amount || verifiedData?.transaction_amount || getValue("payment_amount", "amount"))
+  const phoneNumber = verification?.cust_phone || verification?.customer_phone || url.searchParams.get("cust_phone") || url.searchParams.get("phoneNumber") || invoiceNumber.match(/^SHEBA-(\d{10,15})-/)?.[1]
+  const verifiedAmount = Number(verification?.payment_amount || verification?.amount || verification?.transaction_amount || url.searchParams.get("payment_amount") || url.searchParams.get("amount"))
   if (!phoneNumber || !Number.isFinite(verifiedAmount) || verifiedAmount <= 0) {
-    return NextResponse.redirect(new URL(`${process.env.NEXT_PUBLIC_APP_URL || "https://shebabd.vercel.app"}/add-money?payment=failed`, url.origin))
+    return NextResponse.redirect(new URL(`/add-money?payment=failed`, url.origin))
   }
 
   const paymentTransactionId = `PAYSTATION-${invoiceNumber}`
@@ -94,11 +68,11 @@ async function handleCallback(request: Request, callbackData: Record<string, unk
 
     if (!credited) {
       console.error("[v0] PayStation user not found", { invoiceNumber, phoneNumber })
-      return NextResponse.redirect(new URL(`${process.env.NEXT_PUBLIC_APP_URL || "https://shebabd.vercel.app"}/add-money?payment=pending&invoice=${encodeURIComponent(invoiceNumber)}`, url.origin))
+      return NextResponse.redirect(new URL(`/add-money?payment=pending&invoice=${encodeURIComponent(invoiceNumber)}`, url.origin))
     }
   }
 
-  return NextResponse.redirect(new URL(`${process.env.NEXT_PUBLIC_APP_URL || "https://shebabd.vercel.app"}/add-money?payment=success&invoice=${encodeURIComponent(invoiceNumber)}`, url.origin))
+  return NextResponse.redirect(new URL(`/add-money?payment=success&invoice=${encodeURIComponent(invoiceNumber)}`, url.origin))
 }
 
 export async function GET(request: Request) {
@@ -107,19 +81,14 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   const body = await request.text()
-  const contentType = request.headers.get("content-type") || ""
-  if (contentType.includes("application/json")) {
-    try {
-      return handleCallback(request, JSON.parse(body))
-    } catch {
-      return NextResponse.json({ success: false, message: "Invalid callback payload" }, { status: 400 })
-    }
-  }
-
+  const url = new URL(request.url)
   const params = new URLSearchParams(body)
-  const callbackData: Record<string, string> = {}
-  for (const [key, value] of params.entries()) callbackData[key] = value
-  return handleCallback(request, callbackData)
+  const callbackFields = ["status", "payment_status", "transaction_status", "invoice_number", "invoiceNumber", "invoice", "trx_id", "trxId", "transaction_id", "cust_phone", "phoneNumber", "payment_amount", "amount"]
+  for (const key of callbackFields) {
+    const value = params.get(key)
+    if (value !== null) url.searchParams.set(key, value)
+  }
+  return handleCallback(new Request(url, { method: "GET" }))
 }
 
 export const runtime = "nodejs"

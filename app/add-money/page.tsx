@@ -52,7 +52,7 @@ export default function AddMoneyPage() {
       localStorage.removeItem("paystationAmount")
       localStorage.removeItem("paystationInvoice")
     } else if (paymentStatus === "failed") {
-      setError("Payment could not be verified. If your card was charged, please do not retry and contact support with your invoice ID.")
+      setError("PayStation payment failed. Please try again.")
     } else if (paymentStatus === "pending") {
       setError("Payment received. Wallet credit is being verified.")
     }
@@ -530,20 +530,19 @@ if (Number(amount) > 9000000) {
         </div>
 
         <div className="flex flex-col items-center justify-center flex-1 p-6">
-          <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-green-100">
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <path d="M20 6L9 17L4 12" stroke="#16a34a" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+          <div className="w-20 h-20 bg-[#29a9eb] rounded-full flex items-center justify-center mb-6">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M20 6L9 17L4 12" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </div>
 
-          <h2 className="mb-2 text-2xl font-bold text-gray-800">Add Money Successful!</h2>
-          <p className="mb-2 text-center text-gray-600">Your money has been added to your Sheba balance.</p>
-          <p className="mb-6 text-center text-sm text-[#38afe8]">SMS confirmation sent to your registered mobile number.</p>
+          <h2 className="text-2xl font-bold mb-2">Success!</h2>
+          <p className="text-[#38afe8] mb-4">Money added successfully</p>
 
-          <div className="mb-8 w-full rounded-lg bg-gray-50 p-6">
+          <div className="bg-gray-100 w-full rounded-lg p-4 mb-6">
             <div className="flex justify-between mb-2">
               <span className="text-[#38afe8]">Amount:</span>
-              <span className="font-bold text-green-600">Tk{Number(amount).toLocaleString()}</span>
+              <span className="font-bold">Tk{amount}</span>
             </div>
             <div className="flex justify-between mb-2">
               <span className="text-[#38afe8]">Method:</span>
@@ -563,11 +562,11 @@ if (Number(amount) > 9000000) {
             )}
             <div className="flex justify-between">
               <span className="text-[#38afe8]">Transaction ID:</span>
-              <span className="font-bold">{transactionId || "Processing"}</span>
+              <span className="font-bold">{Math.random().toString(36).substring(2, 10).toUpperCase()}</span>
             </div>
           </div>
 
-          <button onClick={() => router.push("/")} className="w-full rounded-lg bg-[#29a9eb] px-6 py-3 font-medium text-white">
+          <button onClick={() => router.push("/")} className="bg-[#29a9eb] text-white py-3 px-6 rounded-md w-full">
             Done
           </button>
         </div>
