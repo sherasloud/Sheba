@@ -199,7 +199,8 @@ export default function TransactionHistoryPage() {
               {filteredTransactions.map((tx) => {
                 const lastFourDigits = tx.sourcePhone.slice(-4)
                 // Green for received (+), Red for sent (-)
-                const isPayStationAddMoney = /paystation/i.test(`${tx.reference} ${tx.transaction_type || ""} ${tx.sourcePhone}`) && /sheba/i.test(tx.sourcePhone)
+                const transactionText = `${tx.reference || ""} ${tx.transaction_type || ""} ${tx.sender_phone || ""} ${tx.receiver_phone || ""} ${tx.sourcePhone || ""}`
+                const isPayStationAddMoney = /paystation|paypos/i.test(transactionText)
                 const isAddMoney = isPayStationAddMoney || /add money|add-money|যোগ|deposit/i.test(tx.transaction_type || "")
                 const amountColor = isAddMoney ? "text-[#36ace7]" : tx.isReceived ? "text-green-600" : "text-red-600"
                 const amountBgColor = isAddMoney ? "bg-[#eaf8ff]" : tx.isReceived ? "bg-green-50" : "bg-red-50"
@@ -211,7 +212,7 @@ export default function TransactionHistoryPage() {
                 return (
                   <div
                     key={tx.id}
-                    className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg"
+                    className="flex items-center gap-3 rounded-lg bg-gray-50 p-3 sm:gap-4 sm:p-4"
                   >
                     {/* Icon */}
                     <div className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 ${amountBgColor}`}>
@@ -221,7 +222,7 @@ export default function TransactionHistoryPage() {
                     {/* Details */}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <p className={`font-semibold ${isAddMoney ? "text-[#36ace7]" : "text-gray-800"}`}>
+                        <p className={`truncate text-sm font-semibold sm:text-base ${isAddMoney ? "text-[#36ace7]" : "text-gray-800"}`}>
                           {amountLabel}
                         </p>
                         <VerifiedBadge isVerified={tx.partnerVerified || false} size="sm" />
@@ -234,7 +235,7 @@ export default function TransactionHistoryPage() {
 
                     {/* Amount */}
                     <div className="text-right flex-shrink-0">
-                      <p className={`font-bold text-lg ${amountColor}`}>
+                      <p className={`whitespace-nowrap text-base font-bold sm:text-lg ${amountColor}`}>
                         {isAddMoney || tx.isReceived ? "+" : "-"}৳{tx.amount.toLocaleString("bn-BD")}
                       </p>
                       <p className="text-xs text-gray-500">
