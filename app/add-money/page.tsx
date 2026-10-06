@@ -645,13 +645,13 @@ if (Number(amount) > 9000000) {
                   type="text"
                   aria-label="Amount"
                   className="h-auto w-[1ch] shrink-0 border-0 bg-transparent p-0 text-right font-normal leading-none text-black outline-none placeholder:text-black"
-                  style={{ width: `${Math.max(amount.length, 1)}ch`, fontSize: "clamp(3rem, 16vw, 5rem)", lineHeight: "1", fontWeight: 400 }}
+                  style={{ width: `${Math.max(amount.length, 1)}ch`, fontSize: "72px", lineHeight: "1", fontWeight: 400 }}
                   value={amount}
                 onChange={(e) => setAmount(e.target.value.replace(/[^0-9]/g, ""))}
                 placeholder="0"
                   inputMode="numeric"
                 />
-                <span className="shrink-0 font-normal leading-none" style={{ fontSize: "clamp(3rem, 16vw, 5rem)" }}>৳</span>
+                <span className="shrink-0 font-normal leading-none" style={{ fontSize: "72px" }}>৳</span>
               </div>
               {error && <div className="mb-4 text-center text-red-500">{error}</div>}
               <div className="flex justify-center"><button className="mobile-button w-full max-w-sm rounded-full py-5 text-5xl font-normal" onClick={handleAmountNext}>Next</button></div>
@@ -665,12 +665,12 @@ if (Number(amount) > 9000000) {
                   aria-label="Amount"
                   inputMode="numeric"
                   className="h-auto w-[1ch] shrink-0 border-0 bg-transparent p-0 text-right font-normal leading-none text-black outline-none placeholder:text-black"
-                  style={{ width: `${Math.max(amount.length, 1)}ch`, fontSize: "clamp(3rem, 16vw, 5rem)", lineHeight: "1", fontWeight: 400 }}
+                  style={{ width: `${Math.max(amount.length, 1)}ch`, fontSize: "72px", lineHeight: "1", fontWeight: 400 }}
                   value={amount}
                   onChange={(e) => setAmount(e.target.value.replace(/[^0-9]/g, ""))}
                   placeholder="0"
                 />
-                <span className="shrink-0 font-normal leading-none" style={{ fontSize: "clamp(3rem, 16vw, 5rem)" }}>৳</span>
+                <span className="shrink-0 font-normal leading-none" style={{ fontSize: "72px" }}>৳</span>
               </div>
               {error && <div className="mb-4 text-center text-red-500">{error}</div>}
               <div className="mt-auto flex justify-center"><button className="mobile-button w-full max-w-sm rounded-full py-5 text-4xl font-normal" onClick={handleAmountNext}>Next</button></div>
