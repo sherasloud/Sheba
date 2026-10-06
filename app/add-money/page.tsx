@@ -52,7 +52,7 @@ export default function AddMoneyPage() {
       localStorage.removeItem("paystationAmount")
       localStorage.removeItem("paystationInvoice")
     } else if (paymentStatus === "failed") {
-      setError("PayStation payment failed. Please try again.")
+      setError("Payment could not be verified. If your card was charged, please do not retry and contact support with your invoice ID.")
     } else if (paymentStatus === "pending") {
       setError("Payment received. Wallet credit is being verified.")
     }
