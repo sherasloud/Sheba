@@ -521,55 +521,32 @@ if (Number(amount) > 9000000) {
 
   if (success) {
     return (
-      <div className="flex flex-col h-screen bg-white">
-        <div className="bg-[#29a9eb] text-white p-4 flex items-center">
-          <button onClick={() => router.push("/")} className="mr-4">
-            <ArrowLeft size={24} />
-          </button>
-          <div className="text-xl font-medium">Add Money</div>
-        </div>
+      <div className="flex min-h-[100dvh] flex-col bg-white text-[#38afe8]">
+        <main className="flex flex-1 flex-col items-center justify-center px-6 py-10 text-center">
+          <p className="mb-5 text-3xl font-normal tracking-tight sm:text-5xl">Sheba</p>
+          <h1 className="mb-4 text-5xl font-normal tracking-tight sm:text-7xl">Add Money</h1>
+          <p className="mb-16 text-3xl font-normal sm:text-5xl">করা হয়েছে!</p>
 
-        <div className="flex flex-col items-center justify-center flex-1 p-6">
-          <div className="w-20 h-20 bg-[#29a9eb] rounded-full flex items-center justify-center mb-6">
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M20 6L9 17L4 12" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
+          <div className="mb-10 flex flex-col items-center gap-2">
+            <span className="text-2xl font-normal sm:text-4xl">Amount</span>
+            <span className="text-5xl font-normal tracking-tight sm:text-7xl">৳{Number(amount || 0).toLocaleString("en-US")}</span>
           </div>
 
-          <h2 className="text-2xl font-bold mb-2">Success!</h2>
-          <p className="text-[#38afe8] mb-4">Money added successfully</p>
-
-          <div className="bg-gray-100 w-full rounded-lg p-4 mb-6">
-            <div className="flex justify-between mb-2">
-              <span className="text-[#38afe8]">Amount:</span>
-              <span className="font-bold">Tk{amount}</span>
+          <div className="mb-8 w-full max-w-sm rounded-xl border border-[#e5f4fb] bg-[#f9fdff] p-5 text-left">
+            <div className="flex justify-between gap-4 border-b border-[#e5f4fb] pb-3 text-sm">
+              <span>Method</span>
+              <span className="font-medium text-[#188dc9]">{selectedMethod === "card" ? `${selectedCardType} Card` : bankDetails.bankName}</span>
             </div>
-            <div className="flex justify-between mb-2">
-              <span className="text-[#38afe8]">Method:</span>
-              <span className="font-bold">
-                {selectedMethod === "card" ? `${selectedCardType} Card` : bankDetails.bankName}
-              </span>
-            </div>
-            <div className="flex justify-between mb-2">
-              <span className="text-[#38afe8]">Sheba Balance:</span>
-              <span className="font-bold">Tk{balance.toLocaleString()}</span>
-            </div>
-            {selectedMethod === "card" && (
-              <div className="flex justify-between mb-2">
-                <span className="text-[#38afe8]">Card Balance:</span>
-                <span className="font-bold">Tk{cardBalance.toLocaleString()}</span>
-              </div>
-            )}
-            <div className="flex justify-between">
-              <span className="text-[#38afe8]">Transaction ID:</span>
-              <span className="font-bold">{Math.random().toString(36).substring(2, 10).toUpperCase()}</span>
+            <div className="flex justify-between gap-4 pt-3 text-sm">
+              <span>Sheba Balance</span>
+              <span className="font-medium text-[#188dc9]">৳{balance.toLocaleString("en-US")}</span>
             </div>
           </div>
 
-          <button onClick={() => router.push("/")} className="bg-[#29a9eb] text-white py-3 px-6 rounded-md w-full">
+          <button onClick={() => router.push("/")} className="w-full max-w-sm rounded-lg bg-[#38afe8] px-6 py-3 font-medium text-white">
             Done
           </button>
-        </div>
+        </main>
       </div>
     )
   }
