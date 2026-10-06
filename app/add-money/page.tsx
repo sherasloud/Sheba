@@ -51,6 +51,7 @@ export default function AddMoneyPage() {
       setSuccess(true)
       localStorage.removeItem("paystationAmount")
       localStorage.removeItem("paystationInvoice")
+      window.history.replaceState({}, "", "/add-money")
     } else if (paymentStatus === "failed") {
       setError("PayStation payment failed. Please try again.")
     } else if (paymentStatus === "pending") {
@@ -532,7 +533,7 @@ if (Number(amount) > 9000000) {
 
           <div className="mb-10 flex flex-col items-center gap-2">
             <span className="text-2xl font-normal sm:text-4xl">Amount</span>
-            <span className="text-5xl font-normal tracking-tight sm:text-7xl">৳{Number(amount || 0).toLocaleString("en-US")}</span>
+            <span className="text-5xl font-normal tracking-tight sm:text-7xl">{Number(amount || 0).toLocaleString("en-US")} ৳</span>
           </div>
 
           <div className="mb-8 w-full max-w-sm rounded-xl border border-[#e5f4fb] bg-[#f9fdff] p-5 text-left">
@@ -542,7 +543,7 @@ if (Number(amount) > 9000000) {
             </div>
             <div className="mt-3 flex justify-between gap-4 border-t border-[#e5f4fb] pt-3 text-sm">
               <span>Balance</span>
-              <span className="font-medium text-[#188dc9]">৳{(balance + Number(amount || 0)).toLocaleString("en-US")}</span>
+              <span className="font-medium text-[#188dc9]">{(balance + Number(amount || 0)).toLocaleString("en-US")} ৳</span>
             </div>
           </div>
 
