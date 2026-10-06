@@ -2,7 +2,6 @@ import { NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { appUsers, transactions } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
-import { sendTransactionSMS } from "@/lib/services/sms"
 
 async function handleCallback(request: Request, callbackData: Record<string, unknown> = {}) {
   const url = new URL(request.url)
@@ -54,7 +53,6 @@ async function handleCallback(request: Request, callbackData: Record<string, unk
   })
 
   if (!existingPayment) {
-    let creditedBalance = 0
     const credited = await db.transaction(async (tx) => {
       const user = await tx.query.appUsers.findFirst({
         where: eq(appUsers.phoneNumber, String(phoneNumber).trim()),
@@ -63,7 +61,6 @@ async function handleCallback(request: Request, callbackData: Record<string, unk
 
       const currentBalance = Number(user.balance ?? 0)
       const nextBalance = currentBalance + verifiedAmount
-      creditedBalance = nextBalance
       await tx.update(appUsers).set({ balance: nextBalance, updatedAt: new Date() }).where(eq(appUsers.id, user.id))
       await tx.insert(transactions).values({
         id: paymentTransactionId,
@@ -83,16 +80,6 @@ async function handleCallback(request: Request, callbackData: Record<string, unk
       console.error("[v0] PayStation user not found", { invoiceNumber, phoneNumber })
       return NextResponse.redirect(new URL(`${process.env.NEXT_PUBLIC_APP_URL || "https://shebabd.vercel.app"}/add-money?payment=pending&invoice=${encodeURIComponent(invoiceNumber)}`, url.origin))
     }
-
-    const smsResult = await sendTransactionSMS({
-      phoneNumber: String(phoneNumber).trim(),
-      direction: "add_money",
-      amount: verifiedAmount,
-      balance: creditedBalance,
-      transactionId: paymentTransactionId,
-      peerPhone: "PayStation",
-    })
-    if (!smsResult.success) console.error("[v0] Add Money SMS failed", { invoiceNumber, message: smsResult.message })
   }
 
   return NextResponse.redirect(new URL(`${process.env.NEXT_PUBLIC_APP_URL || "https://shebabd.vercel.app"}/add-money?payment=success&invoice=${encodeURIComponent(invoiceNumber)}`, url.origin))

@@ -22,7 +22,6 @@ export default function AddMoneyPage() {
   const [pin, setPin] = useState("")
   const [error, setError] = useState("")
   const [success, setSuccess] = useState(false)
-  const [paymentFailed, setPaymentFailed] = useState(false)
   const [balance, setBalance] = useState(0)
   const [cardBalance, setCardBalance] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
@@ -52,9 +51,8 @@ export default function AddMoneyPage() {
       setSuccess(true)
       localStorage.removeItem("paystationAmount")
       localStorage.removeItem("paystationInvoice")
-  } else if (paymentStatus === "failed") {
-  setPaymentFailed(true)
-  setError("")
+    } else if (paymentStatus === "failed") {
+      setError("PayStation payment failed. Please try again.")
     } else if (paymentStatus === "pending") {
       setError("Payment received. Wallet credit is being verified.")
     }
@@ -521,22 +519,8 @@ if (Number(amount) > 9000000) {
     }
   }
 
-  if (paymentFailed) {
-  return (
-  <div className="flex min-h-[100dvh] flex-col items-center justify-center bg-white px-6 text-center">
-    <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-red-100">
-      <span className="text-4xl font-bold text-red-600">!</span>
-    </div>
-    <h2 className="mb-2 text-2xl font-bold text-gray-800">Payment Failed</h2>
-    <p className="mb-8 max-w-sm text-gray-600">Your payment could not be completed. No money was added to your Sheba balance.</p>
-    <button onClick={() => { setPaymentFailed(false); setStep(1); router.replace("/add-money") }} className="w-full max-w-sm rounded-lg bg-[#38afe8] px-6 py-3 font-semibold text-white">Try Again</button>
-    <button onClick={() => router.push("/")} className="mt-3 w-full max-w-sm rounded-lg border border-gray-200 px-6 py-3 font-semibold text-gray-700">Back to Home</button>
-  </div>
-  )
-  }
-
   if (success) {
-  return (
+    return (
       <div className="flex flex-col h-screen bg-white">
         <div className="bg-[#29a9eb] text-white p-4 flex items-center">
           <button onClick={() => router.push("/")} className="mr-4">

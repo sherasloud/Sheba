@@ -126,11 +126,10 @@ export default function App() {
   const checkAuthStatus = async () => {
     try {
       const token = await SecureStore.getItemAsync('authToken');
-      const storedPin = await SecureStore.getItemAsync('userPin');
       const pinSet = await SecureStore.getItemAsync('pinSet');
 
       setIsLoggedIn(!!token);
-      setIsPINSet(pinSet === 'true' || !!storedPin);
+      setIsPINSet(!!pinSet);
     } catch (error) {
       console.error('[v0] Error checking auth status:', error);
     } finally {
