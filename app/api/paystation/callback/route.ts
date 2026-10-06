@@ -12,69 +12,39 @@ async function handleCallback(request: Request, callbackData: Record<string, unk
     }
     return ""
   }
-  const status = getValue("status", "payment_status", "transaction_status").toLowerCase()
+  const status = getValue("status", "payment_status", "transaction_status", "trx_status", "paymentStatus").toLowerCase()
   const invoiceNumber = getValue("invoice_number", "invoiceNumber", "invoice")
   const transactionId = getValue("trx_id", "trxId", "transaction_id", "transactionId")
 
-  if (status !== "success" && status !== "successful" && status !== "completed") {
-    return NextResponse.redirect(new URL(`/add-money?payment=failed&invoice=${encodeURIComponent(invoiceNumber)}`, url.origin))
+  if (!["success", "successful", "completed", "paid", "complete"].includes(status)) {
+    return NextResponse.redirect(new URL(`${process.env.NEXT_PUBLIC_APP_URL || "https://shebabd.vercel.app"}/add-money?payment=failed&invoice=${encodeURIComponent(invoiceNumber)}`, url.origin))
   }
 
   const merchantId = process.env.PAYSTATION_MERCHANT_ID
   if (!merchantId || !invoiceNumber) {
-    return NextResponse.redirect(new URL(`/add-money?payment=failed`, url.origin))
+    return NextResponse.redirect(new URL(`${process.env.NEXT_PUBLIC_APP_URL || "https://shebabd.vercel.app"}/add-money?payment=failed`, url.origin))
   }
 
-  const verificationRequests = transactionId
-    ? [
-        fetch("https://api.paystation.com.bd/v2/transaction-status", {
-          method: "POST",
-          headers: { Accept: "application/json", "Content-Type": "application/json", merchantId },
-          body: JSON.stringify({ trxId: transactionId }),
-          cache: "no-store",
-        }),
-        fetch("https://api.paystation.com.bd/transaction-status", {
-          method: "POST",
-          headers: { Accept: "application/json", "Content-Type": "application/json", merchantId },
-          body: JSON.stringify({ invoice_number: invoiceNumber }),
-          cache: "no-store",
-        }),
-      ]
-    : [
-        fetch("https://api.paystation.com.bd/transaction-status", {
-          method: "POST",
-          headers: { Accept: "application/json", "Content-Type": "application/json", merchantId },
-          body: JSON.stringify({ invoice_number: invoiceNumber }),
-          cache: "no-store",
-        }),
-      ]
-
-  let verificationResponse: Response | undefined
-  let verification: any = null
-  for (const candidate of verificationRequests) {
-    const response = await candidate
-    const payload = await response.json().catch(() => null)
-    const payloadData = payload?.data || payload?.result || payload
-    const candidateStatus = String(payloadData?.trx_status || payloadData?.transaction_status || payloadData?.payment_status || payloadData?.status || "").trim().toLowerCase()
-    if (response.ok && ["success", "successful", "completed", "complete", "paid", "approved"].includes(candidateStatus)) {
-      verificationResponse = response
-      verification = payloadData
-      break
-    }
-    verificationResponse = response
-    verification = payloadData
+  const verificationResponse = await fetch("https://api.paystation.com.bd/transaction-status", {
+    method: "POST",
+    headers: { Accept: "application/json", "Content-Type": "application/json", merchantId },
+    body: JSON.stringify({ merchantId, invoice_number: invoiceNumber, trx_id: transactionId }),
+    cache: "no-store",
+  })
+  const verification = await verificationResponse.json().catch(() => null)
+  const verifiedStatus = String(
+    verification?.trx_status || verification?.transaction_status || verification?.payment_status || verification?.status || verification?.data?.status || "",
+  ).toLowerCase()
+  if (!verificationResponse.ok || !["success", "successful", "completed", "paid", "complete"].includes(verifiedStatus)) {
+    console.error("[v0] PayStation verification failed", { invoiceNumber, verifiedStatus })
+    return NextResponse.redirect(new URL(`${process.env.NEXT_PUBLIC_APP_URL || "https://shebabd.vercel.app"}/add-money?payment=failed&invoice=${encodeURIComponent(invoiceNumber)}`, url.origin))
   }
 
-  const verifiedStatus = String(verification?.trx_status || verification?.transaction_status || verification?.payment_status || verification?.status || "").toLowerCase()
-  if (!verificationResponse?.ok || !["success", "successful", "completed", "complete", "paid", "approved"].includes(verifiedStatus)) {
-    console.error("[v0] PayStation verification failed", { invoiceNumber, transactionId, verifiedStatus, verification })
-    return NextResponse.redirect(new URL(`/add-money?payment=failed&invoice=${encodeURIComponent(invoiceNumber)}`, url.origin))
-  }
-
-  const phoneNumber = verification?.cust_phone || verification?.customer_phone || url.searchParams.get("cust_phone") || url.searchParams.get("phoneNumber") || invoiceNumber.match(/^SHEBA-(\d{10,15})-/)?.[1]
-  const verifiedAmount = Number(verification?.payment_amount || verification?.amount || verification?.transaction_amount || url.searchParams.get("payment_amount") || url.searchParams.get("amount"))
+  const verifiedData = verification?.data || verification
+  const phoneNumber = verifiedData?.cust_phone || verifiedData?.customer_phone || getValue("cust_phone", "phoneNumber") || invoiceNumber.match(/^SHEBA-(\d{10,15})-/)?.[1]
+  const verifiedAmount = Number(verifiedData?.payment_amount || verifiedData?.amount || verifiedData?.transaction_amount || getValue("payment_amount", "amount"))
   if (!phoneNumber || !Number.isFinite(verifiedAmount) || verifiedAmount <= 0) {
-    return NextResponse.redirect(new URL(`/add-money?payment=failed`, url.origin))
+    return NextResponse.redirect(new URL(`${process.env.NEXT_PUBLIC_APP_URL || "https://shebabd.vercel.app"}/add-money?payment=failed`, url.origin))
   }
 
   const paymentTransactionId = `PAYSTATION-${invoiceNumber}`
@@ -108,11 +78,11 @@ async function handleCallback(request: Request, callbackData: Record<string, unk
 
     if (!credited) {
       console.error("[v0] PayStation user not found", { invoiceNumber, phoneNumber })
-      return NextResponse.redirect(new URL(`/add-money?payment=pending&invoice=${encodeURIComponent(invoiceNumber)}`, url.origin))
+      return NextResponse.redirect(new URL(`${process.env.NEXT_PUBLIC_APP_URL || "https://shebabd.vercel.app"}/add-money?payment=pending&invoice=${encodeURIComponent(invoiceNumber)}`, url.origin))
     }
   }
 
-  return NextResponse.redirect(new URL(`/add-money?payment=success&invoice=${encodeURIComponent(invoiceNumber)}`, url.origin))
+  return NextResponse.redirect(new URL(`${process.env.NEXT_PUBLIC_APP_URL || "https://shebabd.vercel.app"}/add-money?payment=success&invoice=${encodeURIComponent(invoiceNumber)}`, url.origin))
 }
 
 export async function GET(request: Request) {

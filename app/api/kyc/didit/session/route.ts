@@ -6,9 +6,9 @@ export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => ({}))
   const phone = typeof body.phone === "string" ? body.phone.trim() : ""
   const nidType = typeof body.nidType === "string" ? body.nidType : "nid"
-  const documentNumber = typeof body.documentNumber === "string" ? body.documentNumber.trim() : typeof body.nidNumber === "string" ? body.nidNumber.trim() : ""
+  const nidNumber = typeof body.nidNumber === "string" ? body.nidNumber.trim() : ""
 
-  if (!phone || !/^01\d{9}$/.test(phone) || !/^[A-Za-z0-9-]{5,25}$/.test(documentNumber)) {
+  if (!phone || !/^01\d{9}$/.test(phone) || !/^\d{10,17}$/.test(nidNumber)) {
     return NextResponse.json({ error: "Valid phone and NID number are required." }, { status: 400 })
   }
 
@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
     body: JSON.stringify({
       workflow_id: process.env.DIDIT_WORKFLOW_ID,
       callback: `${origin}/kyc/didit/callback`,
-      vendor_data: JSON.stringify({ phone, nidType, nidNumber: documentNumber }),
+      vendor_data: JSON.stringify({ phone, nidType, nidNumber }),
     }),
   })
 
