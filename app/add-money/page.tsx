@@ -23,7 +23,6 @@ export default function AddMoneyPage() {
   const [error, setError] = useState("")
   const [success, setSuccess] = useState(false)
   const [balance, setBalance] = useState(0)
-  const [beforeBalance, setBeforeBalance] = useState(0)
   const [cardBalance, setCardBalance] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
   const [transactionIdCopied, setTransactionIdCopied] = useState(false)
@@ -50,9 +49,19 @@ export default function AddMoneyPage() {
       const returnedAmount = localStorage.getItem("paystationAmount")
       if (returnedAmount) setAmount(returnedAmount)
       setSuccess(true)
+      const addedAmount = Number(returnedAmount || amount || 0).toLocaleString("en-US")
+      if ("Notification" in window) {
+        const showNotification = () => new Notification("Add Money successful", {
+          body: `আপনার wallet-এ ${addedAmount} ৳ যোগ হয়েছে।`,
+          icon: "/icon-192x192.png",
+        })
+        if (Notification.permission === "granted") showNotification()
+        else if (Notification.permission === "default") Notification.requestPermission().then((permission) => {
+          if (permission === "granted") showNotification()
+        })
+      }
       localStorage.removeItem("paystationAmount")
       localStorage.removeItem("paystationInvoice")
-      localStorage.removeItem("addMoneyBeforeBalance")
       window.history.replaceState({}, "", "/add-money")
     } else if (paymentStatus === "failed") {
       setError("PayStation payment failed. Please try again.")
@@ -73,8 +82,6 @@ export default function AddMoneyPage() {
 
     const fetchBalance = async () => {
   const currentPhone = localStorage.getItem("phoneNumber")
-  const storedBeforeBalance = localStorage.getItem("addMoneyBeforeBalance")
-  if (storedBeforeBalance) setBeforeBalance(Number(storedBeforeBalance))
   if (currentPhone) {
         try {
           const response = await fetch(`/api/balance?phone=${currentPhone}`)
@@ -294,9 +301,7 @@ if (Number(amount) > 9000000) {
 
   const startPayStationCheckout = async () => {
   const currentPhone = localStorage.getItem("phoneNumber")
-  localStorage.setItem("addMoneyBeforeBalance", String(balance))
-  setBeforeBalance(balance)
-    if (!currentPhone) {
+  if (!currentPhone) {
       setError("Phone number not found. Please log in again.")
       return
     }
@@ -540,17 +545,6 @@ if (Number(amount) > 9000000) {
           <div className="mb-10 flex flex-col items-center gap-2">
             <span className="text-2xl font-normal sm:text-4xl">Amount</span>
             <span className="text-5xl font-normal tracking-tight sm:text-7xl">{Number(amount || 0).toLocaleString("en-US")} ৳</span>
-          </div>
-
-          <div className="mb-8 w-full max-w-sm rounded-xl border border-[#e5f4fb] bg-[#f9fdff] p-5 text-left">
-            <div className="flex justify-between gap-4 text-sm">
-              <span>Date &amp; Time</span>
-              <span className="text-right font-medium text-[#188dc9]">{new Date().toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" })}</span>
-            </div>
-            <div className="mt-3 flex justify-between gap-4 border-t border-[#e5f4fb] pt-3 text-sm">
-              <span>Balance</span>
-              <span className="font-medium text-[#188dc9]">{(beforeBalance + Number(amount || 0)).toLocaleString("en-US")} ৳</span>
-            </div>
           </div>
 
           <button onClick={() => router.push("/")} className="w-full max-w-sm rounded-lg bg-[#38afe8] px-6 py-3 font-medium text-white">
