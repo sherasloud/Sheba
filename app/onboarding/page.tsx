@@ -383,7 +383,7 @@ export default function OnboardingPage() {
               <h2 className="text-base font-medium text-gray-800">পরিচয় যাচাই</h2>
               <button type="button" onClick={() => setKycUrl("")} className="rounded-full px-3 py-1 text-sm text-gray-500">বন্ধ করুন</button>
             </div>
-            <iframe src={kycUrl} title="Didit identity verification" className="min-h-0 w-full flex-1 border-0" allow="camera; microphone; fullscreen" referrerPolicy="strict-origin-when-cross-origin" />
+            <iframe src={kycUrl} title="Didit identity verification" className="min-h-0 w-full flex-1 border-0" allow="camera *; microphone *; fullscreen *; autoplay *; encrypted-media *" referrerPolicy="strict-origin-when-cross-origin" />
           </section>
         )}
 
