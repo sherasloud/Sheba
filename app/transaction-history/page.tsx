@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import { ArrowLeft, Send, Download } from "lucide-react"
+import { ArrowLeft, Send, Download, Plus } from "lucide-react"
 import { getTransactions, subscribeToTransactions, getProfileByPhone } from "@/lib/supabase/data-service"
 import { ErrorBoundary } from "@/components/error-boundary"
 import { VerifiedBadge } from "@/components/verified-badge"
@@ -212,7 +212,7 @@ export default function TransactionHistoryPage() {
                   >
                     {/* Icon */}
                     <div className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0 ${amountBgColor}`}>
-                      <Send size={20} className={isAddMoney ? "text-[#38afe8]" : tx.isReceived ? "text-green-600" : "text-red-600"} />
+                      {isAddMoney ? <Plus size={24} strokeWidth={2.5} className="text-[#38afe8]" /> : <Send size={20} className={tx.isReceived ? "text-green-600" : "text-red-600"} />}
                     </div>
 
                     {/* Details */}
