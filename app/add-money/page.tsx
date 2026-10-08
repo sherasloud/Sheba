@@ -224,7 +224,12 @@ if (Number(amount) > 9000000) {
     }
 
     setError("")
-    if (selectedMethod === "card" || selectedMethod === "bank") {
+    if (selectedMethod === "card") {
+      setStep(4)
+      return
+    }
+
+    if (selectedMethod === "bank") {
       void startPayStationCheckout()
       return
     }
@@ -755,6 +760,7 @@ if (Number(amount) > 9000000) {
       {step === 4 && selectedMethod === "card" && (
         <div className="flex flex-1 flex-col overflow-y-auto bg-white px-8 pb-8 pt-10">
           <h1 className="mb-24 text-center text-[3.25rem] font-normal leading-[1.2] text-[#38afe8]">কার্ডের তথ্য দিন</h1>
+          <p className="-mt-16 mb-10 text-center text-sm text-gray-500">{selectedCardType} card selected</p>
 
           <div className="space-y-20">
             <div className="relative">
