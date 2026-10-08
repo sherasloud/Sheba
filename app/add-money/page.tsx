@@ -347,8 +347,7 @@ if (Number(amount) > 9000000) {
 
       localStorage.setItem("paystationInvoice", result.invoiceNumber)
       localStorage.setItem("paystationAmount", String(amount))
-      setGatewayUrl(result.redirectUrl)
-      setIsLoading(false)
+      window.location.assign(result.redirectUrl)
     } catch {
       setIsLoading(false)
       setError("Unable to connect to PayStation. Please try again.")
