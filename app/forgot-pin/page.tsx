@@ -1,13 +1,16 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { ArrowLeft, CheckCircle } from "lucide-react"
+import { DiditSdk } from "@didit-protocol/sdk-web"
 import Link from "next/link"
 
 export default function ForgotPinPage() {
   const [step, setStep] = useState(1)
   const [phoneNumber, setPhoneNumber] = useState("")
+  const [enteredPhone, setEnteredPhone] = useState("")
   const [maskedPhone, setMaskedPhone] = useState("")
+  const [kycLoading, setKycLoading] = useState(false)
   const [accountId, setAccountId] = useState("")
   const [nidNumber, setNidNumber] = useState("")
   const [otpCode, setOtpCode] = useState("")
@@ -49,18 +52,50 @@ export default function ForgotPinPage() {
     setStep(2)
   }
 
-  const handleOtpVerify = async () => {
-    if (!otpCode) {
-      setError("Please enter the OTP")
+  const handlePhoneSubmit = async () => {
+    const normalizedPhone = enteredPhone.replace(/\D/g, "")
+    if (!/^01\d{9}$/.test(normalizedPhone)) {
+      setError("সঠিক ফোন নম্বর দিন")
       return
     }
-    const response = await fetch("/api/verify-otp", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ phone: phoneNumber, otp: otpCode }) })
-    if (!response.ok) {
-      setError("Invalid OTP. Please try again.")
+    if (normalizedPhone !== phoneNumber) {
+      setError("NID এবং ফোন নম্বর মেলেনি")
       return
     }
-    setStep(4)
+    setError("")
+    setStep(3)
   }
+
+  const startDiditRecovery = async () => {
+    setKycLoading(true)
+    setError("")
+    try {
+      const response = await fetch("/api/kyc/didit/session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone: phoneNumber, nidNumber }),
+      })
+      const result = await response.json()
+      if (!response.ok || !result.url) throw new Error()
+      await DiditSdk.shared.startVerification({
+        url: result.url,
+        configuration: { embedded: false, showCloseButton: true, defaultDocumentCamera: "back", defaultLivenessCamera: "front" },
+      })
+    } catch {
+      setKycLoading(false)
+      setError("Didit verification শুরু করা যায়নি")
+    }
+  }
+
+  useEffect(() => {
+    DiditSdk.shared.onComplete = (result) => {
+      setKycLoading(false)
+      const status = String(result.session?.status || "").toLowerCase()
+      if (result.type === "completed" && ["approved", "completed", "success"].includes(status)) setStep(4)
+      else if (result.type !== "cancelled") setError("পরিচয় যাচাই সম্পন্ন হয়নি")
+    }
+    return () => { DiditSdk.shared.onComplete = undefined }
+  }, [])
 
   const handlePinReset = async () => {
     if (!newPin) {
@@ -108,52 +143,27 @@ export default function ForgotPinPage() {
             <div className="mb-6 text-[#8c96a3]">আপনার NID দিন এবং facial verification সম্পন্ন করুন</div>
             <input type="text" inputMode="numeric" className="w-full rounded-2xl border border-[#b9e6fb] bg-white p-4 text-lg outline-none focus:border-[#38afe8] focus:ring-2 focus:ring-[#b9e6fb]" value={nidNumber} onChange={(e) => setNidNumber(e.target.value.replace(/\D/g, '').slice(0, 17))} placeholder="NID Number" maxLength={17} />
             {error && <p className="mt-4 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800">{error}</p>}
-            <button onClick={handleNidSubmit} className="mt-auto rounded-full bg-[#38afe8] p-4 text-xl text-white shadow-sm transition-transform active:scale-[0.98]">Verify NID & Face</button>
+            <button onClick={handleNidSubmit} className="mt-auto rounded-full bg-[#38afe8] p-4 text-xl text-white shadow-sm transition-transform active:scale-[0.98]">Next</button>
           </>
         )}
 
         {step === 2 && (
           <>
-            <div className="mb-2 text-2xl font-normal text-[#10141c]">আপনার account নির্বাচন করুন</div>
-            <div className="mb-6 text-[#8c96a3]">এই NID-এর সঙ্গে পাওয়া Sheba account</div>
-            <button type="button" onClick={async () => { const response = await fetch("/api/send-otp", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ phone: phoneNumber, accountId }) }); if (response.ok) { setSuccess("OTP আপনার registered number-এ পাঠানো হয়েছে"); setStep(3) } else setError("OTP পাঠানো যায়নি") }} className="w-full rounded-2xl border-2 border-[#38afe8] bg-[#f2fbff] p-5 text-left text-lg text-[#142033]">User : {maskedPhone}<span className="mt-1 block text-sm text-[#8c96a3]">এই account নির্বাচন করুন</span></button>
-
+            <div className="mb-2 text-2xl font-normal text-[#10141c]">ফোন নম্বর দিন</div>
+            <div className="mb-6 text-[#8c96a3]">NID-এর সঙ্গে নিবন্ধিত ফোন নম্বর দিন</div>
+            <input type="tel" inputMode="numeric" value={enteredPhone} onChange={(event) => setEnteredPhone(event.target.value.replace(/\D/g, '').slice(0, 11))} placeholder="01XXXXXXXXX" className="w-full rounded-2xl border border-[#b9e6fb] bg-white p-4 text-lg outline-none focus:border-[#38afe8]" />
+            {error && <p className="mt-4 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800">{error}</p>}
+            <button onClick={handlePhoneSubmit} className="mt-auto rounded-full bg-[#38afe8] p-4 text-xl text-white">Next</button>
           </>
         )}
 
         {step === 3 && (
           <>
-            <div className="mb-2 text-2xl font-normal text-[#10141c]">OTP দিন</div>
-            <div className="mb-6 text-[#8c96a3]">{phoneNumber}-এ পাঠানো OTP দিন</div>
-
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium mb-2">6-Digit OTP</label>
-                <input
-                  type="text"
-                  className="w-full border rounded-md p-4 text-center text-2xl"
-                  value={otpCode}
-                  onChange={(e) => setOtpCode(e.target.value)}
-                  placeholder="••••••"
-                  maxLength={6}
-                />
-              </div>
-            </div>
-
-            {success && (
-              <div className="bg-green-50 border border-green-200 rounded-lg p-4 mt-4">
-                <p className="text-green-800 text-sm">{success}</p>
-              </div>
-            )}
-
-            {error && (
-              <div className="bg-red-50 border border-red-200 rounded-lg p-4 mt-4">
-                <p className="text-red-800 text-sm">{error}</p>
-              </div>
-            )}
-
-            <button onClick={handleOtpVerify} className="mt-auto rounded-full bg-[#38afe8] p-4 text-xl text-white shadow-sm transition-transform active:scale-[0.98]">
-              Verify OTP
+            <div className="mb-2 text-2xl font-normal text-[#10141c]">পরিচয় যাচাই করুন</div>
+            <div className="mb-6 text-[#8c96a3]">NID ও facial verification সম্পন্ন করুন</div>
+            {error && <p className="mb-4 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800">{error}</p>}
+            <button disabled={kycLoading} onClick={startDiditRecovery} className="mt-auto rounded-full bg-[#38afe8] p-4 text-xl text-white disabled:opacity-60">
+              {kycLoading ? "Verification চলছে…" : "Start Didit Verification"}
             </button>
           </>
         )}
