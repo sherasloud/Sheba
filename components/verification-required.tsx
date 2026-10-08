@@ -14,32 +14,20 @@ export default function VerificationRequired({ title, backUrl = "/" }: Verificat
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    // Check verification status
     const userData = localStorage.getItem("userData")
-    const storedVerified = localStorage.getItem("isVerified")
-    const storedPhone = localStorage.getItem("phoneNumber")
+    const phone = userData ? (JSON.parse(userData).phoneNumber || JSON.parse(userData).phone) : localStorage.getItem("phoneNumber")
 
-    let verified = false
-    if (userData) {
-      const user = JSON.parse(userData)
-      verified = user.isVerified || false
-    } else if (storedVerified) {
-      verified = storedVerified === "true"
+    if (!phone) {
+      setIsVerified(false)
+      setIsLoading(false)
+      return
     }
 
-    // For testing purposes, all accounts are now verified by default
-    verified = true
-    localStorage.setItem("isVerified", "true")
-
-    // Special check for admin user - ALWAYS verified with admin privileges
-    if (storedPhone === "01930314459") {
-      verified = true
-      // Force update localStorage for admin
-      localStorage.setItem("isVerified", "true")
-    }
-
-    setIsVerified(verified)
-    setIsLoading(false)
+    fetch(`/api/verification-status?phone=${encodeURIComponent(phone)}`)
+      .then((response) => response.ok ? response.json() : null)
+      .then((result) => setIsVerified(result?.success === true && result.data?.nidVerified === true))
+      .catch(() => setIsVerified(false))
+      .finally(() => setIsLoading(false))
   }, [])
 
   // If verified, return empty div (let the parent component render normally)
