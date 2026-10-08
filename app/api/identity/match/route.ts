@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
     }
 
     const user = await db.query.appUsers.findFirst({
-      where: eq(appUsers.nidNumber, normalizedNid),
+      where: and(eq(appUsers.nidNumber, normalizedNid), eq(appUsers.nidVerified, true)),
       columns: { id: true, phoneNumber: true },
     })
 
