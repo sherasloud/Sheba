@@ -26,6 +26,7 @@ export default function AddMoneyPage() {
   const [cardBalance, setCardBalance] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
   const [gatewayUrl, setGatewayUrl] = useState("")
+  const [gatewayLoaded, setGatewayLoaded] = useState(false)
   const [transactionIdCopied, setTransactionIdCopied] = useState(false)
   const [transactionId, setTransactionId] = useState("")
 
@@ -552,17 +553,21 @@ if (Number(amount) > 9000000) {
     return (
       <div className="flex h-[100dvh] flex-col bg-white">
         <div className="flex shrink-0 items-center justify-between border-b border-[#edf0f3] px-4 py-3">
-          <button type="button" onClick={() => setGatewayUrl("")} className="text-sm font-medium text-[#38afe8]">Back</button>
+          <button type="button" onClick={() => { setGatewayUrl(""); setGatewayLoaded(false) }} className="text-sm font-medium text-[#38afe8]">Back</button>
           <h1 className="text-base font-medium text-[#151522]">PayStation</h1>
           <span className="w-10" aria-hidden="true" />
         </div>
-        <iframe
-          src={gatewayUrl}
-          title="PayStation payment gateway"
-          className="min-h-0 w-full flex-1 border-0"
-          allow="payment *; camera *; microphone *"
-          referrerPolicy="strict-origin-when-cross-origin"
-        />
+          <div className="relative min-h-0 flex-1">
+            {!gatewayLoaded && <div className="absolute inset-0 z-10 flex items-center justify-center bg-white text-sm text-gray-500">Loading PayStation…</div>}
+            <iframe
+              src={gatewayUrl}
+              title="PayStation payment gateway"
+              className="h-full w-full border-0"
+              allow="payment *; camera *; microphone *"
+              referrerPolicy="strict-origin-when-cross-origin"
+              onLoad={() => setGatewayLoaded(true)}
+            />
+          </div>
       </div>
     )
   }
