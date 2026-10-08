@@ -116,7 +116,7 @@ export default function ForgotPinPage() {
       return
     }
 
-    const response = await fetch("/api/reset-pin", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ accountId, phone: phoneNumber, pin: newPin }) })
+    const response = await fetch("/api/reset-pin", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ accountId, phone: phoneNumber, nidNumber, pin: newPin }) })
     if (!response.ok) {
       setError("PIN update করা যায়নি")
       return
