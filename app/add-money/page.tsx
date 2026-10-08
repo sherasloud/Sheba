@@ -25,6 +25,7 @@ export default function AddMoneyPage() {
   const [balance, setBalance] = useState(0)
   const [cardBalance, setCardBalance] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
+  const [gatewayUrl, setGatewayUrl] = useState("")
   const [transactionIdCopied, setTransactionIdCopied] = useState(false)
   const [transactionId, setTransactionId] = useState("")
 
@@ -278,8 +279,8 @@ if (Number(amount) > 9000000) {
   const validateCardDetails = () => {
     const cleanCardNumber = cardDetails.cardNumber.replace(/\s/g, "")
 
-    if (!cleanCardNumber || cleanCardNumber.length !== 16) {
-      setError("Please enter a valid 16-digit card number")
+    if (!cleanCardNumber || cleanCardNumber.length < 13 || cleanCardNumber.length > 19) {
+      setError("Please enter a valid card number")
       return false
     }
 
@@ -294,7 +295,7 @@ if (Number(amount) > 9000000) {
     setError("Please enter a valid expiry month")
     return false
   }
-  const expiryDate = new Date(2000 + Number.parseInt(year), monthNumber - 1)
+  const expiryDate = new Date(2000 + Number.parseInt(year), monthNumber, 0, 23, 59, 59, 999)
 
     const today = new Date()
     if (expiryDate < today) {
@@ -302,7 +303,7 @@ if (Number(amount) > 9000000) {
       return false
     }
 
-    if (!cardDetails.cvv || cardDetails.cvv.length < 3) {
+    if (!/^\d{3,4}$/.test(cardDetails.cvv)) {
       setError("Please enter a valid CVV")
       return false
     }
@@ -336,8 +337,8 @@ if (Number(amount) > 9000000) {
           cardType: selectedCardType,
         }),
       })
-      const result = await response.json()
-      if (!response.ok || !result.success) {
+      const result = await response.json().catch(() => ({ success: false, message: "Invalid response from PayStation" }))
+      if (!response.ok || !result.success || !result.redirectUrl) {
         setError(result.message || "Unable to start PayStation checkout")
         setIsLoading(false)
         return
@@ -471,7 +472,8 @@ if (Number(amount) > 9000000) {
         }
         localStorage.setItem("paystationInvoice", result.invoiceNumber)
         localStorage.setItem("paystationAmount", String(amount))
-        window.location.assign(result.redirectUrl)
+      setGatewayUrl(result.redirectUrl)
+      setIsLoading(false)
         return
       }
 
@@ -544,6 +546,25 @@ if (Number(amount) > 9000000) {
       setIsLoading(false)
       setError("Transaction failed. Please try again.")
     }
+  }
+
+  if (gatewayUrl) {
+    return (
+      <div className="flex h-[100dvh] flex-col bg-white">
+        <div className="flex shrink-0 items-center justify-between border-b border-[#edf0f3] px-4 py-3">
+          <button type="button" onClick={() => setGatewayUrl("")} className="text-sm font-medium text-[#38afe8]">Back</button>
+          <h1 className="text-base font-medium text-[#151522]">PayStation</h1>
+          <span className="w-10" aria-hidden="true" />
+        </div>
+        <iframe
+          src={gatewayUrl}
+          title="PayStation payment gateway"
+          className="min-h-0 w-full flex-1 border-0"
+          allow="payment *; camera *; microphone *"
+          referrerPolicy="strict-origin-when-cross-origin"
+        />
+      </div>
+    )
   }
 
   if (success) {
@@ -816,7 +837,7 @@ if (Number(amount) > 9000000) {
 
           {error && <div role="alert" className="mt-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">{error}</div>}
 
-<button className="mt-auto w-full rounded-full bg-[#38afe8] py-3 text-xl font-medium leading-6 text-white" onClick={handleDetailsNext}>
+<button type="button" className="mt-auto w-full -translate-y-24 rounded-full bg-[#38afe8] py-3 text-xl font-medium leading-6 text-white" onClick={handleDetailsNext}>
           Next
           </button>
         </div>
