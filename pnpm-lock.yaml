@@ -26,6 +26,9 @@ importers:
       '@cloudflare/workers-types':
         specifier: latest
         version: 5.20260916.1
+      '@didit-protocol/sdk-web':
+        specifier: ^0.4.0
+        version: 0.4.0
       '@electric-sql/pglite':
         specifier: latest
         version: 0.5.8
@@ -928,6 +931,10 @@ packages:
 
   '@date-fns/tz@1.2.0':
     resolution: {integrity: sha512-LBrd7MiJZ9McsOgxqWX7AaxrDjcFVjWH/tIKJd7pnR7McaslGYOP1QmmiBXdJH/H/yLCT+rcQ7FaPBUxRGUtrg==}
+
+  '@didit-protocol/sdk-web@0.4.0':
+    resolution: {integrity: sha512-5urXia3DBjrB1+uOv1sI8+RsLU1ZUHDCxLECTHzVQWG0ewBczX5oirw+QbNfOa8JLDpY086TcfuRztbWSqAeig==}
+    engines: {node: '>=16.0.0'}
 
   '@dotenvx/dotenvx@1.75.1':
     resolution: {integrity: sha512-/BITOC9dmS/edY2zQwZNicQ059O6RKabtQfyEafV0nGtfYRNHYy1DIPiYVcov40+tob9hfmBnbR963dS+EQ1DQ==}
@@ -8131,6 +8138,8 @@ snapshots:
   '@cloudflare/workers-types@5.20260916.1': {}
 
   '@date-fns/tz@1.2.0': {}
+
+  '@didit-protocol/sdk-web@0.4.0': {}
 
   '@dotenvx/dotenvx@1.75.1':
     dependencies:

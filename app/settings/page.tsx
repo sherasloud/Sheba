@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { DiditSdk } from "@didit-protocol/sdk-web"
 import { CheckCircle, ImageIcon, XCircle } from "lucide-react"
 import Link from "next/link"
 import TransactionCleaner from "@/components/transaction-cleaner"
@@ -38,7 +39,6 @@ const SettingsPage = () => {
   const [newName, setNewName] = useState("")
   const [email, setEmail] = useState("")
   const [emailSaved, setEmailSaved] = useState(false)
-  const [showVerification, setShowVerification] = useState(false)
   
   const t = translations[language]
 
@@ -226,7 +226,7 @@ const SettingsPage = () => {
           {!isNidVerified && (
             <button
               type="button"
-              onClick={() => setShowVerification(true)}
+              onClick={() => void DiditSdk.shared.startVerification({ url: "https://verify.didit.me/u/-nz59ozcQIevHqyp-PGeLA", configuration: { embedded: false, showCloseButton: true, defaultDocumentCamera: "back", defaultLivenessCamera: "front" } })}
               className="rounded-md bg-[#29a9eb] px-4 py-2 text-sm whitespace-nowrap text-white"
             >
               {t.verifyNow}
@@ -234,28 +234,6 @@ const SettingsPage = () => {
           )}
         </div>
       </div>
-
-      {showVerification && (
-        <section className="fixed inset-0 z-50 flex min-h-[100dvh] flex-col bg-white" aria-label="Identity verification">
-          <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3">
-            <h2 className="text-base font-medium text-gray-800">{language === "bn" ? "পরিচয় যাচাই" : "Identity verification"}</h2>
-            <button
-              type="button"
-              onClick={() => setShowVerification(false)}
-              className="rounded-md px-3 py-1 text-sm text-gray-500"
-            >
-              {language === "bn" ? "বন্ধ করুন" : "Close"}
-            </button>
-          </div>
-          <iframe
-            src="https://verify.didit.me/u/-nz59ozcQIevHqyp-PGeLA"
-            title="Didit identity verification"
-            className="min-h-0 w-full flex-1 border-0"
-            allow="camera *; microphone *; fullscreen *; autoplay *; encrypted-media *"
-            referrerPolicy="strict-origin-when-cross-origin"
-          />
-        </section>
-      )}
 
       <div className="space-y-3">
         <div className="border rounded-lg p-4">

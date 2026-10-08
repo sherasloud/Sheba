@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { ArrowLeft, User, Phone, Lock, CheckCircle } from "lucide-react"
 import { setCurrentUser, isAdminPhone, getAccountByPhone } from "@/lib/account-manager"
+import { DiditSdk } from "@didit-protocol/sdk-web"
 
 export default function OnboardingPage() {
   const router = useRouter()
@@ -21,22 +22,23 @@ export default function OnboardingPage() {
   const [nidType, setNidType] = useState("nid")
   const [documentNumber, setDocumentNumber] = useState("")
   const [kycLoading, setKycLoading] = useState(false)
-  const [kycUrl, setKycUrl] = useState("")
 
   useEffect(() => {
-    const handleKycMessage = (event: MessageEvent) => {
-      if (event.origin !== window.location.origin || event.data?.type !== "didit-kyc-result") return
-      setKycUrl("")
-      if (event.data.status === "approved") {
+    DiditSdk.shared.onComplete = (result) => {
+      setKycLoading(false)
+      if (result.type === "completed" && result.session?.status === "Approved") {
         sessionStorage.setItem("diditKycApproved", "true")
-        if (event.data.sessionId) sessionStorage.setItem("diditSessionId", event.data.sessionId)
+        sessionStorage.setItem("diditSessionId", result.session.sessionId)
         setStep(4)
-      } else {
+      } else if (result.type !== "cancelled") {
         setError("পরিচয় যাচাই সম্পন্ন হয়নি। আবার চেষ্টা করুন।")
       }
     }
-    window.addEventListener("message", handleKycMessage)
-    return () => window.removeEventListener("message", handleKycMessage)
+
+    return () => {
+      DiditSdk.shared.onComplete = undefined
+      DiditSdk.shared.destroy()
+    }
   }, [])
 
   useEffect(() => {
@@ -64,9 +66,18 @@ export default function OnboardingPage() {
       sessionStorage.setItem("pendingKyc", JSON.stringify({ nidType, documentNumber }))
       if (data.sessionId) sessionStorage.setItem("diditSessionId", data.sessionId)
 
-      // Always use Didit as a top-level page so it never starts the embedded QR handoff.
-      window.location.assign(verificationUrl.toString())
-      return
+      await DiditSdk.shared.startVerification({
+        url: verificationUrl.toString(),
+        configuration: {
+          loggingEnabled: false,
+          embedded: false,
+          showCloseButton: true,
+          defaultDocumentCamera: "back",
+          defaultLivenessCamera: "front",
+          showDocumentCameraSwitchButton: true,
+          showLivenessCameraSwitchButton: true,
+        },
+      })
     } catch (error) {
       setError(error instanceof Error ? error.message : "যাচাই শুরু করা যায়নি")
     } finally {
@@ -380,15 +391,7 @@ export default function OnboardingPage() {
           </div>
         )}
 
-        {kycUrl && (
-          <section className="fixed inset-0 z-50 flex min-h-[100dvh] flex-col bg-white" aria-label="Identity verification">
-            <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3">
-              <h2 className="text-base font-medium text-gray-800">পরিচয় যাচাই</h2>
-              <button type="button" onClick={() => setKycUrl("")} className="rounded-full px-3 py-1 text-sm text-gray-500">বন্ধ করুন</button>
-            </div>
-            <iframe src={kycUrl} title="Didit identity verification" className="min-h-0 w-full flex-1 border-0" allow="camera *; microphone *; fullscreen *; autoplay *; encrypted-media *" referrerPolicy="strict-origin-when-cross-origin" />
-          </section>
-        )}
+
 
         {/* Step 4: Create PIN */}
         {step === 4 && (
