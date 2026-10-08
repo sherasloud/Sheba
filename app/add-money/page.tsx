@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { ArrowLeft, Copy, Check, Building2, CreditCard } from "lucide-react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
@@ -27,6 +27,7 @@ export default function AddMoneyPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [gatewayUrl, setGatewayUrl] = useState("")
   const [gatewayLoaded, setGatewayLoaded] = useState(false)
+  const checkoutStartedRef = useRef(false)
   const [transactionIdCopied, setTransactionIdCopied] = useState(false)
   const [transactionId, setTransactionId] = useState("")
 
@@ -316,17 +317,21 @@ if (Number(amount) > 9000000) {
   }
 
   const startPayStationCheckout = async () => {
-  const currentPhone = localStorage.getItem("phoneNumber")
-  if (!currentPhone) {
+    if (checkoutStartedRef.current || isLoading) return
+
+    const storedUserData = JSON.parse(localStorage.getItem("userData") || "{}")
+    const currentPhone = localStorage.getItem("phoneNumber") || storedUserData.phone || storedUserData.phoneNumber || ""
+    if (!currentPhone) {
       setError("Phone number not found. Please log in again.")
       return
     }
 
+    checkoutStartedRef.current = true
     setIsLoading(true)
     setError("")
 
     try {
-      const userData = JSON.parse(localStorage.getItem("userData") || "{}")
+      const userData = storedUserData
       const response = await fetch("/api/paystation/initiate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -341,6 +346,7 @@ if (Number(amount) > 9000000) {
       const result = await response.json().catch(() => ({ success: false, message: "Invalid response from PayStation" }))
       if (!response.ok || !result.success || !result.redirectUrl) {
         setError(result.message || "Unable to start PayStation checkout")
+        checkoutStartedRef.current = false
         setIsLoading(false)
         return
       }
@@ -349,6 +355,7 @@ if (Number(amount) > 9000000) {
       localStorage.setItem("paystationAmount", String(amount))
       window.location.assign(result.redirectUrl)
     } catch {
+      checkoutStartedRef.current = false
       setIsLoading(false)
       setError("Unable to connect to PayStation. Please try again.")
     }
@@ -842,9 +849,9 @@ if (Number(amount) > 9000000) {
 
           {error && <div role="alert" className="mt-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">{error}</div>}
 
-<button type="button" className="mt-auto w-full -translate-y-24 rounded-full bg-[#38afe8] py-3 text-xl font-medium leading-6 text-white" onClick={handleDetailsNext}>
-          Next
-          </button>
+<button type="button" disabled={isLoading} className="mt-auto w-full -translate-y-24 rounded-full bg-[#38afe8] py-3 text-xl font-medium leading-6 text-white disabled:cursor-wait disabled:opacity-60" onClick={handleDetailsNext}>
+  {isLoading ? "Opening gateway…" : "Next"}
+</button>
         </div>
       )}
 
