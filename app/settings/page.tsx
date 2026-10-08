@@ -38,6 +38,7 @@ const SettingsPage = () => {
   const [newName, setNewName] = useState("")
   const [email, setEmail] = useState("")
   const [emailSaved, setEmailSaved] = useState(false)
+  const [showVerification, setShowVerification] = useState(false)
   
   const t = translations[language]
 
@@ -224,12 +225,38 @@ const SettingsPage = () => {
             </div>
           </div>
           {!isNidVerified && (
-            <Link href="/verification" className="bg-[#29a9eb] text-white px-4 py-2 rounded-md text-sm whitespace-nowrap">
+            <button
+              type="button"
+              onClick={() => setShowVerification(true)}
+              className="rounded-md bg-[#29a9eb] px-4 py-2 text-sm whitespace-nowrap text-white"
+            >
               {t.verifyNow}
-            </Link>
+            </button>
           )}
         </div>
       </div>
+
+      {showVerification && (
+        <section className="fixed inset-0 z-50 flex min-h-[100dvh] flex-col bg-white" aria-label="Identity verification">
+          <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3">
+            <h2 className="text-base font-medium text-gray-800">{language === "bn" ? "পরিচয় যাচাই" : "Identity verification"}</h2>
+            <button
+              type="button"
+              onClick={() => setShowVerification(false)}
+              className="rounded-md px-3 py-1 text-sm text-gray-500"
+            >
+              {language === "bn" ? "বন্ধ করুন" : "Close"}
+            </button>
+          </div>
+          <iframe
+            src="https://verify.didit.me/u/-nz59ozcQIevHqyp-PGeLA"
+            title="Didit identity verification"
+            className="min-h-0 w-full flex-1 border-0"
+            allow="camera *; microphone *; fullscreen *; autoplay *; encrypted-media *"
+            referrerPolicy="strict-origin-when-cross-origin"
+          />
+        </section>
+      )}
 
       <div className="space-y-3">
         <div className="border rounded-lg p-4">

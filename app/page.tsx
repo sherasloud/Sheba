@@ -249,8 +249,8 @@ export default function AppPage() {
 
         // This ensures PIN expires when app/browser is closed
         const phone = sessionStorage.getItem("phoneNumber") || localStorage.getItem("phoneNumber")
-        const pinVerified = sessionStorage.getItem("appPinVerified") || localStorage.getItem("appPinVerified")
-        const pinVerifiedTime = sessionStorage.getItem("pinVerifiedTime") || localStorage.getItem("pinVerifiedTime")
+        const pinVerified = sessionStorage.getItem("appPinVerified")
+        const pinVerifiedTime = sessionStorage.getItem("pinVerifiedTime")
 
         console.log("[v0] Auth values:", { phone, pinVerified, pinVerifiedTime })
 

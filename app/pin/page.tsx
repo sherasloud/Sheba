@@ -136,11 +136,11 @@ export default function PinPage() {
         }
 
         setError("")
-        try {
-          localStorage.setItem("appPinVerified", "true")
-          localStorage.setItem("pinVerifiedTime", timestamp)
-          localStorage.setItem("phoneNumber", data.user?.phoneNumber ?? phoneNumber)
-        } catch (storageError) {
+  try {
+  localStorage.removeItem("appPinVerified")
+  localStorage.removeItem("pinVerifiedTime")
+  localStorage.setItem("phoneNumber", data.user?.phoneNumber ?? phoneNumber)
+  } catch (storageError) {
           console.warn("[v0] Could not persist PIN session", storageError)
         }
         router.replace("/")
