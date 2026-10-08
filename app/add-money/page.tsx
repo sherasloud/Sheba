@@ -283,11 +283,6 @@ if (Number(amount) > 9000000) {
       return false
     }
 
-    if (!validateCardNumberLuhn(cleanCardNumber)) {
-      setError("Invalid card number. Please check and try again")
-      return false
-    }
-
     if (!cardDetails.expiryDate || !/^\d{2}\/\d{2}$/.test(cardDetails.expiryDate)) {
       setError("Please enter expiry date in MM/YY format")
       return false
@@ -336,8 +331,9 @@ if (Number(amount) > 9000000) {
         body: JSON.stringify({
           phoneNumber: currentPhone,
           amount: Number(amount),
-          userEmail: userData.email,
+          userEmail: userData.email || localStorage.getItem("shebaTransactionEmail") || "customer@sheba.com",
           userName: userData.name || cardDetails.cardholderName || "Customer",
+          cardType: selectedCardType,
         }),
       })
       const result = await response.json()
