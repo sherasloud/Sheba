@@ -50,8 +50,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, message: "Unable to start PayStation checkout" }, { status: 502 })
     }
 
-    const redirectUrl = result.payment_url || result.paymentUrl || result.redirect_url || result.redirectUrl || result.url
-    if (!redirectUrl || typeof redirectUrl !== "string") {
+  const redirectUrl = result.payment_url || result.paymentUrl || result.redirect_url || result.redirectUrl || result.url || result.data?.payment_url || result.data?.paymentUrl || result.data?.redirect_url || result.data?.redirectUrl || result.data?.url
+  if (!redirectUrl || typeof redirectUrl !== "string" || !/^https?:\/\//i.test(redirectUrl)) {
       console.error("[v0] PayStation response did not contain a checkout URL")
       return NextResponse.json({ success: false, message: "PayStation did not return a checkout URL" }, { status: 502 })
     }
