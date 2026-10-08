@@ -1,4 +1,7 @@
 import { NextResponse, NextRequest } from "next/server"
+import { eq } from "drizzle-orm"
+import { db } from "@/lib/db"
+import { appUsers } from "@/lib/db/schema"
 
 export async function GET(request: NextRequest) {
   try {
@@ -11,18 +14,24 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // For now, return unverified status
-    // Full verification will be implemented when database is properly configured
-    console.log("[v0] Verification Status API - Returning unverified for phone:", phone)
+    const user = await db.query.appUsers.findFirst({
+      where: eq(appUsers.phoneNumber, phone),
+      columns: {
+        nidVerified: true,
+        nidNumber: true,
+      },
+    })
+
+    const isVerified = user?.nidVerified === true
 
     return NextResponse.json({
       success: true,
       data: {
-        isVerified: false,
-        nidVerified: false,
-        faceVerified: false,
+        isVerified,
+        nidVerified: isVerified,
+        faceVerified: isVerified,
         verifiedAt: null,
-        nidNumber: null,
+        nidNumber: user?.nidNumber ?? null,
       },
     })
   } catch (error) {
