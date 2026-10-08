@@ -691,7 +691,7 @@ if (Number(amount) > 9000000) {
       {step === 4 && selectedMethod === "bank" && (
         <div className="flex flex-1 flex-col overflow-y-auto bg-white px-6 pb-8 pt-10 text-black">
           <h1 className="mb-4 text-center text-4xl font-normal text-[#38afe8]">ব্যাংক তথ্য</h1>
-          <div className="mb-8 text-center text-lg font-medium text-[#38afe8]">Amount: ৳{amount}</div>
+          <div className="mb-8 text-center text-[72px] font-normal leading-none text-[#38afe8]">৳{amount}</div>
 
           <div className="space-y-4">
             <div>
@@ -816,8 +816,8 @@ if (Number(amount) > 9000000) {
 
           {error && <div role="alert" className="mt-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">{error}</div>}
 
-          <button className="mt-auto w-full rounded-full bg-[#38afe8] py-5 text-[3.2rem] font-light leading-none text-white" onClick={handleDetailsNext}>
-            Next
+<button className="mt-auto w-full rounded-full bg-[#38afe8] py-3 text-xl font-medium leading-6 text-white" onClick={handleDetailsNext}>
+          Next
           </button>
         </div>
       )}
