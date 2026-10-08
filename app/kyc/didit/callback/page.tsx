@@ -21,7 +21,7 @@ export default function DiditCallbackPage() {
       window.parent.postMessage({ type: "didit-kyc-result", status: approved ? "approved" : status || "pending", sessionId }, window.location.origin)
       return
     }
-    router.replace(`/onboarding?kyc=${status || "pending"}`)
+    router.replace(approved ? "/?verified=success" : `/onboarding?kyc=${status || "pending"}`)
   }, [router, searchParams])
 
   return <main className="flex min-h-[100dvh] items-center justify-center bg-white text-[#38afe8]">যাচাইকরণ ফলাফল গ্রহণ করা হচ্ছে...</main>

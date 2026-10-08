@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
 import crypto from "node:crypto"
+import { db } from "@/lib/db"
+import { appUsers } from "@/lib/db/schema"
+import { eq } from "drizzle-orm"
 
 export const runtime = "nodejs"
 
@@ -26,13 +29,26 @@ export async function POST(request: NextRequest) {
   const status = String(payload.status || payload.decision || "").toLowerCase()
   const approved = ["approved", "completed", "success"].includes(status)
 
-  // Persist the verified decision in the account/KYC store here. The webhook is
-  // the server-side source of truth; the browser callback is not trusted.
-  console.log("[v0] Didit KYC decision", {
-    sessionId: payload.session_id,
-    approved,
-    vendorData: payload.vendor_data,
-  })
+  // The webhook is the server-side source of truth; browser callbacks are not trusted.
+  if (approved && payload.vendor_data) {
+    const vendorData = (() => {
+      try {
+        return JSON.parse(payload.vendor_data) as { phoneNumber?: string; phone?: string; nidNumber?: string }
+      } catch {
+        return { phoneNumber: payload.vendor_data }
+      }
+    })()
+    const phoneNumber = String(vendorData.phoneNumber || vendorData.phone || "").replace(/\D/g, "")
+    const nidNumber = String(vendorData.nidNumber || "").replace(/\D/g, "")
+
+    if (phoneNumber) {
+      await db.update(appUsers).set({
+        nidVerified: true,
+        ...(nidNumber ? { nidNumber } : {}),
+        updatedAt: new Date(),
+      }).where(eq(appUsers.phoneNumber, phoneNumber))
+    }
+  }
 
   return NextResponse.json({ received: true })
 }

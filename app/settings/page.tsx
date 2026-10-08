@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
 import { DiditSdk } from "@didit-protocol/sdk-web"
 import { CheckCircle, ImageIcon, XCircle } from "lucide-react"
 import Link from "next/link"
@@ -30,6 +31,7 @@ const translations = {
 }
 
 const SettingsPage = () => {
+  const router = useRouter()
   const [isNidVerified, setIsNidVerified] = useState(false)
   const [loading, setLoading] = useState(true)
   const [phone, setPhone] = useState("")
@@ -41,6 +43,19 @@ const SettingsPage = () => {
   const [emailSaved, setEmailSaved] = useState(false)
   
   const t = translations[language]
+
+  useEffect(() => {
+    DiditSdk.shared.onComplete = async (result) => {
+      if (result.type === "completed" && result.session?.status === "Approved") {
+        if (phone) await fetchVerificationStatus(phone)
+        router.replace("/")
+      }
+    }
+
+    return () => {
+      DiditSdk.shared.onComplete = undefined
+    }
+  }, [phone, router])
 
   useEffect(() => {
     // Get phone and name from localStorage
