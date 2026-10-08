@@ -816,7 +816,7 @@ if (Number(amount) > 9000000) {
 
           {error && <div role="alert" className="mt-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">{error}</div>}
 
-<button type="button" className="mt-auto w-full rounded-full bg-[#38afe8] py-3 text-xl font-medium leading-6 text-white" onClick={handleDetailsNext}>
+<button type="button" className="mt-auto w-full -translate-y-24 rounded-full bg-[#38afe8] py-3 text-xl font-medium leading-6 text-white" onClick={handleDetailsNext}>
           Next
           </button>
         </div>
