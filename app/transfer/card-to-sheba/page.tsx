@@ -257,7 +257,7 @@ export default function CardToShebaPage() {
 
           <input
             type="text"
-            className="border rounded-md p-4 mb-2 text-center text-2xl"
+            className="card-transfer-amount-input mb-2 w-full rounded-md border p-4 text-center"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             placeholder="0"

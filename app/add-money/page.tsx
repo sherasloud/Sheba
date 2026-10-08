@@ -691,7 +691,7 @@ if (Number(amount) > 9000000) {
       {step === 4 && selectedMethod === "bank" && (
         <div className="flex flex-1 flex-col overflow-y-auto bg-white px-6 pb-8 pt-10 text-black">
           <h1 className="mb-4 text-center text-4xl font-normal text-[#38afe8]">ব্যাংক তথ্য</h1>
-          <div className="mb-8 text-center text-lg font-medium text-[#38afe8]">Amount: ৳{amount}</div>
+          <div className="mb-8 text-center text-[72px] font-normal leading-none text-[#38afe8]">৳{amount}</div>
 
           <div className="space-y-4">
             <div>
