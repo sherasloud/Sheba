@@ -25,17 +25,18 @@ export default function InboxPage() {
   useEffect(() => {
     const phone = localStorage.getItem('phoneNumber')
     const name = localStorage.getItem('userName') || 'User'
-    const verified = localStorage.getItem('isVerified') === 'true'
-    
-    if (!phone) {
+  if (!phone) {
       router.push('/pin')
       return
     }
     setUserPhone(phone)
     setUserName(name)
     setNewName(name)
-    setIsVerified(verified)
-    loadTransactions(phone)
+  fetch(`/api/verification-status?phone=${encodeURIComponent(phone)}`)
+    .then((response) => response.ok ? response.json() : null)
+    .then((result) => setIsVerified(result?.success === true && result.data?.nidVerified === true))
+    .catch(() => setIsVerified(false))
+  loadTransactions(phone)
     loadNotifications(phone)
   }, [router])
 

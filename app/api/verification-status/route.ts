@@ -22,7 +22,9 @@ export async function GET(request: NextRequest) {
       },
     })
 
-    const isVerified = user?.nidVerified === true
+    const normalizedPhone = phone.replace(/[^0-9]/g, "")
+    const isDemoAccount = normalizedPhone === "01914255406" || normalizedPhone === "8801914255406"
+    const isVerified = !isDemoAccount && user?.nidVerified === true
 
     return NextResponse.json({
       success: true,
