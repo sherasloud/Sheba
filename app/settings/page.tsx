@@ -76,9 +76,8 @@ const SettingsPage = () => {
       console.log("[v0] Verification status response:", result)
 
       if (response.ok && result.success && result.data) {
-        // Only verified if BOTH nidVerified AND faceVerified are true
-        const isFullyVerified = (result.data.nidVerified === true) && (result.data.faceVerified === true)
-        console.log("[v0] NID Verified:", result.data.nidVerified, "Face Verified:", result.data.faceVerified, "Fully Verified:", isFullyVerified)
+        const isFullyVerified = result.data.isVerified === true || result.data.nidVerified === true
+        console.log("[v0] Verification status:", result.data, "Fully Verified:", isFullyVerified)
         setIsNidVerified(isFullyVerified)
       } else {
         // If API fails, no user found, or incomplete verification, default to unverified
