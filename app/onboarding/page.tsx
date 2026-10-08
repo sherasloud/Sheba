@@ -63,7 +63,10 @@ export default function OnboardingPage() {
       if (!isDiditHost) throw new Error("Invalid Didit verification URL")
       sessionStorage.setItem("pendingKyc", JSON.stringify({ nidType, documentNumber }))
       if (data.sessionId) sessionStorage.setItem("diditSessionId", data.sessionId)
-      setKycUrl(verificationUrl.toString())
+
+      // Always use Didit as a top-level page so it never starts the embedded QR handoff.
+      window.location.assign(verificationUrl.toString())
+      return
     } catch (error) {
       setError(error instanceof Error ? error.message : "যাচাই শুরু করা যায়নি")
     } finally {
