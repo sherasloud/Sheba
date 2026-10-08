@@ -96,10 +96,10 @@ export default function OnboardingPage() {
     
     sessionStorage.setItem("phoneNumber", phoneNumber)
     sessionStorage.setItem("otpVerified", "true")
-    sessionStorage.setItem("appPinVerified", "true")
-    sessionStorage.setItem("pinVerifiedTime", Date.now().toString())
-    localStorage.setItem("appPinVerified", "true")
-    localStorage.setItem("pinVerifiedTime", Date.now().toString())
+  sessionStorage.removeItem("appPinVerified")
+  sessionStorage.removeItem("pinVerifiedTime")
+  localStorage.removeItem("appPinVerified")
+  localStorage.removeItem("pinVerifiedTime")
   }
 
 
