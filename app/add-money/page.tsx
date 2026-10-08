@@ -50,6 +50,14 @@ export default function AddMoneyPage() {
       if (returnedAmount) setAmount(returnedAmount)
       setSuccess(true)
       const addedAmount = Number(returnedAmount || amount || 0).toLocaleString("en-US")
+      const transactionEmail = localStorage.getItem("shebaTransactionEmail")
+      if (transactionEmail) {
+        void fetch("/api/notifications/transaction-email", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: transactionEmail, title: "Add Money successful", amount: `${addedAmount} ৳`, details: "Money was added to your Sheba wallet." }),
+        })
+      }
       if ("Notification" in window) {
         const showNotification = () => new Notification("Add Money successful", {
           body: `আপনার wallet-এ ${addedAmount} ৳ যোগ হয়েছে।`,

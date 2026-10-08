@@ -36,6 +36,8 @@ const SettingsPage = () => {
   const [userName, setUserName] = useState("")
   const [showNameModal, setShowNameModal] = useState(false)
   const [newName, setNewName] = useState("")
+  const [email, setEmail] = useState("")
+  const [emailSaved, setEmailSaved] = useState(false)
   
   const t = translations[language]
 
@@ -50,6 +52,7 @@ const SettingsPage = () => {
         setPhone(userPhone)
         setUserName(name)
         setNewName(name)
+        setEmail(user.email || localStorage.getItem("shebaTransactionEmail") || "")
 
         // Fetch NID verification status
         if (userPhone) {
@@ -174,6 +177,29 @@ const SettingsPage = () => {
           </div>
         </div>
       )}
+
+      <div className="mb-4 rounded-lg border border-[#29a9eb]/30 bg-[#f5fbff] p-4">
+        <h3 className="font-semibold text-[#142033]">Transaction Email</h3>
+        <p className="mt-1 text-sm text-gray-500">All transaction notifications will be sent to this email.</p>
+        <div className="mt-3 flex gap-2">
+          <input
+            type="email"
+            value={email}
+            onChange={(event) => { setEmail(event.target.value); setEmailSaved(false) }}
+            placeholder="you@example.com"
+            className="min-w-0 flex-1 rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-[#29a9eb]"
+            aria-label="Transaction email"
+          />
+          <button
+            type="button"
+            onClick={() => { localStorage.setItem("shebaTransactionEmail", email.trim()); setEmailSaved(true) }}
+            className="rounded-lg bg-[#29a9eb] px-4 py-2 text-sm font-semibold text-white"
+          >
+            Save
+          </button>
+        </div>
+        {emailSaved && <p className="mt-2 text-sm text-green-600">Email saved. Transaction notifications are enabled.</p>}
+      </div>
 
       {/* NID Verification Status */}
       <div className={`border rounded-lg p-4 mb-4 ${isNidVerified ? "bg-green-50 border-green-200" : "bg-orange-50 border-orange-200"}`}>
