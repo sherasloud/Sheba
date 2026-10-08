@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { DiditSdk } from '@didit-protocol/sdk-web'
 import { useRouter } from 'next/navigation'
 import { ArrowLeft, ArrowUp, ArrowDown, LogOut, Copy, Check, Upload, User } from 'lucide-react'
 import Link from 'next/link'
@@ -20,7 +21,6 @@ export default function InboxPage() {
   const [transactionProfilePics, setTransactionProfilePics] = useState<Record<string, string | null>>({})
   const [showNameModal, setShowNameModal] = useState(false)
   const [newName, setNewName] = useState('')
-  const [showDiditVerification, setShowDiditVerification] = useState(false)
 
   useEffect(() => {
     const phone = localStorage.getItem('phoneNumber')
@@ -372,7 +372,7 @@ export default function InboxPage() {
               <button
                 type="button"
                 onClick={() => {
-                  if (!isVerified) setShowDiditVerification(true)
+                  if (!isVerified) void DiditSdk.shared.startVerification({ url: "https://verify.didit.me/u/-nz59ozcQIevHqyp-PGeLA", configuration: { embedded: false, showCloseButton: true, defaultDocumentCamera: "back", defaultLivenessCamera: "front" } })
                 }}
                 disabled={isVerified}
                 className={`mt-6 flex items-center gap-2 text-xl font-normal ${isVerified ? "cursor-default text-[#1FBFFF]" : "text-[#1FBFFF]"}`}
@@ -411,22 +411,6 @@ export default function InboxPage() {
           </div>
         )}
       </div>
-
-      {showDiditVerification && (
-        <section className="fixed inset-0 z-50 flex min-h-[100dvh] flex-col bg-white" aria-label="Identity verification">
-          <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3">
-            <h2 className="text-base font-medium text-gray-800">পরিচয় যাচাই</h2>
-            <button type="button" onClick={() => setShowDiditVerification(false)} className="rounded-full px-3 py-1 text-sm text-gray-500">বন্ধ করুন</button>
-          </div>
-          <iframe
-            src="https://verify.didit.me/u/-nz59ozcQIevHqyp-PGeLA"
-            title="Didit identity verification"
-            className="min-h-0 w-full flex-1 border-0"
-            allow="camera *; microphone *; fullscreen *; autoplay *; encrypted-media *"
-            referrerPolicy="strict-origin-when-cross-origin"
-          />
-        </section>
-      )}
 
       {/* Name Change Modal */}
       {showNameModal && (
