@@ -26,10 +26,11 @@ export default function OnboardingPage() {
   useEffect(() => {
     DiditSdk.shared.onComplete = (result) => {
       setKycLoading(false)
-      if (result.type === "completed" && result.session?.status === "Approved") {
+      const status = String(result.session?.status || "").toLowerCase()
+      if (result.type === "completed" && ["approved", "completed", "success"].includes(status)) {
         sessionStorage.setItem("diditKycApproved", "true")
-        sessionStorage.setItem("diditSessionId", result.session.sessionId)
-        setStep(4)
+        if (result.session?.sessionId) sessionStorage.setItem("diditSessionId", result.session.sessionId)
+        router.replace("/?verified=success")
       } else if (result.type !== "cancelled") {
         setError("পরিচয় যাচাই সম্পন্ন হয়নি। আবার চেষ্টা করুন।")
       }
