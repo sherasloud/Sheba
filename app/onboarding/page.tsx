@@ -64,15 +64,9 @@ export default function OnboardingPage() {
       sessionStorage.setItem("pendingKyc", JSON.stringify({ nidType, documentNumber }))
       if (data.sessionId) sessionStorage.setItem("diditSessionId", data.sessionId)
 
-      // Didit shows a QR handoff when embedded on mobile. Open it as the
-      // top-level page on Android/iOS so the same device camera can be used.
-      const isMobileDevice = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || window.matchMedia("(pointer: coarse)").matches
-      if (isMobileDevice) {
-        window.location.assign(verificationUrl.toString())
-        return
-      }
-
-      setKycUrl(verificationUrl.toString())
+      // Always use Didit as a top-level page so it never starts the embedded QR handoff.
+      window.location.assign(verificationUrl.toString())
+      return
     } catch (error) {
       setError(error instanceof Error ? error.message : "যাচাই শুরু করা যায়নি")
     } finally {
