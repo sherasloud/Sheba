@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { appUsers } from "@/lib/db/schema"
-import { and, eq } from "drizzle-orm"
+import { eq } from "drizzle-orm"
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,7 +13,7 @@ export async function POST(request: NextRequest) {
     }
 
     const user = await db.query.appUsers.findFirst({
-      where: and(eq(appUsers.nidNumber, normalizedNid), eq(appUsers.nidVerified, true)),
+      where: eq(appUsers.nidNumber, normalizedNid),
       columns: { id: true, phoneNumber: true },
     })
 

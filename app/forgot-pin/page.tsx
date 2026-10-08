@@ -58,8 +58,9 @@ export default function ForgotPinPage() {
       setError("সঠিক ফোন নম্বর দিন")
       return
     }
-    if (normalizedPhone !== phoneNumber) {
-      setError("NID এবং ফোন নম্বর মেলেনি")
+    const normalizedLinkedPhone = phoneNumber.replace(/\D/g, "")
+    if (normalizedPhone !== normalizedLinkedPhone) {
+      setError("এই NID-এর সঙ্গে যুক্ত ফোন নম্বরটি সঠিক নয়")
       return
     }
     setError("")
