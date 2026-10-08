@@ -25,6 +25,7 @@ export default function AddMoneyPage() {
   const [balance, setBalance] = useState(0)
   const [cardBalance, setCardBalance] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
+  const [gatewayUrl, setGatewayUrl] = useState("")
   const [transactionIdCopied, setTransactionIdCopied] = useState(false)
   const [transactionId, setTransactionId] = useState("")
 
@@ -471,7 +472,8 @@ if (Number(amount) > 9000000) {
         }
         localStorage.setItem("paystationInvoice", result.invoiceNumber)
         localStorage.setItem("paystationAmount", String(amount))
-        window.location.assign(result.redirectUrl)
+      setGatewayUrl(result.redirectUrl)
+      setIsLoading(false)
         return
       }
 
@@ -544,6 +546,25 @@ if (Number(amount) > 9000000) {
       setIsLoading(false)
       setError("Transaction failed. Please try again.")
     }
+  }
+
+  if (gatewayUrl) {
+    return (
+      <div className="flex h-[100dvh] flex-col bg-white">
+        <div className="flex shrink-0 items-center justify-between border-b border-[#edf0f3] px-4 py-3">
+          <button type="button" onClick={() => setGatewayUrl("")} className="text-sm font-medium text-[#38afe8]">Back</button>
+          <h1 className="text-base font-medium text-[#151522]">PayStation</h1>
+          <span className="w-10" aria-hidden="true" />
+        </div>
+        <iframe
+          src={gatewayUrl}
+          title="PayStation payment gateway"
+          className="min-h-0 w-full flex-1 border-0"
+          allow="payment *; camera *; microphone *"
+          referrerPolicy="strict-origin-when-cross-origin"
+        />
+      </div>
+    )
   }
 
   if (success) {
