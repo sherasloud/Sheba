@@ -50,6 +50,14 @@ export default function AddMoneyPage() {
       if (returnedAmount) setAmount(returnedAmount)
       setSuccess(true)
       const addedAmount = Number(returnedAmount || amount || 0).toLocaleString("en-US")
+      const transactionEmail = localStorage.getItem("shebaTransactionEmail")
+      if (transactionEmail) {
+        void fetch("/api/notifications/transaction-email", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: transactionEmail, title: "Add Money successful", amount: `${addedAmount} ৳`, details: "Money was added to your Sheba wallet." }),
+        })
+      }
       if ("Notification" in window) {
         const showNotification = () => new Notification("Add Money successful", {
           body: `আপনার wallet-এ ${addedAmount} ৳ যোগ হয়েছে।`,
@@ -216,7 +224,12 @@ if (Number(amount) > 9000000) {
     }
 
     setError("")
-    if (selectedMethod === "card" || selectedMethod === "bank") {
+    if (selectedMethod === "card") {
+      setStep(4)
+      return
+    }
+
+    if (selectedMethod === "bank") {
       void startPayStationCheckout()
       return
     }
@@ -280,8 +293,14 @@ if (Number(amount) > 9000000) {
       return false
     }
 
-    const [month, year] = cardDetails.expiryDate.split("/")
-    const expiryDate = new Date(2000 + Number.parseInt(year), Number.parseInt(month) - 1)
+  const [month, year] = cardDetails.expiryDate.split("/")
+  const monthNumber = Number.parseInt(month)
+  if (monthNumber < 1 || monthNumber > 12) {
+    setError("Please enter a valid expiry month")
+    return false
+  }
+  const expiryDate = new Date(2000 + Number.parseInt(year), monthNumber - 1)
+
     const today = new Date()
     if (expiryDate < today) {
       setError("Card has expired")
@@ -799,7 +818,7 @@ if (Number(amount) > 9000000) {
             />
           </div>
 
-          {error && <div className="mt-4 text-[#38afe8]">{error}</div>}
+          {error && <div role="alert" className="mt-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">{error}</div>}
 
           <button className="mt-auto w-full rounded-full bg-[#38afe8] py-5 text-[3.2rem] font-light leading-none text-white" onClick={handleDetailsNext}>
             Next
