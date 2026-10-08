@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
       data: {
         isVerified,
         nidVerified: isVerified,
-        faceVerified: isVerified,
+        faceVerified: false,
         verifiedAt: null,
         nidNumber: user?.nidNumber ?? null,
       },

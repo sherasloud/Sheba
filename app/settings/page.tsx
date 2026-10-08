@@ -73,20 +73,12 @@ const SettingsPage = () => {
       const response = await fetch(`/api/verification-status?phone=${encodeURIComponent(userPhone)}`)
       const result = await response.json()
 
-      console.log("[v0] Verification status response:", result)
-
       if (response.ok && result.success && result.data) {
-        const isFullyVerified = result.data.isVerified === true || result.data.nidVerified === true
-        console.log("[v0] Verification status:", result.data, "Fully Verified:", isFullyVerified)
-        setIsNidVerified(isFullyVerified)
+        setIsNidVerified(result.data.nidVerified === true)
       } else {
-        // If API fails, no user found, or incomplete verification, default to unverified
-        console.log("[v0] Setting unverified - API not ok or no data")
         setIsNidVerified(false)
       }
-    } catch (error) {
-      console.error("[v0] Error fetching verification status:", error)
-      // Default to unverified on error
+    } catch {
       setIsNidVerified(false)
     } finally {
       setLoading(false)
