@@ -293,8 +293,14 @@ if (Number(amount) > 9000000) {
       return false
     }
 
-    const [month, year] = cardDetails.expiryDate.split("/")
-    const expiryDate = new Date(2000 + Number.parseInt(year), Number.parseInt(month) - 1)
+  const [month, year] = cardDetails.expiryDate.split("/")
+  const monthNumber = Number.parseInt(month)
+  if (monthNumber < 1 || monthNumber > 12) {
+    setError("Please enter a valid expiry month")
+    return false
+  }
+  const expiryDate = new Date(2000 + Number.parseInt(year), monthNumber - 1)
+
     const today = new Date()
     if (expiryDate < today) {
       setError("Card has expired")
@@ -760,7 +766,6 @@ if (Number(amount) > 9000000) {
       {step === 4 && selectedMethod === "card" && (
         <div className="flex flex-1 flex-col overflow-y-auto bg-white px-8 pb-8 pt-10">
           <h1 className="mb-24 text-center text-[3.25rem] font-normal leading-[1.2] text-[#38afe8]">কার্ডের তথ্য দিন</h1>
-          <p className="-mt-16 mb-10 text-center text-sm text-gray-500">{selectedCardType} card selected</p>
 
           <div className="space-y-20">
             <div className="relative">
@@ -813,7 +818,7 @@ if (Number(amount) > 9000000) {
             />
           </div>
 
-          {error && <div className="mt-4 text-[#38afe8]">{error}</div>}
+          {error && <div role="alert" className="mt-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">{error}</div>}
 
           <button className="mt-auto w-full rounded-full bg-[#38afe8] py-5 text-[3.2rem] font-light leading-none text-white" onClick={handleDetailsNext}>
             Next
