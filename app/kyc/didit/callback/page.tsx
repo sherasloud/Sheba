@@ -8,12 +8,12 @@ export default function DiditCallbackPage() {
   const searchParams = useSearchParams()
 
   useEffect(() => {
-    const status = (searchParams.get("status") || "").toLowerCase()
-    const sessionId = searchParams.get("verificationSessionId") || ""
-    const approved = status === "approved" || status === "completed" || status === "success"
+    const status = (searchParams.get("status") || searchParams.get("decision") || "").toLowerCase()
+    const sessionId = searchParams.get("verificationSessionId") || searchParams.get("session_id") || searchParams.get("sessionId") || ""
+    const approved = ["approved", "completed", "success", "verified"].includes(status)
     if (approved) {
       sessionStorage.setItem("diditKycApproved", "true")
-      sessionStorage.setItem("diditSessionId", sessionId)
+      if (sessionId) sessionStorage.setItem("diditSessionId", sessionId)
     } else {
       sessionStorage.removeItem("diditKycApproved")
     }

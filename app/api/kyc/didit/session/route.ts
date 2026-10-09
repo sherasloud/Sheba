@@ -1,4 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
+import { db } from "@/lib/db"
+import { appUsers } from "@/lib/db/schema"
+import { and, eq, lt } from "drizzle-orm"
 
 export const runtime = "nodejs"
 
@@ -12,6 +15,15 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Valid phone and NID number are required." }, { status: 400 })
   }
 
+  const legacyCutoff = new Date("2026-10-09T00:00:00.000Z")
+  const legacyUser = await db.query.appUsers.findFirst({
+    where: and(eq(appUsers.phoneNumber, phone), eq(appUsers.nidNumber, documentNumber), lt(appUsers.createdAt, legacyCutoff)),
+    columns: { id: true },
+  })
+  if (!legacyUser) {
+    return NextResponse.json({ error: "This recovery flow is only available for legacy accounts." }, { status: 403 })
+  }
+
   const origin = new URL(request.url).origin
   const response = await fetch("https://verification.didit.me/v3/session/", {
     method: "POST",
@@ -22,6 +34,7 @@ export async function POST(request: NextRequest) {
     body: JSON.stringify({
       workflow_id: process.env.DIDIT_WORKFLOW_ID,
       callback: `${origin}/kyc/didit/callback`,
+      callback_method: "both",
       vendor_data: JSON.stringify({ phone, nidType, nidNumber: documentNumber }),
     }),
   })
