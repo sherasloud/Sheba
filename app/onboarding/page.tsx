@@ -46,6 +46,13 @@ export default function OnboardingPage() {
       setError("Didit সফল হয়েছে, কিন্তু Sheba server এখনো approval পায়নি। কিছুক্ষণ পরে আবার চেষ্টা করুন।")
     }
 
+    const handleDiditMessage = (event: MessageEvent) => {
+      if (event.data?.type !== "didit:completed" && event.data?.type !== "didit-kyc-result") return
+      const status = String(event.data?.status || "").toLowerCase()
+      if (["approved", "completed", "success"].includes(status)) void finishVerification(event.data?.sessionId)
+    }
+    window.addEventListener("message", handleDiditMessage)
+
     DiditSdk.shared.onComplete = (result) => {
       const status = String(result.session?.status || "").toLowerCase()
       if (result.type === "completed" && ["approved", "completed", "success"].includes(status)) {
@@ -57,12 +64,13 @@ export default function OnboardingPage() {
     }
     DiditSdk.shared.onEvent = (event) => {
       const status = String(event.data?.status || "").toLowerCase()
-      if (event.type === "didit:completed" && ["approved", "completed", "success"].includes(status)) {
-        finishVerification(event.data?.sessionId)
+      if (["didit:completed", "didit:status_updated"].includes(event.type) && ["approved", "completed", "success"].includes(status)) {
+        void finishVerification(event.data?.sessionId)
       }
     }
 
     return () => {
+      window.removeEventListener("message", handleDiditMessage)
       DiditSdk.shared.onComplete = undefined
       DiditSdk.shared.onEvent = undefined
       DiditSdk.shared.destroy()

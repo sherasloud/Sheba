@@ -104,6 +104,12 @@ export default function ForgotPinPage() {
       setError("Didit সফল হয়েছে, কিন্তু Sheba server এখনো approval পায়নি। কিছুক্ষণ পরে আবার চেষ্টা করুন।")
     }
 
+    const handleVerifiedEvent = (status: string) => {
+      if (["approved", "completed", "success"].includes(status.toLowerCase())) void waitForServerApproval()
+    }
+    DiditSdk.shared.onEvent = (event) => {
+      if (["didit:completed", "didit:status_updated"].includes(event.type)) handleVerifiedEvent(String(event.data?.status || ""))
+    }
     DiditSdk.shared.onComplete = (result) => {
       const status = String(result.session?.status || "").toLowerCase()
       if (result.type === "completed" && ["approved", "completed", "success"].includes(status)) {
@@ -113,7 +119,10 @@ export default function ForgotPinPage() {
         setError("পরিচয় যাচাই সম্পন্ন হয়নি")
       }
     }
-    return () => { DiditSdk.shared.onComplete = undefined }
+    return () => {
+      DiditSdk.shared.onComplete = undefined
+      DiditSdk.shared.onEvent = undefined
+    }
   }, [nidNumber, phoneNumber])
 
   const handlePinReset = async () => {
