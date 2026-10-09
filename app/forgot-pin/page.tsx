@@ -78,10 +78,7 @@ export default function ForgotPinPage() {
       })
       const result = await response.json()
       if (!response.ok || !result.url) throw new Error()
-      await DiditSdk.shared.startVerification({
-        url: result.url,
-        configuration: { embedded: false, showCloseButton: true, defaultDocumentCamera: "back", defaultLivenessCamera: "front" },
-      })
+  window.location.assign(result.url)
     } catch {
       setKycLoading(false)
       setError("Didit verification শুরু করা যায়নি")

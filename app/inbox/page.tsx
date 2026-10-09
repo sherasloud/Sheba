@@ -373,7 +373,7 @@ export default function InboxPage() {
               <button
                 type="button"
                 onClick={() => {
-                  if (!isVerified) void DiditSdk.shared.startVerification({ url: "https://verify.didit.me/u/-nz59ozcQIevHqyp-PGeLA", configuration: { embedded: false, showCloseButton: true, defaultDocumentCamera: "back", defaultLivenessCamera: "front" } })
+                  if (!isVerified) window.location.assign("https://verify.didit.me/u/-nz59ozcQIevHqyp-PGeLA")
                 }}
                 disabled={isVerified}
                 className={`mt-6 flex items-center gap-2 text-xl font-normal ${isVerified ? "cursor-default text-[#1FBFFF]" : "text-[#1FBFFF]"}`}

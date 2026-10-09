@@ -234,7 +234,7 @@ const SettingsPage = () => {
           {!isNidVerified && (
             <button
               type="button"
-              onClick={() => void DiditSdk.shared.startVerification({ url: "https://verify.didit.me/u/-nz59ozcQIevHqyp-PGeLA", configuration: { embedded: false, showCloseButton: true, defaultDocumentCamera: "back", defaultLivenessCamera: "front" } })}
+              onClick={() => window.location.assign("https://verify.didit.me/u/-nz59ozcQIevHqyp-PGeLA")}
               className="rounded-md bg-[#29a9eb] px-4 py-2 text-sm whitespace-nowrap text-white"
             >
               {t.verifyNow}
