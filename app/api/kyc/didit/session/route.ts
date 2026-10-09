@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "This recovery flow is only available for legacy accounts." }, { status: 403 })
   }
 
-  const origin = new URL(request.url).origin
+  const callbackUrl = process.env.DIDIT_CALLBACK_URL || "https://shebabd.shebabd.org/api/kyc/didit/callback"
   const response = await fetch("https://verification.didit.me/v3/session/", {
     method: "POST",
     headers: {
@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
     },
     body: JSON.stringify({
       workflow_id: process.env.DIDIT_WORKFLOW_ID,
-      callback: `${origin}/api/kyc/didit/callback`,
+      callback: callbackUrl,
       callback_method: "both",
       vendor_data: JSON.stringify({ phone, nidType, nidNumber: documentNumber }),
     }),
@@ -45,5 +45,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Unable to start identity verification." }, { status: 502 })
   }
 
-  return NextResponse.json({ url: data.url, sessionId: data.session_id || data.id })
+  return NextResponse.json({
+    url: data.url,
+    sessionId: data.session_id || data.id,
+    sessionToken: data.session_token,
+  })
 }
