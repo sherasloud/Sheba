@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
     },
     body: JSON.stringify({
       workflow_id: process.env.DIDIT_WORKFLOW_ID,
-      callback: `${origin}/kyc/didit/callback`,
+      callback: `${origin}/api/kyc/didit/callback`,
       callback_method: "both",
       vendor_data: JSON.stringify({ phone, nidType, nidNumber: documentNumber }),
     }),
