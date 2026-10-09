@@ -24,23 +24,36 @@ export default function OnboardingPage() {
   const [kycLoading, setKycLoading] = useState(false)
 
   useEffect(() => {
-    DiditSdk.shared.onComplete = (result) => {
+    const finishVerification = (sessionId?: string) => {
       setKycLoading(false)
+      sessionStorage.setItem("diditKycApproved", "true")
+      if (sessionId) sessionStorage.setItem("diditSessionId", sessionId)
+      DiditSdk.shared.close()
+      router.replace("/?verified=success")
+    }
+
+    DiditSdk.shared.onComplete = (result) => {
       const status = String(result.session?.status || "").toLowerCase()
       if (result.type === "completed" && ["approved", "completed", "success"].includes(status)) {
-        sessionStorage.setItem("diditKycApproved", "true")
-        if (result.session?.sessionId) sessionStorage.setItem("diditSessionId", result.session.sessionId)
-        router.replace("/?verified=success")
+        finishVerification(result.session?.sessionId)
       } else if (result.type !== "cancelled") {
+        setKycLoading(false)
         setError("পরিচয় যাচাই সম্পন্ন হয়নি। আবার চেষ্টা করুন।")
+      }
+    }
+    DiditSdk.shared.onEvent = (event) => {
+      const status = String(event.data?.status || "").toLowerCase()
+      if (event.type === "didit:completed" && ["approved", "completed", "success"].includes(status)) {
+        finishVerification(event.data?.sessionId)
       }
     }
 
     return () => {
       DiditSdk.shared.onComplete = undefined
+      DiditSdk.shared.onEvent = undefined
       DiditSdk.shared.destroy()
     }
-  }, [])
+  }, [router])
 
   useEffect(() => {
     if (sessionStorage.getItem("diditKycApproved") === "true") setStep(4)
@@ -73,6 +86,7 @@ export default function OnboardingPage() {
           loggingEnabled: false,
           embedded: false,
           showCloseButton: true,
+          closeModalOnComplete: true,
           defaultDocumentCamera: "back",
           defaultLivenessCamera: "front",
           showDocumentCameraSwitchButton: true,
