@@ -24,13 +24,34 @@ export default function OnboardingPage() {
   const [kycLoading, setKycLoading] = useState(false)
 
   useEffect(() => {
-    const finishVerification = (sessionId?: string) => {
+    let finishing = false
+    const finishVerification = async (sessionId?: string) => {
+      if (finishing) return
+      finishing = true
+      for (let attempt = 0; attempt < 12; attempt += 1) {
+        const response = await fetch(`/api/verification-status?phone=${encodeURIComponent(phoneNumber)}&nid=${encodeURIComponent(documentNumber)}`, { cache: "no-store" })
+        const result = await response.json()
+        if (result.success === true && result.data?.nidVerified === true && result.data?.nidNumber === documentNumber) {
+          setKycLoading(false)
+          sessionStorage.setItem("diditKycApproved", "true")
+          if (sessionId) sessionStorage.setItem("diditSessionId", sessionId)
+          DiditSdk.shared.close()
+          router.replace("/?verified=success")
+          return
+        }
+        await new Promise((resolve) => setTimeout(resolve, 1000))
+      }
+      finishing = false
       setKycLoading(false)
-      sessionStorage.setItem("diditKycApproved", "true")
-      if (sessionId) sessionStorage.setItem("diditSessionId", sessionId)
-      DiditSdk.shared.close()
-      router.replace("/?verified=success")
+      setError("Didit সফল হয়েছে, কিন্তু Sheba server এখনো approval পায়নি। কিছুক্ষণ পরে আবার চেষ্টা করুন।")
     }
+
+    const handleDiditMessage = (event: MessageEvent) => {
+      if (event.data?.type !== "didit:completed" && event.data?.type !== "didit-kyc-result") return
+      const status = String(event.data?.status || "").toLowerCase()
+      if (["approved", "completed", "success"].includes(status)) void finishVerification(event.data?.sessionId)
+    }
+    window.addEventListener("message", handleDiditMessage)
 
     DiditSdk.shared.onComplete = (result) => {
       const status = String(result.session?.status || "").toLowerCase()
@@ -43,17 +64,18 @@ export default function OnboardingPage() {
     }
     DiditSdk.shared.onEvent = (event) => {
       const status = String(event.data?.status || "").toLowerCase()
-      if (event.type === "didit:completed" && ["approved", "completed", "success"].includes(status)) {
-        finishVerification(event.data?.sessionId)
+      if (["didit:completed", "didit:status_updated"].includes(event.type) && ["approved", "completed", "success"].includes(status)) {
+        void finishVerification(event.data?.sessionId)
       }
     }
 
     return () => {
+      window.removeEventListener("message", handleDiditMessage)
       DiditSdk.shared.onComplete = undefined
       DiditSdk.shared.onEvent = undefined
       DiditSdk.shared.destroy()
     }
-  }, [router])
+  }, [documentNumber, phoneNumber, router])
 
   useEffect(() => {
     if (sessionStorage.getItem("diditKycApproved") === "true") setStep(4)
@@ -292,7 +314,7 @@ export default function OnboardingPage() {
           <ArrowLeft size={24} />
         </button>
         <h1 className="text-white text-xl font-bold ml-4">
-          {step === (isAdmin ? 6 : 5) ? "সম্পন্ন" : "অ্যাকাউন্ট তৈরি করুন"}
+          {step === (isAdmin ? 6 : 5) ? "স��্পন্ন" : "অ্যাকাউন্ট তৈরি করুন"}
         </h1>
       </div>
 
