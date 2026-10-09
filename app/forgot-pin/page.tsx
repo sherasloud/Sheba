@@ -89,14 +89,32 @@ export default function ForgotPinPage() {
   }
 
   useEffect(() => {
-    DiditSdk.shared.onComplete = (result) => {
+    const waitForServerApproval = async () => {
+      for (let attempt = 0; attempt < 12; attempt += 1) {
+        const response = await fetch(`/api/verification-status?phone=${encodeURIComponent(phoneNumber)}&nid=${encodeURIComponent(nidNumber)}`, { cache: "no-store" })
+        const result = await response.json()
+        if (result.success === true && result.data?.nidVerified === true && result.data?.nidNumber === nidNumber) {
+          setKycLoading(false)
+          setStep(4)
+          return
+        }
+        await new Promise((resolve) => setTimeout(resolve, 1000))
+      }
       setKycLoading(false)
+      setError("Didit সফল হয়েছে, কিন্তু Sheba server এখনো approval পায়নি। কিছুক্ষণ পরে আবার চেষ্টা করুন।")
+    }
+
+    DiditSdk.shared.onComplete = (result) => {
       const status = String(result.session?.status || "").toLowerCase()
-      if (result.type === "completed" && ["approved", "completed", "success"].includes(status)) setStep(4)
-      else if (result.type !== "cancelled") setError("পরিচয় যাচাই সম্পন্ন হয়নি")
+      if (result.type === "completed" && ["approved", "completed", "success"].includes(status)) {
+        void waitForServerApproval()
+      } else if (result.type !== "cancelled") {
+        setKycLoading(false)
+        setError("পরিচয় যাচাই সম্পন্ন হয়নি")
+      }
     }
     return () => { DiditSdk.shared.onComplete = undefined }
-  }, [])
+  }, [nidNumber, phoneNumber])
 
   const handlePinReset = async () => {
     if (!newPin) {
