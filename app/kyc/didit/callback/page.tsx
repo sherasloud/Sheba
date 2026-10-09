@@ -19,6 +19,7 @@ export default function DiditCallbackPage() {
     }
     if (window.parent !== window) {
       window.parent.postMessage({ type: "didit-kyc-result", status: approved ? "approved" : status || "pending", sessionId }, window.location.origin)
+      setTimeout(() => router.replace(approved ? "/?verified=success" : `/onboarding?kyc=${status || "pending"}`), 1500)
       return
     }
     router.replace(approved ? "/?verified=success" : `/onboarding?kyc=${status || "pending"}`)
