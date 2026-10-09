@@ -25,28 +25,34 @@ export async function POST(request: NextRequest) {
     decision?: string
     vendor_data?: string
     session_id?: string
+    data?: { status?: string; vendor_data?: string; session_id?: string; decision?: string }
   }
-  const status = String(payload.status || payload.decision || "").toLowerCase()
+  const event = payload.data || {}
+  const status = String(payload.status || payload.decision || event.status || event.decision || "").toLowerCase()
   const approved = ["approved", "completed", "success"].includes(status)
 
   // The webhook is the server-side source of truth; browser callbacks are not trusted.
-  if (approved && payload.vendor_data) {
+  const vendorDataValue = payload.vendor_data || event.vendor_data
+  if (approved && vendorDataValue) {
     const vendorData = (() => {
       try {
-        return JSON.parse(payload.vendor_data) as { phoneNumber?: string; phone?: string; nidNumber?: string }
+        return JSON.parse(vendorDataValue) as { phoneNumber?: string; phone?: string; nidNumber?: string; nid?: string }
       } catch {
-        return { phoneNumber: payload.vendor_data }
+        return { phoneNumber: vendorDataValue }
       }
     })()
     const phoneNumber = String(vendorData.phoneNumber || vendorData.phone || "").replace(/\D/g, "")
-    const nidNumber = String(vendorData.nidNumber || "").replace(/\D/g, "")
+    const nidNumber = String(vendorData.nidNumber || vendorData.nid || "").replace(/\D/g, "")
+    const sessionId = String(payload.session_id || event.session_id || "")
 
     if (phoneNumber) {
       await db.update(appUsers).set({
+        diditVerified: true,
         nidVerified: true,
         ...(nidNumber ? { nidNumber } : {}),
         updatedAt: new Date(),
       }).where(eq(appUsers.phoneNumber, phoneNumber))
+      console.log("[v0] Didit verification saved", { phoneNumber, hasNid: Boolean(nidNumber), hasSession: Boolean(sessionId) })
     }
   }
 
