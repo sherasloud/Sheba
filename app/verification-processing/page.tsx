@@ -128,9 +128,9 @@ export default function VerificationProcessingPage() {
       case "approved":
         return {
           icon: <CheckCircle2 className="h-16 w-16 text-green-500" />,
-          title: "Verification Approved!",
-          description: "Your verification has been approved. Redirecting to dashboard...",
-          badge: "Approved",
+          title: "You are Verified",
+          description: "Your NID and facial verification are saved securely. You can now exit this page and use Sheba.",
+          badge: "Verified",
           badgeColor: "bg-green-100 text-green-800",
         }
       case "rejected":
@@ -164,7 +164,7 @@ export default function VerificationProcessingPage() {
         <Card className="border-0 shadow-lg">
           <CardHeader className="text-center">
             <CardTitle>Verification Status</CardTitle>
-            <CardDescription>Your NID verification request</CardDescription>
+            <CardDescription>Your NID and facial verification status</CardDescription>
           </CardHeader>
 
           <CardContent className="space-y-6">
@@ -211,8 +211,8 @@ export default function VerificationProcessingPage() {
                   )}
 
                   {verificationStatus.status === "approved" && (
-                    <Button onClick={() => router.replace("/dashboard")} className="w-full">
-                      Go to Dashboard
+                    <Button onClick={() => router.replace("/?verified=success")} className="w-full">
+                      Exit to Sheba
                     </Button>
                   )}
 
