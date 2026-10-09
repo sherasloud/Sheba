@@ -1,4 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
+import { db } from "@/lib/db"
+import { appUsers } from "@/lib/db/schema"
+import { and, eq, lt } from "drizzle-orm"
 
 export const runtime = "nodejs"
 
@@ -10,6 +13,15 @@ export async function POST(request: NextRequest) {
 
   if (!phone || !/^01\d{9}$/.test(phone) || !/^[A-Za-z0-9-]{5,25}$/.test(documentNumber)) {
     return NextResponse.json({ error: "Valid phone and NID number are required." }, { status: 400 })
+  }
+
+  const legacyCutoff = new Date("2026-10-09T00:00:00.000Z")
+  const legacyUser = await db.query.appUsers.findFirst({
+    where: and(eq(appUsers.phoneNumber, phone), eq(appUsers.nidNumber, documentNumber), lt(appUsers.createdAt, legacyCutoff)),
+    columns: { id: true },
+  })
+  if (!legacyUser) {
+    return NextResponse.json({ error: "This recovery flow is only available for legacy accounts." }, { status: 403 })
   }
 
   const origin = new URL(request.url).origin
