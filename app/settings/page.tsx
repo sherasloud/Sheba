@@ -10,7 +10,7 @@ import TransactionCleaner from "@/components/transaction-cleaner"
 const translations = {
   en: {
     settings: "Settings",
-    nidVerified: "✓ NID Verified",
+    nidVerified: "You are Verified",
     unverified: "✗ Unverified",
     nidVerifiedDesc: "Your NID and face have been verified",
     completeVerification: "Complete NID and face verification to unlock features",
@@ -20,7 +20,7 @@ const translations = {
   },
   bn: {
     settings: "সেটিংস",
-    nidVerified: "✓ এনআইডি যাচাইকৃত",
+    nidVerified: "আপনি Verified",
     unverified: "✗ অযাচাইকৃত",
     nidVerifiedDesc: "আপনার এনআইডি এবং মুখ যাচাইকৃত হয়েছে",
     completeVerification: "বৈশিষ্ট্য আনলক করতে সম্পূর্ণ এনআইডি এবং মুখ যাচাইকরণ করুন",
@@ -46,7 +46,8 @@ const SettingsPage = () => {
 
   useEffect(() => {
     DiditSdk.shared.onComplete = async (result) => {
-      if (result.type === "completed" && result.session?.status === "Approved") {
+      const status = String(result.session?.status || "").toLowerCase()
+      if (result.type === "completed" && ["approved", "completed", "success"].includes(status)) {
         if (phone) await fetchVerificationStatus(phone)
         router.replace("/")
       }
