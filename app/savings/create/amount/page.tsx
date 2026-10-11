@@ -8,8 +8,10 @@ export default function SavingsAmountPage() {
   const [amount, setAmount] = useState("")
   const [savingsName, setSavingsName] = useState("")
   const [balance, setBalance] = useState(0)
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
+    setMounted(true)
     const phone = localStorage.getItem("phoneNumber")
     const storedUser = localStorage.getItem("userData")
     const storedBalance = storedUser ? Number(JSON.parse(storedUser).balance) : 0
@@ -60,11 +62,11 @@ export default function SavingsAmountPage() {
                 className="amount-display block h-52 w-full min-w-0 appearance-none border-0 bg-transparent p-0 text-center font-light leading-none text-[#3aaef0] placeholder-[#3aaef0]/50 outline-none focus:ring-0"
                 style={{ fontFamily: "Noto Sans Bengali, sans-serif", fontSize: "120px", lineHeight: 1.05, transform: "scale(1.15)" }}
                 min="100"
-                max={balance}
+                max={mounted ? balance : undefined}
                 aria-label="সেভিংসের পরিমাণ"
               />
             </label>
-            <div className="mt-4 text-base font-medium text-[#3aaef0]/70">বর্তমান ব্যালেন্স: {balance.toLocaleString("bn-BD")} ৳</div>
+            <div className="mt-4 text-base font-medium text-[#3aaef0]/70">বর্তমান ব্যালেন্স: {mounted ? balance.toLocaleString("bn-BD") : "০"} ৳</div>
           </div>
         </div>
 
