@@ -21,8 +21,10 @@ export default function SavingsPage() {
       <Link
         href="/savings/create/name"
         aria-label="Start savings"
-        className="absolute bottom-0 left-1/2 z-20 flex h-[24%] w-[86%] -translate-x-1/2 cursor-pointer items-center justify-center rounded-full bg-transparent touch-manipulation"
-      />
+        className="absolute bottom-[18%] left-1/2 z-20 flex min-h-12 w-[72%] -translate-x-1/2 items-center justify-center rounded-full bg-[#3aaef0] px-6 py-3 text-xl font-semibold text-white shadow-lg transition-transform active:scale-95 touch-manipulation"
+      >
+        সামনে যাই
+      </Link>
     </main>
   )
 }
