@@ -21,7 +21,7 @@ export default function SavingsPage() {
       <Link
         href="/savings/create/name"
         aria-label="Start savings"
-        className="absolute bottom-[8%] left-1/2 z-20 flex h-[7%] w-[52%] -translate-x-1/2 cursor-pointer items-center justify-center rounded-full bg-transparent"
+        className="absolute bottom-0 left-1/2 z-20 flex h-[24%] w-[86%] -translate-x-1/2 cursor-pointer items-center justify-center rounded-full bg-transparent touch-manipulation"
       />
     </main>
   )
