@@ -135,7 +135,7 @@ export default function SavingsPinPage() {
   const targetAmount = Number.parseFloat(savingsAmount)
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 p-4">
+    <div className="min-h-screen bg-white p-4 text-black">
       <div className="max-w-md mx-auto">
         {/* Header */}
         <div className="flex items-center gap-4 mb-8 pt-4">
@@ -151,15 +151,15 @@ export default function SavingsPinPage() {
             <span>Step 4 of 4</span>
             <span>100%</span>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-2">
-            <div className="bg-[#29a9eb] h-2 rounded-full w-full transition-all duration-300"></div>
+          <div className="h-1 w-full bg-gray-200">
+            <div className="h-1 w-full bg-[#29a9eb]"></div>
           </div>
         </div>
 
         {/* Form */}
-        <div className="bg-white rounded-2xl p-6 shadow-lg">
+        <div className="p-2">
           <div className="text-center mb-6">
-            <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="mb-4 flex items-center justify-center">
               <Lock className="w-8 h-8 text-[#29a9eb]" />
             </div>
             <h2 className="text-xl font-semibold text-gray-800 mb-2">Confirm with PIN</h2>
