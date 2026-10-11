@@ -85,7 +85,7 @@ export default function SavingsAmountPage() {
       </div>
 
       {/* Bottom Button */}
-      <div className="-mt-12 px-6 pb-6">
+      <div className="-mt-24 px-6 pb-6">
         <button
           onClick={handleNext}
           disabled={!amount || Number.parseFloat(amount) < 100 || Number.parseFloat(amount) > balance}
