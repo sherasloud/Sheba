@@ -48,29 +48,29 @@ export default function SavingsAmountPage() {
           <div className="text-center text-[#3aaef0]">
             <div className="text-7xl font-light tracking-tight">Savings</div>
             <div className="mt-6 text-2xl font-medium">কত টাকা সেভিংস করবেন?</div>
-            <div className="mt-6 text-7xl font-light">{amount ? Number(amount).toLocaleString("bn-BD") : "০"} <span className="text-5xl">৳</span></div>
+            <label className="mt-6 block text-7xl font-light" htmlFor="savings-amount">
+              <span className="sr-only">কত টাকা সেভিংস করবেন?</span>
+              <input
+                id="savings-amount"
+                type="number"
+                inputMode="numeric"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                placeholder="০"
+                className="w-full border-0 bg-transparent p-0 text-center text-7xl font-light text-[#3aaef0] placeholder-[#3aaef0]/50 outline-none focus:ring-0"
+                style={{ fontFamily: "Noto Sans Bengali, sans-serif" }}
+                min="100"
+                max={balance}
+                aria-label="সেভিংসের পরিমাণ"
+              />
+            </label>
             <div className="mt-4 text-base font-medium text-[#3aaef0]/70">বর্তমান ব্যালেন্স: {balance.toLocaleString("bn-BD")} ৳</div>
           </div>
         </div>
 
-        <h1
-          className="mb-6 text-center text-2xl font-medium text-[#3aaef0]"
-          style={{ fontFamily: "Noto Sans Bengali, sans-serif" }}
-        >
+        <p className="mb-6 text-center text-2xl font-medium text-[#3aaef0]" style={{ fontFamily: "Noto Sans Bengali, sans-serif" }}>
           টাকার পরিমাণ লিখুন
-        </h1>
-
-        {/* Amount Input (hidden but functional) */}
-        <input
-          type="number"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-          placeholder="১০০"
-          className="w-full rounded-2xl border-2 border-[#3aaef0]/30 bg-white px-6 py-4 text-center text-2xl font-bold text-[#3aaef0] placeholder-[#3aaef0]/50 focus:border-[#3aaef0] focus:outline-none"
-          style={{ fontFamily: "Noto Sans Bengali, sans-serif" }}
-          min="100"
-          max={balance}
-        />
+        </p>
         {amount && Number.parseFloat(amount) > balance ? (
           <p className="mt-2 text-center text-sm font-medium text-red-500">আপনার ব্যালেন্সের বেশি টাকা রাখা যাবে না</p>
         ) : null}
