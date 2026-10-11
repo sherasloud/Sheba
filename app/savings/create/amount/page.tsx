@@ -64,7 +64,7 @@ export default function SavingsAmountPage() {
               <div
                 aria-hidden="true"
                 className="pointer-events-none h-48 w-[290px] max-w-full text-center font-light leading-none text-[#3aaef0]"
-                style={{ fontFamily: "Noto Sans Bengali, sans-serif", fontSize: "104px", lineHeight: 0.95 }}
+                style={{ fontFamily: "Noto Sans Bengali, sans-serif", fontSize: "80px", lineHeight: 0.95 }}
               >
                 {amount || "০"} ৳
               </div>
