@@ -89,7 +89,7 @@ export default function SavingsAmountPage() {
         <button
           onClick={handleNext}
           disabled={!amount || Number.parseFloat(amount) < 100 || Number.parseFloat(amount) > balance}
-          className="w-full rounded-full bg-[#3aaef0] py-3 text-center text-lg font-semibold text-white shadow-lg disabled:cursor-not-allowed disabled:opacity-50"
+          className="w-full py-2 text-center text-lg font-semibold text-[#3aaef0] disabled:cursor-not-allowed disabled:opacity-50"
           style={{ fontFamily: "Noto Sans Bengali, sans-serif" }}
         >
           {amount && Number.parseFloat(amount) >= 100 ? "সেভিংস করুন" : "ঠিক আছে"}
