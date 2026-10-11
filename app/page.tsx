@@ -121,9 +121,7 @@ export default function AppPage() {
       clearInterval(intervalRef.current)
     }
 
-    setTimeout(() => {
-      startAutoRotation()
-    }, 2000)
+    startAutoRotation()
   }
 
   const startAutoRotation = () => {
@@ -410,8 +408,6 @@ export default function AppPage() {
     document.addEventListener("visibilitychange", handleVisibilityChange)
     window.addEventListener("nameChanged", handleCustomNameChange as EventListener)
     window.addEventListener("balanceUpdated", handleBalanceUpdate)
-
-    startAutoRotation()
 
     return () => {
       window.removeEventListener("storage", handleStorageChange)
