@@ -7,10 +7,15 @@ import { ArrowLeft } from "lucide-react"
 export default function SavingsPaymentPage() {
   const router = useRouter()
   const [amount, setAmount] = useState("0")
+  const [months, setMonths] = useState(12)
 
   useEffect(() => {
     setAmount(localStorage.getItem("lastCreatedGoalAmount") || localStorage.getItem("savingsAmount") || "0")
+    setMonths(Number(localStorage.getItem("savingsMonths") || "12"))
   }, [])
+
+  const totalAmount = Number(amount) || 0
+  const monthlyAmount = Math.ceil(totalAmount / Math.max(months, 1))
 
   return (
     <main className="min-h-screen bg-white px-6 py-6 text-black">
@@ -27,7 +32,7 @@ export default function SavingsPaymentPage() {
           className="flex items-center justify-between text-left"
         >
           <span className="text-6xl font-light leading-none">Pay<br />Full</span>
-          <span className="text-8xl font-light leading-none text-[#3aaef0]">{amount}</span>
+          <span className="text-8xl font-light leading-none text-[#3aaef0]">{totalAmount}</span>
         </button>
         <button
           type="button"
@@ -38,7 +43,7 @@ export default function SavingsPaymentPage() {
           className="flex items-center justify-between text-left"
         >
           <span className="text-6xl font-light leading-none">Pay<br />Monthly</span>
-          <span className="text-8xl font-light leading-none text-[#3aaef0]">{amount}</span>
+          <span className="text-8xl font-light leading-none text-[#3aaef0]">{monthlyAmount}</span>
         </button>
       </section>
     </main>
