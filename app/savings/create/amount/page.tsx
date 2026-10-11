@@ -59,12 +59,12 @@ export default function SavingsAmountPage() {
         <div className="mb-12">
             <div className="text-center text-[#3aaef0]">
             <div className="text-5xl font-light tracking-tight">Savings</div>
-            <label className="relative mt-6 block h-64 w-[290px] max-w-full text-7xl font-light" htmlFor="savings-amount">
+            <label className="relative mt-10 block h-56 w-[290px] max-w-full text-7xl font-light" htmlFor="savings-amount">
               <span className="sr-only">কত টাকা সেভিংস করবেন?</span>
               <div
                 aria-hidden="true"
-                className="pointer-events-none h-64 w-[290px] max-w-full text-center font-light leading-none text-[#3aaef0]"
-                style={{ fontFamily: "Noto Sans Bengali, sans-serif", fontSize: "148px", lineHeight: 0.95 }}
+                className="pointer-events-none h-56 w-[290px] max-w-full text-center font-light leading-none text-[#3aaef0]"
+                style={{ fontFamily: "Noto Sans Bengali, sans-serif", fontSize: "126px", lineHeight: 0.95 }}
               >
                 {amount || "০"} ৳
               </div>
@@ -75,7 +75,7 @@ export default function SavingsAmountPage() {
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 placeholder="০"
-                className="absolute inset-0 h-64 w-[290px] max-w-full opacity-0 outline-none"
+                className="absolute inset-0 h-56 w-[290px] max-w-full opacity-0 outline-none"
                 style={{ fontSize: "48px" }}
                 min="100"
                 max={mounted ? balance : undefined}
