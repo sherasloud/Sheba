@@ -47,19 +47,17 @@ export default function SavingsAmountPage() {
         <div className="mb-12">
           <div className="text-center text-[#3aaef0]">
             <div className="text-7xl font-light tracking-tight">Savings</div>
-            <div className="mt-4 text-2xl font-medium">আপনার ব্যালেন্স</div>
-            <div className="mt-6 text-7xl font-light">{balance.toLocaleString("bn-BD")} <span className="text-5xl">৳</span></div>
+            <div className="mt-6 text-2xl font-medium">কত টাকা সেভিংস করবেন?</div>
+            <div className="mt-6 text-7xl font-light">{amount ? Number(amount).toLocaleString("bn-BD") : "০"} <span className="text-5xl">৳</span></div>
+            <div className="mt-4 text-base font-medium text-[#3aaef0]/70">বর্তমান ব্যালেন্স: {balance.toLocaleString("bn-BD")} ৳</div>
           </div>
         </div>
 
-        {/* Main Text */}
         <h1
-          className="text-white text-5xl font-bold text-center mb-12 leading-tight"
+          className="mb-6 text-center text-2xl font-medium text-[#3aaef0]"
           style={{ fontFamily: "Noto Sans Bengali, sans-serif" }}
         >
-          টাকার পরিমাণ
-          <br />
-          লিখুন
+          টাকার পরিমাণ লিখুন
         </h1>
 
         {/* Amount Input (hidden but functional) */}
