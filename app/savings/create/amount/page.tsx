@@ -38,7 +38,7 @@ export default function SavingsAmountPage() {
     if (amount && Number.parseFloat(amount) >= 100 && Number.parseFloat(amount) <= balance) {
       localStorage.setItem("savingsAmount", amount)
       localStorage.setItem("savingsName", savingsName || "Savings")
-      localStorage.setItem("savingsMonths", "1")
+      localStorage.setItem("savingsMonths", "12")
       router.push("/savings/create/pin")
     }
   }

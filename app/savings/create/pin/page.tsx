@@ -33,6 +33,9 @@ export default function SavingsPinPage() {
     const pinString = pin
     if (pinString.length === 6) {
       setIsLoading(true)
+      localStorage.setItem("savingsPinVerified", "true")
+      router.push("/savings/create/checkout")
+      return
 
       const currentBalance = Number(localStorage.getItem("userBalance") || "0")
       const targetAmount = Number.parseFloat(savingsAmount)
