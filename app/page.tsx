@@ -70,6 +70,7 @@ export default function AppPage() {
   ]
 
   const [currentBannerIndex, setCurrentBannerIndex] = useState(0)
+  const [bannerDuration, setBannerDuration] = useState(7)
   const [touchStart, setTouchStart] = useState(0)
   const [touchEnd, setTouchEnd] = useState(0)
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
@@ -135,8 +136,20 @@ export default function AppPage() {
         const nextIndex = (prevIndex + 1) % allBanners.length
         return nextIndex
       })
-    }, 2000)
+    }, bannerDuration * 1000)
   }
+
+  useEffect(() => {
+    const savedDuration = Number.parseInt(localStorage.getItem("shebaBannerDuration") || "7", 10)
+    setBannerDuration(Number.isFinite(savedDuration) ? Math.min(60, Math.max(1, savedDuration)) : 7)
+  }, [])
+
+  useEffect(() => {
+    startAutoRotation()
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current)
+    }
+  }, [bannerDuration])
 
   const getLatestBalance = useCallback(async () => {
     try {
