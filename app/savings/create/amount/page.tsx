@@ -48,7 +48,7 @@ export default function SavingsAmountPage() {
           <div className="text-center text-[#3aaef0]">
             <div className="text-7xl font-light tracking-tight">Savings</div>
             <div className="mt-6 text-2xl font-medium">কত টাকা সেভিংস করবেন?</div>
-            <label className="mt-6 block text-7xl font-light" htmlFor="savings-amount">
+            <label className="mt-6 block w-full text-7xl font-light" htmlFor="savings-amount">
               <span className="sr-only">কত টাকা সেভিংস করবেন?</span>
               <input
                 id="savings-amount"
@@ -57,8 +57,8 @@ export default function SavingsAmountPage() {
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 placeholder="০"
-                className="h-44 w-full border-0 bg-transparent p-0 text-center font-light leading-none text-[#3aaef0] placeholder-[#3aaef0]/50 outline-none focus:ring-0"
-                style={{ fontFamily: "Noto Sans Bengali, sans-serif", fontSize: "8rem" }}
+                className="amount-display h-44 w-full appearance-none border-0 bg-transparent p-0 text-center font-light leading-none text-[#3aaef0] placeholder-[#3aaef0]/50 outline-none focus:ring-0"
+                style={{ fontFamily: "Noto Sans Bengali, sans-serif", fontSize: "96px", lineHeight: 1 }}
                 min="100"
                 max={balance}
                 aria-label="সেভিংসের পরিমাণ"
