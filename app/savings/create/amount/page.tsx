@@ -70,10 +70,15 @@ export default function SavingsAmountPage() {
               </div>
               <input
                 id="savings-amount"
-                type="number"
+                type="text"
                 inputMode="numeric"
+                pattern="[0-9]*"
                 value={amount}
-                onChange={(e) => setAmount(e.target.value)}
+                onChange={(e) => {
+                  const digitsOnly = e.target.value.replace(/\D/g, "").slice(0, 6)
+                  const nextAmount = digitsOnly && Number(digitsOnly) > 200000 ? "200000" : digitsOnly
+                  setAmount(nextAmount)
+                }}
                 placeholder="০"
                 className="absolute inset-0 h-48 w-[290px] max-w-full opacity-0 outline-none"
                 style={{ fontSize: "48px" }}
