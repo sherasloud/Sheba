@@ -47,9 +47,8 @@ export default function SavingsAmountPage() {
       {/* Coin Stack Icon */}
       <div className="flex-1 flex flex-col items-center justify-center px-6">
         <div className="mb-12">
-          <div className="text-center text-[#3aaef0]">
-            <div className="text-7xl font-light tracking-tight">Savings</div>
-            <div className="mt-6 text-2xl font-medium">কত টাকা সেভিংস করবেন?</div>
+            <div className="text-center text-[#3aaef0]">
+            <div className="text-5xl font-light tracking-tight">Savings</div>
             <label className="mt-6 block w-full text-7xl font-light" htmlFor="savings-amount">
               <span className="sr-only">কত টাকা সেভিংস করবেন?</span>
               <input
@@ -70,9 +69,6 @@ export default function SavingsAmountPage() {
           </div>
         </div>
 
-        <p className="mb-6 text-center text-2xl font-medium text-[#3aaef0]" style={{ fontFamily: "Noto Sans Bengali, sans-serif" }}>
-          টাকার পরিমাণ লিখুন
-        </p>
         {amount && Number.parseFloat(amount) > balance ? (
           <p className="mt-2 text-center text-sm font-medium text-red-500">আপনার ব্যালেন্সের বেশি টাকা রাখা যাবে না</p>
         ) : null}
