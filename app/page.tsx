@@ -28,6 +28,12 @@ export default function AppPage() {
 
   const allBanners = [
     {
+      id: "usa-visa-assistance",
+      image: "/images/usa-visa-banner.png",
+      link: "/air-tickets",
+      alt: "Sheba helps you prepare for lawful USA visa applications from Bangladesh",
+    },
+    {
       id: "send-money-woman",
       image:
         "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/White%20Digitalism%20Basic%20Simple%20Presentation%20%283%29-1LaWqW2UnOB0FpYeQqhSDbTbcyWWYf.jpg",
