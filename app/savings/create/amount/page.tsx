@@ -69,7 +69,7 @@ export default function SavingsAmountPage() {
                 onChange={(e) => setAmount(e.target.value)}
                 placeholder="০"
                 className="amount-display block h-52 w-full min-w-0 appearance-none border-0 bg-transparent p-0 text-center font-light leading-none text-[#3aaef0] placeholder-[#3aaef0]/50 outline-none focus:ring-0"
-                style={{ fontFamily: "Noto Sans Bengali, sans-serif", fontSize: "120px", lineHeight: 1.05, transform: "scale(1.15)" }}
+                style={{ fontFamily: "Noto Sans Bengali, sans-serif", fontSize: "148px", lineHeight: 0.95, transform: "scale(1.2)" }}
                 min="100"
                 max={mounted ? balance : undefined}
                 aria-label="সেভিংসের পরিমাণ"
