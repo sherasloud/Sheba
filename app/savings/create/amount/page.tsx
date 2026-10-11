@@ -66,7 +66,7 @@ export default function SavingsAmountPage() {
                 className="pointer-events-none h-48 w-[290px] max-w-full whitespace-nowrap text-center font-light leading-none text-[#3aaef0]"
                 style={{ fontFamily: "Noto Sans Bengali, sans-serif", fontSize: "72px", lineHeight: 0.95 }}
               >
-                {amount || "০"} ৳
+                {amount || "0"} ৳
               </div>
               <input
                 id="savings-amount"
@@ -79,7 +79,7 @@ export default function SavingsAmountPage() {
                   const nextAmount = digitsOnly && Number(digitsOnly) > 200000 ? "200000" : digitsOnly
                   setAmount(nextAmount)
                 }}
-                placeholder="০"
+                placeholder="0"
                 className="absolute inset-0 h-48 w-[290px] max-w-full opacity-0 outline-none"
                 style={{ fontSize: "48px" }}
                 min="100"
@@ -87,7 +87,7 @@ export default function SavingsAmountPage() {
                 aria-label="সেভিংসের পরিমাণ"
               />
             </label>
-            <div className="mt-4 text-base font-medium text-[#3aaef0]/70">বর্তমান ব্যালেন্স: {mounted ? balance.toLocaleString("bn-BD") : "০"} ৳</div>
+            <div className="mt-4 text-base font-medium text-[#3aaef0]/70">বর্তমান ব্যালেন্স: {mounted ? balance.toLocaleString("bn-BD") : "0"} ৳</div>
             {mounted && amount && Number.isFinite(Number(amount)) && Number(amount) > 200000 ? (
               <p className="mt-2 text-center text-sm font-medium text-red-500">সর্বোচ্চ ২০০,০০০ টাকা সেভিংস করা যাবে</p>
             ) : mounted && amount && Number.isFinite(Number(amount)) && Number(amount) > balance ? (
