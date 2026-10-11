@@ -14,7 +14,7 @@ export default function SavingsPage() {
       <Link
         href="/"
         aria-label="Back to Sheba"
-        className="absolute left-4 top-4 z-20 flex min-h-11 min-w-11 items-center justify-center rounded-full bg-white/90 text-slate-700 shadow-md"
+        className="absolute left-4 top-4 z-20 flex min-h-11 min-w-11 items-center justify-center text-slate-700"
       >
         <ArrowLeft className="h-5 w-5" aria-hidden="true" />
       </Link>

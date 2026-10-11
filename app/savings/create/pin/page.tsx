@@ -139,7 +139,7 @@ export default function SavingsPinPage() {
       <div className="max-w-md mx-auto">
         {/* Header */}
         <div className="flex items-center gap-4 mb-8 pt-4">
-          <button onClick={() => router.back()} className="p-2 hover:bg-white/50 rounded-full transition-colors">
+          <button onClick={() => router.back()} className="p-2 text-gray-700 transition-colors">
             <ArrowLeft className="w-6 h-6 text-gray-700" />
           </button>
           <h1 className="text-xl font-semibold text-gray-800">Create Savings Goal</h1>

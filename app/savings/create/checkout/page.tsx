@@ -51,7 +51,7 @@ export default function SavingsCheckoutPage() {
 
   return (
     <main className="min-h-screen bg-white px-6 py-6 text-[#3aaef0]">
-      <button type="button" onClick={() => router.back()} aria-label="পেছনে যান" className="mb-8">
+      <button type="button" onClick={() => router.back()} aria-label="পেছনে যান" className="mb-8 bg-transparent p-0">
         <ArrowLeft className="h-6 w-6" />
       </button>
       <section className="mx-auto max-w-sm">
