@@ -83,19 +83,20 @@ export default function SavingsAmountPage() {
               />
             </label>
             <div className="mt-4 text-base font-medium text-[#3aaef0]/70">বর্তমান ব্যালেন্স: {mounted ? balance.toLocaleString("bn-BD") : "০"} ৳</div>
+            {mounted && amount && Number.isFinite(Number(amount)) && Number(amount) > 200000 ? (
+              <p className="mt-2 text-center text-sm font-medium text-red-500">সর্বোচ্চ ২০০,০০০ টাকা সেভিংস করা যাবে</p>
+            ) : mounted && amount && Number.isFinite(Number(amount)) && Number(amount) > balance ? (
+              <p className="mt-2 text-center text-sm font-medium text-red-500">আপনার ব্যালেন্সের বেশি টাকা সেভিংস করা যাবে না</p>
+            ) : null}
           </div>
         </div>
-
-        {amount && Number.parseFloat(amount) > Math.min(balance, 200000) ? (
-          <p className="mt-2 text-center text-sm font-medium text-red-500">সর্বোচ্চ ২০০,০০০ টাকা সেভিংস করা যাবে</p>
-        ) : null}
       </div>
 
       {/* Bottom Button */}
       <div className="relative -top-16 px-6 pb-6">
         <button
           onClick={handleNext}
-          disabled={!amount || Number.parseFloat(amount) < 100 || Number.parseFloat(amount) > Math.min(balance, 200000)}
+          disabled={!mounted || !amount || !Number.isFinite(Number(amount)) || Number(amount) < 100 || Number(amount) > 200000 || Number(amount) > balance}
           className="w-full rounded-full bg-[#3aaef0] px-4 py-2 text-center text-lg font-semibold text-white shadow-sm disabled:cursor-not-allowed disabled:opacity-50"
           style={{ fontFamily: "Noto Sans Bengali, sans-serif" }}
         >
