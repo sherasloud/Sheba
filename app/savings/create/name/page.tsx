@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { ArrowLeft } from "lucide-react"
 
@@ -21,6 +22,12 @@ export default function SavingsNamePage() {
         alt="Savings coupon"
         className="block min-h-screen w-full object-cover object-center"
       />
+      <Link
+        href="/savings/create/amount"
+        className="absolute bottom-8 left-1/2 z-10 flex min-h-12 w-[72%] -translate-x-1/2 items-center justify-center rounded-full bg-[#3aaef0] px-6 py-3 text-xl font-semibold text-white shadow-lg transition-transform active:scale-95 touch-manipulation"
+      >
+        সামনে যাই
+      </Link>
     </main>
   )
 }
