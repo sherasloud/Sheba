@@ -11,7 +11,7 @@ export default function SavingsBalancePage() {
 
   useEffect(() => {
     const goal = JSON.parse(localStorage.getItem("lastCreatedGoal") || "null")
-    setAmount(Number(goal?.targetAmount || goal?.amount || localStorage.getItem("savingsAmount") || localStorage.getItem("lastCreatedGoalAmount") || 0))
+    setAmount(Number(localStorage.getItem("savingsBalance") || goal?.currentAmount || goal?.targetAmount || goal?.amount || localStorage.getItem("savingsAmount") || localStorage.getItem("lastCreatedGoalAmount") || 0))
     setNextPaymentDate(goal?.maturityDate ? new Date(goal.maturityDate).toLocaleDateString("bn-BD") : "")
   }, [])
 

@@ -30,22 +30,21 @@ export default function SavingsCheckoutPage() {
 
     const user = JSON.parse(localStorage.getItem("userData") || "{}")
     const phoneNumber = user.phoneNumber || user.phone || localStorage.getItem("phoneNumber")
-    if (!phoneNumber) {
-      setError("Account পাওয়া যায়নি। আবার login করুন।")
-      return
-    }
 
     setIsSubmitting(true)
     setError("")
     const nextBalance = balance - monthlyAmount
+    const nextSavingsBalance = Number(localStorage.getItem("savingsBalance") || 0) + monthlyAmount
 
     try {
-      const response = await fetch("/api/balance", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phoneNumber, balance: nextBalance }),
-      })
-      if (!response.ok) throw new Error("balance update failed")
+      if (phoneNumber) {
+        const response = await fetch("/api/balance", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ phoneNumber, balance: nextBalance }),
+        })
+        if (!response.ok) throw new Error("balance update failed")
+      }
 
       const now = new Date()
     const goal = {
@@ -63,7 +62,8 @@ export default function SavingsCheckoutPage() {
     const goals = JSON.parse(localStorage.getItem("savingsGoals") || "[]")
     localStorage.setItem("savingsGoals", JSON.stringify([goal, ...goals]))
     localStorage.setItem("userBalance", String(nextBalance))
-    localStorage.setItem("userData", JSON.stringify({ ...user, balance: nextBalance }))
+    localStorage.setItem("savingsBalance", String(nextSavingsBalance))
+    localStorage.setItem("userData", JSON.stringify({ ...user, balance: nextBalance, savingsBalance: nextSavingsBalance }))
     localStorage.setItem("lastCreatedGoal", JSON.stringify(goal))
     localStorage.removeItem("savingsName")
     localStorage.removeItem("savingsAmount")
