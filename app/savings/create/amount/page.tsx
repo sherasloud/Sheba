@@ -49,7 +49,7 @@ export default function SavingsAmountPage() {
         type="button"
         onClick={() => router.back()}
         aria-label="পেছনে যান"
-        className="absolute left-4 top-4 z-10 flex min-h-11 min-w-11 items-center justify-center rounded-full bg-white text-slate-700 shadow-md"
+        className="absolute left-4 top-2 z-10 flex min-h-11 min-w-11 items-center justify-center text-slate-700"
       >
         <ArrowLeft className="h-5 w-5" aria-hidden="true" />
       </button>
@@ -85,7 +85,7 @@ export default function SavingsAmountPage() {
       </div>
 
       {/* Bottom Button */}
-      <div className="-mt-8 px-6 pb-6">
+      <div className="-mt-12 px-6 pb-6">
         <button
           onClick={handleNext}
           disabled={!amount || Number.parseFloat(amount) < 100 || Number.parseFloat(amount) > balance}
