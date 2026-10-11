@@ -20,7 +20,7 @@ export default function SavingsNamePage() {
       <img
         src="/images/savings-coupon.png"
         alt="Savings coupon"
-        className="-translate-y-12 block min-h-screen w-full object-cover object-center"
+        className="-translate-y-[47px] block min-h-screen w-full object-cover object-center"
       />
       <Link
         href="/savings/create/amount"
