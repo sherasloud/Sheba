@@ -27,6 +27,7 @@ export default function SuccessPage() {
     console.log("Creating goal with data:", { name, amount, months }) // Debug log
 
     if (name && amount && months) {
+      localStorage.setItem("lastCreatedGoalAmount", amount)
       try {
         // Create the savings goal
         const newGoal = addSavingsGoal({
@@ -76,7 +77,7 @@ export default function SuccessPage() {
 
     // Redirect after 3 seconds
     setTimeout(() => {
-      router.push("/savings")
+      router.push("/savings/create/balance")
     }, 3000)
   }, [router])
 
