@@ -24,7 +24,7 @@ export default function SavingsPage() {
 
       <Link
         href="/savings/create/name"
-        className="mx-auto mt-12 flex min-h-10 w-[72%] items-center justify-center rounded-full bg-[#48b9ed] px-4 py-2 text-base font-semibold text-white shadow-sm transition-transform active:scale-[.98]"
+        className="mx-auto mt-36 flex min-h-10 w-[72%] items-center justify-center rounded-full bg-[#48b9ed] px-4 py-2 text-base font-semibold text-white shadow-sm transition-transform active:scale-[.98]"
       >
         সেভিংস চালু করুন
       </Link>
