@@ -1,38 +1,26 @@
 "use client"
 
 import Link from "next/link"
-import { ArrowLeft, Coins, Landmark, Target, Users } from "lucide-react"
+import { ArrowLeft, Coins, Target, Users } from "lucide-react"
 
 const savingOptions = [
-  { title: "Single Saving", description: "Your personal savings journey starts here.", icon: Coins, color: "text-[#5146e5]", href: "/savings/create/name" },
-  { title: "Target Savings", description: "Save with purpose, reach your target.", icon: Target, color: "text-[#c43d3d]", href: "/savings/create/name" },
-  { title: "Group Savings", description: "Save together and reach your goals.", icon: Users, color: "text-[#d4a51c]", href: "/savings/create/name" },
+  { title: "একক সেভিংস", description: "আপনার নিজের সেভিংস যাত্রা শুরু করুন।", icon: Coins, color: "text-[#5146e5]", href: "/savings/create/name" },
+  { title: "লক্ষ্য সেভিংস", description: "লক্ষ্য ঠিক করে ধীরে ধীরে সঞ্চয় করুন।", icon: Target, color: "text-[#c43d3d]", href: "/savings/create/name" },
+  { title: "গ্রুপ সেভিংস", description: "একসাথে সঞ্চয় করে আপনার লক্ষ্য পূরণ করুন।", icon: Users, color: "text-[#d4a51c]", href: "/savings/create/name" },
 ]
 
 export default function SavingsPage() {
   return (
     <main className="min-h-[100dvh] bg-[#f7f8fc] px-5 pb-8 pt-5 text-slate-900">
-      <header className="flex items-center justify-between">
-        <Link href="/" aria-label="Back to Sheba" className="text-slate-700">
+      <header className="flex items-center">
+        <Link href="/" aria-label="শেবায় ফিরে যান" className="text-slate-700">
           <ArrowLeft className="h-6 w-6" aria-hidden="true" />
         </Link>
-        <div className="flex items-center gap-2 text-sm text-slate-500"><span className="h-2 w-2 rounded-full bg-[#5146e5]" /> Welcome</div>
       </header>
 
-      <nav className="mt-7 flex gap-3" aria-label="Account sections">
-        <div className="flex flex-1 items-center justify-center gap-2 rounded-full border border-slate-200 bg-white py-3 text-sm text-slate-500"><Landmark className="h-4 w-4" /> Wallet</div>
-        <div className="flex flex-1 items-center justify-center gap-2 rounded-full border border-slate-200 bg-white py-3 text-sm text-slate-500"><Landmark className="h-4 w-4" /> Loan</div>
-        <div className="flex flex-1 items-center justify-center gap-2 rounded-full bg-[#5146e5] py-3 text-sm font-medium text-white"><Coins className="h-4 w-4" /> Savings</div>
-      </nav>
-
-      <div className="mx-auto mt-6 flex w-fit rounded-full bg-white p-1 shadow-sm">
-        <span className="rounded-full bg-[#5146e5] px-5 py-2 text-sm font-medium text-white">Savings</span>
-        <span className="px-5 py-2 text-sm text-slate-500">Active Savings</span>
-      </div>
-
-      <section className="mt-5 rounded-2xl bg-white p-5 shadow-sm" aria-label="Total savings">
-        <p className="text-lg font-medium">Total Savings</p>
-        <p className="mt-5 text-3xl font-semibold text-[#168a4a]">৳0</p>
+      <section className="mt-7 rounded-2xl bg-white p-5 shadow-sm" aria-label="মোট সেভিংস">
+        <p className="text-lg font-medium">মোট সেভিংস</p>
+        <p className="mt-5 text-3xl font-semibold text-[#168a4a]">৳০</p>
       </section>
 
       <section className="mt-5 grid grid-cols-2 gap-4" aria-label="Savings options">
@@ -44,6 +32,13 @@ export default function SavingsPage() {
           </Link>
         ))}
       </section>
+
+      <Link
+        href="/savings/create/name"
+        className="mt-6 flex min-h-12 w-full items-center justify-center rounded-full bg-[#5146e5] px-5 py-3 text-lg font-semibold text-white shadow-sm transition-transform active:scale-[.98]"
+      >
+        সেভিংস চালু করুন
+      </Link>
     </main>
   )
 }
