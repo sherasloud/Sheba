@@ -10,6 +10,8 @@ export default function SavingsCheckoutPage() {
   const [balance, setBalance] = useState(0)
   const [amount, setAmount] = useState(0)
   const [months, setMonths] = useState(12)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [error, setError] = useState("")
 
   useEffect(() => {
     const savedAmount = Number(localStorage.getItem("savingsAmount") || 0)
@@ -23,9 +25,29 @@ export default function SavingsCheckoutPage() {
   const monthlyAmount = useMemo(() => Math.ceil(amount / months), [amount, months])
   const canPayFirstMonth = balance >= monthlyAmount
 
-  const handleCheckout = () => {
-    if (!checked || !canPayFirstMonth) return
-    const now = new Date()
+  const handleCheckout = async () => {
+    if (!checked || !canPayFirstMonth || isSubmitting) return
+
+    const user = JSON.parse(localStorage.getItem("userData") || "{}")
+    const phoneNumber = user.phoneNumber || user.phone || localStorage.getItem("phoneNumber")
+    if (!phoneNumber) {
+      setError("Account পাওয়া যায়নি। আবার login করুন।")
+      return
+    }
+
+    setIsSubmitting(true)
+    setError("")
+    const nextBalance = balance - monthlyAmount
+
+    try {
+      const response = await fetch("/api/balance", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phoneNumber, balance: nextBalance }),
+      })
+      if (!response.ok) throw new Error("balance update failed")
+
+      const now = new Date()
     const goal = {
       id: `GOAL_${Date.now()}`,
       name: localStorage.getItem("savingsName") || "Savings",
@@ -40,13 +62,18 @@ export default function SavingsCheckoutPage() {
     }
     const goals = JSON.parse(localStorage.getItem("savingsGoals") || "[]")
     localStorage.setItem("savingsGoals", JSON.stringify([goal, ...goals]))
-    localStorage.setItem("userBalance", String(balance - monthlyAmount))
+    localStorage.setItem("userBalance", String(nextBalance))
+    localStorage.setItem("userData", JSON.stringify({ ...user, balance: nextBalance }))
     localStorage.setItem("lastCreatedGoal", JSON.stringify(goal))
     localStorage.removeItem("savingsName")
     localStorage.removeItem("savingsAmount")
     localStorage.removeItem("savingsMonths")
     localStorage.removeItem("savingsPinVerified")
     router.push("/savings/create/success")
+    } catch {
+      setError("টাকা কাটা যায়নি। কিছুক্ষণ পর আবার চেষ্টা করুন।")
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -64,12 +91,13 @@ export default function SavingsCheckoutPage() {
           <div className="flex justify-between"><span>বর্তমান ব্যালেন্স</span><strong>{balance.toLocaleString("bn-BD")} ৳</strong></div>
         </div>
         {!canPayFirstMonth && <p className="mt-5 text-sm text-red-500">প্রথম মাসের {monthlyAmount.toLocaleString("bn-BD")} টাকা জমা দেওয়ার মতো ব্যালেন্স নেই।</p>}
+        {error && <p className="mt-5 text-sm text-red-500">{error}</p>}
         <label className="mt-8 flex cursor-pointer items-center gap-3 text-lg">
           <input type="checkbox" checked={checked} onChange={(event) => setChecked(event.target.checked)} className="sr-only" />
           <span className={`flex h-7 w-7 items-center justify-center border-2 ${checked ? "border-[#3aaef0] bg-[#3aaef0] text-white" : "border-[#3aaef0]"}`} aria-hidden="true">{checked && <Check className="h-5 w-5" />}</span>
           <span>আমি এই Savings চালু করতে চাই</span>
         </label>
-        <button type="button" onClick={handleCheckout} disabled={!checked || !canPayFirstMonth} className="mt-10 w-full rounded-full bg-[#3aaef0] px-4 py-3 text-lg font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50">Confirm Savings</button>
+        <button type="button" onClick={handleCheckout} disabled={!checked || !canPayFirstMonth || isSubmitting} className="mt-10 w-full rounded-full bg-[#3aaef0] px-4 py-3 text-lg font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50">{isSubmitting ? "Processing..." : "Confirm Savings"}</button>
       </section>
     </main>
   )
