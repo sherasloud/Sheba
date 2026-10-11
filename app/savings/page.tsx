@@ -6,7 +6,7 @@ import { ArrowLeft, Coins, Target, Users } from "lucide-react"
 const savingOptions = [
   { title: "একক সেভিংস", description: "আপনার নিজের সেভিংস যাত্রা শুরু করুন।", icon: Coins, color: "text-[#5146e5]", href: "/savings/create/name" },
   { title: "লক্ষ্য সেভিংস", description: "লক্ষ্য ঠিক করে ধীরে ধীরে সঞ্চয় করুন।", icon: Target, color: "text-[#c43d3d]", href: "/savings/create/name" },
-  { title: "গ্রুপ সেভিংস", description: "একসাথে সঞ্চয় করে আপনার লক্ষ্য পূরণ করুন।", icon: Users, color: "text-[#d4a51c]", href: "/savings/create/name" },
+  { title: "গ্রুপ সেভিংস", description: "একসাথে সঞ্চয় করে আপনার লক্ষ্য পূরণ করুন।", icon: Users, color: "text-[#48b9ed]", href: "/savings/create/name" },
 ]
 
 export default function SavingsPage() {
@@ -20,7 +20,7 @@ export default function SavingsPage() {
 
       <section className="mt-7 rounded-2xl bg-white p-5 shadow-sm" aria-label="মোট সেভিংস">
         <p className="text-lg font-medium">মোট সেভিংস</p>
-        <p className="mt-5 text-3xl font-semibold text-[#168a4a]">0 ৳</p>
+        <p className="mt-5 text-3xl font-semibold text-[#48b9ed]">0 ৳</p>
       </section>
 
       <section className="mt-5 grid grid-cols-2 gap-4" aria-label="Savings options">
