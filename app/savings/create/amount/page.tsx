@@ -38,7 +38,7 @@ export default function SavingsAmountPage() {
     if (amount && Number.parseFloat(amount) >= 100 && Number.parseFloat(amount) <= balance) {
       localStorage.setItem("savingsAmount", amount)
       localStorage.setItem("savingsName", savingsName || "Savings")
-      localStorage.setItem("savingsMonths", "1")
+      localStorage.setItem("savingsMonths", "12")
       router.push("/savings/create/pin")
     }
   }
@@ -59,36 +59,49 @@ export default function SavingsAmountPage() {
         <div className="mb-12">
             <div className="text-center text-[#3aaef0]">
             <div className="text-5xl font-light tracking-tight">Savings</div>
-            <label className="mt-6 block w-full text-7xl font-light" htmlFor="savings-amount">
+            <label className="relative mt-24 block h-48 w-[290px] max-w-full text-7xl font-light" htmlFor="savings-amount">
               <span className="sr-only">কত টাকা সেভিংস করবেন?</span>
+              <div
+                aria-hidden="true"
+                className="pointer-events-none h-48 w-[290px] max-w-full whitespace-nowrap text-center font-light leading-none text-[#3aaef0]"
+                style={{ fontFamily: "Noto Sans Bengali, sans-serif", fontSize: "72px", lineHeight: 0.95 }}
+              >
+                {amount || "0"} ৳
+              </div>
               <input
                 id="savings-amount"
-                type="number"
+                type="text"
                 inputMode="numeric"
+                pattern="[0-9]*"
                 value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-                placeholder="০"
-                className="amount-display block h-52 w-full min-w-0 appearance-none border-0 bg-transparent p-0 text-center font-light leading-none text-[#3aaef0] placeholder-[#3aaef0]/50 outline-none focus:ring-0"
-                style={{ fontFamily: "Noto Sans Bengali, sans-serif", fontSize: "120px", lineHeight: 1.05, transform: "scale(1.15)" }}
+                onChange={(e) => {
+                  const digitsOnly = e.target.value.replace(/\D/g, "").slice(0, 6)
+                  const nextAmount = digitsOnly && Number(digitsOnly) > 200000 ? "200000" : digitsOnly
+                  setAmount(nextAmount)
+                }}
+                placeholder="0"
+                className="absolute inset-0 h-48 w-[290px] max-w-full opacity-0 outline-none"
+                style={{ fontSize: "48px" }}
                 min="100"
-                max={mounted ? balance : undefined}
+                max={mounted ? Math.min(balance, 200000) : 200000}
                 aria-label="সেভিংসের পরিমাণ"
               />
             </label>
-            <div className="mt-4 text-base font-medium text-[#3aaef0]/70">বর্তমান ব্যালেন্স: {mounted ? balance.toLocaleString("bn-BD") : "০"} ৳</div>
+            <div className="mt-4 text-base font-medium text-[#3aaef0]/70">বর্তমান ব্যালেন্স: {mounted ? balance.toLocaleString("bn-BD") : "0"} ৳</div>
+            {mounted && amount && Number.isFinite(Number(amount)) && Number(amount) > 200000 ? (
+              <p className="mt-2 text-center text-sm font-medium text-red-500">সর্বোচ্চ ২০০,০০০ টাকা সেভিংস করা যাবে</p>
+            ) : mounted && amount && Number.isFinite(Number(amount)) && Number(amount) > balance ? (
+              <p className="mt-2 text-center text-sm font-medium text-red-500">আপনার ব্যালেন্সের বেশি টাকা সেভিংস করা যাবে না</p>
+            ) : null}
           </div>
         </div>
-
-        {amount && Number.parseFloat(amount) > balance ? (
-          <p className="mt-2 text-center text-sm font-medium text-red-500">আপনার ব্যালেন্সের বেশি টাকা রাখা যাবে না</p>
-        ) : null}
       </div>
 
       {/* Bottom Button */}
-      <div className="-mt-12 px-6 pb-6">
+      <div className="relative -top-16 px-6 pb-6">
         <button
           onClick={handleNext}
-          disabled={!amount || Number.parseFloat(amount) < 100 || Number.parseFloat(amount) > balance}
+          disabled={!mounted || !amount || !Number.isFinite(Number(amount)) || Number(amount) < 100 || Number(amount) > 200000 || Number(amount) > balance}
           className="w-full rounded-full bg-[#3aaef0] px-4 py-2 text-center text-lg font-semibold text-white shadow-sm disabled:cursor-not-allowed disabled:opacity-50"
           style={{ fontFamily: "Noto Sans Bengali, sans-serif" }}
         >
