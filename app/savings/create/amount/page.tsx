@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import Image from "next/image"
 
 export default function SavingsAmountPage() {
   const router = useRouter()
@@ -10,32 +9,27 @@ export default function SavingsAmountPage() {
   const [savingsName, setSavingsName] = useState("")
 
   useEffect(() => {
-    const name = localStorage.getItem("savingsName")
-    if (!name) {
-      router.push("/savings/create/name")
-      return
-    }
-    setSavingsName(name)
-  }, [router])
+    setSavingsName(localStorage.getItem("savingsName") || "Savings")
+  }, [])
 
   const handleNext = () => {
     if (amount && Number.parseFloat(amount) >= 100) {
       localStorage.setItem("savingsAmount", amount)
-      router.push("/savings/create/duration")
+      localStorage.setItem("savingsName", savingsName || "Savings")
+      localStorage.setItem("savingsMonths", "1")
+      router.push("/savings/create/pin")
     }
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-b from-[#29a9eb] to-[#1e8bc3]">
+    <div className="flex min-h-screen flex-col bg-white">
       {/* Coin Stack Icon */}
       <div className="flex-1 flex flex-col items-center justify-center px-6">
         <div className="mb-12">
-          <Image
-            src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Blue%20Black%20Formal%20Minimalist%20Company%20Letterhead%20%2813%29-dKfdzBXHBluBx6iJ8ERpyNaRQHlHGt.png"
-            alt="Coin Stack"
-            width={160}
-            height={160}
-          />
+          <div className="text-center text-[#3aaef0]">
+            <div className="text-7xl font-light tracking-tight">Savings</div>
+            <div className="mt-12 text-7xl font-light">{amount || "৬০০"} <span className="text-5xl">৳</span></div>
+          </div>
         </div>
 
         {/* Main Text */}
@@ -54,7 +48,7 @@ export default function SavingsAmountPage() {
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
           placeholder="১০০"
-          className="w-full px-6 py-4 text-center text-2xl font-bold bg-white/20 backdrop-blur-sm text-white placeholder-white/60 rounded-2xl border-2 border-white/30 focus:outline-none focus:border-white"
+          className="w-full rounded-2xl border-2 border-[#3aaef0]/30 bg-white px-6 py-4 text-center text-2xl font-bold text-[#3aaef0] placeholder-[#3aaef0]/50 focus:border-[#3aaef0] focus:outline-none"
           style={{ fontFamily: "Noto Sans Bengali, sans-serif" }}
           min="100"
         />
@@ -65,7 +59,7 @@ export default function SavingsAmountPage() {
         <button
           onClick={handleNext}
           disabled={!amount || Number.parseFloat(amount) < 100}
-          className="w-full bg-white text-gray-900 py-5 rounded-full text-center text-2xl font-semibold shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full rounded-full bg-[#3aaef0] py-5 text-center text-2xl font-semibold text-white shadow-lg disabled:cursor-not-allowed disabled:opacity-50"
           style={{ fontFamily: "Noto Sans Bengali, sans-serif" }}
         >
           {amount && Number.parseFloat(amount) >= 100 ? "সেভিংস করুন" : "ঠিক আছে"}
