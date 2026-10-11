@@ -42,6 +42,11 @@ export default function SavingsNamePage() {
 
         {/* Content */}
         <div className="p-4">
+          <img
+            src="/images/savings-coupon.png"
+            alt="Savings coupon illustration"
+            className="mb-4 h-auto w-full rounded-xl object-contain"
+          />
           <div className="bg-white rounded-lg border border-gray-200 p-6">
             <div className="text-center mb-6">
               <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
