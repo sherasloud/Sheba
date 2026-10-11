@@ -2,70 +2,94 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
-import Image from "next/image"
+import { ArrowLeft } from "lucide-react"
 
 export default function SavingsAmountPage() {
   const router = useRouter()
   const [amount, setAmount] = useState("")
   const [savingsName, setSavingsName] = useState("")
+  const [balance, setBalance] = useState(0)
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    const name = localStorage.getItem("savingsName")
-    if (!name) {
-      router.push("/savings/create/name")
-      return
+    setMounted(true)
+    const phone = localStorage.getItem("phoneNumber")
+    const storedUser = localStorage.getItem("userData")
+    const storedBalance = storedUser ? Number(JSON.parse(storedUser).balance) : 0
+    setBalance(Number.isFinite(storedBalance) ? storedBalance : 0)
+    setSavingsName(localStorage.getItem("savingsName") || "Savings")
+
+    if (phone) {
+      fetch("/api/user-profile", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phoneNumber: phone }),
+        cache: "no-store",
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success && data.user) setBalance(Number(data.user.balance) || 0)
+        })
+        .catch(() => undefined)
     }
-    setSavingsName(name)
-  }, [router])
+  }, [])
 
   const handleNext = () => {
-    if (amount && Number.parseFloat(amount) >= 100) {
+    if (amount && Number.parseFloat(amount) >= 100 && Number.parseFloat(amount) <= balance) {
       localStorage.setItem("savingsAmount", amount)
-      router.push("/savings/create/duration")
+      localStorage.setItem("savingsName", savingsName || "Savings")
+      localStorage.setItem("savingsMonths", "1")
+      router.push("/savings/create/pin")
     }
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-gradient-to-b from-[#29a9eb] to-[#1e8bc3]">
+    <div className="relative flex min-h-screen flex-col bg-white">
+      <button
+        type="button"
+        onClick={() => router.back()}
+        aria-label="পেছনে যান"
+        className="absolute left-4 top-2 z-10 flex min-h-11 min-w-11 items-center justify-center text-slate-700"
+      >
+        <ArrowLeft className="h-5 w-5" aria-hidden="true" />
+      </button>
+
       {/* Coin Stack Icon */}
       <div className="flex-1 flex flex-col items-center justify-center px-6">
         <div className="mb-12">
-          <Image
-            src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Blue%20Black%20Formal%20Minimalist%20Company%20Letterhead%20%2813%29-dKfdzBXHBluBx6iJ8ERpyNaRQHlHGt.png"
-            alt="Coin Stack"
-            width={160}
-            height={160}
-          />
+            <div className="text-center text-[#3aaef0]">
+            <div className="text-5xl font-light tracking-tight">Savings</div>
+            <label className="mt-6 block w-full text-7xl font-light" htmlFor="savings-amount">
+              <span className="sr-only">কত টাকা সেভিংস করবেন?</span>
+              <input
+                id="savings-amount"
+                type="number"
+                inputMode="numeric"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                placeholder="০"
+                className="amount-display block h-52 w-full min-w-0 appearance-none border-0 bg-transparent p-0 text-center font-light leading-none text-[#3aaef0] placeholder-[#3aaef0]/50 outline-none focus:ring-0"
+                style={{ fontFamily: "Noto Sans Bengali, sans-serif", fontSize: "120px", lineHeight: 1.05, transform: "scale(1.15)" }}
+                min="100"
+                max={mounted ? balance : undefined}
+                aria-label="সেভিংসের পরিমাণ"
+              />
+            </label>
+            <div className="mt-4 text-base font-medium text-[#3aaef0]/70">বর্তমান ব্যালেন্স: {mounted ? balance.toLocaleString("bn-BD") : "০"} ৳</div>
+          </div>
         </div>
 
-        {/* Main Text */}
-        <h1
-          className="text-white text-5xl font-bold text-center mb-12 leading-tight"
-          style={{ fontFamily: "Noto Sans Bengali, sans-serif" }}
-        >
-          টাকার পরিমাণ
-          <br />
-          লিখুন
-        </h1>
-
-        {/* Amount Input (hidden but functional) */}
-        <input
-          type="number"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-          placeholder="১০০"
-          className="w-full px-6 py-4 text-center text-2xl font-bold bg-white/20 backdrop-blur-sm text-white placeholder-white/60 rounded-2xl border-2 border-white/30 focus:outline-none focus:border-white"
-          style={{ fontFamily: "Noto Sans Bengali, sans-serif" }}
-          min="100"
-        />
+        {amount && Number.parseFloat(amount) > balance ? (
+          <p className="mt-2 text-center text-sm font-medium text-red-500">আপনার ব্যালেন্সের বেশি টাকা রাখা যাবে না</p>
+        ) : null}
       </div>
 
       {/* Bottom Button */}
-      <div className="px-6 pb-8">
+      <div className="-mt-12 px-6 pb-6">
         <button
           onClick={handleNext}
-          disabled={!amount || Number.parseFloat(amount) < 100}
-          className="w-full bg-white text-gray-900 py-5 rounded-full text-center text-2xl font-semibold shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={!amount || Number.parseFloat(amount) < 100 || Number.parseFloat(amount) > balance}
+          className="w-full rounded-full bg-[#3aaef0] px-4 py-2 text-center text-lg font-semibold text-white shadow-sm disabled:cursor-not-allowed disabled:opacity-50"
           style={{ fontFamily: "Noto Sans Bengali, sans-serif" }}
         >
           {amount && Number.parseFloat(amount) >= 100 ? "সেভিংস করুন" : "ঠিক আছে"}

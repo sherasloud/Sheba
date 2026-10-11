@@ -21,10 +21,13 @@ export default function InboxPage() {
   const [transactionProfilePics, setTransactionProfilePics] = useState<Record<string, string | null>>({})
   const [showNameModal, setShowNameModal] = useState(false)
   const [newName, setNewName] = useState('')
+  const [bannerDuration, setBannerDuration] = useState(7)
 
   useEffect(() => {
     const phone = localStorage.getItem('phoneNumber')
     const name = localStorage.getItem('userName') || 'User'
+    const savedDuration = Number.parseInt(localStorage.getItem('shebaBannerDuration') || '7', 10)
+    setBannerDuration(Number.isFinite(savedDuration) ? Math.min(60, Math.max(1, savedDuration)) : 7)
   if (!phone) {
       router.push('/pin')
       return
@@ -380,6 +383,31 @@ export default function InboxPage() {
               >
                 {isVerified ? <><Check size={22} strokeWidth={2.5} aria-hidden="true" />Verified</> : "Verify your account"}
               </button>
+
+              <div className="mt-10 w-full max-w-md rounded-xl border border-[#1FBFFF]/30 bg-[#f5fbff] p-4 text-black">
+                <div className="flex items-center justify-between gap-3">
+                  <div>
+                    <h2 className="text-base font-semibold">Banner duration</h2>
+                    <p className="mt-1 text-xs text-gray-600">Home banner stay time: 1–60 seconds</p>
+                  </div>
+                  <output className="rounded-lg bg-[#1FBFFF] px-3 py-2 text-sm font-semibold text-white">{bannerDuration}s</output>
+                </div>
+                <input
+                  type="range"
+                  min="1"
+                  max="60"
+                  step="1"
+                  value={bannerDuration}
+                  onChange={(event) => {
+                    const duration = Math.min(60, Math.max(1, Number(event.target.value)))
+                    setBannerDuration(duration)
+                    localStorage.setItem('shebaBannerDuration', String(duration))
+                  }}
+                  className="mt-4 w-full accent-[#1FBFFF]"
+                  aria-label="Banner duration in seconds"
+                />
+                <div className="mt-1 flex justify-between text-xs text-gray-500"><span>1s</span><span>60s</span></div>
+              </div>
 
               <div className="mt-12 flex w-full max-w-md flex-col gap-8 text-2xl font-normal leading-normal">
                 <button onClick={() => setShowNameModal(true)} className="flex w-full items-center justify-between text-left">

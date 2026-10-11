@@ -263,7 +263,7 @@ export default function SavingsPinPage() {
           <Button
             onClick={handleConfirm}
             disabled={pin.length !== 6 || isLoading}
-            className="w-full bg-[#29a9eb] hover:bg-[#2490d1] text-white py-3 rounded-xl font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full rounded-xl bg-[#29a9eb] py-2.5 text-sm font-medium text-white hover:bg-[#2490d1] disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isLoading ? (
               <div className="flex items-center justify-center gap-2">

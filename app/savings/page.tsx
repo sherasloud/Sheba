@@ -18,11 +18,14 @@ export default function SavingsPage() {
       >
         <ArrowLeft className="h-5 w-5" aria-hidden="true" />
       </Link>
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-[40%] bg-white" aria-hidden="true" />
       <Link
         href="/savings/create/name"
-        aria-label="Start savings"
-        className="absolute bottom-[8%] left-1/2 z-20 flex h-[7%] w-[52%] -translate-x-1/2 cursor-pointer items-center justify-center rounded-full bg-transparent"
-      />
+        aria-label="সামনে যাই"
+        className="absolute bottom-8 left-1/2 z-20 flex min-h-10 w-[62%] -translate-x-1/2 items-center justify-center rounded-full bg-[#3aaef0] px-4 py-2 text-lg font-semibold text-white shadow-lg transition-transform active:scale-95 touch-manipulation"
+      >
+        সামনে যাই
+      </Link>
     </main>
   )
 }
