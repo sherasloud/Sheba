@@ -63,7 +63,7 @@ export default function SavingsAmountPage() {
               <span className="sr-only">কত টাকা সেভিংস করবেন?</span>
               <div
                 aria-hidden="true"
-                className="pointer-events-none h-48 w-[290px] max-w-full text-center font-light leading-none text-[#3aaef0]"
+                className="pointer-events-none h-48 w-[290px] max-w-full whitespace-nowrap text-center font-light leading-none text-[#3aaef0]"
                 style={{ fontFamily: "Noto Sans Bengali, sans-serif", fontSize: "80px", lineHeight: 0.95 }}
               >
                 {amount || "০"} ৳
