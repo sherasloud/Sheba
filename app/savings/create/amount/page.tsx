@@ -57,7 +57,7 @@ export default function SavingsAmountPage() {
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 placeholder="০"
-                className="w-full border-0 bg-transparent p-0 text-center text-7xl font-light text-[#3aaef0] placeholder-[#3aaef0]/50 outline-none focus:ring-0"
+                className="min-h-32 w-full border-0 bg-transparent p-0 text-center text-8xl font-light text-[#3aaef0] placeholder-[#3aaef0]/50 outline-none focus:ring-0"
                 style={{ fontFamily: "Noto Sans Bengali, sans-serif" }}
                 min="100"
                 max={balance}
@@ -81,7 +81,7 @@ export default function SavingsAmountPage() {
         <button
           onClick={handleNext}
           disabled={!amount || Number.parseFloat(amount) < 100 || Number.parseFloat(amount) > balance}
-          className="w-full rounded-full bg-[#3aaef0] py-5 text-center text-2xl font-semibold text-white shadow-lg disabled:cursor-not-allowed disabled:opacity-50"
+          className="w-full rounded-full bg-[#3aaef0] py-3 text-center text-lg font-semibold text-white shadow-lg disabled:cursor-not-allowed disabled:opacity-50"
           style={{ fontFamily: "Noto Sans Bengali, sans-serif" }}
         >
           {amount && Number.parseFloat(amount) >= 100 ? "সেভিংস করুন" : "ঠিক আছে"}
