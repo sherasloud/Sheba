@@ -20,7 +20,7 @@ export default function SavingsPage() {
 
       <section className="mt-7 rounded-2xl bg-white p-5 shadow-sm" aria-label="মোট সেভিংস">
         <p className="text-lg font-medium">মোট সেভিংস</p>
-        <p className="mt-5 text-3xl font-semibold text-[#168a4a]">৳০</p>
+        <p className="mt-5 text-3xl font-semibold text-[#168a4a]">0 ৳</p>
       </section>
 
       <section className="mt-5 grid grid-cols-2 gap-4" aria-label="Savings options">
@@ -35,7 +35,7 @@ export default function SavingsPage() {
 
       <Link
         href="/savings/create/name"
-        className="mt-6 flex min-h-12 w-full items-center justify-center rounded-full bg-[#5146e5] px-5 py-3 text-lg font-semibold text-white shadow-sm transition-transform active:scale-[.98]"
+        className="mx-auto mt-5 flex min-h-10 w-[72%] items-center justify-center rounded-full bg-[#48b9ed] px-4 py-2 text-base font-semibold text-white shadow-sm transition-transform active:scale-[.98]"
       >
         সেভিংস চালু করুন
       </Link>
