@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
+import { ArrowLeft } from "lucide-react"
 
 export default function SavingsAmountPage() {
   const router = useRouter()
@@ -43,7 +44,16 @@ export default function SavingsAmountPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-white">
+    <div className="relative flex min-h-screen flex-col bg-white">
+      <button
+        type="button"
+        onClick={() => router.back()}
+        aria-label="পেছনে যান"
+        className="absolute left-4 top-4 z-10 flex min-h-11 min-w-11 items-center justify-center rounded-full bg-white text-slate-700 shadow-md"
+      >
+        <ArrowLeft className="h-5 w-5" aria-hidden="true" />
+      </button>
+
       {/* Coin Stack Icon */}
       <div className="flex-1 flex flex-col items-center justify-center px-6">
         <div className="mb-12">
@@ -75,7 +85,7 @@ export default function SavingsAmountPage() {
       </div>
 
       {/* Bottom Button */}
-      <div className="px-6 pb-8">
+      <div className="-mt-8 px-6 pb-6">
         <button
           onClick={handleNext}
           disabled={!amount || Number.parseFloat(amount) < 100 || Number.parseFloat(amount) > balance}
