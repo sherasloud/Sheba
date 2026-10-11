@@ -6,10 +6,15 @@ import { ArrowLeft } from "lucide-react"
 export default function SavingsPage() {
   return (
     <main className="min-h-[100dvh] bg-[#f7f8fc] px-5 pb-8 pt-5 text-slate-900">
-      <header className="flex items-center">
+      <header className="flex items-center justify-between">
         <Link href="/" aria-label="শেবায় ফিরে যান" className="text-slate-700">
           <ArrowLeft className="h-6 w-6" aria-hidden="true" />
         </Link>
+        <img
+          src="/images/sheba-headline-logo.jpeg"
+          alt="শেবা"
+          className="h-10 w-auto object-contain"
+        />
       </header>
 
       <section className="mt-7 rounded-2xl bg-white p-5 shadow-sm" aria-label="মোট সেভিংস">
