@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { db } from "@/lib/db"
 import { appUsers } from "@/lib/db/schema"
-import { and, eq, lt } from "drizzle-orm"
+import { eq } from "drizzle-orm"
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,10 +12,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ matched: false, error: "Valid NID is required" }, { status: 400 })
     }
 
-    const legacyCutoff = new Date("2026-10-09T00:00:00.000Z")
     const user = await db.query.appUsers.findFirst({
-      where: and(eq(appUsers.nidNumber, normalizedNid), lt(appUsers.createdAt, legacyCutoff)),
-      columns: { id: true, phoneNumber: true, createdAt: true },
+      where: eq(appUsers.nidNumber, normalizedNid),
+      columns: { id: true, phoneNumber: true },
     })
 
     if (!user) return NextResponse.json({ matched: false })

@@ -6,7 +6,6 @@ import { appUsers } from "@/lib/db/schema"
 export async function GET(request: NextRequest) {
   try {
     const phone = request.nextUrl.searchParams.get("phone")
-    const requestedNid = request.nextUrl.searchParams.get("nid")?.replace(/\D/g, "")
 
     if (!phone) {
       return NextResponse.json(
@@ -25,7 +24,7 @@ export async function GET(request: NextRequest) {
 
     const normalizedPhone = phone.replace(/[^0-9]/g, "")
     const isDemoAccount = normalizedPhone === "01914255406" || normalizedPhone === "8801914255406"
-    const isVerified = !isDemoAccount && user?.nidVerified === true && (!requestedNid || user?.nidNumber === requestedNid)
+    const isVerified = !isDemoAccount && user?.nidVerified === true
 
     return NextResponse.json({
       success: true,

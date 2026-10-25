@@ -8,18 +8,17 @@ export default function DiditCallbackPage() {
   const searchParams = useSearchParams()
 
   useEffect(() => {
-    const status = (searchParams.get("status") || searchParams.get("decision") || "").toLowerCase()
-    const sessionId = searchParams.get("verificationSessionId") || searchParams.get("session_id") || searchParams.get("sessionId") || ""
-    const approved = ["approved", "completed", "success", "verified"].includes(status)
+    const status = (searchParams.get("status") || "").toLowerCase()
+    const sessionId = searchParams.get("verificationSessionId") || ""
+    const approved = status === "approved" || status === "completed" || status === "success"
     if (approved) {
       sessionStorage.setItem("diditKycApproved", "true")
-      if (sessionId) sessionStorage.setItem("diditSessionId", sessionId)
+      sessionStorage.setItem("diditSessionId", sessionId)
     } else {
       sessionStorage.removeItem("diditKycApproved")
     }
     if (window.parent !== window) {
       window.parent.postMessage({ type: "didit-kyc-result", status: approved ? "approved" : status || "pending", sessionId }, window.location.origin)
-      setTimeout(() => router.replace(approved ? "/?verified=success" : `/onboarding?kyc=${status || "pending"}`), 1500)
       return
     }
     router.replace(approved ? "/?verified=success" : `/onboarding?kyc=${status || "pending"}`)

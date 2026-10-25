@@ -114,7 +114,8 @@ export default function PinPage() {
         
         const timestamp = Date.now().toString()
 
-        // Keep authentication for the current browser session only.
+        // Storage must never turn a verified PIN into a fake server error
+        // (Safari private mode can reject sessionStorage/localStorage writes).
         try {
           const userData = JSON.stringify({
             phoneNumber: data.user?.phoneNumber ?? phoneNumber,
@@ -122,19 +123,26 @@ export default function PinPage() {
             balance: data.user?.balance ?? 0,
             accountType: data.user?.accountType,
           })
-          sessionStorage.setItem("phoneNumber", phoneNumber)
-          sessionStorage.setItem("appPinVerified", "true")
-          sessionStorage.setItem("pinVerifiedTime", timestamp)
-          sessionStorage.setItem("userName", data.user?.fullName ?? "")
-          sessionStorage.setItem("userBalance", String(data.user?.balance ?? 0))
-          sessionStorage.setItem("userData", userData)
-          localStorage.removeItem("appPinVerified")
-          localStorage.removeItem("pinVerifiedTime")
+          for (const storage of [sessionStorage, localStorage]) {
+            storage.setItem("phoneNumber", phoneNumber)
+            storage.setItem("appPinVerified", "true")
+            storage.setItem("pinVerifiedTime", timestamp)
+            storage.setItem("userName", data.user?.fullName ?? "")
+            storage.setItem("userBalance", String(data.user?.balance ?? 0))
+            storage.setItem("userData", userData)
+          }
         } catch (storageError) {
           console.warn("[v0] PIN verified but browser storage is unavailable", storageError)
         }
 
         setError("")
+  try {
+  localStorage.removeItem("appPinVerified")
+  localStorage.removeItem("pinVerifiedTime")
+  localStorage.setItem("phoneNumber", data.user?.phoneNumber ?? phoneNumber)
+  } catch (storageError) {
+          console.warn("[v0] Could not persist PIN session", storageError)
+        }
         router.replace("/")
       } else if (response.status === 401) {
         setError(data.message || "ভুল পিন। আবার চেষ্টা করুন।")
