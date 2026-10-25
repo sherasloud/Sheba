@@ -41,8 +41,7 @@ const SettingsPage = () => {
   const [newName, setNewName] = useState("")
   const [email, setEmail] = useState("")
   const [emailSaved, setEmailSaved] = useState(false)
-  const [bannerDuration, setBannerDuration] = useState(7)
-
+  
   const t = translations[language]
 
   useEffect(() => {
@@ -60,9 +59,6 @@ const SettingsPage = () => {
   }, [phone, router])
 
   useEffect(() => {
-    const savedDuration = Number.parseInt(localStorage.getItem("shebaBannerDuration") || "7", 10)
-    setBannerDuration(Number.isFinite(savedDuration) ? Math.min(60, Math.max(1, savedDuration)) : 7)
-
     // Get phone and name from localStorage
     const userData = localStorage.getItem("userData")
     if (userData) {
@@ -238,40 +234,13 @@ const SettingsPage = () => {
           {!isNidVerified && (
             <button
               type="button"
-              onClick={() => window.location.assign("https://verify.didit.me/u/-nz59ozcQIevHqyp-PGeLA")}
+              onClick={() => void DiditSdk.shared.startVerification({ url: "https://verify.didit.me/u/-nz59ozcQIevHqyp-PGeLA", configuration: { embedded: false, showCloseButton: true, defaultDocumentCamera: "back", defaultLivenessCamera: "front" } })}
               className="rounded-md bg-[#29a9eb] px-4 py-2 text-sm whitespace-nowrap text-white"
             >
               {t.verifyNow}
             </button>
           )}
         </div>
-      </div>
-
-      <div className="mb-4 rounded-lg border border-[#29a9eb]/30 bg-[#f5fbff] p-4">
-        <div className="flex items-center justify-between gap-3">
-          <div>
-            <h3 className="font-semibold text-[#142033]">Banner duration</h3>
-            <p className="mt-1 text-sm text-gray-500">How long each home banner stays visible (1–60 seconds).</p>
-          </div>
-          <output className="min-w-16 rounded-lg bg-[#29a9eb] px-3 py-2 text-center text-sm font-semibold text-white">
-            {bannerDuration}s
-          </output>
-        </div>
-        <input
-          type="range"
-          min="1"
-          max="60"
-          step="1"
-          value={bannerDuration}
-          onChange={(event) => {
-            const duration = Math.min(60, Math.max(1, Number(event.target.value)))
-            setBannerDuration(duration)
-            localStorage.setItem("shebaBannerDuration", String(duration))
-          }}
-          className="mt-4 w-full accent-[#29a9eb]"
-          aria-label="Banner duration in seconds"
-        />
-        <div className="mt-1 flex justify-between text-xs text-gray-500"><span>1s</span><span>60s</span></div>
       </div>
 
       <div className="space-y-3">

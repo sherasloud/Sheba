@@ -102,7 +102,19 @@ export default function OnboardingPage() {
       sessionStorage.setItem("pendingKyc", JSON.stringify({ nidType, documentNumber }))
       if (data.sessionId) sessionStorage.setItem("diditSessionId", data.sessionId)
 
-      window.location.assign(verificationUrl.toString())
+      await DiditSdk.shared.startVerification({
+        url: verificationUrl.toString(),
+        configuration: {
+          loggingEnabled: false,
+          embedded: false,
+          showCloseButton: true,
+          closeModalOnComplete: true,
+          defaultDocumentCamera: "back",
+          defaultLivenessCamera: "front",
+          showDocumentCameraSwitchButton: true,
+          showLivenessCameraSwitchButton: true,
+        },
+      })
     } catch (error) {
       setError(error instanceof Error ? error.message : "যাচাই শুরু করা যায়নি")
     } finally {

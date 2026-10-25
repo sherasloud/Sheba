@@ -33,9 +33,6 @@ export default function SavingsPinPage() {
     const pinString = pin
     if (pinString.length === 6) {
       setIsLoading(true)
-      localStorage.setItem("savingsPinVerified", "true")
-      router.push("/savings/create/checkout")
-      return
 
       const currentBalance = Number(localStorage.getItem("userBalance") || "0")
       const targetAmount = Number.parseFloat(savingsAmount)
@@ -135,11 +132,11 @@ export default function SavingsPinPage() {
   const targetAmount = Number.parseFloat(savingsAmount)
 
   return (
-    <div className="min-h-screen bg-white p-4 text-black">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 p-4">
       <div className="max-w-md mx-auto">
         {/* Header */}
         <div className="flex items-center gap-4 mb-8 pt-4">
-          <button onClick={() => router.back()} className="p-2 text-gray-700 transition-colors">
+          <button onClick={() => router.back()} className="p-2 hover:bg-white/50 rounded-full transition-colors">
             <ArrowLeft className="w-6 h-6 text-gray-700" />
           </button>
           <h1 className="text-xl font-semibold text-gray-800">Create Savings Goal</h1>
@@ -151,15 +148,15 @@ export default function SavingsPinPage() {
             <span>Step 4 of 4</span>
             <span>100%</span>
           </div>
-          <div className="h-1 w-full bg-gray-200">
-            <div className="h-1 w-full bg-[#29a9eb]"></div>
+          <div className="w-full bg-gray-200 rounded-full h-2">
+            <div className="bg-[#29a9eb] h-2 rounded-full w-full transition-all duration-300"></div>
           </div>
         </div>
 
         {/* Form */}
-        <div className="p-2">
+        <div className="bg-white rounded-2xl p-6 shadow-lg">
           <div className="text-center mb-6">
-            <div className="mb-4 flex items-center justify-center">
+            <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <Lock className="w-8 h-8 text-[#29a9eb]" />
             </div>
             <h2 className="text-xl font-semibold text-gray-800 mb-2">Confirm with PIN</h2>
@@ -266,7 +263,7 @@ export default function SavingsPinPage() {
           <Button
             onClick={handleConfirm}
             disabled={pin.length !== 6 || isLoading}
-            className="w-full rounded-xl bg-[#29a9eb] py-2.5 text-sm font-medium text-white hover:bg-[#2490d1] disabled:cursor-not-allowed disabled:opacity-50"
+            className="w-full bg-[#29a9eb] hover:bg-[#2490d1] text-white py-3 rounded-xl font-medium disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isLoading ? (
               <div className="flex items-center justify-center gap-2">

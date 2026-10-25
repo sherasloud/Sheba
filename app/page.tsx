@@ -28,12 +28,6 @@ export default function AppPage() {
 
   const allBanners = [
     {
-      id: "usa-visa-assistance",
-      image: "/images/usa-visa-banner.png",
-      link: "/air-tickets",
-      alt: "Sheba helps you prepare for lawful USA visa applications from Bangladesh",
-    },
-    {
       id: "send-money-woman",
       image:
         "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/White%20Digitalism%20Basic%20Simple%20Presentation%20%283%29-1LaWqW2UnOB0FpYeQqhSDbTbcyWWYf.jpg",
@@ -70,7 +64,6 @@ export default function AppPage() {
   ]
 
   const [currentBannerIndex, setCurrentBannerIndex] = useState(0)
-  const [bannerDuration, setBannerDuration] = useState(7)
   const [touchStart, setTouchStart] = useState(0)
   const [touchEnd, setTouchEnd] = useState(0)
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
@@ -121,7 +114,9 @@ export default function AppPage() {
       clearInterval(intervalRef.current)
     }
 
-    startAutoRotation()
+    setTimeout(() => {
+      startAutoRotation()
+    }, 2000)
   }
 
   const startAutoRotation = () => {
@@ -134,20 +129,8 @@ export default function AppPage() {
         const nextIndex = (prevIndex + 1) % allBanners.length
         return nextIndex
       })
-    }, bannerDuration * 1000)
+    }, 2000)
   }
-
-  useEffect(() => {
-    const savedDuration = Number.parseInt(localStorage.getItem("shebaBannerDuration") || "7", 10)
-    setBannerDuration(Number.isFinite(savedDuration) ? Math.min(60, Math.max(1, savedDuration)) : 7)
-  }, [])
-
-  useEffect(() => {
-    startAutoRotation()
-    return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current)
-    }
-  }, [bannerDuration])
 
   const getLatestBalance = useCallback(async () => {
     try {
@@ -408,6 +391,8 @@ export default function AppPage() {
     document.addEventListener("visibilitychange", handleVisibilityChange)
     window.addEventListener("nameChanged", handleCustomNameChange as EventListener)
     window.addEventListener("balanceUpdated", handleBalanceUpdate)
+
+    startAutoRotation()
 
     return () => {
       window.removeEventListener("storage", handleStorageChange)
