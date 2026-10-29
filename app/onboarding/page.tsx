@@ -62,6 +62,7 @@ export default function OnboardingPage() {
       const data = await response.json()
       if (!response.ok || !data.url) throw new Error(data.error || "KYC session failed")
       const verificationUrl = new URL(data.url)
+      if (!verificationUrl.protocol.startsWith("http")) throw new Error("Invalid verification URL")
       const isDiditHost = verificationUrl.hostname === "verification.didit.me" || verificationUrl.hostname === "verify.didit.me"
       if (!isDiditHost) throw new Error("Invalid Didit verification URL")
       sessionStorage.setItem("pendingKyc", JSON.stringify({ nidType, documentNumber }))

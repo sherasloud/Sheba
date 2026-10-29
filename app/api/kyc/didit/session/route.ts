@@ -13,14 +13,21 @@ export async function POST(request: NextRequest) {
   }
 
   const origin = new URL(request.url).origin
+  const apiKey = process.env.DIDIT_API_KEY || process.env.DIDIT_API_KEY_2 || process.env.DIDIT_API_KEY_3
+  const workflowId = process.env.DIDIT_WORKFLOW_ID
+
+  if (!apiKey || !workflowId) {
+    return NextResponse.json({ error: "Identity verification is not configured." }, { status: 503 })
+  }
+
   const response = await fetch("https://verification.didit.me/v3/session/", {
     method: "POST",
     headers: {
-      "x-api-key": process.env.DIDIT_API_KEY || "",
+      "x-api-key": apiKey,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      workflow_id: process.env.DIDIT_WORKFLOW_ID,
+      workflow_id: workflowId,
       callback: `${origin}/kyc/didit/callback`,
       vendor_data: JSON.stringify({ phone, nidType, nidNumber: documentNumber }),
     }),
@@ -29,7 +36,8 @@ export async function POST(request: NextRequest) {
   const data = await response.json().catch(() => ({}))
   if (!response.ok || !data.url) {
     console.error("[v0] Didit session creation failed", response.status, data)
-    return NextResponse.json({ error: "Unable to start identity verification." }, { status: 502 })
+    const upstreamError = typeof data.detail === "string" ? data.detail : typeof data.message === "string" ? data.message : "Unable to start identity verification."
+    return NextResponse.json({ error: upstreamError }, { status: 502 })
   }
 
   return NextResponse.json({ url: data.url, sessionId: data.session_id || data.id })
