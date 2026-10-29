@@ -4,7 +4,6 @@ import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { ArrowLeft, User, Phone, Lock, CheckCircle } from "lucide-react"
 import { setCurrentUser, isAdminPhone, getAccountByPhone } from "@/lib/account-manager"
-import { DiditSdk } from "@didit-protocol/sdk-web"
 
 export default function OnboardingPage() {
   const router = useRouter()
@@ -19,74 +18,6 @@ export default function OnboardingPage() {
   const [confirmPin, setConfirmPin] = useState("")
   const [accountType, setAccountType] = useState("personal")
   const [isAdmin, setIsAdmin] = useState(false)
-  const [nidType, setNidType] = useState("nid")
-  const [documentNumber, setDocumentNumber] = useState("")
-  const [kycLoading, setKycLoading] = useState(false)
-
-  useEffect(() => {
-    DiditSdk.shared.onComplete = (result) => {
-      setKycLoading(false)
-      const status = String(result.session?.status || "").toLowerCase()
-      if (result.type === "completed" && ["approved", "completed", "success"].includes(status)) {
-        sessionStorage.setItem("diditKycApproved", "true")
-        if (result.session?.sessionId) sessionStorage.setItem("diditSessionId", result.session.sessionId)
-        router.replace("/?verified=success")
-      } else if (result.type !== "cancelled") {
-        setError("পরিচয় যাচাই সম্পন্ন হয়নি। আবার চেষ্টা করুন।")
-      }
-    }
-
-    return () => {
-      DiditSdk.shared.onComplete = undefined
-      DiditSdk.shared.destroy()
-    }
-  }, [])
-
-  useEffect(() => {
-    if (sessionStorage.getItem("diditKycApproved") === "true") setStep(4)
-  }, [])
-
-  const startKyc = async () => {
-    if (!/^[A-Za-z0-9-]{5,25}$/.test(documentNumber)) {
-      setError("সঠিক document number দিন")
-      return
-    }
-    setKycLoading(true)
-    setError("")
-    try {
-      const response = await fetch("/api/kyc/didit/session", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone: phoneNumber, nidType, documentNumber }),
-      })
-      const data = await response.json()
-      if (!response.ok || !data.url) throw new Error(data.error || "KYC session failed")
-      const verificationUrl = new URL(data.url)
-      if (!verificationUrl.protocol.startsWith("http")) throw new Error("Invalid verification URL")
-      const isDiditHost = verificationUrl.hostname === "verification.didit.me" || verificationUrl.hostname === "verify.didit.me"
-      if (!isDiditHost) throw new Error("Invalid Didit verification URL")
-      sessionStorage.setItem("pendingKyc", JSON.stringify({ nidType, documentNumber }))
-      if (data.sessionId) sessionStorage.setItem("diditSessionId", data.sessionId)
-
-      await DiditSdk.shared.startVerification({
-        url: verificationUrl.toString(),
-        configuration: {
-          loggingEnabled: false,
-          embedded: false,
-          showCloseButton: true,
-          defaultDocumentCamera: "back",
-          defaultLivenessCamera: "front",
-          showDocumentCameraSwitchButton: true,
-          showLivenessCameraSwitchButton: true,
-        },
-      })
-    } catch (error) {
-      setError(error instanceof Error ? error.message : "যাচাই শুরু করা যায়নি")
-    } finally {
-      setKycLoading(false)
-    }
-  }
-
   // Skip phone step if coming from OTP
   useEffect(() => {
     const storedPhone = sessionStorage.getItem("phoneNumber") || localStorage.getItem("phoneNumber")
@@ -173,10 +104,10 @@ export default function OnboardingPage() {
     // For regular users, go to PIN setup (step 3)
     // For admin, show account type selection first
     if (isAdmin) {
-      setStep(3) // Show account type selection for admin
+      setStep(4) // Continue to PIN setup without KYC
     } else {
       setAccountType("personal") // Auto-set personal for regular users
-      setStep(3) // Go to PIN setup
+      setStep(4) // Go to PIN setup without KYC
     }
   }
 
@@ -210,11 +141,7 @@ export default function OnboardingPage() {
             name: fullName.trim(),
             pin,
             accountType: accountType, // State, Personal, Business, Institution
-            nidType,
-            documentNumber,
-            nidNumber: nidType === "nid" ? documentNumber : undefined,
-            nidVerified: sessionStorage.getItem("diditKycApproved") === "true",
-            kycSessionId: sessionStorage.getItem("diditSessionId") || "",
+            nidVerified: false,
           }),
       })
 
@@ -370,25 +297,6 @@ export default function OnboardingPage() {
               className="mt-auto w-full py-4 bg-[#1FBFFF] text-white rounded-full text-lg font-medium disabled:opacity-50"
             >
               পরবর্তী
-            </button>
-          </div>
-        )}
-
-        {/* Step 3: Identity verification */}
-        {step === 3 && (
-          <div className="flex h-full flex-col gap-4">
-            <h2 className="text-xl font-bold text-gray-800">পরিচয় যাচাই করুন</h2>
-            <p className="text-sm text-gray-500">NID, document upload এবং facial liveness Didit secure verification-এ সম্পন্ন হবে।</p>
-            <select value={nidType} onChange={(e) => setNidType(e.target.value)} className="w-full rounded-xl border-2 border-gray-200 p-4">
-<option value="nid">জাতীয় পরিচয়পত্র (NID)</option>
-  <option value="driving_license">Driving License</option>
-  <option value="passport">Passport</option>
-  <option value="student_id">Student ID</option>
-            </select>
-            <input type="text" inputMode="text" value={documentNumber} onChange={(e) => setDocumentNumber(e.target.value.replace(/[^A-Za-z0-9-]/g, '').slice(0, 25))} placeholder={nidType === "nid" ? "NID Number" : nidType === "driving_license" ? "Driving License Number" : nidType === "passport" ? "Passport Number" : "Student ID Number"} className="w-full rounded-xl border-2 border-gray-200 p-4" maxLength={25} />
-            {error && <p className="text-sm text-red-500">{error}</p>}
-            <button onClick={startKyc} disabled={kycLoading || documentNumber.length < 5} className="mt-auto w-full rounded-full bg-[#1FBFFF] py-4 text-lg font-medium text-white disabled:opacity-50">
-              {kycLoading ? "যাচাই শুরু হচ্ছে..." : "Document ও Facial Verification"}
             </button>
           </div>
         )}
