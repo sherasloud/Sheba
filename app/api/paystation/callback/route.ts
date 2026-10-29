@@ -112,7 +112,9 @@ async function handleCallback(request: Request, callbackData: Record<string, unk
     }
   }
 
-  return NextResponse.redirect(new URL(`/add-money?payment=success&invoice=${encodeURIComponent(invoiceNumber)}`, url.origin))
+  const successUrl = new URL(`/add-money?payment=success&invoice=${encodeURIComponent(invoiceNumber)}`, url.origin)
+  successUrl.searchParams.set("amount", String(verifiedAmount))
+  return NextResponse.redirect(successUrl)
 }
 
 export async function GET(request: Request) {

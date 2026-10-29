@@ -47,9 +47,10 @@ export default function AddMoneyPage() {
   })
 
   useEffect(() => {
-    const paymentStatus = new URLSearchParams(window.location.search).get("payment")
+    const searchParams = new URLSearchParams(window.location.search)
+    const paymentStatus = searchParams.get("payment")
     if (paymentStatus === "success") {
-      const returnedAmount = localStorage.getItem("paystationAmount")
+      const returnedAmount = searchParams.get("amount") || localStorage.getItem("paystationAmount")
       if (returnedAmount) setAmount(returnedAmount)
       setSuccess(true)
       const addedAmount = Number(returnedAmount || amount || 0).toLocaleString("en-US")
