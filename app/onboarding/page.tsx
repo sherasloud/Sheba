@@ -117,7 +117,7 @@ export default function OnboardingPage() {
       return
     }
     setError("")
-    setStep(4) // Go to confirm PIN page
+    setStep(5) // Go to confirm PIN page
   }
 
   const handleConfirmPinSubmit = async () => {
