@@ -297,80 +297,17 @@ export default function BillPage() {
   )}
 
       {step === 3 && (
-  <div className="flex flex-1 flex-col bg-white px-6 pb-10 pt-6 sm:px-10">
-  <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col">
-  <button onClick={() => setStep(2)} className="mb-14 flex w-fit items-center gap-2 text-sm font-medium text-[#142033]" aria-label="বিল প্রদানকারী নির্বাচনে ফিরে যান">
-  <ArrowLeft size={22} strokeWidth={1.8} />
-  ফিরে যান
-  </button>
-  <div className="mb-10 text-center">
-  <p className="mb-4 text-5xl font-normal tracking-tight text-[#36aaf0] sm:text-6xl">বিল পরিশোধ</p>
-  <h1 className="text-2xl font-medium text-[#142033] sm:text-3xl">বিলের বিস্তারিত দিন</h1>
-  <p className="mt-3 text-sm leading-6 text-slate-500">আপনার বিলের তথ্য দিয়ে পরবর্তী ধাপে এগিয়ে যান।</p>
+  <div className="flex h-[100dvh] max-h-[100dvh] flex-1 flex-col overflow-hidden bg-white px-3 py-3 text-[#36aaf0] sm:px-10 sm:py-6">
+  <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col items-center text-center">
+    <p className="mt-10 text-[2.75rem] font-normal leading-none tracking-tight text-[#36aaf0] sm:mt-14 sm:text-7xl">{selectedProvider.name.replace(/ (POSTPAID|PREPAID|SMART PREPAID)$/i, "")}</p>
+    <p className="mt-10 text-[1.55rem] font-light leading-none text-[#36aaf0] sm:mt-16 sm:text-5xl">বিভাগ : {selectedCategory === "electricity" ? "বিদ্যুৎ" : selectedCategory === "water" ? "পানি" : selectedCategory === "gas" ? "গ্যাস" : selectedCategory === "internet" ? "ইন্টারনেট" : "মোবাইল"}</p>
+    <p className="mt-20 text-[2rem] font-light leading-none text-[#72c6f4] sm:mt-36 sm:text-6xl">বিলের ধরন</p>
+    <label className="sr-only" htmlFor="bill-id">বিল আইডি</label>
+    <input id="bill-id" type="text" inputMode="numeric" value={billDetails.accountNumber} onChange={(event) => setBillDetails({ ...billDetails, accountNumber: event.target.value })} placeholder="নম্বর দিন" className="mt-8 h-12 w-[82%] border-0 bg-transparent text-center text-[2rem] font-light text-[#72c6f4] outline-none placeholder:text-[#72c6f4] focus:ring-0 sm:text-6xl" maxLength={selectedCategory === "mobile" ? 11 : undefined} />
+    {error && <p className="mt-2 text-sm text-red-500">{error}</p>}
+    <button onClick={handleBillInquiry} disabled={isLoading} className="mt-auto mb-2 min-h-12 w-[68%] rounded-full bg-[#36aaf0] px-3 py-2 text-2xl font-light text-white disabled:bg-gray-400 sm:mb-16 sm:min-h-16 sm:w-[66%] sm:text-3xl">{isLoading ? "Checking Bill..." : "Check Bill"}</button>
   </div>
-  <div className="mb-8 border-y border-[#e5f2f8] py-5 text-sm text-[#142033]">
-  <p><strong>প্রদানকারী:</strong> {selectedProvider.name}</p>
-  <p className="mt-2"><strong>বিভাগ:</strong> {selectedCategory === "electricity" ? "বিদ্যুৎ" : selectedCategory === "water" ? "পানি" : selectedCategory === "gas" ? "গ্যাস" : selectedCategory === "internet" ? "��ন্টারনেট" : "মোব��ইল"}</p>
-  </div>
-  <p className="mt-2"><strong>প্রদানকারীর কোড:</strong> {selectedProvider?.number}</p>
-  </div>
-
-  <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                {selectedCategory === "electricity"
-                  ? "গ্রাহক/অ্যাকাউন্ট নম্বর"
-                  : selectedCategory === "water"
-                    ? "গ্রাহক নম্বর"
-                    : selectedCategory === "gas"
-                      ? "অ্যাকাউন্ট নম্বর"
-                      : selectedCategory === "internet"
-                        ? "গ্রাহক আইডি"
-                        : "মোবাইল নম্বর"}
-              </label>
-              <input
-                type="text"
-                className="w-full border rounded-md p-3"
-                value={billDetails.accountNumber}
-                onChange={(e) => setBillDetails({ ...billDetails, accountNumber: e.target.value })}
-                placeholder={
-                  selectedCategory === "mobile"
-                    ? "01XXXXXXXXX"
-                    : selectedCategory === "electricity"
-                      ? "আপনার মিটার নম্বর লিখুন"
-                      : "আপনার অ্যাকাউন্ট নম্বর লিখুন"
-                }
-                maxLength={selectedCategory === "mobile" ? 11 : undefined}
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">বিল প্রদানকারীর নম্বর / ড্যাশবোর্ড অ্যাক্সেস নম্��র</label>
-              <input
-                type="tel"
-                className="w-full border rounded-md p-3"
-                value={billDetails.providerNumber || ""}
-                onChange={(e) => setBillDetails({ ...billDetails, providerNumber: e.target.value })}
-                placeholder={`যেমন: ${selectedProvider?.number || "09666123456"}`}
-              />
-            </div>
-
-          </div>
-
-          {error && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mt-4">
-              <p className="text-red-800 text-sm">{error}</p>
-            </div>
-          )}
-
-          <button
-            onClick={handleBillInquiry}
-            disabled={isLoading}
-            className="mt-[77px] rounded-full bg-[#38aef2] p-4 text-xl font-light text-white shadow-sm transition hover:bg-[#249fe4] disabled:bg-gray-400"
-          >
-            {isLoading ? "Checking Bill..." : "Check Bill"}
-          </button>
-        </div>
+</div>
       )}
 
       {step === 4 && billInfo && (
