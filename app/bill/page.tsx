@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { ArrowLeft, CheckCircle, AlertTriangle, Droplets, Flame, Lightbulb } from "lucide-react"
+import { ArrowLeft, CheckCircle, AlertTriangle } from "lucide-react"
 import { useRouter } from "next/navigation"
 
 const billProviders: { [key: string]: any[] } = {}
@@ -241,26 +241,21 @@ export default function BillPage() {
   return (
     <div className="flex min-h-screen flex-col bg-white text-[#38aef2]">
       {step === 1 && (
-        <div className="flex-1 overflow-y-auto px-6 pb-10 pt-5">
-          <div className="mb-8 flex items-center">
-            <button onClick={() => router.push("/")} className="text-[#142033]" aria-label="Back to home">
-              <ArrowLeft size={34} strokeWidth={1.8} />
-            </button>
-          </div>
-          <h1 className="mb-24 text-center text-[64px] font-light tracking-tight text-[#38aef2]">বিল পে</h1>
+        <div className="flex h-[100dvh] max-h-[100dvh] flex-1 flex-col overflow-hidden bg-white px-4 pt-10">
+          <h1 className="mb-28 text-center text-[4rem] font-light tracking-tight text-[#38aef2]">বিল পে</h1>
 
-          <div className="space-y-24">
+          <div className="space-y-28">
             <button onClick={() => handleCategorySelect("electricity")} className="flex w-full flex-col items-center gap-5 border-0 bg-transparent text-center transition-transform hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#38aef2]">
-              <div className="flex items-center justify-center text-[#38aef2]"><Lightbulb size={76} strokeWidth={1.2} aria-hidden="true" /></div>
-              <h3 className="text-4xl font-light text-[#38aef2]">বিদ্যুৎ বিল</h3>
+              <div className="flex items-center justify-center text-6xl" aria-hidden="true">💡</div>
+              <h3 className="text-4xl font-light text-[#142033]">বিদ্যুৎ বিল</h3>
             </button>
             <button onClick={() => handleCategorySelect("water")} className="flex w-full flex-col items-center gap-5 border-0 bg-transparent text-center transition-transform hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#38aef2]">
-              <div className="flex items-center justify-center text-[#38aef2]"><Droplets size={76} strokeWidth={1.2} aria-hidden="true" /></div>
+              <div className="flex items-center justify-center text-6xl" aria-hidden="true">💧</div>
               <h3 className="text-4xl font-light text-[#38aef2]">পানি বিল</h3>
             </button>
             <button onClick={() => handleCategorySelect("gas")} className="flex w-full flex-col items-center gap-5 border-0 bg-transparent text-center transition-transform hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#38aef2]">
-              <div className="flex items-center justify-center text-[#38aef2]"><Flame size={76} strokeWidth={1.2} aria-hidden="true" /></div>
-              <h3 className="text-4xl font-light text-[#38aef2]">গ্যাস বিল</h3>
+              <div className="flex items-center justify-center text-6xl" aria-hidden="true">🔥</div>
+              <h3 className="text-4xl font-light text-[#f47b20]">গ্যাস বিল</h3>
             </button>
           </div>
         </div>
