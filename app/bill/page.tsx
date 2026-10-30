@@ -319,7 +319,7 @@ export default function BillPage() {
             <div>
               <label className="block text-sm font-medium mb-2">
                 {selectedCategory === "electricity"
-                  ? "গ্রাহক/অ্যাকাউন্ট নম্বর"
+                  ? "বিল আইডি"
                   : selectedCategory === "water"
                     ? "গ্রাহক নম্বর"
                     : selectedCategory === "gas"
@@ -337,7 +337,7 @@ export default function BillPage() {
                   selectedCategory === "mobile"
                     ? "01XXXXXXXXX"
                     : selectedCategory === "electricity"
-                      ? "আপনার মিটার নম্বর লিখুন"
+                      ? "আপনার বিল আইডি লিখুন"
                       : "আপনার অ্যাকাউন্ট নম্বর লিখুন"
                 }
                 maxLength={selectedCategory === "mobile" ? 11 : undefined}
