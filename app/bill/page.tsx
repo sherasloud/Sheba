@@ -300,7 +300,7 @@ export default function BillPage() {
     <label className="sr-only" htmlFor="bill-id">বিল আইডি</label>
     <input id="bill-id" type="text" inputMode="numeric" value={billDetails.accountNumber} onChange={(event) => setBillDetails({ ...billDetails, accountNumber: event.target.value })} placeholder="নম্বর দিন" className="mt-8 h-12 w-[82%] border-0 bg-transparent text-center text-[2rem] font-light text-[#72c6f4] outline-none placeholder:text-[#72c6f4] focus:ring-0 sm:text-6xl" maxLength={selectedCategory === "mobile" ? 11 : undefined} />
     {error && <p className="mt-2 text-sm text-red-500">{error}</p>}
-    <button onClick={handleBillInquiry} disabled={isLoading} className="mt-auto mb-2 min-h-12 w-[68%] rounded-full bg-[#36aaf0] px-3 py-2 text-2xl font-light text-white disabled:bg-gray-400 sm:mb-16 sm:min-h-16 sm:w-[66%] sm:text-3xl">{isLoading ? "Checking Bill..." : "Check Bill"}</button>
+    <button onClick={handleBillInquiry} disabled={isLoading} className="mt-20 mb-2 min-h-12 w-[68%] rounded-full bg-[#36aaf0] px-3 py-2 text-2xl font-light text-white disabled:bg-gray-400 sm:mt-32 sm:mb-16 sm:min-h-16 sm:w-[66%] sm:text-3xl">{isLoading ? "Checking Bill..." : "Check Bill"}</button>
   </div>
 </div>
       )}
