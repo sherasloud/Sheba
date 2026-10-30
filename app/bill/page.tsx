@@ -294,9 +294,10 @@ export default function BillPage() {
       {step === 3 && (
   <div className="flex h-[100dvh] max-h-[100dvh] flex-1 flex-col overflow-hidden bg-white px-3 py-3 text-[#36aaf0] sm:px-10 sm:py-6">
   <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col items-center text-center">
+    <button onClick={() => setStep(2)} className="self-start flex h-10 w-10 items-center justify-center rounded-full text-[#36aaf0]" aria-label="পিছনে যান"><ArrowLeft size={24} strokeWidth={1.8} /></button>
     <p className="mt-10 text-[2.75rem] font-normal leading-none tracking-tight text-[#36aaf0] sm:mt-14 sm:text-7xl">{selectedProvider.name.replace(/ (POSTPAID|PREPAID|SMART PREPAID)$/i, "")}</p>
     <p className="mt-10 text-[1.55rem] font-light leading-none text-[#36aaf0] sm:mt-16 sm:text-5xl">বিভাগ : {selectedCategory === "electricity" ? "বিদ্যুৎ" : selectedCategory === "water" ? "পানি" : selectedCategory === "gas" ? "গ্যাস" : selectedCategory === "internet" ? "ইন্টারনেট" : "মোবাইল"}</p>
-    <p className="mt-20 text-[2rem] font-light leading-none text-[#72c6f4] sm:mt-36 sm:text-6xl">বিলের ধরন</p>
+    <p className="mt-20 text-[2rem] font-light leading-none text-[#72c6f4] sm:mt-36 sm:text-6xl">বিল আইডি দিন</p>
     <label className="sr-only" htmlFor="bill-id">বিল আইডি</label>
     <input id="bill-id" type="text" inputMode="numeric" value={billDetails.accountNumber} onChange={(event) => setBillDetails({ ...billDetails, accountNumber: event.target.value })} placeholder="নম্বর দিন" className="mt-8 h-12 w-[82%] border-0 bg-transparent text-center text-[2rem] font-light text-[#72c6f4] outline-none placeholder:text-[#72c6f4] focus:ring-0 sm:text-6xl" maxLength={selectedCategory === "mobile" ? 11 : undefined} />
     {error && <p className="mt-2 text-sm text-red-500">{error}</p>}
@@ -307,6 +308,7 @@ export default function BillPage() {
 
       {step === 4 && billInfo && (
         <div className="p-6 flex flex-col flex-1">
+          <button onClick={() => setStep(3)} className="mb-4 flex h-10 w-10 items-center justify-center rounded-full text-[#36aaf0]" aria-label="পিছনে যান"><ArrowLeft size={24} strokeWidth={1.8} /></button>
 <div className="mb-4 text-center text-5xl font-normal tracking-tight text-[#36aaf0]">বিল পরিশোধ</div>
   <div className="mb-2 text-center text-2xl font-medium text-[#142033]">বিলের বিস্তারিত</div>
   <div className="mb-6 text-center text-gray-600">আপনার বিলের তথ্য যাচাই করুন</div>
