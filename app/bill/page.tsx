@@ -242,8 +242,11 @@ export default function BillPage() {
   return (
     <div className="flex min-h-screen flex-col bg-white text-[#38aef2]">
       {step === 1 && (
-        <div className="flex h-[100dvh] max-h-[100dvh] flex-1 flex-col overflow-hidden bg-white px-4 pt-10">
-          <h1 className="mb-28 text-center text-[4rem] font-light tracking-tight text-[#38aef2]">বিল পে</h1>
+        <div className="flex h-[100dvh] max-h-[100dvh] flex-1 flex-col overflow-hidden bg-white px-4 pt-4">
+          <button onClick={() => router.push("/")} className="flex h-10 w-10 items-center justify-center self-start rounded-full text-[#38aef2] transition-colors hover:bg-[#eaf7fe] active:scale-95" aria-label="হোমে ফিরে যান">
+            <ArrowLeft size={28} strokeWidth={1.8} />
+          </button>
+          <h1 className="mb-24 text-center text-[4rem] font-light tracking-tight text-[#38aef2]">বিল পে</h1>
 
           <div className="space-y-28">
             <button onClick={() => handleCategorySelect("electricity")} className="flex w-full flex-col items-center gap-5 border-0 bg-transparent text-center transition-transform hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#38aef2]">
