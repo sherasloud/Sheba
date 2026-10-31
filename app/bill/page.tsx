@@ -24,6 +24,7 @@ export default function BillPage() {
   const [success, setSuccess] = useState(false)
   const [balance, setBalance] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
+  const [isBillIdFocused, setIsBillIdFocused] = useState(false)
   const [billInfo, setBillInfo] = useState<any>(null)
   const [providers, setProviders] = useState<{ [key: string]: any[] }>({})
 
@@ -241,8 +242,11 @@ export default function BillPage() {
   return (
     <div className="flex min-h-screen flex-col bg-white text-[#38aef2]">
       {step === 1 && (
-        <div className="flex h-[100dvh] max-h-[100dvh] flex-1 flex-col overflow-hidden bg-white px-4 pt-10">
-          <h1 className="mb-28 text-center text-[4rem] font-light tracking-tight text-[#38aef2]">বিল পে</h1>
+        <div className="flex h-[100dvh] max-h-[100dvh] flex-1 flex-col overflow-hidden bg-white px-4 pt-4">
+          <button onClick={() => router.push("/")} className="flex h-10 w-10 items-center justify-center self-start rounded-full text-[#38aef2] transition-colors hover:bg-[#eaf7fe] active:scale-95" aria-label="হোমে ফিরে যান">
+            <ArrowLeft size={28} strokeWidth={1.8} />
+          </button>
+          <h1 className="mb-24 text-center text-[4rem] font-light tracking-tight text-[#38aef2]">বিল পে</h1>
 
           <div className="space-y-28">
             <button onClick={() => handleCategorySelect("electricity")} className="flex w-full flex-col items-center gap-5 border-0 bg-transparent text-center transition-transform hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#38aef2]">
@@ -299,7 +303,7 @@ export default function BillPage() {
     <p className="mt-10 text-[1.55rem] font-light leading-none text-[#36aaf0] sm:mt-16 sm:text-5xl">বিভাগ : {selectedCategory === "electricity" ? "বিদ্যুৎ" : selectedCategory === "water" ? "পানি" : selectedCategory === "gas" ? "গ্যাস" : selectedCategory === "internet" ? "ইন্টারনেট" : "মোবাইল"}</p>
     <p className="mt-20 text-[2rem] font-light leading-none text-[#72c6f4] sm:mt-36 sm:text-6xl">বিল আইডি দিন</p>
     <label className="sr-only" htmlFor="bill-id">বিল আইডি</label>
-    <input id="bill-id" type="text" inputMode="numeric" value={billDetails.accountNumber} onChange={(event) => setBillDetails({ ...billDetails, accountNumber: event.target.value })} placeholder="নম্বর দিন" className="mt-8 h-12 w-[82%] border-0 bg-transparent text-center text-[2rem] font-light text-[#72c6f4] outline-none placeholder:text-[#72c6f4] focus:ring-0 sm:text-6xl" maxLength={selectedCategory === "mobile" ? 11 : undefined} />
+    <input id="bill-id" type="text" inputMode="numeric" value={billDetails.accountNumber} onFocus={() => setIsBillIdFocused(true)} onBlur={() => setIsBillIdFocused(false)} onChange={(event) => setBillDetails({ ...billDetails, accountNumber: event.target.value })} placeholder={isBillIdFocused ? "বিল নম্বর লিখুন" : ""} className="mt-8 h-12 w-[82%] border-0 bg-transparent text-center text-[2rem] font-light text-[#72c6f4] outline-none placeholder:text-[#72c6f4] focus:ring-0 sm:text-6xl" maxLength={selectedCategory === "mobile" ? 11 : undefined} />
     {error && <p className="mt-2 text-sm text-red-500">{error}</p>}
     <button onClick={handleBillInquiry} disabled={isLoading} className="mt-20 mb-2 min-h-12 w-[68%] rounded-full bg-[#36aaf0] px-3 py-2 text-2xl font-light text-white disabled:bg-gray-400 sm:mt-32 sm:mb-16 sm:min-h-16 sm:w-[66%] sm:text-3xl">{isLoading ? "Checking Bill..." : "Check Bill"}</button>
   </div>
@@ -311,7 +315,7 @@ export default function BillPage() {
           <button onClick={() => setStep(3)} className="mb-4 flex h-10 w-10 items-center justify-center rounded-full text-[#36aaf0]" aria-label="পিছনে যান"><ArrowLeft size={24} strokeWidth={1.8} /></button>
 <div className="mb-4 text-center text-5xl font-normal tracking-tight text-[#36aaf0]">বিল পরিশোধ</div>
   <div className="mb-2 text-center text-2xl font-medium text-[#142033]">বিলের বিস্তারিত</div>
-  <div className="mb-6 text-center text-gray-600">আপনার বিলের তথ্য যাচাই করুন</div>
+  <div className="mb-6 text-center text-gray-600">আপনার বিলের তথ্য যাচাই কর��ন</div>
 
           <div className="bg-gray-100 rounded-lg p-4 mb-6">
             <div className="space-y-3">
