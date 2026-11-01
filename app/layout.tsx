@@ -2,7 +2,6 @@ import type React from "react"
 import "./globals.css"
 import type { Metadata, Viewport } from "next"
 import { Inter } from "next/font/google"
-import { OrientationLock } from "@/components/orientation-lock"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -60,7 +59,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className="bg-white text-gray-900">
       <body className={`${inter.className} antialiased bg-white min-h-screen`}>
-        <OrientationLock />
         <main className="app-shell flex-1">{children}</main>
       </body>
     </html>
