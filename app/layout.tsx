@@ -15,7 +15,7 @@ export const viewport: Viewport = {
   maximumScale: 1,
   userScalable: false,
   viewportFit: "cover",
-  orientation: "portrait",
+
 }
 
 export const metadata: Metadata = {
@@ -49,7 +49,6 @@ export const metadata: Metadata = {
     "application-name": "Sheba",
     "msapplication-TileColor": "#29a9eb",
     "msapplication-config": "none",
-    "screen-orientation": "portrait-primary",
   },
     generator: 'v0.app'
 }
