@@ -61,7 +61,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className="bg-white text-gray-900">
       <body className={`${inter.className} antialiased bg-white min-h-screen`}>
         <OrientationLock />
-        <main className="flex-1">{children}</main>
+        <main className="app-shell flex-1">{children}</main>
       </body>
     </html>
   )
