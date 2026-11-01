@@ -75,18 +75,6 @@ body {
   position: fixed !important;
 }
 
-/* Keep the app portrait-shaped even when the browser reports landscape orientation. */
-@media (orientation: landscape) and (max-width: 900px) {
-  .app-shell {
-    width: 100vh;
-    height: 100vw;
-    min-height: 100vw;
-    overflow: hidden;
-    transform: rotate(90deg) translateY(-100%);
-    transform-origin: top left;
-  }
-}
-
 /* Ensure mobile viewport is properly handled */
 html,
 body {
