@@ -87,7 +87,6 @@
     "expo-camera": "latest",
     "expo-firebase-recaptcha": "latest",
     "expo-media-library": "latest",
-    "expo-screen-orientation": "latest",
     "expo-secure-store": "latest",
     "expo-sqlite": "latest",
     "expo-status-bar": "latest",
