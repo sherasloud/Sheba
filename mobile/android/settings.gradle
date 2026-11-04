@@ -1,8 +1,7 @@
-def nodeCommand = System.getenv("NODE_BINARY") ?: ["/opt/homebrew/bin/node", "/usr/local/bin/node", "node"].find { candidate ->
-  candidate == "node" || new File(candidate).canExecute()
-} ?: "node"
-
 pluginManagement {
+  def nodeCommand = System.getenv("NODE_BINARY") ?: ["/opt/homebrew/bin/node", "/usr/local/bin/node", "node"].find { candidate ->
+    candidate == "node" || new File(candidate).canExecute()
+  } ?: "node"
   def reactNativeGradlePlugin = new File(
     providers.exec {
       workingDir(rootDir)
