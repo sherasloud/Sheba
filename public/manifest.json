@@ -4,9 +4,9 @@
   "description": "Fast and secure mobile money transfer application",
   "start_url": "/",
   "display": "standalone",
-  "orientation": "portrait",
   "background_color": "#ffffff",
   "theme_color": "#29a9eb",
+  "orientation": "portrait-primary",
   "scope": "/",
   "icons": [
     {

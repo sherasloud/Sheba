@@ -13,7 +13,8 @@
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTabletMode": false
+      "supportsTabletMode": false,
+      "orientationLock": "portrait"
     },
     "android": {
       "adaptiveIcon": {
@@ -22,7 +23,8 @@
       },
       "package": "com.bengali.wallet",
       "versionCode": 1,
-      "permissions": ["CAMERA", "ACCESS_FINE_LOCATION", "RECORD_AUDIO"]
+      "permissions": ["CAMERA", "ACCESS_FINE_LOCATION", "RECORD_AUDIO"],
+      "screenOrientation": "portrait"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -32,6 +34,12 @@
         "expo-camera",
         {
           "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera"
+        }
+      ],
+      [
+        "expo-screen-orientation",
+        {
+          "initialOrientation": "PORTRAIT"
         }
       ]
     ]
