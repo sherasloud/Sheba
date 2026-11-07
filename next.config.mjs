@@ -1,8 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Keep server routes available on Vercel; static export is opt-in for Capacitor builds.
-  ...(process.env.CAPACITOR_BUILD === 'true' ? { output: 'export' } : {}),
-  trailingSlash: true,
   typescript: {
     ignoreBuildErrors: true,
   },

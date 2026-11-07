@@ -56,7 +56,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   // Main layout component for Sheba mobile app
   return (
-    <html lang="en" data-scroll-behavior="smooth" className="bg-white text-gray-900">
+    <html lang="en" className="bg-white text-gray-900">
       <body className={`${inter.className} antialiased bg-white min-h-screen`}>
         <main className="app-shell flex-1">{children}</main>
       </body>

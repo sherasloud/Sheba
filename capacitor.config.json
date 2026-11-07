@@ -1,9 +1,0 @@
-{
-  "appId": "com.sheba.app",
-  "appName": "Sheba",
-  "webDir": "out",
-  "bundledWebRuntime": false,
-  "server": {
-    "androidScheme": "https"
-  }
-}

@@ -446,14 +446,8 @@ export default function AppPage() {
     return (
       <div className="mobile-page items-center justify-center bg-[#3498DB]">
         <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-white"></div>
-          <p className="mt-4 text-white text-sm">Loading Sheba...</p>
-          <Link
-            href="/enter-phone"
-            className="mt-6 rounded-lg bg-white/15 px-4 py-2 text-sm font-medium text-white underline-offset-4 hover:underline"
-          >
-            Continue to sign in
-          </Link>
-        </div>
+        <p className="mt-4 text-white text-sm">Loading Sheba...</p>
+      </div>
     )
   }
 

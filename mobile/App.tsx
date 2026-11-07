@@ -4,7 +4,6 @@ import { createNativeStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { ActivityIndicator, View } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
-import * as ScreenOrientation from 'expo-screen-orientation';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import LoginScreen from './screens/Auth/LoginScreen';
@@ -118,9 +117,6 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP).catch((error) => {
-      console.error('[v0] Unable to lock portrait orientation:', error);
-    });
     checkAuthStatus();
   }, []);
 
