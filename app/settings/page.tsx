@@ -6,6 +6,8 @@ import { DiditSdk } from "@didit-protocol/sdk-web"
 import { CheckCircle, ImageIcon, XCircle } from "lucide-react"
 import Link from "next/link"
 import TransactionCleaner from "@/components/transaction-cleaner"
+import AdminAabUpload from "@/components/admin-aab-upload"
+import { isAdminPhone } from "@/lib/account-manager"
 
 const translations = {
   en: {
@@ -136,6 +138,7 @@ const SettingsPage = () => {
 
       <div className="px-5">
       <TransactionCleaner />
+      {isAdminPhone(phone) && <AdminAabUpload />}
 
       {/* User Profile Section */}
       <div className="bg-gradient-to-r from-[#29a9eb] to-blue-400 text-white border-2 border-[#29a9eb] rounded-lg p-4 mb-4">
