@@ -64,7 +64,17 @@ export default function AdminAabUpload() {
         </div>
         <div className="min-w-0 flex-1">
           <h2 id="aab-upload-title" className="font-semibold text-[#142033]">Android App Bundle</h2>
-          <p className="mt-1 text-sm text-gray-600">Upload a signed .aab release for your Play Store workflow.</p>
+          <p className="mt-1 text-sm text-gray-600">Admin verified: {adminPhone}. Upload a signed .aab release for your Play Store workflow.</p>
+          <details className="mt-3 rounded-lg border border-blue-100 bg-white p-3 text-sm text-gray-700">
+            <summary className="cursor-pointer font-semibold text-[#142033]">How to get the .aab file</summary>
+            <ol className="mt-2 list-decimal space-y-1 pl-5">
+              <li>Open <code>mobile/android</code> in Android Studio.</li>
+              <li>Select <strong>Build → Generate Signed Bundle / APK</strong>.</li>
+              <li>Select <strong>Android App Bundle</strong> and complete the signing steps.</li>
+              <li>Choose the generated <code>app-release.aab</code> file below and upload it.</li>
+            </ol>
+            <p className="mt-2 text-xs text-gray-500">The file is usually in <code>android/app/build/outputs/bundle/release/</code>.</p>
+          </details>
           <label className="mt-3 block cursor-pointer rounded-lg border border-dashed border-blue-300 bg-white p-3 text-sm text-gray-700 hover:bg-blue-50">
             <span className="flex items-center gap-2"><UploadCloud size={18} className="text-[#29a9eb]" />{file ? file.name : "Choose signed .aab file"}</span>
             <input className="sr-only" type="file" accept=".aab,application/vnd.android.package-archive" onChange={(event) => setFile(event.target.files?.[0] || null)} />
