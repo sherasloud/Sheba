@@ -256,7 +256,9 @@ export default function AppPage() {
 
         if (!phone) {
           console.log("[v0] No phone number, redirecting to /enter-phone")
-          router.replace("/enter-phone")
+          // Use a full navigation for the unauthenticated entry route so the
+          // preview and Capacitor webview do not depend on an RSC payload.
+          window.location.replace("/enter-phone")
           return
         }
 
@@ -264,7 +266,7 @@ export default function AppPage() {
         // The old error state is component-local, so the PIN page starts clean.
         if (pinVerified !== "true") {
           console.log("[v0] PIN session missing, redirecting to /pin")
-          router.replace(`/pin?phone=${encodeURIComponent(phone)}`)
+          window.location.replace(`/pin?phone=${encodeURIComponent(phone)}`)
           return
         }
 
