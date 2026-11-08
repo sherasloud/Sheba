@@ -477,11 +477,11 @@ export default function AppPage() {
         onPointerDown={() => {
           if (!isExternal) router.prefetch(href)
         }}
-        className="flex flex-col items-center touch-manipulation no-tap-highlight p-1 rounded-lg active:bg-gray-100 transition-colors"
+        className="flex flex-col items-center touch-manipulation no-tap-highlight rounded-2xl p-1 transition-colors active:bg-[#f2f9ff]"
         {...linkProps}
       >
         <div
-          className={`mb-3 flex items-center justify-center rounded-[18px] bg-[#eaf5ff] ring-1 ring-[#d8ecfb] shadow-[0_6px_14px_rgba(41,169,235,0.12)] transition-transform duration-200 active:scale-95 ${
+          className={`mb-3 flex items-center justify-center isolate transition-transform duration-200 active:scale-95 [&>img]:drop-shadow-[0_8px_8px_rgba(20,70,110,0.2)] [&>svg]:drop-shadow-[0_6px_5px_rgba(20,70,110,0.18)] ${
             iconSize === "super-large"
               ? "h-16 w-16"
               : iconSize === "extra-large"
