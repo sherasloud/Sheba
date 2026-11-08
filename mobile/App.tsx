@@ -118,11 +118,18 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP).catch((error) => {
-      console.error('[v0] Unable to lock portrait orientation:', error);
-    });
+    lockScreenOrientation();
     checkAuthStatus();
   }, []);
+
+  const lockScreenOrientation = async () => {
+    try {
+      await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
+      console.log('[v0] Screen orientation locked to portrait');
+    } catch (error) {
+      console.error('[v0] Failed to lock screen orientation:', error);
+    }
+  };
 
   const checkAuthStatus = async () => {
     try {

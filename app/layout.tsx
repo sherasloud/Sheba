@@ -2,6 +2,7 @@ import type React from "react"
 import "./globals.css"
 import type { Metadata, Viewport } from "next"
 import { Inter } from "next/font/google"
+import { OrientationLock } from "@/components/orientation-lock"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -15,7 +16,7 @@ export const viewport: Viewport = {
   maximumScale: 1,
   userScalable: false,
   viewportFit: "cover",
-
+  orientation: "portrait",
 }
 
 export const metadata: Metadata = {
@@ -49,6 +50,7 @@ export const metadata: Metadata = {
     "application-name": "Sheba",
     "msapplication-TileColor": "#29a9eb",
     "msapplication-config": "none",
+    "screen-orientation": "portrait-primary",
   },
     generator: 'v0.app'
 }
@@ -56,8 +58,9 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   // Main layout component for Sheba mobile app
   return (
-    <html lang="en" data-scroll-behavior="smooth" className="bg-white text-gray-900">
+    <html lang="en" className="bg-white text-gray-900">
       <body className={`${inter.className} antialiased bg-white min-h-screen`}>
+        <OrientationLock />
         <main className="app-shell flex-1">{children}</main>
       </body>
     </html>

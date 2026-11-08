@@ -6,19 +6,13 @@
     "build": "next build --webpack",
     "dev": "next dev --webpack",
     "lint": "eslint .",
-    "start": "next start",
-    "build:static": "CAPACITOR_BUILD=true next build",
-    "cap:sync": "cap sync",
-    "cap:android": "cap open android"
+    "start": "next start"
   },
   "dependencies": {
     "@ai-sdk/react": "2.0.66",
     "@aws-sdk/client-rds-data": "latest",
     "@aws-sdk/credential-providers": "latest",
     "@base-ui/react": "^1.5.0",
-    "@capacitor/android": "^8.6.0",
-    "@capacitor/cli": "^8.6.0",
-    "@capacitor/core": "^8.6.0",
     "@cloudflare/workers-types": "latest",
     "@didit-protocol/sdk-web": "^0.4.0",
     "@electric-sql/pglite": "latest",
@@ -93,6 +87,7 @@
     "expo-camera": "latest",
     "expo-firebase-recaptcha": "latest",
     "expo-media-library": "latest",
+    "expo-screen-orientation": "latest",
     "expo-secure-store": "latest",
     "expo-sqlite": "latest",
     "expo-status-bar": "latest",
