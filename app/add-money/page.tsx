@@ -7,6 +7,15 @@ import Image from "next/image"
 import VerificationRequired from "@/components/verification-required"
 import { cardProviders } from "@/lib/data/static-data"
 
+const bangladeshBanks = [
+  { name: "Dhaka Bank Limited", shortName: "Dhaka Bank", mark: "D", tone: "bg-[#eaf3ff] text-[#1768b0]" },
+  { name: "Bank Asia Limited", shortName: "Bank Asia", mark: "A", tone: "bg-[#eaf3ff] text-[#1768b0]" },
+  { name: "Pubali Bank Limited", shortName: "Pubali Bank", mark: "P", tone: "bg-[#edf8f0] text-[#08783f]" },
+  { name: "Islami Bank Bangladesh Limited", shortName: "Islami Bank", mark: "I", tone: "bg-[#edf8f0] text-[#08783f]" },
+  { name: "United Commercial Bank PLC", shortName: "UCB Bank", mark: "U", tone: "bg-[#f4f5f7] text-[#343a40]" },
+  { name: "AB Bank Limited", shortName: "AB Bank", mark: "AB", tone: "bg-[#fff4f1] text-[#ba2c25]" },
+]
+
 export default function AddMoneyPage() {
   // SSLCommerz Payment Gateway Information
   const SSLCOMMERZ_STORE_ID = process.env.NEXT_PUBLIC_SSLCOMMERZ_STORE_ID || "shusto0live"
@@ -139,6 +148,12 @@ export default function AddMoneyPage() {
 
     setStep(selectedMethod === "card" ? 2 : 3)
     setError("")
+  }
+
+  const handleBankSelect = (bankName: string) => {
+    setBankDetails((current) => ({ ...current, bankName }))
+    setError("")
+    setStep(3)
   }
 
   const handleCardTypeSelect = (cardType: string) => {
@@ -634,7 +649,7 @@ if (Number(amount) > 9000000) {
   <button
   onClick={() => {
     handleMethodSelect("bank")
-    setStep(3)
+    setStep(2)
   }}
   className="flex w-full items-center rounded-xl border border-[#edf0f3] bg-white px-4 py-4 text-left shadow-[0_3px_12px_rgba(20,32,51,0.05)] transition-colors hover:border-[#38afe8]"
   >
@@ -653,7 +668,7 @@ if (Number(amount) > 9000000) {
 
       {step === 2 && selectedMethod === "card" && (
         <div className="flex flex-1 flex-col items-center overflow-y-auto bg-white px-6 pb-8 pt-10">
-          <h1 className="mb-24 text-center text-4xl font-normal text-[#38afe8]">কার্ড সিলেক্ট করুন</h1>
+          <h1 className="mb-12 text-center text-4xl font-normal text-[#38afe8]">কার্ড সিলেক্ট করুন</h1>
 
           <div className="flex w-full max-w-xs flex-col items-center gap-10">
             {cardProviders.map((provider) => (
@@ -674,7 +689,28 @@ if (Number(amount) > 9000000) {
               </button>
             ))}
           </div>
+        </div>
+      )}
 
+      {step === 2 && selectedMethod === "bank" && (
+        <div className="flex flex-1 flex-col overflow-y-auto bg-white px-5 pb-8 pt-8 text-[#142033]">
+          <h1 className="mb-8 text-center text-[2.35rem] font-normal leading-tight text-[#1768b0]">Bank Select korun</h1>
+          <p className="mb-5 text-center text-sm text-[#6f7d8b]">বাংলাদেশের আপনার ব্যাংক নির্বাচন করুন</p>
+          <div className="mx-auto flex w-full max-w-md flex-col gap-3">
+            {bangladeshBanks.map((bank) => (
+              <button
+                key={bank.name}
+                type="button"
+                onClick={() => handleBankSelect(bank.name)}
+                className="flex min-h-[76px] w-full items-center gap-4 rounded-2xl border border-[#edf2f7] bg-white px-4 text-left shadow-[0_4px_16px_rgba(23,104,176,0.08)] transition-transform active:scale-[0.98]"
+              >
+                <span className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl text-lg font-bold shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_5px_8px_rgba(24,73,110,0.14)] ${bank.tone}`} aria-hidden="true">
+                  {bank.mark}
+                </span>
+                <span className="text-lg font-medium text-[#182431]">{bank.shortName}</span>
+              </button>
+            ))}
+          </div>
         </div>
       )}
 
