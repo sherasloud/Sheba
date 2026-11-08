@@ -8,12 +8,14 @@ import VerificationRequired from "@/components/verification-required"
 import { cardProviders } from "@/lib/data/static-data"
 
 const bangladeshBanks = [
-  { name: "Dhaka Bank Limited", shortName: "Dhaka Bank", mark: "D", tone: "bg-[#eaf3ff] text-[#1768b0]" },
-  { name: "Bank Asia Limited", shortName: "Bank Asia", mark: "A", tone: "bg-[#eaf3ff] text-[#1768b0]" },
-  { name: "Pubali Bank Limited", shortName: "Pubali Bank", mark: "P", tone: "bg-[#edf8f0] text-[#08783f]" },
-  { name: "Islami Bank Bangladesh Limited", shortName: "Islami Bank", mark: "I", tone: "bg-[#edf8f0] text-[#08783f]" },
-  { name: "United Commercial Bank PLC", shortName: "UCB Bank", mark: "U", tone: "bg-[#f4f5f7] text-[#343a40]" },
-  { name: "AB Bank Limited", shortName: "AB Bank", mark: "AB", tone: "bg-[#fff4f1] text-[#ba2c25]" },
+  { name: "Dhaka Bank Limited", shortName: "Dhaka Bank", logo: "/banks/dhaka-bank.jpeg" },
+  { name: "Bank Asia Limited", shortName: "Bank Asia", logo: "/banks/bank-asia.jpeg" },
+  { name: "Pubali Bank Limited", shortName: "Pubali Bank", logo: "/banks/pubali-bank.jpeg" },
+  { name: "Islami Bank Bangladesh Limited", shortName: "Islami Bank", logo: "/banks/islami-bank.jpeg" },
+  { name: "United Commercial Bank PLC", shortName: "UCB Bank", logo: "/banks/ucb-bank.jpeg" },
+  { name: "AB Bank Limited", shortName: "AB Bank", logo: "/banks/ab-bank.jpeg" },
+  { name: "City Bank PLC", shortName: "City Bank", logo: "/banks/city-bank.jpeg" },
+  { name: "Prime Bank PLC", shortName: "Prime Bank", logo: "/banks/prime-bank.jpeg" },
 ]
 
 export default function AddMoneyPage() {
@@ -146,7 +148,7 @@ export default function AddMoneyPage() {
       return
     }
 
-    setStep(selectedMethod === "card" ? 2 : 3)
+    setStep(2)
     setError("")
   }
 
@@ -357,6 +359,7 @@ if (Number(amount) > 9000000) {
           userEmail: userData.email || localStorage.getItem("shebaTransactionEmail") || "customer@sheba.com",
           userName: userData.name || cardDetails.cardholderName || "Customer",
           cardType: selectedCardType,
+          bankName: bankDetails.bankName,
         }),
       })
       const result = await response.json().catch(() => ({ success: false, message: "Invalid response from PayStation" }))
@@ -369,7 +372,8 @@ if (Number(amount) > 9000000) {
 
       localStorage.setItem("paystationInvoice", result.invoiceNumber)
       localStorage.setItem("paystationAmount", String(amount))
-      window.location.assign(result.redirectUrl)
+      setGatewayUrl(result.redirectUrl)
+      setIsLoading(false)
     } catch {
       checkoutStartedRef.current = false
       setIsLoading(false)
@@ -694,23 +698,21 @@ if (Number(amount) > 9000000) {
 
       {step === 2 && selectedMethod === "bank" && (
         <div className="flex flex-1 flex-col overflow-y-auto bg-white px-5 pb-8 pt-8 text-[#142033]">
-          <h1 className="mb-8 text-center text-[2.35rem] font-normal leading-tight text-[#1768b0]">Bank Select korun</h1>
+          <h1 className="mb-8 text-center text-[2.35rem] font-normal leading-tight text-[#1768b0]">ব্যাংক নির্বাচন করুন</h1>
           <p className="mb-5 text-center text-sm text-[#6f7d8b]">বাংলাদেশের আপনার ব্যাংক নির্বাচন করুন</p>
-          <div className="mx-auto flex w-full max-w-md flex-col gap-3">
+          <section className="mx-auto flex w-full max-w-md flex-col gap-3" aria-label="বাংলাদেশের ব্যাংক">
             {bangladeshBanks.map((bank) => (
               <button
                 key={bank.name}
                 type="button"
                 onClick={() => handleBankSelect(bank.name)}
-                className="flex min-h-[76px] w-full items-center gap-4 rounded-2xl border border-[#edf2f7] bg-white px-4 text-left shadow-[0_4px_16px_rgba(23,104,176,0.08)] transition-transform active:scale-[0.98]"
+                className="flex min-h-[82px] w-full items-center gap-5 px-3 text-left transition-transform active:scale-[0.98]"
               >
-                <span className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl text-lg font-bold shadow-[inset_0_1px_0_rgba(255,255,255,0.8),0_5px_8px_rgba(24,73,110,0.14)] ${bank.tone}`} aria-hidden="true">
-                  {bank.mark}
-                </span>
+                <Image src={bank.logo} alt={`${bank.shortName} logo`} width={88} height={58} className="h-14 w-20 object-contain" />
                 <span className="text-lg font-medium text-[#182431]">{bank.shortName}</span>
               </button>
             ))}
-          </div>
+          </section>
         </div>
       )}
 
