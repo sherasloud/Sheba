@@ -481,14 +481,14 @@ export default function AppPage() {
         {...linkProps}
       >
         <div
-          className={`mb-3 flex items-center justify-center ${
+          className={`mb-3 flex items-center justify-center rounded-[18px] bg-[#eaf5ff] ring-1 ring-[#d8ecfb] shadow-[0_6px_14px_rgba(41,169,235,0.12)] transition-transform duration-200 active:scale-95 ${
             iconSize === "super-large"
-              ? "w-16 h-16"
+              ? "h-16 w-16"
               : iconSize === "extra-large"
-                ? "w-14 h-14"
+                ? "h-14 w-14"
                 : iconSize === "large"
-                  ? "w-9 h-9"
-                  : "w-7 h-7"
+                  ? "h-9 w-9"
+                  : "h-7 w-7"
           }`}
         >
           {icon}
