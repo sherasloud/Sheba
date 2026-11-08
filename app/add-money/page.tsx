@@ -148,7 +148,7 @@ export default function AddMoneyPage() {
       return
     }
 
-    setStep(selectedMethod === "card" ? 2 : 3)
+    setStep(2)
     setError("")
   }
 
@@ -359,6 +359,7 @@ if (Number(amount) > 9000000) {
           userEmail: userData.email || localStorage.getItem("shebaTransactionEmail") || "customer@sheba.com",
           userName: userData.name || cardDetails.cardholderName || "Customer",
           cardType: selectedCardType,
+          bankName: bankDetails.bankName,
         }),
       })
       const result = await response.json().catch(() => ({ success: false, message: "Invalid response from PayStation" }))
@@ -371,7 +372,8 @@ if (Number(amount) > 9000000) {
 
       localStorage.setItem("paystationInvoice", result.invoiceNumber)
       localStorage.setItem("paystationAmount", String(amount))
-      window.location.assign(result.redirectUrl)
+      setGatewayUrl(result.redirectUrl)
+      setIsLoading(false)
     } catch {
       checkoutStartedRef.current = false
       setIsLoading(false)
@@ -704,7 +706,7 @@ if (Number(amount) > 9000000) {
                 key={bank.name}
                 type="button"
                 onClick={() => handleBankSelect(bank.name)}
-                className="flex min-h-[76px] w-full items-center gap-4 rounded-2xl border border-[#edf2f7] bg-white px-4 text-left shadow-[0_4px_16px_rgba(23,104,176,0.08)] transition-transform active:scale-[0.98]"
+                className="flex min-h-[82px] w-full items-center gap-5 px-3 text-left transition-transform active:scale-[0.98]"
               >
                 <Image src={bank.logo} alt={`${bank.shortName} logo`} width={88} height={58} className="h-14 w-20 object-contain" />
                 <span className="text-lg font-medium text-[#182431]">{bank.shortName}</span>
