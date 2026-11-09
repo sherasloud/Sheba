@@ -477,7 +477,7 @@ export default function AppPage() {
         onPointerDown={() => {
           if (!isExternal) router.prefetch(href)
         }}
-        className="flex flex-col items-center touch-manipulation no-tap-highlight rounded-2xl p-1 transition-colors active:bg-[#f2f9ff]"
+        className="flex flex-col items-center touch-manipulation no-tap-highlight p-1 transition-colors"
         {...linkProps}
       >
         <div
