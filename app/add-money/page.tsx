@@ -699,16 +699,15 @@ if (Number(amount) > 9000000) {
       {step === 2 && selectedMethod === "bank" && (
         <div className="flex flex-1 flex-col overflow-y-auto bg-white px-5 pb-8 pt-8 text-[#142033]">
           <h1 className="mb-8 text-center text-[2.35rem] font-normal leading-tight text-[#1768b0]">ব্যাংক নির্বাচন করুন</h1>
-          <p className="mb-5 text-center text-sm text-[#6f7d8b]">বাংলাদেশের আপনার ব্যাংক নির্বাচন করুন</p>
           <section className="mx-auto flex w-full max-w-md flex-col gap-3" aria-label="বাংলাদেশের ব্যাংক">
             {bangladeshBanks.map((bank) => (
               <button
                 key={bank.name}
                 type="button"
                 onClick={() => handleBankSelect(bank.name)}
-                className="flex min-h-[82px] w-full items-center gap-5 px-3 text-left transition-transform active:scale-[0.98]"
+                className="flex min-h-[100px] w-full items-center gap-6 px-2 text-left transition-transform active:scale-[0.98]"
               >
-                <Image src={bank.logo} alt={`${bank.shortName} logo`} width={88} height={58} className="h-14 w-20 object-contain" />
+                <Image src={bank.logo} alt={`${bank.shortName} logo`} width={140} height={86} className="h-20 w-32 object-contain" />
                 <span className="text-lg font-medium text-[#182431]">{bank.shortName}</span>
               </button>
             ))}
@@ -740,13 +739,13 @@ if (Number(amount) > 9000000) {
           ) : (
             <>
               <h1 className="mb-24 text-center text-[3.25rem] font-normal leading-tight text-[#38afe8]">এমাউন্ট লিখুন</h1>
-              <div className="mb-16 flex w-full items-center justify-center gap-[1ch] text-black">
+              <div className="mb-16 flex min-h-24 w-full items-center justify-center gap-2 overflow-visible text-black">
                 <input
                   type="text"
                   aria-label="Amount"
                   inputMode="numeric"
-                  className="h-auto w-[1ch] shrink-0 border-0 bg-transparent p-0 text-right font-normal leading-none text-black outline-none placeholder:text-black"
-                  style={{ width: `${Math.max(amount.length, 1)}ch`, fontSize: "72px", lineHeight: "1", fontWeight: 400 }}
+                  className="add-money-amount-input h-24 shrink-0 border-0 bg-transparent p-0 text-right font-normal leading-none text-black outline-none placeholder:text-black"
+                  style={{ width: `${Math.max(amount.length, 1)}ch`, lineHeight: "1", fontWeight: 400 }}
                   value={amount}
                   onChange={(e) => setAmount(e.target.value.replace(/[^0-9]/g, ""))}
                   placeholder="0"
@@ -754,7 +753,7 @@ if (Number(amount) > 9000000) {
                 <span className="add-money-amount-currency shrink-0 font-normal leading-none">৳</span>
               </div>
               {error && <div className="mb-4 text-center text-red-500">{error}</div>}
-              <div className="mt-auto flex justify-center"><button className="mobile-button w-full max-w-sm rounded-full py-5 text-4xl font-normal" onClick={handleAmountNext}>Next</button></div>
+              <div className="flex justify-center"><button className="mobile-button w-full max-w-sm rounded-full py-5 text-5xl font-normal" onClick={handleAmountNext}>Next</button></div>
             </>
           )}
         </div>
