@@ -384,7 +384,8 @@ if (Number(amount) > 9000000) {
   const handleDetailsNext = () => {
     if (selectedMethod === "card") {
       if (validateCardDetails()) {
-        void startPayStationCheckout()
+        setError("")
+        setStep(5)
       }
       return
     }
@@ -481,31 +482,9 @@ if (Number(amount) > 9000000) {
 
       const userData = JSON.parse(localStorage.getItem("userData") || "{}")
 
-      if (selectedMethod === "card") {
-        const response = await fetch("/api/paystation/initiate", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            phoneNumber: currentPhone,
-            amount: Number(amount),
-            userEmail: userData.email,
-            userName: userData.name || "Customer",
-          }),
-        })
-        const result = await response.json()
-        if (!response.ok || !result.success) {
-          setError(result.message || "Unable to start PayStation checkout")
-          setIsLoading(false)
-          return
-        }
-        localStorage.setItem("paystationInvoice", result.invoiceNumber)
-        localStorage.setItem("paystationAmount", String(amount))
-      setGatewayUrl(result.redirectUrl)
-      setIsLoading(false)
-        return
-      }
+      // Card and bank additions use Sheba's internal add-money flow until
+      // the PayStation white-label checkout is available.
 
-      // Bank flow remains the existing internal balance flow.
       const response = await fetch("/api/add-money", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
