@@ -480,7 +480,7 @@ export default function AppPage() {
         {...linkProps}
       >
         <div
-          className="mb-3 flex items-center justify-center transition-transform duration-200 active:scale-95 [&>img]:h-11 [&>img]:w-11 [&>img]:object-contain [&>img]:drop-shadow-[0_3px_4px_rgba(20,70,110,0.16)] [&>svg]:h-9 [&>svg]:w-9 [&>svg]:drop-shadow-[0_3px_4px_rgba(20,70,110,0.16)]"
+          className="mb-3 flex items-center justify-center transition-transform duration-200 active:scale-95 [&>img]:h-11 [&>img]:w-11 [&>img]:object-contain [&>img]:mix-blend-multiply [&>svg]:h-9 [&>svg]:w-9"
         >
           {icon}
         </div>
