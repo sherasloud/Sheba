@@ -457,7 +457,6 @@ export default function AppPage() {
     title,
     isRestricted = true,
     isExternal = false,
-    iconSize = "normal",
     requiresBalance = false,
   }: {
     href: string
@@ -481,15 +480,7 @@ export default function AppPage() {
         {...linkProps}
       >
         <div
-          className={`mb-3 flex items-center justify-center isolate transition-transform duration-200 active:scale-95 [&>img]:drop-shadow-[0_8px_8px_rgba(20,70,110,0.2)] [&>svg]:drop-shadow-[0_6px_5px_rgba(20,70,110,0.18)] ${
-            iconSize === "super-large"
-              ? "h-16 w-16"
-              : iconSize === "extra-large"
-                ? "h-14 w-14"
-                : iconSize === "large"
-                  ? "h-9 w-9"
-                  : "h-7 w-7"
-          }`}
+          className="mb-3 flex items-center justify-center transition-transform duration-200 active:scale-95 [&>img]:h-11 [&>img]:w-11 [&>img]:object-contain [&>img]:drop-shadow-[0_3px_4px_rgba(20,70,110,0.16)] [&>svg]:h-9 [&>svg]:w-9 [&>svg]:drop-shadow-[0_3px_4px_rgba(20,70,110,0.16)]"
         >
           {icon}
         </div>
