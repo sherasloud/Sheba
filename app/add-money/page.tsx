@@ -581,8 +581,8 @@ if (Number(amount) > 9000000) {
       <div className="flex h-[100dvh] flex-col bg-white">
         <div className="flex shrink-0 items-center justify-between border-b border-[#edf0f3] px-4 py-3">
           <button type="button" onClick={() => { setGatewayUrl(""); setGatewayLoaded(false) }} className="text-sm font-medium text-[#38afe8]">Back</button>
-          <h1 className="text-base font-medium text-[#151522]">PayStation</h1>
-          <span className="w-10" aria-hidden="true" />
+          <h1 className="text-base font-medium text-[#151522]">Secure Bank Gateway</h1>
+          <a href={gatewayUrl} target="_blank" rel="noopener noreferrer" className="text-xs font-medium text-[#38afe8]">Open</a>
         </div>
           <div className="relative min-h-0 flex-1">
             {!gatewayLoaded && <div className="absolute inset-0 z-10 flex items-center justify-center bg-white text-sm text-gray-500">Loading PayStation…</div>}
@@ -677,6 +677,7 @@ if (Number(amount) > 9000000) {
           <div className="flex w-full max-w-xs flex-col items-center gap-10">
             {cardProviders.map((provider) => (
               <button
+                type="button"
                 key={provider.name}
                 onClick={() => handleCardTypeSelect(provider.name)}
                 className="flex w-full flex-col items-center p-2"
