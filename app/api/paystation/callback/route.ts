@@ -13,10 +13,13 @@ async function handleCallback(request: Request, callbackData: Record<string, unk
     return ""
   }
   const status = getValue("status", "payment_status", "transaction_status").toLowerCase()
-  const invoiceNumber = getValue("invoice_number", "invoiceNumber", "invoice")
-  const transactionId = getValue("trx_id", "trxId", "transaction_id", "transactionId")
+  const invoiceNumber = getValue("invoice_number", "invoiceNumber", "invoice", "invoice_id", "order_id", "orderId")
+  const transactionId = getValue("trx_id", "trxId", "transaction_id", "transactionId", "transaction_ref")
 
-  if (status !== "success" && status !== "successful" && status !== "completed") {
+  const acceptedStatuses = ["1", "true", "success", "successful", "completed", "complete", "paid", "approved"]
+  // Some PayStation callbacks omit status and only provide the invoice/trx id;
+  // verification below is the source of truth in that case.
+  if (status && !acceptedStatuses.includes(status)) {
     return NextResponse.redirect(new URL(`/add-money?payment=failed&invoice=${encodeURIComponent(invoiceNumber)}`, url.origin))
   }
 
@@ -55,8 +58,8 @@ async function handleCallback(request: Request, callbackData: Record<string, unk
     const response = await candidate
     const payload = await response.json().catch(() => null)
     const payloadData = payload?.data || payload?.result || payload
-    const candidateStatus = String(payloadData?.trx_status || payloadData?.transaction_status || payloadData?.payment_status || payloadData?.status || "").trim().toLowerCase()
-    if (response.ok && ["success", "successful", "completed", "complete", "paid", "approved"].includes(candidateStatus)) {
+    const candidateStatus = String(payloadData?.trx_status || payloadData?.transaction_status || payloadData?.payment_status || payloadData?.status || (payloadData?.success === true ? "success" : "")).trim().toLowerCase()
+    if (response.ok && ["1", "true", "success", "successful", "completed", "complete", "paid", "approved"].includes(candidateStatus)) {
       verificationResponse = response
       verification = payloadData
       break
@@ -65,8 +68,8 @@ async function handleCallback(request: Request, callbackData: Record<string, unk
     verification = payloadData
   }
 
-  const verifiedStatus = String(verification?.trx_status || verification?.transaction_status || verification?.payment_status || verification?.status || "").toLowerCase()
-  if (!verificationResponse?.ok || !["success", "successful", "completed", "complete", "paid", "approved"].includes(verifiedStatus)) {
+  const verifiedStatus = String(verification?.trx_status || verification?.transaction_status || verification?.payment_status || verification?.status || (verification?.success === true ? "success" : "")).toLowerCase()
+  if (!verificationResponse?.ok || !["1", "true", "success", "successful", "completed", "complete", "paid", "approved"].includes(verifiedStatus)) {
     console.error("[v0] PayStation verification failed", { invoiceNumber, transactionId, verifiedStatus, verification })
     return NextResponse.redirect(new URL(`/add-money?payment=failed&invoice=${encodeURIComponent(invoiceNumber)}`, url.origin))
   }
