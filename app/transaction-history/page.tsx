@@ -200,7 +200,7 @@ export default function TransactionHistoryPage() {
                 const lastFourDigits = tx.sourcePhone.slice(-4)
                 const transactionText = JSON.stringify(tx)
                 const transactionType = String((tx as typeof tx & { type?: string }).type || tx.transaction_type || "")
-                const isAddMoney = /add money|add-money|paystation|paypos|deposit/i.test(`${transactionText} ${transactionType}`)
+                const isAddMoney = /add money|add-money|add_money|paystation|paypos|deposit|top-up/i.test(`${transactionText} ${transactionType}`)
                 const amountColor = isAddMoney ? "text-[#38afe8]" : tx.isReceived ? "text-green-600" : "text-red-600"
                 const amountBgColor = isAddMoney ? "bg-[#e8f7fd]" : tx.isReceived ? "bg-green-50" : "bg-red-50"
                 const directionLabel = isAddMoney ? "Add Money" : tx.isReceived ? `থেকে: ${tx.sourcePhone}` : `কাছে: ${tx.sourcePhone}`
