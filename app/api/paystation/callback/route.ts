@@ -23,8 +23,9 @@ async function handleCallback(request: Request, callbackData: Record<string, unk
     return NextResponse.redirect(new URL(`/add-money?payment=failed&invoice=${encodeURIComponent(invoiceNumber)}`, url.origin))
   }
 
-  const merchantId = process.env.PAYSTATION_MERCHANT_ID
-  if (!merchantId || !invoiceNumber) {
+  const merchantId = process.env.PAYSTATION_MERCHANT_ID || process.env.PAYSTATION_STORE_ID
+  const password = process.env.PAYSTATION_PASSWORD
+  if (!merchantId || !password || !invoiceNumber) {
     return NextResponse.redirect(new URL(`/add-money?payment=failed`, url.origin))
   }
 
@@ -32,22 +33,22 @@ async function handleCallback(request: Request, callbackData: Record<string, unk
     ? [
         fetch("https://api.paystation.com.bd/v2/transaction-status", {
           method: "POST",
-          headers: { Accept: "application/json", "Content-Type": "application/json", merchantId },
-          body: JSON.stringify({ trxId: transactionId }),
+          headers: { Accept: "application/json", "Content-Type": "application/json", merchantId, password },
+          body: JSON.stringify({ merchantId, password, trxId: transactionId }),
           cache: "no-store",
         }),
         fetch("https://api.paystation.com.bd/transaction-status", {
           method: "POST",
-          headers: { Accept: "application/json", "Content-Type": "application/json", merchantId },
-          body: JSON.stringify({ invoice_number: invoiceNumber }),
+          headers: { Accept: "application/json", "Content-Type": "application/json", merchantId, password },
+          body: JSON.stringify({ merchantId, password, invoice_number: invoiceNumber }),
           cache: "no-store",
         }),
       ]
     : [
         fetch("https://api.paystation.com.bd/transaction-status", {
           method: "POST",
-          headers: { Accept: "application/json", "Content-Type": "application/json", merchantId },
-          body: JSON.stringify({ invoice_number: invoiceNumber }),
+          headers: { Accept: "application/json", "Content-Type": "application/json", merchantId, password },
+          body: JSON.stringify({ merchantId, password, invoice_number: invoiceNumber }),
           cache: "no-store",
         }),
       ]
