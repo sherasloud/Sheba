@@ -372,8 +372,7 @@ if (Number(amount) > 9000000) {
 
       localStorage.setItem("paystationInvoice", result.invoiceNumber)
       localStorage.setItem("paystationAmount", String(amount))
-      setGatewayUrl(result.redirectUrl)
-      setIsLoading(false)
+      window.location.assign(result.redirectUrl)
     } catch {
       checkoutStartedRef.current = false
       setIsLoading(false)
@@ -385,7 +384,7 @@ if (Number(amount) > 9000000) {
     if (selectedMethod === "card") {
       if (validateCardDetails()) {
         setError("")
-        setStep(5)
+        void startPayStationCheckout()
       }
       return
     }
@@ -651,7 +650,7 @@ if (Number(amount) > 9000000) {
 
       {step === 2 && selectedMethod === "card" && (
         <div className="flex flex-1 flex-col items-center overflow-y-auto bg-white px-6 pb-8 pt-10">
-          <h1 className="mb-12 text-center text-4xl font-normal text-[#38afe8]">কার্ড সিলেক্ট করুন</h1>
+          <h1 className="mb-12 text-center text-4xl font-normal text-[#38afe8]">কার্ড সিল��ক্ট করুন</h1>
 
           <div className="flex w-full max-w-xs flex-col items-center gap-10">
             {cardProviders.map((provider) => (
