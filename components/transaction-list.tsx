@@ -63,11 +63,13 @@ export default function TransactionList({ phoneNumber }: TransactionListProps) {
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
-          {transactions.map((txn) => (
+          {transactions.map((txn) => {
+            const isAddMoney = /add money|add-money|add_money|paystation|deposit|top-up/i.test(txn.description || "")
+            return (
             <div key={txn.id} className="flex items-center justify-between p-3 border rounded-lg">
               <div className="flex-1">
                 <div className="font-medium">
-                  {txn.type === 'sent' ? '📤 পাঠানো' : '📥 পাওয়া'}
+                  {isAddMoney ? 'Add Money' : txn.type === 'sent' ? '📤 পাঠানো' : '📥 পাওয়া'}
                 </div>
                 <div className="text-sm text-gray-500">
                   {txn.type === 'sent' ? 'To: ' : 'From: '}{txn.otherPhone}
@@ -78,15 +80,16 @@ export default function TransactionList({ phoneNumber }: TransactionListProps) {
               </div>
 
               <div className="text-right">
-                <div className={`font-bold ${txn.type === 'sent' ? 'text-red-500' : 'text-green-500'}`}>
-                  {txn.type === 'sent' ? '-' : '+'}ট{txn.amount.toLocaleString()}
+                <div className={`font-bold ${isAddMoney || txn.type !== 'sent' ? 'text-[#38afe8]' : 'text-red-500'}`}>
+                  {isAddMoney || txn.type !== 'sent' ? '+' : '-'}ট{txn.amount.toLocaleString()}
                 </div>
                 <Badge variant={txn.status === 'completed' ? 'default' : 'secondary'}>
                   {txn.status === 'completed' ? 'সম্পন্ন' : txn.status}
                 </Badge>
               </div>
             </div>
-          ))}
+            )
+          })}
         </div>
       </CardContent>
     </Card>
