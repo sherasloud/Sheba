@@ -8,16 +8,16 @@ import VerificationRequired from "@/components/verification-required"
 import { cardProviders } from "@/lib/data/static-data"
 
 const bangladeshBanks = [
-  { name: "Dhaka Bank Limited", shortName: "Dhaka Bank", logo: "/banks/dhaka-bank.jpeg" },
-  { name: "Bank Asia Limited", shortName: "Bank Asia", logo: "/banks/bank-asia.jpeg" },
+  { name: "Premier Bank PLC", shortName: "Premier Bank", logo: "/banks/premier-bank.jpeg" },
   { name: "Pubali Bank Limited", shortName: "Pubali Bank", logo: "/banks/pubali-bank.jpeg" },
   { name: "Islami Bank Bangladesh Limited", shortName: "Islami Bank", logo: "/banks/islami-bank.jpeg" },
-  { name: "United Commercial Bank PLC", shortName: "UCB Bank", logo: "/banks/ucb-bank.jpeg" },
-  { name: "AB Bank Limited", shortName: "AB Bank", logo: "/banks/ab-bank.jpeg" },
   { name: "City Bank PLC", shortName: "City Bank", logo: "/banks/city-bank.jpeg" },
+  { name: "United Commercial Bank PLC", shortName: "UCB Bank", logo: "/banks/ucb-bank.jpeg" },
+  { name: "Dhaka Bank Limited", shortName: "Dhaka Bank", logo: "/banks/dhaka-bank.jpeg" },
+  { name: "Bank Asia Limited", shortName: "Bank Asia", logo: "/banks/bank-asia.jpeg" },
+  { name: "AB Bank Limited", shortName: "AB Bank", logo: "/banks/ab-bank.jpeg" },
   { name: "Prime Bank PLC", shortName: "Prime Bank", logo: "/banks/prime-bank.jpeg" },
   { name: "Mutual Trust Bank PLC", shortName: "Mutual Trust Bank", logo: "/banks/mutual-trust-bank.jpeg" },
-  { name: "Premier Bank PLC", shortName: "Premier Bank", logo: "/banks/premier-bank.jpeg" },
 ]
 
 export default function AddMoneyPage() {
