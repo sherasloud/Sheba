@@ -641,6 +641,7 @@ if (Number(amount) > 9000000) {
     <div className="mr-4 flex h-12 w-12 shrink-0 items-center justify-center"><Image src="/banks/bank-to-sheba.png" alt="" width={48} height={48} className="h-12 w-12 object-contain" /></div>
     <div className="min-w-0 flex-1">
       <h3 className="text-base font-medium text-[#151522]">Bank to Sheba</h3>
+      <p className="text-xs text-[#a5a9b1]">Add money from your bank</p>
     </div>
 
   </button>
