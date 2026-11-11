@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { ArrowLeft, Copy, Check, Building2, CreditCard } from "lucide-react"
+import { ArrowLeft, Copy, Check } from "lucide-react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 import VerificationRequired from "@/components/verification-required"
@@ -624,7 +624,7 @@ if (Number(amount) > 9000000) {
   }}
   className="flex w-full items-center rounded-xl border border-[#edf0f3] bg-white px-4 py-4 text-left shadow-[0_3px_12px_rgba(20,32,51,0.05)] transition-colors hover:border-[#38afe8]"
   >
-    <div className="mr-4 flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-[#e8f7fd] text-[#249fe0]"><CreditCard size={22} strokeWidth={1.8} /></div>
+    <div className="mr-4 flex h-12 w-12 shrink-0 items-center justify-center"><Image src="/banks/card-to-sheba.png" alt="" width={48} height={48} className="h-12 w-12 object-contain" /></div>
     <div className="min-w-0 flex-1">
       <h3 className="text-base font-medium text-[#151522]">Card to Sheba</h3>
     </div>
@@ -638,10 +638,9 @@ if (Number(amount) > 9000000) {
   }}
   className="flex w-full items-center rounded-xl border border-[#edf0f3] bg-white px-4 py-4 text-left shadow-[0_3px_12px_rgba(20,32,51,0.05)] transition-colors hover:border-[#38afe8]"
   >
-    <div className="mr-4 flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-[#eaf8ef] text-[#2da35a]"><Building2 size={22} strokeWidth={1.8} /></div>
+    <div className="mr-4 flex h-12 w-12 shrink-0 items-center justify-center"><Image src="/banks/bank-to-sheba.png" alt="" width={48} height={48} className="h-12 w-12 object-contain" /></div>
     <div className="min-w-0 flex-1">
       <h3 className="text-base font-medium text-[#151522]">Bank to Sheba</h3>
-      <p className="text-xs text-[#a5a9b1]">Add money from your bank</p>
     </div>
 
   </button>
