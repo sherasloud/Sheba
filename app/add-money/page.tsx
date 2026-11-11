@@ -16,6 +16,8 @@ const bangladeshBanks = [
   { name: "AB Bank Limited", shortName: "AB Bank", logo: "/banks/ab-bank.jpeg" },
   { name: "City Bank PLC", shortName: "City Bank", logo: "/banks/city-bank.jpeg" },
   { name: "Prime Bank PLC", shortName: "Prime Bank", logo: "/banks/prime-bank.jpeg" },
+  { name: "Mutual Trust Bank PLC", shortName: "Mutual Trust Bank", logo: "/banks/mutual-trust-bank.jpeg" },
+  { name: "Premier Bank PLC", shortName: "Premier Bank", logo: "/banks/premier-bank.jpeg" },
 ]
 
 export default function AddMoneyPage() {
@@ -613,7 +615,7 @@ if (Number(amount) > 9000000) {
 
       {step === 1 && (
   <div className="flex flex-1 flex-col overflow-y-auto bg-white px-5 pb-8 pt-6">
-  <div className="space-y-4">
+  <div className="flex flex-col gap-2">
   <button
   type="button"
   onClick={() => {
@@ -625,7 +627,6 @@ if (Number(amount) > 9000000) {
     <div className="mr-4 flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-[#e8f7fd] text-[#249fe0]"><CreditCard size={22} strokeWidth={1.8} /></div>
     <div className="min-w-0 flex-1">
       <h3 className="text-base font-medium text-[#151522]">Card to Sheba</h3>
-      <p className="text-xs text-[#a5a9b1]">Add money from your card</p>
     </div>
 
   </button>
@@ -679,7 +680,7 @@ if (Number(amount) > 9000000) {
 
       {step === 2 && selectedMethod === "bank" && (
         <div className="flex flex-1 flex-col overflow-y-auto bg-white px-5 pb-8 pt-8 text-[#142033]">
-          <h1 className="mb-8 text-center text-[2.35rem] font-normal leading-tight text-[#1768b0]">ব্যাংক নির্বাচন করুন</h1>
+          <h1 className="mb-8 text-center text-[2.35rem] font-normal leading-tight text-[#38afe8]">ব্যাংক নির্বাচন করুন</h1>
           <section className="mx-auto flex w-full max-w-md flex-col gap-3" aria-label="বাংলাদেশের ব্যাংক">
             {bangladeshBanks.map((bank) => (
               <button
@@ -913,7 +914,7 @@ if (Number(amount) > 9000000) {
             >
               Back
             </button>
-            <button className="flex-1 mobile-button" onClick={handleAddMoney} disabled={isLoading}>
+            <button className="mobile-button flex-1 rounded-full bg-[#38afe8] font-semibold shadow-[0_6px_16px_rgba(56,175,232,0.24)] hover:bg-[#249bd4]" onClick={handleAddMoney} disabled={isLoading}>
               {isLoading ? "Processing..." : "Add Money"}
             </button>
           </div>
