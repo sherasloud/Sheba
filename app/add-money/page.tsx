@@ -615,6 +615,7 @@ if (Number(amount) > 9000000) {
   <div className="flex flex-1 flex-col overflow-y-auto bg-white px-5 pb-8 pt-6">
   <div className="space-y-4">
   <button
+  type="button"
   onClick={() => {
     handleMethodSelect("card")
     setStep(2)
@@ -623,12 +624,13 @@ if (Number(amount) > 9000000) {
   >
     <div className="mr-4 flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-[#e8f7fd] text-[#249fe0]"><CreditCard size={22} strokeWidth={1.8} /></div>
     <div className="min-w-0 flex-1">
-      <h3 className="text-base font-medium text-[#151522]">Credit Card</h3>
-      <p className="text-xs text-[#a5a9b1]">Visa or Mastercard</p>
+      <h3 className="text-base font-medium text-[#151522]">Card to Sheba</h3>
+      <p className="text-xs text-[#a5a9b1]">Add money from your card</p>
     </div>
 
   </button>
   <button
+  type="button"
   onClick={() => {
     handleMethodSelect("bank")
     setStep(2)
@@ -637,8 +639,8 @@ if (Number(amount) > 9000000) {
   >
     <div className="mr-4 flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-[#eaf8ef] text-[#2da35a]"><Building2 size={22} strokeWidth={1.8} /></div>
     <div className="min-w-0 flex-1">
-      <h3 className="text-base font-medium text-[#151522]">Bank Account</h3>
-      <p className="text-xs text-[#a5a9b1]">Transfer from your bank</p>
+      <h3 className="text-base font-medium text-[#151522]">Bank to Sheba</h3>
+      <p className="text-xs text-[#a5a9b1]">Add money from your bank</p>
     </div>
 
   </button>
