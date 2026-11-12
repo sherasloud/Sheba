@@ -1,11 +1,10 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { ArrowLeft, Copy, Check } from "lucide-react"
+import { ArrowLeft, Check } from "lucide-react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
 import VerificationRequired from "@/components/verification-required"
-import { cardProviders } from "@/lib/data/static-data"
 
 const bangladeshBanks = [
   { name: "Premier Bank PLC", shortName: "Premier Bank", logo: "/banks/premier-bank.jpeg" },
@@ -21,44 +20,19 @@ const bangladeshBanks = [
 ]
 
 export default function AddMoneyPage() {
-  // SSLCommerz Payment Gateway Information
-  const SSLCOMMERZ_STORE_ID = process.env.NEXT_PUBLIC_SSLCOMMERZ_STORE_ID || "shusto0live"
-  const SSLCOMMERZ_SANDBOX_URL = "https://sandbox.sslcommerz.com/EasyCheckOut"
-  const SSLCOMMERZ_LIVE_URL = "https://securepay.sslcommerz.com/EasyCheckOut"
-
   const router = useRouter()
   const [isVerified, setIsVerified] = useState(false)
   const [selectedMethod, setSelectedMethod] = useState("")
-  const [selectedCardType, setSelectedCardType] = useState("") // New state for selected card type
+  const [selectedBank, setSelectedBank] = useState("")
   const [step, setStep] = useState(1)
   const [bankPage, setBankPage] = useState(1)
   const [amount, setAmount] = useState("")
-  const [pin, setPin] = useState("")
   const [error, setError] = useState("")
   const [success, setSuccess] = useState(false)
-  const [balance, setBalance] = useState(0)
-  const [cardBalance, setCardBalance] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
   const [gatewayUrl, setGatewayUrl] = useState("")
   const [gatewayLoaded, setGatewayLoaded] = useState(false)
   const checkoutStartedRef = useRef(false)
-  const [transactionIdCopied, setTransactionIdCopied] = useState(false)
-  const [transactionId, setTransactionId] = useState("")
-
-  // Bank details
-  const [bankDetails, setBankDetails] = useState({
-    bankName: "",
-    accountNumber: "",
-    routingNumber: "",
-  })
-
-  // Card details
-  const [cardDetails, setCardDetails] = useState({
-    cardNumber: "",
-    expiryDate: "",
-    cvv: "",
-    cardholderName: "",
-  })
 
   const gatewayFrameRef = useRef<HTMLIFrameElement>(null)
 
@@ -143,31 +117,17 @@ export default function AddMoneyPage() {
           const response = await fetch(`/api/balance?phone=${currentPhone}`)
           const data = await response.json()
           if (data.balance !== undefined) {
-            setBalance(data.balance)
             localStorage.setItem("userBalance", data.balance.toString())
             localStorage.setItem(`userBalance_${currentPhone}`, data.balance.toString())
           }
         } catch (error) {
           console.error("[v0] Failed to fetch balance from API:", error)
-          // Fallback to localStorage
-          const storedBalance = localStorage.getItem("userBalance")
-          if (storedBalance) {
-            setBalance(Number(storedBalance))
-          }
         }
       }
     }
 
     fetchBalance()
 
-    const storedCardBalance = localStorage.getItem("cardBalance")
-    if (storedCardBalance) {
-      setCardBalance(Number(storedCardBalance))
-    } else {
-      const initialCardBalance = 85000 // Tk85,000 initial card balance
-      setCardBalance(initialCardBalance)
-      localStorage.setItem("cardBalance", initialCardBalance.toString())
-    }
   }, [])
 
   const handleMethodSelect = (method: string) => {
@@ -175,196 +135,20 @@ export default function AddMoneyPage() {
     setError("")
   }
 
-  const handleMethodNext = () => {
-    if (!selectedMethod) {
-      setError("Please select Card or Bank Account")
-      return
-    }
-
-    setStep(2)
-    setError("")
-  }
-
   const handleBankSelect = (bankName: string) => {
-    setBankDetails((current) => ({ ...current, bankName }))
+    setSelectedBank(bankName)
     setError("")
     setStep(3)
-  }
-
-  const handleCardTypeSelect = (cardType: string) => {
-    setSelectedCardType(cardType)
-    localStorage.setItem("selectedCardType", cardType)
-    setError("")
-    setAmount("")
-    setStep(3)
-  }
-
-  const handleCardPayment = (userAmountNum: number) => {
-    // Calculate total amount with commission (2% SSLCommerz fee)
-    const commissionRate = 0.02
-    const commission = Math.round(userAmountNum * commissionRate * 100) / 100
-    const totalAmount = userAmountNum + commission
-    
-    const transactionRef = `SHEBA_${Date.now()}_${Math.random().toString(36).substr(2, 9).toUpperCase()}`
-    localStorage.setItem("transactionRef", transactionRef)
-    localStorage.setItem("addMoneyAmount", String(userAmountNum))
-    localStorage.setItem("commissionAmount", String(commission))
-    
-    // Create and submit form to SSLCommerz
-    const form = document.createElement("form")
-    form.method = "POST"
-    form.action = "https://pay.sslcommerz.com/gwprocess/v4/api.php"
-    form.style.display = "none"
-    
-    const fields: Record<string, string> = {
-      store_id: SSLCOMMERZ_STORE_ID,
-      store_passwd: "6A0D6039B299110857",
-      total_amount: String(totalAmount), // Send total (user amount + commission)
-      currency: "BDT",
-      tran_id: transactionRef,
-      success_url: `${typeof window !== 'undefined' ? window.location.origin : ''}/api/sslcommerz/success`,
-      fail_url: `${typeof window !== 'undefined' ? window.location.origin : ''}/api/sslcommerz/fail`,
-      cancel_url: `${typeof window !== 'undefined' ? window.location.origin : ''}/add-money`,
-      cus_name: "Customer",
-      cus_email: "customer@sheba.com",
-      cus_phone: "01700000000",
-      cus_add1: "Dhaka",
-      ship_name: "Customer",
-      ship_add1: "Dhaka",
-      shipping_method: "NO",
-      product_name: "Add Money to Sheba",
-      product_category: "Wallet Top-up",
-      product_profile: "general"
-    }
-    
-    console.log("[v0] Form fields:", fields)
-    
-    Object.entries(fields).forEach(([key, value]) => {
-      const input = document.createElement("input")
-      input.type = "hidden"
-      input.name = key
-      input.value = value
-      form.appendChild(input)
-    })
-    
-    document.body.appendChild(form)
-    console.log("[v0] Form appended to body, submitting...")
-    console.log("[v0] Form action:", form.action)
-    console.log("[v0] Form method:", form.method)
-    
-    // Try to submit
-    try {
-      form.submit()
-      console.log("[v0] Form submitted successfully")
-    } catch (err) {
-      console.log("[v0] Form submission error:", err)
-    }
   }
 
   const handleAmountNext = () => {
-    if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) {
-      setError("Please enter a valid amount")
-      return
-    }
-
-    if (Number(amount) < 10) {
-      setError("Minimum amount is Tk10")
-      return
-    }
-
-if (Number(amount) > 9000000) {
-  setError("Maximum amount is Tk90,00,000 per transaction")
+    if (!amount || isNaN(Number(amount)) || Number(amount) < 10 || Number(amount) > 9000000) {
+      setError(Number(amount) > 9000000 ? "Maximum amount is Tk90,00,000 per transaction" : "Please enter an amount between Tk10 and Tk90,00,000")
       return
     }
 
     setError("")
-    if (selectedMethod === "card") {
-      setStep(4)
-      return
-    }
-
-    if (selectedMethod === "bank") {
-      void startPayStationCheckout()
-      return
-    }
-
-    setStep(4) // Bank details step
-  }
-
-  const validateBankDetails = () => {
-    if (!bankDetails.bankName) {
-      setError("Please select a bank")
-      return false
-    }
-    if (!bankDetails.accountNumber || bankDetails.accountNumber.length < 10) {
-      setError("Please enter a valid account number (minimum 10 digits)")
-      return false
-    }
-    if (!/^\d+$/.test(bankDetails.accountNumber)) {
-      setError("Account number should contain only numbers")
-      return false
-    }
-    return true
-  }
-
-  const validateCardNumberLuhn = (cardNumber: string) => {
-    const digits = cardNumber.replace(/\s/g, "")
-    if (!/^\d{16}$/.test(digits)) return false
-
-    let sum = 0
-    let isEven = false
-
-    for (let i = digits.length - 1; i >= 0; i--) {
-      let digit = Number.parseInt(digits[i])
-
-      if (isEven) {
-        digit *= 2
-        if (digit > 9) digit -= 9
-      }
-
-      sum += digit
-      isEven = !isEven
-    }
-
-    return sum % 10 === 0
-  }
-
-  const validateCardDetails = () => {
-    const cleanCardNumber = cardDetails.cardNumber.replace(/\s/g, "")
-
-    if (!cleanCardNumber || cleanCardNumber.length < 13 || cleanCardNumber.length > 19) {
-      setError("Please enter a valid card number")
-      return false
-    }
-
-    if (!cardDetails.expiryDate || !/^\d{2}\/\d{2}$/.test(cardDetails.expiryDate)) {
-      setError("Please enter expiry date in MM/YY format")
-      return false
-    }
-
-  const [month, year] = cardDetails.expiryDate.split("/")
-  const monthNumber = Number.parseInt(month)
-  if (monthNumber < 1 || monthNumber > 12) {
-    setError("Please enter a valid expiry month")
-    return false
-  }
-  const expiryDate = new Date(2000 + Number.parseInt(year), monthNumber, 0, 23, 59, 59, 999)
-
-    const today = new Date()
-    if (expiryDate < today) {
-      setError("Card has expired")
-      return false
-    }
-
-    if (!/^\d{3,4}$/.test(cardDetails.cvv)) {
-      setError("Please enter a valid CVV")
-      return false
-    }
-    if (!cardDetails.cardholderName || cardDetails.cardholderName.length < 2) {
-      setError("Please enter cardholder name")
-      return false
-    }
-    return true
+    void startPayStationCheckout()
   }
 
   const startPayStationCheckout = async () => {
@@ -390,9 +174,7 @@ if (Number(amount) > 9000000) {
           phoneNumber: currentPhone,
           amount: Number(amount),
           userEmail: userData.email || localStorage.getItem("shebaTransactionEmail") || "customer@sheba.com",
-          userName: userData.name || cardDetails.cardholderName || "Customer",
-          cardType: selectedCardType,
-          bankName: bankDetails.bankName,
+          userName: userData.name || "Customer",
         }),
       })
       const result = await response.json().catch(() => ({ success: false, message: "Invalid response from PayStation" }))
@@ -415,178 +197,15 @@ if (Number(amount) > 9000000) {
     }
   }
 
-  const handleDetailsNext = () => {
-    if (selectedMethod === "card") {
-      if (validateCardDetails()) {
-        setError("")
-        void startPayStationCheckout()
-      }
-      return
-    }
-
-    if (selectedMethod === "bank" && validateBankDetails()) {
-      // Bank details are collected first; all Add Money methods use PayStation.
-      void startPayStationCheckout()
-    }
-  }
-
   const handleBackStep = () => {
-    if (step === 5) {
-      setStep(4) // From PIN to Details
-    } else if (step === 4) {
-      setStep(3) // From Details to Amount
-    } else if (step === 3) {
-      if (selectedMethod === "card") {
-        setStep(2) // From Amount (Card) to Card Type Selection
-      } else {
-        setStep(1) // From Amount (Bank) to Method Selection
-      }
+    if (step === 3) {
+      setStep(selectedMethod === "bank" ? 2 : 1)
     } else if (step === 2) {
-      setStep(1) // From Card Type Selection to Method Selection
-    } else if (step === 1) {
-      router.push("/") // Go back to home if on first step
-    }
-    setError("") // Clear error on back navigation
-  }
-
-  const formatCardNumber = (value: string) => {
-    const v = value.replace(/\s+/g, "").replace(/[^0-9]/gi, "")
-    const matches = v.match(/\d{4,16}/g)
-    const match = (matches && matches[0]) || ""
-    const parts = []
-    for (let i = 0, len = match.length; i < len; i += 4) {
-      parts.push(match.substring(i, i + 4))
-    }
-    if (parts.length) {
-      return parts.join(" ")
+      setStep(1)
     } else {
-      return v
+      router.push("/")
     }
-  }
-
-  const formatExpiryDate = (value: string) => {
-    const v = value.replace(/\s+/g, "").replace(/[^0-9]/gi, "")
-    if (v.length >= 2) {
-      return v.substring(0, 2) + "/" + v.substring(2, 4)
-    }
-    return v
-  }
-
-  const handleAddMoney = async () => {
-    if (!pin || pin.length !== 6) {
-      setError("Please enter your 6-digit PIN")
-      return
-    }
-
-    const correctPin = localStorage.getItem("userPIN") || "123456"
-    if (pin !== correctPin) {
-      setError("Incorrect PIN")
-      return
-    }
-
-    if (selectedMethod === "card") {
-      // Check if card has sufficient balance
-      if (Number(amount) > cardBalance) {
-        setError(`Insufficient card balance. Available: Tk${cardBalance.toLocaleString()}`)
-        return
-      }
-
-      // Validate all card details are properly filled
-      if (!validateCardDetails()) {
-        return
-      }
-    }
-
-    if (selectedMethod === "bank") {
-      if (!validateBankDetails()) {
-        return
-      }
-    }
-
-    setIsLoading(true)
     setError("")
-
-    try {
-      const currentPhone = localStorage.getItem("phoneNumber")
-      if (!currentPhone) {
-        setError("Phone number not found. Please log in again.")
-        setIsLoading(false)
-        return
-      }
-
-      const userData = JSON.parse(localStorage.getItem("userData") || "{}")
-
-      // Card and bank additions use Sheba's internal add-money flow until
-      // the PayStation white-label checkout is available.
-
-      const response = await fetch("/api/add-money", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          phoneNumber: currentPhone,
-          amount: Number(amount),
-          method: selectedMethod,
-          cardType: selectedCardType,
-          userEmail: userData.email,
-          userName: userData.name || "Customer",
-        }),
-      })
-
-      const result = await response.json()
-
-      if (!result.success) {
-        setError(result.message || "Transaction failed. Please try again.")
-        setIsLoading(false)
-        return
-      }
-
-      console.log("[v0] Add Money successful, new balance:", result.newBalance)
-
-      if (selectedMethod === "card") {
-        const newCardBalance = cardBalance - Number(amount)
-        setCardBalance(newCardBalance)
-        localStorage.setItem("cardBalance", newCardBalance.toString())
-      }
-
-      const newShebaBalance = result.newBalance
-      setBalance(newShebaBalance)
-      localStorage.setItem("userBalance", newShebaBalance.toString())
-      localStorage.setItem(`userBalance_${currentPhone}`, newShebaBalance.toString())
-
-      const newTransactionId = `SHB${Date.now()}${Math.random().toString(36).substring(2, 8).toUpperCase()}`
-      setTransactionId(newTransactionId)
-
-      const transaction = {
-        id: Date.now(),
-        transactionId: newTransactionId,
-        type: selectedMethod === "card" ? "Card to Sheba" : "Bank to Sheba",
-        amount: Number(amount),
-        method: selectedMethod === "card" ? `${selectedCardType} Card` : bankDetails.bankName, // Use selected card type
-        status: "Completed",
-        date: new Date().toLocaleDateString(),
-        time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-        fee: 0,
-      }
-
-      const transactions = JSON.parse(localStorage.getItem("transactions") || "[]")
-      transactions.push(transaction)
-      localStorage.setItem("transactions", JSON.stringify(transactions))
-
-      window.dispatchEvent(
-        new StorageEvent("storage", {
-          key: "userBalance",
-          newValue: newShebaBalance.toString(),
-          oldValue: balance.toString(),
-        }),
-      )
-
-      setIsLoading(false)
-      setSuccess(true)
-    } catch (error) {
-      console.error("[v0] Add Money error:", error)
-      setIsLoading(false)
-      setError("Transaction failed. Please try again.")
-    }
   }
 
   if (gatewayUrl) {
@@ -594,7 +213,7 @@ if (Number(amount) > 9000000) {
       <div className="flex h-[100dvh] flex-col bg-white">
         <div className="flex shrink-0 items-center justify-between border-b border-[#edf0f3] px-4 py-3">
           <button type="button" onClick={() => { setGatewayUrl(""); setGatewayLoaded(false); checkoutStartedRef.current = false }} className="text-sm font-medium text-[#38afe8]">Back</button>
-          <h1 className="text-base font-medium text-[#151522]">Secure Bank Gateway</h1>
+          <h1 className="text-base font-medium text-[#151522]">PayStation secure checkout</h1>
           <a href={gatewayUrl} target="_blank" rel="noopener noreferrer" className="text-xs font-medium text-[#38afe8]">Open securely</a>
         </div>
           <div className="flex min-h-0 flex-1 flex-col">
@@ -659,7 +278,7 @@ if (Number(amount) > 9000000) {
   type="button"
   onClick={() => {
     handleMethodSelect("card")
-    setStep(2)
+    setStep(3)
   }}
   className="flex w-full items-center rounded-xl border border-[#edf0f3] bg-white px-4 py-4 text-left shadow-[0_3px_12px_rgba(20,32,51,0.05)] transition-colors hover:border-[#38afe8]"
   >
@@ -687,33 +306,6 @@ if (Number(amount) > 9000000) {
 
   {error && <div className="mt-4 text-center text-red-500">{error}</div>}
   </div>
-      )}
-
-      {step === 2 && selectedMethod === "card" && (
-        <div className="flex flex-1 flex-col items-center overflow-y-auto bg-white px-6 pb-8 pt-10">
-          <h1 className="mb-12 text-center text-4xl font-normal text-[#38afe8]">কার্ড নির্বাচন করুন</h1>
-
-          <div className="flex w-full max-w-xs flex-col items-center gap-10">
-            {cardProviders.map((provider) => (
-              <button
-                type="button"
-                key={provider.name}
-                onClick={() => handleCardTypeSelect(provider.name)}
-                className="flex w-full flex-col items-center p-2"
-              >
-                <div className="flex h-28 w-full items-center justify-center">
-                  <Image
-                    src={provider.logo || "/placeholder.svg"}
-                    alt={provider.name}
-                    width={190}
-                    height={100}
-                    className="max-h-24 w-auto object-contain"
-                  />
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
       )}
 
       {step === 2 && selectedMethod === "bank" && (
@@ -776,6 +368,9 @@ if (Number(amount) > 9000000) {
                 />
                 <span className="add-money-amount-currency shrink-0 font-normal leading-none">৳</span>
               </div>
+              <p className="mb-5 text-center text-sm text-[#667085]">
+                {selectedMethod === "bank" ? `Selected: ${selectedBank}. Choose it in the PayStation checkout.` : "Next opens PayStation here. Enter card details in its secure checkout; Sheba does not collect them."}
+              </p>
               {error && <div className="mb-4 text-center text-red-500">{error}</div>}
               <div className="flex justify-center"><button className="mobile-button w-full max-w-sm rounded-full py-5 text-5xl font-normal" onClick={handleAmountNext}>Next</button></div>
             </>
@@ -795,6 +390,9 @@ if (Number(amount) > 9000000) {
                 />
                 <span className="add-money-amount-currency shrink-0 font-normal leading-none">৳</span>
               </div>
+              <p className="mb-5 text-center text-sm text-[#667085]">
+                {selectedMethod === "bank" ? `Selected: ${selectedBank}. Choose it in the PayStation checkout.` : "Next opens PayStation here. Enter card details in its secure checkout; Sheba does not collect them."}
+              </p>
               {error && <div className="mb-4 text-center text-red-500">{error}</div>}
               <div className="flex justify-center"><button className="mobile-button w-full max-w-sm rounded-full py-5 text-5xl font-normal" onClick={handleAmountNext}>Next</button></div>
             </>
@@ -802,185 +400,11 @@ if (Number(amount) > 9000000) {
         </div>
       )}
 
-      {step === 4 && selectedMethod === "bank" && (
-        <div className="flex flex-1 flex-col overflow-y-auto bg-white px-6 pb-8 pt-10 text-black">
-          <h1 className="mb-4 text-center text-4xl font-normal text-[#38afe8]">ব্যাংক তথ্য</h1>
-          <div className="mb-8 text-center text-[72px] font-normal leading-none text-[#38afe8]">৳{amount}</div>
 
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium mb-2">Select Bank</label>
-              <select
-                className="w-full border rounded-md p-3"
-                value={bankDetails.bankName}
-                onChange={(e) => setBankDetails({ ...bankDetails, bankName: e.target.value })}
-              >
-                <option value="">Choose your bank</option>
-                <option value="Sonali Bank Limited">Sonali Bank Limited</option>
-                <option value="Janata Bank Limited">Janata Bank Limited</option>
-                <option value="Agrani Bank Limited">Agrani Bank Limited</option>
-                <option value="Rupali Bank Limited">Rupali Bank Limited</option>
-                <option value="BRAC Bank Limited">BRAC Bank Limited</option>
-                <option value="Dutch-Bangla Bank Limited">Dutch-Bangla Bank Limited</option>
-                <option value="City Bank Limited">City Bank Limited</option>
-                <option value="Eastern Bank Limited">Eastern Bank Limited</option>
-                <option value="Prime Bank Limited">Prime Bank Limited</option>
-                <option value="Southeast Bank Limited">Southeast Bank Limited</option>
-                <option value="Dhaka Bank Limited">Dhaka Bank Limited</option>
-                <option value="AB Bank Limited">AB Bank Limited</option>
-                <option value="Islami Bank Bangladesh Limited">Islami Bank Bangladesh Limited</option>
-                <option value="Al-Arafah Islami Bank Limited">Al-Arafah Islami Bank Limited</option>
-                <option value="Social Islami Bank Limited">Social Islami Bank Limited</option>
-              </select>
-            </div>
 
-            <div>
-              <label className="block text-sm font-medium mb-2">Account Number</label>
-              <input
-                type="text"
-                className="w-full border rounded-md p-3"
-                value={bankDetails.accountNumber}
-                onChange={(e) => setBankDetails({ ...bankDetails, accountNumber: e.target.value.replace(/\D/g, "") })}
-                placeholder="Enter your account number"
-              />
-            </div>
 
-            <div>
-              <label className="block text-sm font-medium mb-2">Routing Number (Optional)</label>
-              <input
-                type="text"
-                className="w-full border rounded-md p-3"
-                value={bankDetails.routingNumber}
-                onChange={(e) => setBankDetails({ ...bankDetails, routingNumber: e.target.value })}
-                placeholder="Enter routing number if required"
-              />
-            </div>
-          </div>
 
-          {error && <div className="text-red-500 mb-4">{error}</div>}
 
-          <div className="flex space-x-2 mt-auto">
-            <button
-              className="flex-1 border border-gray-300 p-4 rounded-md touch-manipulation"
-              onClick={handleBackStep}
-            >
-              Back
-            </button>
-            <button className="flex-1 mobile-button" onClick={handleDetailsNext}>
-              Next
-            </button>
-          </div>
-        </div>
-      )}
-
-      {step === 4 && selectedMethod === "card" && (
-        <div className="flex flex-1 flex-col overflow-y-auto bg-white px-8 pb-8 pt-10">
-          <h1 className="mb-24 text-center text-[3.25rem] font-normal leading-[1.2] text-[#38afe8]">কার্ডের তথ্য দিন</h1>
-
-          <div className="space-y-20">
-            <div className="relative">
-              <input
-                type="text"
-                aria-label="Card Number"
-                className="w-full border-0 bg-transparent px-0 py-0 text-[3rem] font-light text-[#a8a8a8] outline-none placeholder:text-[#a8a8a8]"
-                value={cardDetails.cardNumber}
-                onChange={(e) => setCardDetails({ ...cardDetails, cardNumber: formatCardNumber(e.target.value) })}
-                placeholder="Card Number"
-                maxLength={19}
-              />
-              <Image
-                src={cardProviders.find((provider) => provider.name === selectedCardType)?.logo || "/placeholder.svg"}
-                alt={selectedCardType || "Card"}
-                width={135}
-                height={75}
-                className="absolute -top-4 right-0 max-h-20 w-auto object-contain"
-              />
-            </div>
-
-            <div className="flex items-start justify-between gap-8">
-              <input
-                type="text"
-                aria-label="Expiration Date"
-                className="min-w-0 flex-1 border-0 bg-transparent px-0 py-0 text-[2.8rem] font-light text-[#a8a8a8] outline-none placeholder:text-[#a8a8a8]"
-                value={cardDetails.expiryDate}
-                onChange={(e) => setCardDetails({ ...cardDetails, expiryDate: formatExpiryDate(e.target.value) })}
-                placeholder="Expiration Date"
-                maxLength={5}
-              />
-              <input
-                type="text"
-                aria-label="CVV"
-                className="w-32 border-0 bg-transparent px-0 py-0 text-[2.8rem] font-light text-[#a8a8a8] outline-none placeholder:text-[#a8a8a8]"
-                value={cardDetails.cvv}
-                onChange={(e) => setCardDetails({ ...cardDetails, cvv: e.target.value.replace(/\D/g, "") })}
-                placeholder="CVV"
-                maxLength={3}
-              />
-            </div>
-
-            <input
-              type="text"
-              aria-label="Cardholder name"
-              className="w-full border-0 bg-transparent px-0 py-0 text-center text-[2.8rem] font-light text-[#a8a8a8] outline-none placeholder:text-[#a8a8a8]"
-              value={cardDetails.cardholderName}
-              onChange={(e) => setCardDetails({ ...cardDetails, cardholderName: e.target.value })}
-              placeholder="Cardholder name"
-            />
-          </div>
-
-          {error && <div role="alert" className="mt-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">{error}</div>}
-
-<button type="button" disabled={isLoading} className="mt-auto w-full -translate-y-24 rounded-full bg-[#38afe8] py-3 text-xl font-medium leading-6 text-white disabled:cursor-wait disabled:opacity-60" onClick={handleDetailsNext}>
-  {isLoading ? "Opening gateway…" : "Next"}
-</button>
-        </div>
-      )}
-
-      {step === 5 && (
-        <div className="flex flex-1 flex-col overflow-y-auto px-5 py-6">
-          <div className="text-2xl font-bold mb-2">Enter PIN</div>
-          <div className="text-[#38afe8] mb-1">Amount: Tk{amount}</div>
-          <div className="text-[#38afe8] mb-8">
-            {selectedMethod === "card" ? `From: ${selectedCardType} Card` : `From: ${bankDetails.bankName}`}
-          </div>
-
-          {selectedMethod === "card" && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4">
-              <div className="text-sm text-[#38afe8]">
-                <div>⚠️ Tk{amount} will be deducted from your card</div>
-              </div>
-            </div>
-          )}
-
-          <div className="mb-2 flex items-center">
-            <div className="mr-2">🔒</div>
-            <div>6-Digit PIN</div>
-          </div>
-
-          <input
-            type="password"
-            className="border rounded-md p-4 mb-2 text-center"
-            value={pin}
-            onChange={(e) => setPin(e.target.value)}
-            maxLength={6}
-            placeholder="••••••"
-          />
-
-          {error && <div className="text-red-500 mb-4">{error}</div>}
-
-          <div className="flex space-x-2 mt-auto">
-            <button
-              className="flex-1 border border-gray-300 p-4 rounded-md touch-manipulation"
-              onClick={handleBackStep}
-            >
-              Back
-            </button>
-            <button className="mobile-button flex-1 rounded-full bg-[#38afe8] font-semibold shadow-[0_6px_16px_rgba(56,175,232,0.24)] hover:bg-[#249bd4]" onClick={handleAddMoney} disabled={isLoading}>
-              {isLoading ? "Processing..." : "Add Money"}
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   )
 }
