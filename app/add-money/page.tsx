@@ -25,7 +25,6 @@ export default function AddMoneyPage() {
   const [selectedMethod, setSelectedMethod] = useState("")
   const [selectedBank, setSelectedBank] = useState("")
   const [step, setStep] = useState(1)
-  const [bankPage, setBankPage] = useState(1)
   const [amount, setAmount] = useState("")
   const [error, setError] = useState("")
   const [success, setSuccess] = useState(false)
@@ -213,8 +212,20 @@ export default function AddMoneyPage() {
       <div className="flex h-[100dvh] flex-col bg-white">
         <div className="flex shrink-0 items-center justify-between border-b border-[#edf0f3] px-4 py-3">
           <button type="button" onClick={() => { setGatewayUrl(""); setGatewayLoaded(false); checkoutStartedRef.current = false }} className="text-sm font-medium text-[#38afe8]">Back</button>
-          <h1 className="text-base font-medium text-[#151522]">PayStation secure checkout</h1>
-          <a href={gatewayUrl} target="_blank" rel="noopener noreferrer" className="text-xs font-medium text-[#38afe8]">Open securely</a>
+          <div className="flex min-w-0 items-center gap-2">
+            <Image
+              src={selectedMethod === "card" ? "/banks/card-to-sheba.png" : "/banks/bank-to-sheba.png"}
+              alt=""
+              width={28}
+              height={28}
+              className="h-7 w-7 shrink-0 object-contain"
+            />
+            <div className="min-w-0 text-center">
+              <h1 className="truncate text-sm font-semibold text-[#151522]">{selectedMethod === "card" ? "Card to Sheba" : "Bank to Sheba"}</h1>
+              <p className="text-[11px] text-[#667085]">Secure checkout by PayStation</p>
+            </div>
+          </div>
+          <a href={gatewayUrl} target="_blank" rel="noopener noreferrer" className="shrink-0 text-xs font-medium text-[#38afe8]">Open securely</a>
         </div>
           <div className="flex min-h-0 flex-1 flex-col">
             <div className="relative min-h-0 flex-1">
@@ -309,44 +320,27 @@ export default function AddMoneyPage() {
       )}
 
       {step === 2 && selectedMethod === "bank" && (
-        <div className="flex flex-1 flex-col overflow-y-auto bg-white px-5 pb-8 pt-8 text-[#142033]">
-          <h1 className="mb-8 text-center text-[2.35rem] font-normal leading-tight text-[#38afe8]">ব্যাংক নির্বাচন করুন</h1>
-          <section className="mx-auto flex w-full max-w-md flex-col gap-3" aria-label="বাংলাদেশের ব্যাংক">
-            {bangladeshBanks.slice((bankPage - 1) * 5, bankPage * 5).map((bank) => (
-              <button
-                key={bank.name}
-                type="button"
-                onClick={() => handleBankSelect(bank.name)}
-                className="flex min-h-[100px] w-full items-center gap-6 px-2 text-left transition-transform active:scale-[0.98]"
-              >
-                <Image src={bank.logo} alt={`${bank.shortName} logo`} width={140} height={86} className="h-20 w-32 object-contain" />
-                <span className="text-lg font-medium text-[#182431]">{bank.shortName}</span>
-              </button>
-            ))}
+        <div className="flex min-h-0 flex-1 flex-col overflow-hidden bg-white px-5 pb-4 pt-8 text-[#142033]">
+          <h1 className="mb-6 shrink-0 text-center text-[2.35rem] font-normal leading-tight text-[#38afe8]">ব্যাংক নির্বাচন করুন</h1>
+          <section
+            className="mx-auto w-full max-w-md overflow-y-auto overscroll-contain"
+            style={{ maxHeight: "min(356px, calc(100dvh - 210px))" }}
+            aria-label="বাংলাদেশের ব্যাংক"
+          >
+            <div className="flex flex-col gap-1">
+              {bangladeshBanks.map((bank) => (
+                <button
+                  key={bank.name}
+                  type="button"
+                  onClick={() => handleBankSelect(bank.name)}
+                  className="flex h-[67px] w-full shrink-0 items-center gap-5 px-2 text-left transition-transform active:scale-[0.98]"
+                >
+                  <Image src={bank.logo} alt={`${bank.shortName} logo`} width={112} height={56} className="h-14 w-24 object-contain" />
+                  <span className="text-lg font-medium text-[#182431]">{bank.shortName}</span>
+                </button>
+              ))}
+            </div>
           </section>
-          {bangladeshBanks.length > 5 && (
-            <nav className="mx-auto mt-4 flex w-full max-w-md items-center justify-between" aria-label="Bank pages">
-              <button
-                type="button"
-                onClick={() => setBankPage((page) => Math.max(1, page - 1))}
-                disabled={bankPage === 1}
-                className="rounded-lg px-4 py-2 text-sm font-medium text-[#38afe8] disabled:opacity-40"
-              >
-                Previous
-              </button>
-              <span aria-live="polite" className="text-sm text-[#667085]">
-                Page {bankPage} of {Math.ceil(bangladeshBanks.length / 5)}
-              </span>
-              <button
-                type="button"
-                onClick={() => setBankPage((page) => Math.min(Math.ceil(bangladeshBanks.length / 5), page + 1))}
-                disabled={bankPage >= Math.ceil(bangladeshBanks.length / 5)}
-                className="rounded-lg px-4 py-2 text-sm font-medium text-[#38afe8] disabled:opacity-40"
-              >
-                Next
-              </button>
-            </nav>
-          )}
         </div>
       )}
 
