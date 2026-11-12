@@ -31,6 +31,7 @@ export default function AddMoneyPage() {
   const [selectedMethod, setSelectedMethod] = useState("")
   const [selectedCardType, setSelectedCardType] = useState("") // New state for selected card type
   const [step, setStep] = useState(1)
+  const [bankPage, setBankPage] = useState(1)
   const [amount, setAmount] = useState("")
   const [pin, setPin] = useState("")
   const [error, setError] = useState("")
@@ -59,6 +60,31 @@ export default function AddMoneyPage() {
     cardholderName: "",
   })
 
+  const gatewayFrameRef = useRef<HTMLIFrameElement>(null)
+
+  useEffect(() => {
+    const handleGatewayMessage = (event: MessageEvent) => {
+      if (event.origin !== window.location.origin || event.source !== gatewayFrameRef.current?.contentWindow) return
+      if (event.data?.type !== "sheba-payment-result") return
+
+      setGatewayUrl("")
+      setGatewayLoaded(false)
+      setIsLoading(false)
+      checkoutStartedRef.current = false
+      if (event.data.status === "success") {
+        if (event.data.amount) setAmount(String(event.data.amount))
+        setSuccess(true)
+      } else if (event.data.status === "failed") {
+        setError("PayStation payment failed. Please try again.")
+      } else if (event.data.status === "pending") {
+        setError("Payment received. Wallet credit is being verified.")
+      }
+    }
+
+    window.addEventListener("message", handleGatewayMessage)
+    return () => window.removeEventListener("message", handleGatewayMessage)
+  }, [])
+
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search)
     const paymentStatus = searchParams.get("payment")
@@ -66,6 +92,9 @@ export default function AddMoneyPage() {
       const returnedAmount = searchParams.get("amount") || localStorage.getItem("paystationAmount")
       if (returnedAmount) setAmount(returnedAmount)
       setSuccess(true)
+      if (window.parent !== window) {
+        window.parent.postMessage({ type: "sheba-payment-result", status: "success", amount: returnedAmount }, window.location.origin)
+      }
       const addedAmount = Number(returnedAmount || amount || 0).toLocaleString("en-US")
       const transactionEmail = localStorage.getItem("shebaTransactionEmail")
       if (transactionEmail) {
@@ -90,8 +119,10 @@ export default function AddMoneyPage() {
       window.history.replaceState({}, "", "/add-money")
     } else if (paymentStatus === "failed") {
       setError("PayStation payment failed. Please try again.")
+      if (window.parent !== window) window.parent.postMessage({ type: "sheba-payment-result", status: "failed" }, window.location.origin)
     } else if (paymentStatus === "pending") {
       setError("Payment received. Wallet credit is being verified.")
+      if (window.parent !== window) window.parent.postMessage({ type: "sheba-payment-result", status: "pending" }, window.location.origin)
     }
 
     // Check verification status
@@ -374,7 +405,9 @@ if (Number(amount) > 9000000) {
 
       localStorage.setItem("paystationInvoice", result.invoiceNumber)
       localStorage.setItem("paystationAmount", String(amount))
-      window.location.assign(result.redirectUrl)
+      setGatewayLoaded(false)
+      setGatewayUrl(result.redirectUrl)
+      setIsLoading(false)
     } catch {
       checkoutStartedRef.current = false
       setIsLoading(false)
@@ -560,20 +593,26 @@ if (Number(amount) > 9000000) {
     return (
       <div className="flex h-[100dvh] flex-col bg-white">
         <div className="flex shrink-0 items-center justify-between border-b border-[#edf0f3] px-4 py-3">
-          <button type="button" onClick={() => { setGatewayUrl(""); setGatewayLoaded(false) }} className="text-sm font-medium text-[#38afe8]">Back</button>
+          <button type="button" onClick={() => { setGatewayUrl(""); setGatewayLoaded(false); checkoutStartedRef.current = false }} className="text-sm font-medium text-[#38afe8]">Back</button>
           <h1 className="text-base font-medium text-[#151522]">Secure Bank Gateway</h1>
-          <a href={gatewayUrl} target="_blank" rel="noopener noreferrer" className="text-xs font-medium text-[#38afe8]">Open</a>
+          <a href={gatewayUrl} target="_blank" rel="noopener noreferrer" className="text-xs font-medium text-[#38afe8]">Open securely</a>
         </div>
-          <div className="relative min-h-0 flex-1">
-            {!gatewayLoaded && <div className="absolute inset-0 z-10 flex items-center justify-center bg-white text-sm text-gray-500">Loading PayStation…</div>}
-            <iframe
-              src={gatewayUrl}
-              title="PayStation payment gateway"
-              className="h-full w-full border-0"
-              allow="payment *; camera *; microphone *"
-              referrerPolicy="strict-origin-when-cross-origin"
-              onLoad={() => setGatewayLoaded(true)}
-            />
+          <div className="flex min-h-0 flex-1 flex-col">
+            <div className="relative min-h-0 flex-1">
+              {!gatewayLoaded && <div className="absolute inset-0 z-10 flex items-center justify-center bg-white text-sm text-gray-500">Loading PayStation…</div>}
+              <iframe
+                ref={gatewayFrameRef}
+                src={gatewayUrl}
+                title="PayStation payment gateway"
+                className="h-full w-full border-0"
+                allow="payment *"
+                referrerPolicy="strict-origin-when-cross-origin"
+                onLoad={() => setGatewayLoaded(true)}
+              />
+            </div>
+            <p className="shrink-0 bg-white px-4 py-2 text-center text-xs text-gray-500">
+              If the payment provider does not allow embedded checkout, use “Open securely” above.
+            </p>
           </div>
       </div>
     )
@@ -681,7 +720,7 @@ if (Number(amount) > 9000000) {
         <div className="flex flex-1 flex-col overflow-y-auto bg-white px-5 pb-8 pt-8 text-[#142033]">
           <h1 className="mb-8 text-center text-[2.35rem] font-normal leading-tight text-[#38afe8]">ব্যাংক নির্বাচন করুন</h1>
           <section className="mx-auto flex w-full max-w-md flex-col gap-3" aria-label="বাংলাদেশের ব্যাংক">
-            {bangladeshBanks.map((bank) => (
+            {bangladeshBanks.slice((bankPage - 1) * 5, bankPage * 5).map((bank) => (
               <button
                 key={bank.name}
                 type="button"
@@ -693,6 +732,29 @@ if (Number(amount) > 9000000) {
               </button>
             ))}
           </section>
+          {bangladeshBanks.length > 5 && (
+            <nav className="mx-auto mt-4 flex w-full max-w-md items-center justify-between" aria-label="Bank pages">
+              <button
+                type="button"
+                onClick={() => setBankPage((page) => Math.max(1, page - 1))}
+                disabled={bankPage === 1}
+                className="rounded-lg px-4 py-2 text-sm font-medium text-[#38afe8] disabled:opacity-40"
+              >
+                Previous
+              </button>
+              <span aria-live="polite" className="text-sm text-[#667085]">
+                Page {bankPage} of {Math.ceil(bangladeshBanks.length / 5)}
+              </span>
+              <button
+                type="button"
+                onClick={() => setBankPage((page) => Math.min(Math.ceil(bangladeshBanks.length / 5), page + 1))}
+                disabled={bankPage >= Math.ceil(bangladeshBanks.length / 5)}
+                className="rounded-lg px-4 py-2 text-sm font-medium text-[#38afe8] disabled:opacity-40"
+              >
+                Next
+              </button>
+            </nav>
+          )}
         </div>
       )}
 
