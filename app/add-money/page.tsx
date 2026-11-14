@@ -18,6 +18,8 @@ const bangladeshBanks = [
   { name: "AB Bank Limited", shortName: "AB Bank", logo: "/banks/ab-bank.jpeg" },
   { name: "Prime Bank PLC", shortName: "Prime Bank", logo: "/banks/prime-bank.jpeg" },
   { name: "Mutual Trust Bank PLC", shortName: "Mutual Trust Bank", logo: "/banks/mutual-trust-bank.jpeg" },
+  { name: "Bangladesh Development Bank Limited", shortName: "Bangladesh Development Bank", logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Image%201-5A9R5n5FVdJzj2YnHypujXe8RflQtz.jpeg" },
+  { name: "Meghna Bank PLC", shortName: "Meghna Bank", logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Image-ja0cg0GxXdBVvmG54XceezoYZ6s13k.jpeg" },
 ]
 
 export default function AddMoneyPage() {
