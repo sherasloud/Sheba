@@ -117,10 +117,11 @@ export default function WithdrawPage() {
               <option value="Nagad">Nagad</option>
               <option value="Rocket">Rocket</option>
               <option value="Upay">Upay</option>
-              <option value="DBL">DBL</option>
               <option value="Islami Bank">Islami Bank</option>
               <option value="Sonali Bank">Sonali Bank</option>
-              <option value="Dutch Bangla">Dutch Bangla</option>
+              <option value="Dutch-Bangla Bank">Dutch-Bangla Bank</option>
+              <option value="Eastern Bank">Eastern Bank</option>
+              <option value="Southeast Bank">Southeast Bank</option>
               <option value="Dhaka Bank">Dhaka Bank</option>
             </select>
           </div>
