@@ -15,7 +15,7 @@ export default function PaymentGatewayScreen() {
   const [phoneNumber, setPhoneNumber] = useState("")
   const [phoneError, setPhoneError] = useState("")
 
-  const handleConfirm = () => {
+  const handleContinue = () => {
     if (!/^1[3-9]\d{8}$/.test(phoneNumber)) {
       setPhoneError("Enter a valid 10-digit Bangladesh mobile number.")
       setPreviewNotice(false)
@@ -51,36 +51,43 @@ export default function PaymentGatewayScreen() {
           />
         </div>
 
-        <section className="flex flex-1 flex-col justify-center gap-2" aria-label="Payer phone number">
-          <label htmlFor="payer-phone" className="text-sm font-medium text-[#292929]">
-            Bangladesh mobile number
-          </label>
-          <div className={`flex min-h-14 items-center rounded-xl border bg-white px-4 ${phoneError ? "border-red-500" : "border-[#d9d9d9] focus-within:border-[#078bb2]"}`}>
-            <span className="mr-3 shrink-0 text-base font-medium text-[#555]" aria-hidden="true">+880</span>
-            <input
-              id="payer-phone"
-              type="tel"
-              inputMode="numeric"
-              autoComplete="tel-national"
-              maxLength={11}
-              value={phoneNumber}
-              onChange={(event) => {
-                const digits = event.target.value.replace(/\D/g, "")
-                const localNumber =
-                  digits.length === 11 && digits.startsWith("0") ? digits.slice(1) : digits.slice(0, 10)
-                setPhoneNumber(localNumber)
-                setPhoneError("")
-                setPreviewNotice(false)
-              }}
-              placeholder="17XXXXXXXX"
-              aria-label="Bangladesh mobile number without country code"
-              aria-invalid={Boolean(phoneError)}
-              aria-describedby={phoneError ? "payer-phone-error" : "payer-phone-hint"}
-              className="min-w-0 flex-1 bg-transparent py-3 text-base text-[#171717] outline-none placeholder:text-[#9a9a9a]"
-            />
+        <section className="flex flex-1 flex-col justify-center gap-3" aria-label="Payer phone number">
+          <div className="flex items-center gap-3">
+            <div className="flex h-14 shrink-0 items-center gap-2.5 rounded-xl border border-[#d9d9d9] bg-[#f8fcff] px-3">
+              <span className="relative block h-6 w-9 overflow-hidden rounded-[3px] bg-[#006a4e]" aria-hidden="true">
+                <span className="absolute left-1/2 top-1/2 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#f42a41]" />
+              </span>
+              <span className="flex flex-col text-left leading-tight">
+                <span className="text-xs font-medium text-[#242424]">Bangladesh</span>
+                <span className="mt-0.5 text-xs text-[#646464]">+880</span>
+              </span>
+            </div>
+            <div className={`flex min-h-14 min-w-0 flex-1 items-center rounded-xl border bg-white px-4 ${phoneError ? "border-red-500" : "border-[#d9d9d9] focus-within:border-[#38afe8]"}`}>
+              <label htmlFor="payer-phone" className="sr-only">Phone number</label>
+              <input
+                id="payer-phone"
+                type="tel"
+                inputMode="numeric"
+                autoComplete="tel-national"
+                maxLength={11}
+                value={phoneNumber}
+                onChange={(event) => {
+                  const digits = event.target.value.replace(/\D/g, "")
+                  const localNumber =
+                    digits.length === 11 && digits.startsWith("0") ? digits.slice(1) : digits.slice(0, 10)
+                  setPhoneNumber(localNumber)
+                  setPhoneError("")
+                  setPreviewNotice(false)
+                }}
+                placeholder="Phone number"
+                aria-invalid={Boolean(phoneError)}
+                aria-describedby={phoneError ? "payer-phone-error" : "payer-phone-hint"}
+                className="min-w-0 flex-1 bg-transparent py-3 text-base text-[#171717] outline-none placeholder:text-[#9a9a9a]"
+              />
+            </div>
           </div>
           <p id={phoneError ? "payer-phone-error" : "payer-phone-hint"} className={`text-sm ${phoneError ? "text-red-600" : "text-[#646464]"}`} role={phoneError ? "alert" : undefined}>
-            {phoneError || "Enter 10 digits after +880."}
+            {phoneError || "Enter a 10-digit mobile number."}
           </p>
         </section>
 
@@ -88,11 +95,11 @@ export default function PaymentGatewayScreen() {
           <div className="flex flex-col gap-3">
             <button
               type="button"
-              onClick={handleConfirm}
+              onClick={handleContinue}
               disabled={secondsLeft === 0}
-              className="min-h-[58px] w-full rounded-xl bg-[#078bb2] px-6 py-4 text-lg font-semibold text-white shadow-[0_3px_0_0_#05799b] transition-colors hover:bg-[#067da2] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#078bb2]/25 disabled:cursor-not-allowed disabled:bg-[#9acbd9] disabled:shadow-none"
+              className="min-h-[58px] w-full rounded-xl bg-[#38afe8] px-6 py-4 text-lg font-semibold text-white shadow-[0_3px_0_0_#2b9dd5] transition-colors hover:bg-[#259edc] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#38afe8]/25 disabled:cursor-not-allowed disabled:bg-[#a8d8ef] disabled:shadow-none"
             >
-              CONFIRM
+              CONTINUE
             </button>
             <button
               type="button"
