@@ -19,8 +19,8 @@ const bangladeshBanks = [
   { name: "Prime Bank PLC", shortName: "Prime Bank", logo: "/banks/prime-bank.jpeg" },
   { name: "Mutual Trust Bank PLC", shortName: "Mutual Trust Bank", logo: "/banks/mutual-trust-bank.jpeg" },
   { name: "Dutch-Bangla Bank Limited", shortName: "Dutch Bangla Bank", logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Image%203-BDHDZICyoiUC077EM3iYq7FTJbeU28.jpeg" },
-  { name: "South East Bank PLC", shortName: "South East Bank", logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Image%205-WsobqqhI24r8EXUUsNgkLH9cN0W4s3.jpeg" },
-  { name: "Eastern Bank PLC", shortName: "Eastern Bank", logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Image%207-rriZjloYdVC1mt4v9JJYZzFvAoLm4H.jpeg" },
+  { name: "South East Bank PLC", shortName: "South East Bank", logo: "/banks/south-east-bank.png" },
+  { name: "Eastern Bank PLC", shortName: "Eastern Bank", logo: "/banks/eastern-bank.png" },
   { name: "Bangladesh Development Bank Limited", shortName: "Bangladesh Development Bank", logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Image%201-5A9R5n5FVdJzj2YnHypujXe8RflQtz.jpeg" },
   { name: "Meghna Bank PLC", shortName: "Meghna Bank", logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Image-ja0cg0GxXdBVvmG54XceezoYZ6s13k.jpeg" },
   { name: "Community Bank Bangladesh PLC", shortName: "Community Bank", logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Image-wyof7WS0uba89ByjLE5rrOXMbvnjlc.jpeg" },
@@ -699,7 +699,13 @@ if (Number(amount) > 9000000) {
                 className="flex min-h-[100px] w-full items-center gap-6 px-2 text-left transition-transform active:scale-[0.98]"
               >
                 <span className="flex h-20 w-32 shrink-0 items-center justify-center">
-                  <Image src={bank.logo} alt={`${bank.shortName} logo`} width={140} height={86} className="h-20 w-32 object-contain" />
+                  <Image
+                    src={bank.logo}
+                    alt={`${bank.shortName} logo`}
+                    width={140}
+                    height={86}
+                    className="h-20 w-32 object-contain"
+                  />
                 </span>
                 <span className="min-w-0 flex-1 text-left text-lg font-medium text-[#182431]">{bank.shortName}</span>
               </button>
