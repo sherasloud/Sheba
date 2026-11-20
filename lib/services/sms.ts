@@ -1,7 +1,5 @@
 /**
- * SMS Service for sending OTP via MyGP
- * 
- * আপনার MyGP message পাঠানোর method এখানে integrate করুন
+ * AutoMas SMS service for Sheba OTPs and transaction notifications.
  */
 
 interface SMSResult {
@@ -27,9 +25,9 @@ function internationalPhone(phoneNumber: string) {
   return `880${digits}`
 }
 
-async function sendAutomasSMS(phoneNumber: string, message: string): Promise<SMSResult> {
+async function sendAutomasSMS(phoneNumber: string, message: string, senderIdOverride?: string): Promise<SMSResult> {
   const apiKey = process.env.AUTOMAS_API_KEY || process.env.api_key || process.env.API_KEY
-  const senderId = process.env.AUTOMAS_SENDER_ID || "8809617642467"
+  const senderId = senderIdOverride || "Sheba"
   if (!apiKey || !senderId) return { success: false, message: "Automas SMS is not configured" }
 
   const controller = new AbortController()
@@ -68,26 +66,21 @@ async function sendAutomasSMS(phoneNumber: string, message: string): Promise<SMS
 }
 
 /**
- * Send OTP to phone number using MyGP
- * 
- * TODO: আপনার MyGP SMS পাঠানোর method এখানে add করুন
+ * Send a Sheba-branded OTP, optionally bound to this app's origin for WebOTP autofill.
  */
-export async function sendOTP(phoneNumber: string, otp: string): Promise<SMSResult> {
+export async function sendOTP(phoneNumber: string, otp: string, originHost?: string): Promise<SMSResult> {
   try {
-    // Message content
-    const message = `Sheba OTP: ${otp}. This code is valid for 5 minutes.`
+    const host = originHost?.trim().toLowerCase()
+    const canBindToOrigin = Boolean(host && (host === "localhost" || (/^[a-z0-9.-]+$/.test(host) && host.includes("."))))
+    const originBinding = canBindToOrigin ? `\n@${host} #${otp}` : ""
+    const message = `Sheba verification code: ${otp}. It expires in 5 minutes.${originBinding}`
 
-    console.log('[v0] Attempting to send SMS:', {
-      to: phoneNumber,
-      message: message,
-    })
-
-    return await sendAutomasSMS(phoneNumber, message)
-  } catch (error: any) {
-    console.error('[v0] Error sending OTP:', error.message)
+    return await sendAutomasSMS(phoneNumber, message, "Sheba")
+  } catch (error: unknown) {
+    console.error("[v0] Error sending OTP:", error instanceof Error ? error.message : "Unknown error")
     return {
       success: false,
-      message: error.message || 'Failed to send OTP',
+      message: "Failed to send OTP",
     }
   }
 }
