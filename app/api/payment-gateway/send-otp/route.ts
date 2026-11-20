@@ -40,6 +40,7 @@ export async function POST(request: NextRequest) {
 
     const sent = await sendOTP(phone, generated.otp, request.nextUrl.hostname)
     if (!sent.success) {
+      console.warn("[v0] Gateway OTP SMS was not accepted by the provider:", sent.message)
       await invalidateStoredOTP(phone, "payment-gateway")
       return NextResponse.json(
         { success: false, message: "We couldn't send your code right now. Please try again later." },
