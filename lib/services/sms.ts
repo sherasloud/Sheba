@@ -57,19 +57,37 @@ async function sendAutomasSMS(phoneNumber: string, message: string): Promise<SMS
     } catch {}
 
     const result = typeof data === "object" && data !== null
-      ? data as { status?: unknown; id?: unknown }
+      ? data as { status?: unknown; id?: unknown; response?: unknown }
       : null
-    const status = String(result?.status ?? "").trim().toUpperCase()
-    if (response.ok && status === "SUCCESS") {
+    const responseRecords = Array.isArray(result?.response)
+      ? result.response.filter((record): record is { status?: unknown; id?: unknown } =>
+          typeof record === "object" && record !== null,
+        )
+      : []
+    const topLevelStatus = String(result?.status ?? "").trim().toUpperCase()
+    const recordStatuses = responseRecords.map((record) => String(record.status ?? "").trim().toUpperCase())
+    const isAcceptedStatus = (status: string) => status === "0" || status === "SUCCESS"
+    const accepted = response.ok && (responseRecords.length > 0
+      ? recordStatuses.every(isAcceptedStatus)
+      : isAcceptedStatus(topLevelStatus))
+
+    if (accepted) {
+      const messageId = responseRecords[0]?.id ?? result?.id
       return {
         success: true,
         message: "SMS accepted by AutoMas",
-        messageId: typeof result?.id === "string" ? result.id : undefined,
+        messageId: typeof messageId === "string" || typeof messageId === "number" ? String(messageId) : undefined,
         data,
       }
     }
 
-    const reason = status ? `provider status ${status}` : `HTTP ${response.status}`
+    const reason = !response.ok
+      ? `HTTP ${response.status}`
+      : responseRecords.length > 0
+        ? `provider status ${recordStatuses.join(", ")}`
+        : topLevelStatus
+          ? `provider status ${topLevelStatus}`
+          : `unrecognized provider response (HTTP ${response.status})`
     return { success: false, message: `AutoMas did not accept the SMS (${reason})` }
   } catch (error: unknown) {
     const timedOut = error instanceof Error && error.name === "AbortError"
