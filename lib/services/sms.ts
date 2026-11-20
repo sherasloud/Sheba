@@ -11,13 +11,6 @@ interface SMSResult {
 
 const AUTOMAS_URL = "https://api.automas.com.bd/smsapiv3"
 
-function localPhone(phoneNumber: string) {
-  const digits = phoneNumber.replace(/\D/g, "")
-  if (digits.startsWith("880")) return `0${digits.slice(3)}`
-  if (digits.startsWith("88")) return `0${digits.slice(2)}`
-  return digits
-}
-
 function internationalPhone(phoneNumber: string) {
   const digits = phoneNumber.replace(/\D/g, "")
   if (digits.startsWith("880")) return digits
@@ -45,7 +38,7 @@ async function sendAutomasSMS(phoneNumber: string, message: string): Promise<SMS
         type: "text",
         scheduledDateTime: "",
         msg: message,
-        contacts: localPhone(phoneNumber),
+        contacts: internationalPhone(phoneNumber),
       }),
       cache: "no-store",
       signal: controller.signal,
