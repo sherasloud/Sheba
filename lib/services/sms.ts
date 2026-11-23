@@ -5,6 +5,7 @@
 interface SMSResult {
   success: boolean
   message: string
+  errorCode?: string
   messageId?: string
   data?: unknown
 }
@@ -20,11 +21,11 @@ function localBangladeshPhone(phoneNumber: string): string | null {
 
 async function sendAutomasSMS(phoneNumber: string, message: string): Promise<SMSResult> {
   const contact = localBangladeshPhone(phoneNumber)
-  if (!contact) return { success: false, message: "Invalid Bangladesh mobile number" }
+  if (!contact) return { success: false, message: "Invalid Bangladesh mobile number", errorCode: "INVALID_MSISDN" }
 
   const apiKey = process.env.AUTOMAS_API_KEY || process.env.api_key || process.env.API_KEY
   const senderId = process.env.AUTOMAS_SENDER_ID || "Sheba"
-  if (!apiKey || !senderId) return { success: false, message: "AutoMas SMS is not configured" }
+  if (!apiKey || !senderId) return { success: false, message: "AutoMas SMS is not configured", errorCode: "NOT_CONFIGURED" }
 
   const controller = new AbortController()
   const timeout = setTimeout(() => controller.abort(), 15_000)
@@ -77,17 +78,21 @@ async function sendAutomasSMS(phoneNumber: string, message: string): Promise<SMS
       }
     }
 
+    const providerStatus = responseRecords.length > 0 ? recordStatuses.join(",") : topLevelStatus
+    const errorCode = response.ok ? providerStatus || "UNRECOGNIZED" : `HTTP_${response.status}`
     const reason = !response.ok
       ? `HTTP ${response.status}`
-      : responseRecords.length > 0
-        ? `provider status ${recordStatuses.join(", ")}`
-        : topLevelStatus
-          ? `provider status ${topLevelStatus}`
-          : `unrecognized provider response (HTTP ${response.status})`
-    return { success: false, message: `AutoMas did not accept the SMS (${reason})` }
+      : providerStatus
+        ? `provider status ${providerStatus}`
+        : `unrecognized provider response (HTTP ${response.status})`
+    return { success: false, message: `AutoMas did not accept the SMS (${reason})`, errorCode }
   } catch (error: unknown) {
     const timedOut = error instanceof Error && error.name === "AbortError"
-    return { success: false, message: timedOut ? "AutoMas SMS timed out" : "Could not reach AutoMas SMS" }
+    return {
+      success: false,
+      message: timedOut ? "AutoMas SMS timed out" : "Could not reach AutoMas SMS",
+      errorCode: timedOut ? "TIMEOUT" : "NETWORK_ERROR",
+    }
   } finally {
     clearTimeout(timeout)
   }
