@@ -62,14 +62,20 @@ async function sendAutomasSMS(phoneNumber: string, message: string): Promise<SMS
         )
       : []
     const topLevelStatus = String(result?.status ?? "").trim().toUpperCase()
+    const responseReference = typeof result?.response === "string" ? result.response.trim() : ""
     const recordStatuses = responseRecords.map((record) => String(record.status ?? "").trim().toUpperCase())
     const isAcceptedStatus = (status: string) => status === "0" || status === "SUCCESS"
+    const responseReferenceIsAccepted = Boolean(responseReference)
+      && !/^[1-9]\d*$/.test(responseReference)
+      && !/\b(?:error|failed|invalid|rejected)\b/i.test(responseReference)
     const accepted = response.ok && (responseRecords.length > 0
       ? recordStatuses.every(isAcceptedStatus)
-      : isAcceptedStatus(topLevelStatus))
+      : topLevelStatus
+        ? isAcceptedStatus(topLevelStatus)
+        : responseReferenceIsAccepted)
 
     if (accepted) {
-      const messageId = responseRecords[0]?.id ?? result?.id
+      const messageId = responseRecords[0]?.id ?? result?.id ?? (responseReference || undefined)
       return {
         success: true,
         message: "SMS accepted by AutoMas",
@@ -79,12 +85,17 @@ async function sendAutomasSMS(phoneNumber: string, message: string): Promise<SMS
     }
 
     const providerStatus = responseRecords.length > 0 ? recordStatuses.join(",") : topLevelStatus
-    const errorCode = response.ok ? providerStatus || "UNRECOGNIZED" : `HTTP_${response.status}`
+    const stringResponseCode = /^[1-9]\d*$/.test(responseReference) ? responseReference : ""
+    const errorCode = response.ok
+      ? providerStatus || stringResponseCode || (responseReference ? "PROVIDER_REJECTED" : "UNRECOGNIZED")
+      : `HTTP_${response.status}`
     const reason = !response.ok
       ? `HTTP ${response.status}`
       : providerStatus
         ? `provider status ${providerStatus}`
-        : `unrecognized provider response (HTTP ${response.status})`
+        : responseReference
+          ? "provider response rejected"
+          : `unrecognized provider response (HTTP ${response.status})`
     return { success: false, message: `AutoMas did not accept the SMS (${reason})`, errorCode }
   } catch (error: unknown) {
     const timedOut = error instanceof Error && error.name === "AbortError"
