@@ -1,14 +1,14 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { generateAndStoreOTP } from "@/lib/otp-store"
+import { discardStoredOTP, generateAndStoreOTP } from "@/lib/otp-store"
 import { sendOTP } from "@/lib/services/sms"
 
 export async function POST(request: NextRequest) {
   try {
-    const { phone } = await request.json()
+    const body = await request.json()
+    const phone = typeof body?.phone === "string" ? body.phone.trim() : ""
 
-    // Validate BD phone number (01XXXXXXXXX)
-    if (!phone || !/^01\d{9}$/.test(phone)) {
-      return NextResponse.json({ success: false, message: "Invalid phone number" }, { status: 400 })
+    if (!/^01[3-9]\d{8}$/.test(phone)) {
+      return NextResponse.json({ success: false, message: "সঠিক বাংলাদেশি মোবাইল নম্বর দিন।" }, { status: 400 })
     }
 
     // Generate + store OTP in Redis (also enforces rate limits)
@@ -19,7 +19,12 @@ export async function POST(request: NextRequest) {
 
     const sent = await sendOTP(phone, generated.otp)
     if (!sent.success) {
-      return NextResponse.json({ success: false, message: sent.message }, { status: 502 })
+      console.warn("[v0] OTP SMS was not accepted by the provider:", sent.message)
+      await discardStoredOTP(phone)
+      return NextResponse.json(
+        { success: false, message: "SMS পাঠানো যায়নি। নম্বরটি যাচাই করে একটু পরে আবার চেষ্টা করুন।" },
+        { status: 502 },
+      )
     }
 
     return NextResponse.json({

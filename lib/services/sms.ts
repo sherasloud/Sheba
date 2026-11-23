@@ -11,14 +11,17 @@ interface SMSResult {
 
 const AUTOMAS_URL = "https://api.automas.com.bd/smsapiv3"
 
-function internationalPhone(phoneNumber: string) {
+function localBangladeshPhone(phoneNumber: string): string | null {
   const digits = phoneNumber.replace(/\D/g, "")
-  if (digits.startsWith("880")) return digits
-  if (digits.startsWith("0")) return `88${digits}`
-  return `880${digits}`
+  const nationalDigits = digits.startsWith("880") ? digits.slice(3) : digits
+  const localNumber = nationalDigits.startsWith("0") ? nationalDigits : `0${nationalDigits}`
+  return /^01[3-9]\d{8}$/.test(localNumber) ? localNumber : null
 }
 
 async function sendAutomasSMS(phoneNumber: string, message: string): Promise<SMSResult> {
+  const contact = localBangladeshPhone(phoneNumber)
+  if (!contact) return { success: false, message: "Invalid Bangladesh mobile number" }
+
   const apiKey = process.env.AUTOMAS_API_KEY || process.env.api_key || process.env.API_KEY
   const senderId = process.env.AUTOMAS_SENDER_ID || "Sheba"
   if (!apiKey || !senderId) return { success: false, message: "AutoMas SMS is not configured" }
@@ -38,7 +41,7 @@ async function sendAutomasSMS(phoneNumber: string, message: string): Promise<SMS
         type: "text",
         scheduledDateTime: "",
         msg: message,
-        contacts: internationalPhone(phoneNumber),
+        contacts: contact,
       }),
       cache: "no-store",
       signal: controller.signal,
@@ -146,7 +149,8 @@ export async function sendTransactionSMS({
     second: "2-digit",
     hour12: false,
   })
-  const message = `${label}\nUser : ${localPhone(peerPhone || phoneNumber)}\nAmount : ${formattedAmount} ${currency}\nBalance : ${formattedBalance} ${currency}\nTransaction ID : ${transactionId}\n${formattedTime}`
+  const displayPhone = localBangladeshPhone(peerPhone || phoneNumber) ?? (peerPhone || phoneNumber)
+  const message = `${label}\nUser : ${displayPhone}\nAmount : ${formattedAmount} ${currency}\nBalance : ${formattedBalance} ${currency}\nTransaction ID : ${transactionId}\n${formattedTime}`
   try {
     return await sendAutomasSMS(phoneNumber, message)
   } catch (error: any) {
