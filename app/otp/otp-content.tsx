@@ -13,11 +13,8 @@ export default function OTPContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const phoneNumber = searchParams.get("phone") || ""
-  const isValidPhone = /^01[3-9]\d{8}$/.test(phoneNumber)
 
-  useEffect(() => {
-    if (!isValidPhone) router.replace("/enter-phone")
-  }, [isValidPhone, router])
+
 
   useEffect(() => {
     if (timeLeft <= 0) return
@@ -26,20 +23,12 @@ export default function OTPContent() {
   }, [timeLeft])
 
   const handleInputChange = (index: number, value: string) => {
-    const digits = value.replace(/\D/g, "")
-    if (digits.length > 1) {
-      const nextOtp = Array.from({ length: 6 }, (_, digitIndex) => digits[digitIndex] || "")
-      setOtp(nextOtp)
-      inputRefs.current[Math.min(digits.length, 5)]?.focus()
-      setError("")
-      return
-    }
+    if (!/^\d*$/.test(value)) return
+    const newOtp = [...otp]
+    newOtp[index] = value
+    setOtp(newOtp)
 
-    const nextOtp = [...otp]
-    nextOtp[index] = digits
-    setOtp(nextOtp)
-
-    if (digits && index < 5) {
+    if (value && index < 5) {
       inputRefs.current[index + 1]?.focus()
     }
 
@@ -127,7 +116,7 @@ export default function OTPContent() {
     return `${mins}:${secs.toString().padStart(2, "0")}`
   }
 
-  if (!isValidPhone) return null
+
 
   return (
     <div className="h-[100dvh] w-full overflow-hidden bg-white px-5 py-4 text-[#142033]">
@@ -150,7 +139,7 @@ export default function OTPContent() {
           <div className="mb-4 flex w-full items-center justify-between rounded-2xl bg-[#f4f5f7] px-4 py-3">
             <div>
               <p className="text-xs text-[#9a9da5]">Verification code sent to</p>
-              <p className="mt-1 text-base font-medium">+880 {phoneNumber.slice(1)}</p>
+              <p className="mt-1 text-base font-medium">{phoneNumber || "Phone number"}</p>
             </div>
             <button type="button" onClick={() => router.push("/enter-phone")} className="text-xl text-[#142033]" aria-label="Edit phone number">✎</button>
           </div>
@@ -162,9 +151,7 @@ export default function OTPContent() {
                 ref={(el) => { inputRefs.current[index] = el }}
                 type="tel"
                 inputMode="numeric"
-                maxLength={index === 0 ? 6 : 1}
-                autoComplete={index === 0 ? "one-time-code" : "off"}
-                aria-label={`Verification code digit ${index + 1}`}
+                maxLength={1}
                 value={digit}
                 onChange={(e) => handleInputChange(index, e.target.value)}
                 onKeyDown={(e) => handleKeyDown(index, e)}
