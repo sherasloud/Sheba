@@ -10,7 +10,7 @@ interface SMSResult {
   data?: unknown
 }
 
-const AUTOMAS_URL = "https://api.automas.com.bd/smsapiv3"
+const AUTOMAS_URL = "https://api.automas.com.bd/smsapimany"
 
 function localBangladeshPhone(phoneNumber: string): string | null {
   const digits = phoneNumber.replace(/\D/g, "")
@@ -42,12 +42,15 @@ async function sendAutomasSMS(
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        api_key: apiKey,
-        senderid: senderId,
-        type: "text",
-        scheduledDateTime: "",
-        msg: message,
-        contacts: recipient,
+        apikey: apiKey,
+        sender: senderId,
+        messages: [
+          {
+            id: 1,
+            msisdn: recipient,
+            smstext: message,
+          },
+        ],
       }),
       cache: "no-store",
       signal: controller.signal,
@@ -62,7 +65,7 @@ async function sendAutomasSMS(
       ? data as { status?: unknown; id?: unknown; response?: unknown }
       : null
     const responseRecords = Array.isArray(result?.response)
-      ? result.response.filter((record): record is { status?: unknown; id?: unknown } =>
+      ? result.response.filter((record): record is { status?: unknown; id?: unknown; cid?: unknown; sid?: unknown; msisdn?: unknown } =>
           typeof record === "object" && record !== null,
         )
       : []
@@ -80,7 +83,11 @@ async function sendAutomasSMS(
         : responseReferenceIsAccepted)
 
     if (accepted) {
-      const messageId = responseRecords[0]?.id ?? result?.id ?? (responseReference || undefined)
+      const messageId = responseRecords[0]?.id
+        ?? responseRecords[0]?.sid
+        ?? responseRecords[0]?.cid
+        ?? result?.id
+        ?? (responseReference || undefined)
       return {
         success: true,
         message: "SMS accepted by AutoMas",
