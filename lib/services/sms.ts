@@ -10,7 +10,7 @@ interface SMSResult {
   data?: unknown
 }
 
-const AUTOMAS_URL = "https://api.automas.com.bd/smsapiv3"
+const AUTOMAS_URL = "https://api.automas.com.bd/smsapimany"
 
 function localBangladeshPhone(phoneNumber: string): string | null {
   const digits = phoneNumber.replace(/\D/g, "")
@@ -19,9 +19,14 @@ function localBangladeshPhone(phoneNumber: string): string | null {
   return /^01[3-9]\d{8}$/.test(localNumber) ? localNumber : null
 }
 
-async function sendAutomasSMS(phoneNumber: string, message: string): Promise<SMSResult> {
+async function sendAutomasSMS(
+  phoneNumber: string,
+  message: string,
+  useInternationalMsisdn = false,
+): Promise<SMSResult> {
   const contact = localBangladeshPhone(phoneNumber)
   if (!contact) return { success: false, message: "Invalid Bangladesh mobile number", errorCode: "INVALID_MSISDN" }
+  const recipient = useInternationalMsisdn ? `880${contact.slice(1)}` : contact
 
   const apiKey = process.env.AUTOMAS_API_KEY || process.env.api_key || process.env.API_KEY
   const senderId = process.env.AUTOMAS_SENDER_ID || "Sheba"
@@ -37,12 +42,15 @@ async function sendAutomasSMS(phoneNumber: string, message: string): Promise<SMS
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        api_key: apiKey,
-        senderid: senderId,
-        type: "text",
-        scheduledDateTime: "",
-        msg: message,
-        contacts: contact,
+        apikey: apiKey,
+        sender: senderId,
+        messages: [
+          {
+            id: 1,
+            msisdn: recipient,
+            smstext: message,
+          },
+        ],
       }),
       cache: "no-store",
       signal: controller.signal,
@@ -57,19 +65,29 @@ async function sendAutomasSMS(phoneNumber: string, message: string): Promise<SMS
       ? data as { status?: unknown; id?: unknown; response?: unknown }
       : null
     const responseRecords = Array.isArray(result?.response)
-      ? result.response.filter((record): record is { status?: unknown; id?: unknown } =>
+      ? result.response.filter((record): record is { status?: unknown; id?: unknown; cid?: unknown; sid?: unknown; msisdn?: unknown } =>
           typeof record === "object" && record !== null,
         )
       : []
     const topLevelStatus = String(result?.status ?? "").trim().toUpperCase()
+    const responseReference = typeof result?.response === "string" ? result.response.trim() : ""
     const recordStatuses = responseRecords.map((record) => String(record.status ?? "").trim().toUpperCase())
     const isAcceptedStatus = (status: string) => status === "0" || status === "SUCCESS"
+    const responseReferenceIsAccepted = Boolean(responseReference)
+      && !/^[1-9]\d*$/.test(responseReference)
+      && !/\b(?:error|failed|invalid|rejected)\b/i.test(responseReference)
     const accepted = response.ok && (responseRecords.length > 0
       ? recordStatuses.every(isAcceptedStatus)
-      : isAcceptedStatus(topLevelStatus))
+      : topLevelStatus
+        ? isAcceptedStatus(topLevelStatus)
+        : responseReferenceIsAccepted)
 
     if (accepted) {
-      const messageId = responseRecords[0]?.id ?? result?.id
+      const messageId = responseRecords[0]?.id
+        ?? responseRecords[0]?.sid
+        ?? responseRecords[0]?.cid
+        ?? result?.id
+        ?? (responseReference || undefined)
       return {
         success: true,
         message: "SMS accepted by AutoMas",
@@ -79,12 +97,22 @@ async function sendAutomasSMS(phoneNumber: string, message: string): Promise<SMS
     }
 
     const providerStatus = responseRecords.length > 0 ? recordStatuses.join(",") : topLevelStatus
-    const errorCode = response.ok ? providerStatus || "UNRECOGNIZED" : `HTTP_${response.status}`
+    const stringResponseCode = /^[1-9]\d*$/.test(responseReference) ? responseReference : ""
+    const errorCode = response.ok
+      ? providerStatus || stringResponseCode || (responseReference ? "PROVIDER_REJECTED" : "UNRECOGNIZED")
+      : `HTTP_${response.status}`
+
+    if (errorCode === "105" && !useInternationalMsisdn) {
+      return sendAutomasSMS(phoneNumber, message, true)
+    }
+
     const reason = !response.ok
       ? `HTTP ${response.status}`
       : providerStatus
         ? `provider status ${providerStatus}`
-        : `unrecognized provider response (HTTP ${response.status})`
+        : responseReference
+          ? "provider response rejected"
+          : `unrecognized provider response (HTTP ${response.status})`
     return { success: false, message: `AutoMas did not accept the SMS (${reason})`, errorCode }
   } catch (error: unknown) {
     const timedOut = error instanceof Error && error.name === "AbortError"
