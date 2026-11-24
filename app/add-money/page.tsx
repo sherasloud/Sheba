@@ -26,8 +26,11 @@ const bangladeshBanks = [
   { name: "Community Bank Bangladesh PLC", shortName: "Community Bank", logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Image-wyof7WS0uba89ByjLE5rrOXMbvnjlc.jpeg" },
   { name: "ONE Bank PLC", shortName: "ONE Bank", logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Image%201-DGMxpS9c5thamGYAV5dVlNWsGGBqWl.jpeg" },
   { name: "Midland Bank Limited", shortName: "Midland Bank", logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Image%202-UfEYhp1DcuYQfKUQeT2JahZ4WyNC1J.jpeg" },
+  { name: "Standard Bank PLC", shortName: "Standard Bank", logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Image%205-5FQULiyxu6VkilCDlgwQoRdwjXkiUh.jpeg" },
   { name: "Jamuna Bank PLC", shortName: "Jamuna Bank", logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Image%206-iJdIcJ3W6pr4vgEj9fNj9QVLXmaUlv.jpeg" },
+  { name: "Rupali Bank PLC", shortName: "Rupali Bank", logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Image%203-pkDYwSEqQUdJ4ph0GLxMkEsBm92EIV.jpeg" },
   { name: "Woori Bank Bangladesh", shortName: "Woori Bank", logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Image%204-ARiVtmtJbt3XPxfp5Wbh44nz6jGTam.jpeg" },
+  { name: "EXIM Bank PLC", shortName: "EXIM Bank", logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Image%207-udZCdfESshEIKHizrGSoEfWvP1UMoO.jpeg" },
 ]
 
 export default function AddMoneyPage() {
