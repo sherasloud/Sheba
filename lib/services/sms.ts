@@ -29,8 +29,8 @@ async function sendAutomasSMS(
   const recipient = useInternationalMsisdn ? `880${contact.slice(1)}` : contact
 
   const apiKey = process.env.AUTOMAS_API_KEY || process.env.api_key || process.env.API_KEY
-  const senderId = process.env.AUTOMAS_SENDER_ID || "Sheba"
-  if (!apiKey || !senderId) return { success: false, message: "AutoMas SMS is not configured", errorCode: "NOT_CONFIGURED" }
+  const senderId = "Sheba"
+  if (!apiKey) return { success: false, message: "AutoMas SMS is not configured", errorCode: "NOT_CONFIGURED" }
 
   const controller = new AbortController()
   const timeout = setTimeout(() => controller.abort(), 15_000)
