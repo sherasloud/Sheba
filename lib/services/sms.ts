@@ -35,17 +35,15 @@ async function sendAutomasSMS(
   const controller = new AbortController()
   const timeout = setTimeout(() => controller.abort(), 15_000)
   try {
-    const response = await fetch(AUTOMAS_URL, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        apikey: apiKey,
-        sender: senderId,
-        messages: [{ id: 1, msisdn: recipient, smstext: message }],
-      }),
+    const params = new URLSearchParams({
+      apikey: apiKey,
+      sender: senderId,
+      msisdn: recipient,
+      smstext: message,
+    })
+    const response = await fetch(`${AUTOMAS_URL}?${params.toString()}`, {
+      method: "GET",
+      headers: { Accept: "application/json" },
       cache: "no-store",
       signal: controller.signal,
     })
