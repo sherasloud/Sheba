@@ -10,7 +10,7 @@ interface SMSResult {
   data?: unknown
 }
 
-const AUTOMAS_URL = "https://api.automas.com.bd/smsapiv3"
+const AUTOMAS_URL = "https://api.automas.com.bd/smsapimany"
 
 function localBangladeshPhone(phoneNumber: string): string | null {
   const digits = phoneNumber.replace(/\D/g, "")
@@ -35,15 +35,14 @@ async function sendAutomasSMS(
   const controller = new AbortController()
   const timeout = setTimeout(() => controller.abort(), 15_000)
   try {
-    const params = new URLSearchParams({
-      apikey: apiKey,
-      sender: senderId,
-      msisdn: recipient,
-      smstext: message,
-    })
-    const response = await fetch(`${AUTOMAS_URL}?${params.toString()}`, {
-      method: "GET",
-      headers: { Accept: "application/json" },
+    const response = await fetch(AUTOMAS_URL, {
+      method: "POST",
+      headers: { Accept: "application/json", "Content-Type": "application/json" },
+      body: JSON.stringify({
+        api_key: apiKey,
+        sender: senderId,
+        messages: [{ id: 1, msisdn: recipient, smstext: message }],
+      }),
       cache: "no-store",
       signal: controller.signal,
     })
