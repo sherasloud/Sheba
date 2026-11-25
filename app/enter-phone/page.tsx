@@ -12,7 +12,7 @@ export default function EnterPhonePage() {
   const handleKey = (digit: string) => {
     setError("")
     setPhoneNumber((prev) => {
-      if (prev.length >= 10) return prev
+      if (prev.length >= 11 || (!prev && digit !== "0")) return prev
       return prev + digit
     })
   }
@@ -28,12 +28,12 @@ export default function EnterPhonePage() {
       return
     }
 
-    if (!/^1[3-9]\d{8}$/.test(phoneNumber)) {
-      setError("Please enter the 10 digits after +880")
+    if (!/^01[3-9]\d{8}$/.test(phoneNumber)) {
+      setError("Enter a valid Bangladesh mobile number starting with 01")
       return
     }
 
-    const localPhone = `0${phoneNumber}`
+    const localPhone = phoneNumber
     setIsChecking(true)
     setError("")
 
@@ -87,7 +87,7 @@ export default function EnterPhonePage() {
           <svg className="mr-3 text-[#9a9aa5]" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
             <path d="M6 9l6 6 6-6" />
           </svg>
-          <span className="text-[#141414] font-semibold text-base mr-3">+880</span>
+          <span className="text-[#141414] font-semibold text-base mr-3">+88</span>
           <input
             id="phone-number"
             type="tel"
@@ -95,7 +95,7 @@ export default function EnterPhonePage() {
             readOnly
             className="flex-1 min-w-0 bg-transparent text-[#141414] text-base placeholder-[#b6b6bf] focus:outline-none"
             value={phoneNumber}
-            placeholder="17 1234 5678"
+            placeholder="017 1234 5678"
           />
         </div>
         {error && <p className="text-red-600 text-sm mt-3">{error}</p>}

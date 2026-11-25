@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
       await discardStoredOTP(phone)
 
       const message = providerCode === "105"
-        ? "AutoMas error 105: নম্বরটিকে বৈধ MSISDN হিসেবে গ্রহণ করেনি। নম্বরটি সক্রিয় এবং +880-এর পরের ১০ অঙ্ক ঠিক আছে কি না যাচাই করুন।"
+        ? "AutoMas error 105: gateway নম্বরটি গ্রহণ করেনি। ১১ সংখ্যার বাংলাদেশি নম্বরটি 01 দিয়ে শুরু হয়েছে কি না যাচাই করুন।"
         : providerCode === "106"
           ? "AutoMas error 106: API key সঠিক বা সক্রিয় নয়। AutoMas account-এর API key যাচাই করুন।"
           : providerCode === "INVALID_MSISDN"
