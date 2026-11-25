@@ -19,9 +19,14 @@ function localBangladeshPhone(phoneNumber: string): string | null {
   return /^01[3-9]\d{8}$/.test(localNumber) ? localNumber : null
 }
 
-async function sendAutomasSMS(phoneNumber: string, message: string): Promise<SMSResult> {
+async function sendAutomasSMS(
+  phoneNumber: string,
+  message: string,
+  useInternationalMsisdn = false,
+): Promise<SMSResult> {
   const contact = localBangladeshPhone(phoneNumber)
   if (!contact) return { success: false, message: "Invalid Bangladesh mobile number", errorCode: "INVALID_MSISDN" }
+  const recipient = useInternationalMsisdn ? `880${contact.slice(1)}` : contact
 
   const apiKey = process.env.AUTOMAS_API_KEY || process.env.api_key || process.env.API_KEY
   const senderId = process.env.AUTOMAS_SENDER_ID || "Sheba"
@@ -39,7 +44,7 @@ async function sendAutomasSMS(phoneNumber: string, message: string): Promise<SMS
       body: JSON.stringify({
         apikey: apiKey,
         sender: senderId,
-        messages: [{ id: 1, msisdn: contact, smstext: message }],
+        messages: [{ id: 1, msisdn: recipient, smstext: message }],
       }),
       cache: "no-store",
       signal: controller.signal,
@@ -77,6 +82,10 @@ async function sendAutomasSMS(phoneNumber: string, message: string): Promise<SMS
 
     const providerStatus = responseRecords.length > 0 ? recordStatuses.join(",") : topLevelStatus
     const errorCode = response.ok ? providerStatus || "UNRECOGNIZED" : `HTTP_${response.status}`
+    if (errorCode === "105" && !useInternationalMsisdn) {
+      return sendAutomasSMS(phoneNumber, message, true)
+    }
+
     const reason = !response.ok
       ? `HTTP ${response.status}`
       : providerStatus
