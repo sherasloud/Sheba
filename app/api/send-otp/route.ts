@@ -27,16 +27,20 @@ export async function POST(request: NextRequest) {
       await discardStoredOTP(phone)
 
       const message = providerCode === "105"
-        ? "AutoMas error 105: নম্বরটিকে বৈধ MSISDN হিসেবে গ্রহণ করেনি। নম্বরটি সক্রিয় এবং +880-এর পরের ১০ অঙ্ক ঠিক আছে কি না যাচাই করুন।"
-        : providerCode === "106"
-          ? "AutoMas error 106: API key সঠিক বা সক্রিয় নয়। AutoMas account-এর API key যাচাই করুন।"
-          : providerCode === "INVALID_MSISDN"
-            ? "সঠিক বাংলাদেশি মোবাইল নম্বর দিন।"
-            : providerCode === "NOT_CONFIGURED"
-              ? "AutoMas API key বা Sender ID configuration পাওয়া যায়নি।"
-              : providerCode === "TIMEOUT" || providerCode === "NETWORK_ERROR"
-                ? `AutoMas-এর সাথে সংযোগ হয়নি (${providerCode})। কিছুক্ষণ পর আবার চেষ্টা করুন।`
-                : `AutoMas (${providerCode}) SMS গ্রহণ করেনি। Sheba masking Sender ID অনুমোদিত ও সক্রিয় কি না যাচাই করুন।`
+        ? "AutoMas নম্বরটি গ্রহণ করেনি। 01XXXXXXXXX format-এ সক্রিয় বাংলাদেশি নম্বর দিন।"
+        : providerCode === "103"
+          ? "AutoMas API key প্রত্যাখ্যান করেছে। AutoMas dashboard-এর API key যাচাই করুন।"
+          : providerCode === "1000"
+            ? "AutoMas account-এ পর্যাপ্ত SMS balance নেই।"
+            : providerCode === "INVALID_MSISDN"
+              ? "সঠিক বাংলাদেশি মোবাইল নম্বর দিন।"
+              : providerCode === "NOT_CONFIGURED"
+                ? "AutoMas API key বা অনুমোদিত Sender ID নেই। Project Vars-এ AUTOMAS_API_KEY ও AUTOMAS_SENDER_ID যোগ করুন।"
+                : providerCode === "TIMEOUT" || providerCode === "NETWORK_ERROR"
+                  ? `AutoMas-এর সাথে সংযোগ হয়নি (${providerCode})। কিছুক্ষণ পর আবার চেষ্টা করুন।`
+                  : providerCode.startsWith("HTTP_")
+                    ? `AutoMas server ${providerCode} error দিয়েছে। API key, request, এবং AutoMas account status যাচাই করুন।`
+                    : `AutoMas SMS গ্রহণ করেনি (${providerCode})। AutoMas dashboard-এ Sender ID ও error status যাচাই করুন।`
 
       return NextResponse.json({ success: false, providerCode, message }, { status: 502 })
     }

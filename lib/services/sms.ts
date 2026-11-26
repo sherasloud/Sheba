@@ -10,7 +10,7 @@ interface SMSResult {
   data?: unknown
 }
 
-const AUTOMAS_URL = "https://api.automas.com.bd/smsapimany"
+const AUTOMAS_URL = "https://api.automas.com.bd/smsapiv3"
 
 function localBangladeshPhone(phoneNumber: string): string | null {
   const digits = phoneNumber.replace(/\D/g, "")
@@ -19,18 +19,13 @@ function localBangladeshPhone(phoneNumber: string): string | null {
   return /^01[3-9]\d{8}$/.test(localNumber) ? localNumber : null
 }
 
-async function sendAutomasSMS(
-  phoneNumber: string,
-  message: string,
-  useInternationalMsisdn = false,
-): Promise<SMSResult> {
-  const contact = localBangladeshPhone(phoneNumber)
-  if (!contact) return { success: false, message: "Invalid Bangladesh mobile number", errorCode: "INVALID_MSISDN" }
-  const recipient = useInternationalMsisdn ? `880${contact.slice(1)}` : contact
+async function sendAutomasSMS(phoneNumber: string, message: string): Promise<SMSResult> {
+  const recipient = localBangladeshPhone(phoneNumber)
+  if (!recipient) return { success: false, message: "Invalid Bangladesh mobile number", errorCode: "INVALID_MSISDN" }
 
-  const apiKey = process.env.AUTOMAS_API_KEY || process.env.api_key || process.env.API_KEY
-  const senderId = process.env.AUTOMAS_SENDER_ID || process.env.AUTOMAS_SENDER || "Sheba"
-  if (!apiKey || !senderId) return { success: false, message: "AutoMas SMS is not configured", errorCode: "NOT_CONFIGURED" }
+  const apiKey = process.env.AUTOMAS_API_KEY
+  const senderId = process.env.AUTOMAS_SENDER_ID || process.env.AUTOMAS_SENDER
+  if (!apiKey || !senderId) return { success: false, message: "AutoMas API key or approved Sender ID is not configured", errorCode: "NOT_CONFIGURED" }
 
   const controller = new AbortController()
   const timeout = setTimeout(() => controller.abort(), 15_000)
@@ -42,15 +37,13 @@ async function sendAutomasSMS(
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        apikey: apiKey,
-        sender: senderId,
-        messages: [
-          {
-            id: 1,
-            msisdn: recipient,
-            smstext: message,
-          },
-        ],
+        api_key: apiKey,
+        senderid: senderId,
+        type: "text",
+        scheduledDateTime: "",
+        msg: message,
+        contacts: recipient,
+        ...(/[^\u0000-\u007f]/.test(message) ? { smsformat: 8 } : {}),
       }),
       cache: "no-store",
       signal: controller.signal,
@@ -73,14 +66,9 @@ async function sendAutomasSMS(
     const responseReference = typeof result?.response === "string" ? result.response.trim() : ""
     const recordStatuses = responseRecords.map((record) => String(record.status ?? "").trim().toUpperCase())
     const isAcceptedStatus = (status: string) => status === "0" || status === "SUCCESS"
-    const responseReferenceIsAccepted = Boolean(responseReference)
-      && !/^[1-9]\d*$/.test(responseReference)
-      && !/\b(?:error|failed|invalid|rejected)\b/i.test(responseReference)
     const accepted = response.ok && (responseRecords.length > 0
       ? recordStatuses.every(isAcceptedStatus)
-      : topLevelStatus
-        ? isAcceptedStatus(topLevelStatus)
-        : responseReferenceIsAccepted)
+      : isAcceptedStatus(topLevelStatus))
 
     if (accepted) {
       const messageId = responseRecords[0]?.id
@@ -101,10 +89,6 @@ async function sendAutomasSMS(
     const errorCode = response.ok
       ? providerStatus || stringResponseCode || (responseReference ? "PROVIDER_REJECTED" : "UNRECOGNIZED")
       : `HTTP_${response.status}`
-
-    if (errorCode === "105" && !useInternationalMsisdn) {
-      return sendAutomasSMS(phoneNumber, message, true)
-    }
 
     const reason = !response.ok
       ? `HTTP ${response.status}`
