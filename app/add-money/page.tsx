@@ -8,26 +8,16 @@ import VerificationRequired from "@/components/verification-required"
 import { cardProviders } from "@/lib/data/static-data"
 
 const bangladeshBanks = [
-  { name: "Dhaka Bank Limited", shortName: "Dhaka Bank", logo: "/banks/dhaka-bank.jpeg" },
   { name: "Premier Bank PLC", shortName: "Premier Bank", logo: "/banks/premier-bank.jpeg" },
   { name: "Pubali Bank Limited", shortName: "Pubali Bank", logo: "/banks/pubali-bank.jpeg" },
   { name: "Islami Bank Bangladesh Limited", shortName: "Islami Bank", logo: "/banks/islami-bank.jpeg" },
   { name: "City Bank PLC", shortName: "City Bank", logo: "/banks/city-bank.jpeg" },
   { name: "United Commercial Bank PLC", shortName: "UCB Bank", logo: "/banks/ucb-bank.jpeg" },
+  { name: "Dhaka Bank Limited", shortName: "Dhaka Bank", logo: "/banks/dhaka-bank.jpeg" },
   { name: "Bank Asia Limited", shortName: "Bank Asia", logo: "/banks/bank-asia.jpeg" },
   { name: "AB Bank Limited", shortName: "AB Bank", logo: "/banks/ab-bank.jpeg" },
   { name: "Prime Bank PLC", shortName: "Prime Bank", logo: "/banks/prime-bank.jpeg" },
   { name: "Mutual Trust Bank PLC", shortName: "Mutual Trust Bank", logo: "/banks/mutual-trust-bank.jpeg" },
-  { name: "Dutch-Bangla Bank Limited", shortName: "Dutch Bangla Bank", logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Image%203-BDHDZICyoiUC077EM3iYq7FTJbeU28.jpeg" },
-  { name: "South East Bank PLC", shortName: "South East Bank", logo: "/banks/south-east-bank.png" },
-  { name: "Eastern Bank PLC", shortName: "Eastern Bank", logo: "/banks/eastern-bank.png" },
-  { name: "Bangladesh Development Bank Limited", shortName: "Bangladesh Development Bank", logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Image%201-5A9R5n5FVdJzj2YnHypujXe8RflQtz.jpeg" },
-  { name: "Meghna Bank PLC", shortName: "Meghna Bank", logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Image-ja0cg0GxXdBVvmG54XceezoYZ6s13k.jpeg" },
-  { name: "Community Bank Bangladesh PLC", shortName: "Community Bank", logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Image-wyof7WS0uba89ByjLE5rrOXMbvnjlc.jpeg" },
-  { name: "ONE Bank PLC", shortName: "ONE Bank", logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Image%201-DGMxpS9c5thamGYAV5dVlNWsGGBqWl.jpeg" },
-  { name: "Midland Bank Limited", shortName: "Midland Bank", logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Image%202-UfEYhp1DcuYQfKUQeT2JahZ4WyNC1J.jpeg" },
-  { name: "Jamuna Bank PLC", shortName: "Jamuna Bank", logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Image%206-iJdIcJ3W6pr4vgEj9fNj9QVLXmaUlv.jpeg" },
-  { name: "Woori Bank Bangladesh", shortName: "Woori Bank", logo: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Image%204-ARiVtmtJbt3XPxfp5Wbh44nz6jGTam.jpeg" },
 ]
 
 export default function AddMoneyPage() {
@@ -698,16 +688,8 @@ if (Number(amount) > 9000000) {
                 onClick={() => handleBankSelect(bank.name)}
                 className="flex min-h-[100px] w-full items-center gap-6 px-2 text-left transition-transform active:scale-[0.98]"
               >
-                <span className="flex h-20 w-32 shrink-0 items-center justify-center">
-                  <Image
-                    src={bank.logo}
-                    alt={`${bank.shortName} logo`}
-                    width={140}
-                    height={86}
-                    className="h-20 w-32 object-contain"
-                  />
-                </span>
-                <span className="min-w-0 flex-1 text-left text-lg font-medium text-[#182431]">{bank.shortName}</span>
+                <Image src={bank.logo} alt={`${bank.shortName} logo`} width={140} height={86} className="h-20 w-32 object-contain" />
+                <span className="text-lg font-medium text-[#182431]">{bank.shortName}</span>
               </button>
             ))}
           </section>
@@ -772,9 +754,21 @@ if (Number(amount) > 9000000) {
                 onChange={(e) => setBankDetails({ ...bankDetails, bankName: e.target.value })}
               >
                 <option value="">Choose your bank</option>
-                {bangladeshBanks.map((bank) => (
-                  <option key={bank.name} value={bank.name}>{bank.name}</option>
-                ))}
+                <option value="Sonali Bank Limited">Sonali Bank Limited</option>
+                <option value="Janata Bank Limited">Janata Bank Limited</option>
+                <option value="Agrani Bank Limited">Agrani Bank Limited</option>
+                <option value="Rupali Bank Limited">Rupali Bank Limited</option>
+                <option value="BRAC Bank Limited">BRAC Bank Limited</option>
+                <option value="Dutch-Bangla Bank Limited">Dutch-Bangla Bank Limited</option>
+                <option value="City Bank Limited">City Bank Limited</option>
+                <option value="Eastern Bank Limited">Eastern Bank Limited</option>
+                <option value="Prime Bank Limited">Prime Bank Limited</option>
+                <option value="Southeast Bank Limited">Southeast Bank Limited</option>
+                <option value="Dhaka Bank Limited">Dhaka Bank Limited</option>
+                <option value="AB Bank Limited">AB Bank Limited</option>
+                <option value="Islami Bank Bangladesh Limited">Islami Bank Bangladesh Limited</option>
+                <option value="Al-Arafah Islami Bank Limited">Al-Arafah Islami Bank Limited</option>
+                <option value="Social Islami Bank Limited">Social Islami Bank Limited</option>
               </select>
             </div>
 

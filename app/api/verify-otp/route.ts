@@ -6,14 +6,13 @@ import { eq } from "drizzle-orm"
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json()
-    const phone = typeof body?.phone === "string" ? body.phone.trim() : ""
-    const otp = typeof body?.otp === "string" ? body.otp.trim() : ""
+    const { phone, otp } = await request.json()
 
-    if (!/^01[3-9]\d{8}$/.test(phone) || !/^\d{6}$/.test(otp)) {
+    // Validate inputs
+    if (!phone || !otp) {
       return NextResponse.json(
-        { success: false, message: "সঠিক মোবাইল নম্বর ও ৬ সংখ্যার OTP দিন।" },
-        { status: 400 },
+        { success: false, message: "Phone number and OTP are required" },
+        { status: 400 }
       )
     }
 

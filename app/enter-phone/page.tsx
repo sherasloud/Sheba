@@ -12,7 +12,7 @@ export default function EnterPhonePage() {
   const handleKey = (digit: string) => {
     setError("")
     setPhoneNumber((prev) => {
-      if (prev.length >= 10) return prev
+      if (prev.length >= 11) return prev
       return prev + digit
     })
   }
@@ -28,24 +28,23 @@ export default function EnterPhonePage() {
       return
     }
 
-    if (!/^1[3-9]\d{8}$/.test(phoneNumber)) {
-      setError("Please enter the 10 digits after +880")
+    if (phoneNumber.length !== 11 || !/^01\d{9}$/.test(phoneNumber)) {
+      setError("Please enter a valid 11-digit phone number")
       return
     }
 
-    const localPhone = `0${phoneNumber}`
     setIsChecking(true)
     setError("")
 
     try {
-      sessionStorage.setItem("phoneNumber", localPhone)
-      localStorage.setItem("phoneNumber", localPhone)
+      sessionStorage.setItem("phoneNumber", phoneNumber)
+      localStorage.setItem("phoneNumber", phoneNumber)
 
-      // Request an OTP by SMS
+      // Request an OTP over WhatsApp
       const res = await fetch("/api/send-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone: localPhone }),
+        body: JSON.stringify({ phone: phoneNumber }),
       })
       const result = await res.json()
 
@@ -55,7 +54,7 @@ export default function EnterPhonePage() {
         return
       }
 
-      router.push(`/otp?phone=${encodeURIComponent(localPhone)}`)
+      router.push(`/otp?phone=${encodeURIComponent(phoneNumber)}`)
     } catch (err) {
       console.error("[v0] Error in handleNext:", err)
       setError("Something went wrong. Please try again")
@@ -76,7 +75,7 @@ export default function EnterPhonePage() {
         />
 
         {/* Label */}
-        <label htmlFor="phone-number" className="text-[#9a9aa5] text-sm mb-2 mt-24">Phone Number</label>
+        <label className="text-[#9a9aa5] text-sm mb-2 mt-24">Phone Number</label>
 
         {/* Phone Input Field */}
         <div className="flex items-center bg-[#f4f4f6] rounded-2xl px-4 py-2.5">
@@ -89,13 +88,12 @@ export default function EnterPhonePage() {
           </svg>
           <span className="text-[#141414] font-semibold text-base mr-3">+880</span>
           <input
-            id="phone-number"
             type="tel"
             inputMode="none"
             readOnly
             className="flex-1 min-w-0 bg-transparent text-[#141414] text-base placeholder-[#b6b6bf] focus:outline-none"
             value={phoneNumber}
-            placeholder="17 1234 5678"
+            placeholder="017 123 4567"
           />
         </div>
         {error && <p className="text-red-600 text-sm mt-3">{error}</p>}
