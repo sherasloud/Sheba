@@ -54,7 +54,6 @@ export async function POST(request: NextRequest) {
           fullName: user.fullName,
           balance: Number(user.balance) || 0, // Convert BigInt to number
           accountType: user.accountType,
-          pin: user.pin,
           createdAt: user.createdAt,
         },
       },

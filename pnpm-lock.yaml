@@ -389,6 +389,9 @@ importers:
       stripe:
         specifier: latest
         version: 22.6.2(@types/node@24.13.4)
+      swr:
+        specifier: ^2.5.1
+        version: 2.5.1(react@19.3.0)
       tailwind-merge:
         specifier: ^2.5.5
         version: 2.6.1

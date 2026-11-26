@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
 
     // Verify PIN
     if (user.pin !== pin) {
-      console.log('[v0] PIN verification failed: incorrect PIN for phone:', trimmedPhone, 'provided:', pin, 'stored:', user.pin)
+      console.log('[v0] PIN verification failed: incorrect PIN')
       return NextResponse.json(
         { 
           success: false, 
