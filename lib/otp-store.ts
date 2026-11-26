@@ -36,10 +36,6 @@ export async function invalidateStoredOTP(phone: string, purpose?: OTPPurpose): 
   await redis.del(otpKey(phone, purpose), attemptsKey(phone, purpose), cooldownKey(phone, purpose))
 }
 
-export async function discardStoredOTP(phone: string, purpose?: OTPPurpose): Promise<void> {
-  await redis.del(otpKey(phone, purpose), attemptsKey(phone, purpose))
-}
-
 export type GenerateResult = { ok: true; otp: string } | { ok: false; message: string }
 
 /**
