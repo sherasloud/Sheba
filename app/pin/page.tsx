@@ -2,6 +2,36 @@
 
 import { useState, useEffect, useRef } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
+import useSWR from "swr"
+
+type PinAccountCheck =
+  | { status: "ready"; user: { fullName?: string | null } }
+  | { status: "missing" }
+
+type PinAccountKey = readonly ["pin-account", string]
+
+async function fetchPinAccount([, phone]: PinAccountKey): Promise<PinAccountCheck> {
+  const response = await fetch("/api/user-profile", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ phone }),
+  })
+  const data = await response.json().catch(() => ({})) as {
+    success?: boolean
+    error?: string
+    user?: { fullName?: string | null }
+  }
+
+  if (response.status === 404 && data.error === "User not found") {
+    return { status: "missing" }
+  }
+
+  if (!response.ok || data.success !== true || !data.user) {
+    throw new Error(data.error || "Could not verify account")
+  }
+
+  return { status: "ready", user: data.user }
+}
 
 export default function PinPage() {
   const [pin, setPin] = useState("")
@@ -9,60 +39,48 @@ export default function PinPage() {
   const [error, setError] = useState("")
   const [phoneNumber, setPhoneNumber] = useState("")
   const [userName, setUserName] = useState("")
-  const [checkingUser, setCheckingUser] = useState(true)
-  const [isNewUser, setIsNewUser] = useState(false)
+  const [phoneInitialized, setPhoneInitialized] = useState(false)
   const initializedRef = useRef(false)
   const router = useRouter()
   const searchParams = useSearchParams()
 
   useEffect(() => {
-    const initPage = async () => {
-      if (initializedRef.current) return
-      initializedRef.current = true
-      // Always start a fresh PIN attempt when the app is reopened.
-      setPin("")
-      setError("")
-      setIsLoading(false)
+    if (initializedRef.current) return
+    initializedRef.current = true
+    setPin("")
+    setError("")
+    setIsLoading(false)
 
-      const currentPhone = searchParams.get("phone") || sessionStorage.getItem("phoneNumber") || localStorage.getItem("phoneNumber")
+    const currentPhone = searchParams.get("phone") || sessionStorage.getItem("phoneNumber") || localStorage.getItem("phoneNumber")
 
-      if (!currentPhone) {
-        console.log("[v0] No phone number found, redirecting to enter-phone")
-        router.replace("/enter-phone")
-        return
-      }
-
-      setPhoneNumber(currentPhone)
-      
-      // Fetch user name from Neon database
-      try {
-        const response = await fetch('/api/user-profile', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ phone: currentPhone }),
-        })
-        
-        if (response.ok) {
-          const data = await response.json()
-          if (data.user?.fullName) {
-            setUserName(data.user.fullName)
-            console.log('[v0] User name loaded from Neon:', data.user.fullName)
-          } else {
-            setUserName("ব্যবহারকারী")
-          }
-        } else {
-          setUserName("ব্যবহারকারী")
-        }
-      } catch (err) {
-        console.error('[v0] Error fetching user name:', err)
-        setUserName("ব্যবহারকারী")
-      }
-      
-      setCheckingUser(false) // No need to check, OTP already verified
+    if (!currentPhone) {
+      router.replace("/enter-phone")
+      return
     }
 
-    initPage()
+    setPhoneNumber(currentPhone)
+    setPhoneInitialized(true)
   }, [router, searchParams])
+
+  const accountKey = phoneInitialized && phoneNumber ? (["pin-account", phoneNumber] as const) : null
+  const {
+    data: accountCheck,
+    error: accountCheckError,
+    isLoading: isAccountLoading,
+    mutate: retryAccountCheck,
+  } = useSWR(accountKey, fetchPinAccount)
+  const checkingUser = !phoneInitialized || isAccountLoading
+
+  useEffect(() => {
+    if (accountCheck?.status === "missing") {
+      router.replace(`/onboarding?phone=${encodeURIComponent(phoneNumber)}`)
+      return
+    }
+
+    if (accountCheck?.status === "ready") {
+      setUserName(accountCheck.user.fullName || "ব্যবহারকারী")
+    }
+  }, [accountCheck, phoneNumber, router])
 
   const handlePinInput = (digit: string) => {
     if (pin.length < 6) {
@@ -87,14 +105,7 @@ export default function PinPage() {
     console.log("[v0] PIN verification started for:", phoneNumber)
 
     try {
-      if (isNewUser) {
-        // New user - should not be here, go to onboarding instead
-        console.log("[v0] New user should not be on PIN page, redirecting to onboarding")
-        router.replace(`/onboarding?phone=${encodeURIComponent(phoneNumber)}`)
-        return
-      }
-
-      // Existing user - verify PIN with MongoDB
+      // Existing user - verify PIN with Neon
       const response = await fetch("/api/verify-pin", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -169,6 +180,49 @@ export default function PinPage() {
   <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#38afe8] mb-4"></div>
         <p className="text-[#10141c] text-lg">যাচাই করা হচ্ছে...</p>
       </div>
+    )
+  }
+
+  if (accountCheckError || accountCheck?.status !== "ready") {
+    const accountMissing = accountCheck?.status === "missing"
+
+    return (
+      <main className="flex min-h-[100dvh] flex-col items-center justify-center bg-white px-6 text-center text-[#10141c]">
+        <h1 className="text-2xl font-semibold">
+          {accountMissing ? "অ্যাকাউন্ট তৈরি সম্পূর্ণ হয়নি" : "অ্যাকাউন্ট যাচাই করা যাচ্ছে না"}
+        </h1>
+        <p className="mt-3 max-w-sm text-base text-[#6b7280]" role="alert">
+          {accountMissing
+            ? "PIN দেওয়ার আগে অ্যাকাউন্ট তৈরি সম্পন্ন করুন।"
+            : "ডাটাবেসে সংযোগ পাওয়া যায়নি। PIN দেওয়ার আগে আবার চেষ্টা করুন।"}
+        </p>
+        <div className="mt-6 flex w-full max-w-sm flex-col gap-3">
+          {accountMissing ? (
+            <button
+              type="button"
+              onClick={() => router.replace(`/onboarding?phone=${encodeURIComponent(phoneNumber)}`)}
+              className="rounded-xl bg-[#38afe8] px-5 py-3 font-semibold text-white"
+            >
+              অ্যাকাউন্ট তৈরি করুন
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={() => void retryAccountCheck()}
+              className="rounded-xl bg-[#38afe8] px-5 py-3 font-semibold text-white"
+            >
+              আবার চেষ্টা করুন
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={() => router.replace("/enter-phone")}
+            className="rounded-xl px-5 py-3 font-semibold text-[#38afe8]"
+          >
+            ফোন নম্বর পরিবর্তন করুন
+          </button>
+        </div>
+      </main>
     )
   }
 
