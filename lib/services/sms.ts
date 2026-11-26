@@ -51,8 +51,9 @@ async function sendAutomasSMS(phoneNumber: string, message: string): Promise<SMS
       data = JSON.parse(raw)
     } catch {}
 
-    const result = typeof data === "object" && data !== null
-      ? data as { status?: unknown; Status?: unknown; code?: unknown; success?: unknown; error?: unknown; message?: unknown }
+    const responseData = Array.isArray(data) ? data[0] : data
+    const result = typeof responseData === "object" && responseData !== null
+      ? responseData as { status?: unknown; Status?: unknown; code?: unknown; success?: unknown; error?: unknown; message?: unknown }
       : null
     const status = String(result?.status ?? result?.Status ?? result?.code ?? "").trim().toLowerCase()
     const failedStatus = ["false", "failed", "error"].includes(status) || (/^-?\d+$/.test(status) && Number(status) !== 0)
