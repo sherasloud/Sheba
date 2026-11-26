@@ -1,3 +1,4 @@
+import { randomInt } from "node:crypto"
 import { Redis } from "@upstash/redis"
 
 /**
@@ -40,7 +41,7 @@ export async function generateAndStoreOTP(phone: string): Promise<GenerateResult
     return { ok: false, message: "অনেকবার চেষ্টা করেছেন। ১ ঘণ্টা পর আবার চেষ্টা করুন।" }
   }
 
-  const otp = Math.floor(100000 + Math.random() * 900000).toString()
+  const otp = randomInt(100000, 1_000_000).toString()
 
   await redis.set(otpKey(phone), otp, { ex: OTP_TTL_SECONDS })
   await redis.del(attemptsKey(phone))
