@@ -37,20 +37,11 @@ async function sendAutomasSMS(
   try {
     const response = await fetch(AUTOMAS_URL, {
       method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
+      headers: { Accept: "application/json", "Content-Type": "application/json" },
       body: JSON.stringify({
-        apikey: apiKey,
+        api_key: apiKey,
         sender: senderId,
-        messages: [
-          {
-            id: 1,
-            msisdn: recipient,
-            smstext: message,
-          },
-        ],
+        messages: [{ id: 1, msisdn: recipient, smstext: message }],
       }),
       cache: "no-store",
       signal: controller.signal,
@@ -101,7 +92,6 @@ async function sendAutomasSMS(
     const errorCode = response.ok
       ? providerStatus || stringResponseCode || (responseReference ? "PROVIDER_REJECTED" : "UNRECOGNIZED")
       : `HTTP_${response.status}`
-
     if (errorCode === "105" && !useInternationalMsisdn) {
       return sendAutomasSMS(phoneNumber, message, true)
     }
