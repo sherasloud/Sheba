@@ -40,7 +40,7 @@ export default function EnterPhonePage() {
       sessionStorage.setItem("phoneNumber", phoneNumber)
       localStorage.setItem("phoneNumber", phoneNumber)
 
-      // Request an OTP over WhatsApp
+      // Request an OTP over SMS
       const res = await fetch("/api/send-otp", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
