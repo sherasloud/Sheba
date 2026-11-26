@@ -4,7 +4,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 
 export default function EnterPhonePage() {
-  const [phoneNumber, setPhoneNumber] = useState("")
+  const [phoneNumber, setPhoneNumber] = useState("01")
   const [error, setError] = useState("")
   const [isChecking, setIsChecking] = useState(false)
   const router = useRouter()
@@ -12,28 +12,23 @@ export default function EnterPhonePage() {
   const handleKey = (digit: string) => {
     setError("")
     setPhoneNumber((prev) => {
-      if (prev.length >= 10) return prev
+      if (prev.length >= 11) return prev
       return prev + digit
     })
   }
 
   const handleBackspace = () => {
     setError("")
-    setPhoneNumber((prev) => prev.slice(0, -1))
+    setPhoneNumber((prev) => (prev.length > 2 ? prev.slice(0, -1) : "01"))
   }
 
   const handleNext = async () => {
-    if (!phoneNumber) {
-      setError("Please enter your phone number")
+    if (!/^01[3-9]\d{8}$/.test(phoneNumber)) {
+      setError("Enter a valid 11-digit number in 01XXXXXXXXX format.")
       return
     }
 
-    if (!/^1[3-9]\d{8}$/.test(phoneNumber)) {
-      setError("Please enter the 10 digits after +880")
-      return
-    }
-
-    const localPhone = `0${phoneNumber}`
+    const localPhone = phoneNumber
     setIsChecking(true)
     setError("")
 
@@ -66,45 +61,49 @@ export default function EnterPhonePage() {
   const keypadKeys = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
 
   return (
-    <div className="min-h-screen w-full bg-white flex flex-col px-6 pt-10 pb-8">
+    <div className="min-h-[100dvh] w-full bg-white flex flex-col px-6 pt-4 pb-4 sm:pt-6 sm:pb-6">
       <div className="w-full max-w-md mx-auto flex flex-col flex-1">
         {/* Sheba headline logo */}
         <img
           src="/images/sheba-headline-logo.jpeg"
           alt="সেবা"
-          className="h-24 w-auto object-contain mt-2 mb-10 mx-auto"
+          className="h-16 sm:h-20 md:h-24 w-auto object-contain mt-1 mb-6 sm:mt-2 sm:mb-8 md:mb-10 mx-auto"
         />
 
         {/* Label */}
-        <label htmlFor="phone-number" className="text-[#9a9aa5] text-sm mb-2 mt-24">Phone Number</label>
+        <label htmlFor="phone-number" className="text-[#9a9aa5] text-sm mb-1 mt-4 sm:mt-8 md:mt-10">Phone Number</label>
+        <p id="phone-number-hint" className="text-xs text-[#777780]">
+          Use the full 11-digit format: 01XXXXXXXXX
+        </p>
 
         {/* Phone Input Field */}
-        <div className="flex items-center bg-[#f4f4f6] rounded-2xl px-4 py-2.5">
-          {/* BD flag */}
-          <span className="flex items-center justify-center w-7 h-5 rounded-sm bg-[#006a4e] mr-2 shrink-0">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#f42a41]" />
-          </span>
-          <svg className="mr-3 text-[#9a9aa5]" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M6 9l6 6 6-6" />
-          </svg>
-          <span className="text-[#141414] font-semibold text-base mr-3">+880</span>
+        <div className="mt-2 flex items-center rounded-2xl bg-[#f4f4f6] px-3 py-3">
+          <div className="mr-3 flex shrink-0 items-center gap-2" aria-label="Bangladesh country code +880">
+            <span aria-hidden="true" className="relative h-4 w-6 overflow-hidden rounded-[2px] bg-[#006a4e]">
+              <span className="absolute left-1/2 top-1/2 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#f42a41]" />
+            </span>
+            <span className="text-sm font-medium text-[#141414]">+880</span>
+          </div>
           <input
             id="phone-number"
             type="tel"
             inputMode="none"
             readOnly
-            className="flex-1 min-w-0 bg-transparent text-[#141414] text-base placeholder-[#b6b6bf] focus:outline-none"
+            maxLength={11}
+            aria-describedby="phone-number-hint"
+            aria-invalid={Boolean(error)}
+            className="w-full min-w-0 bg-transparent text-base font-semibold tracking-normal text-[#141414] focus:outline-none"
             value={phoneNumber}
-            placeholder="17 1234 5678"
+            placeholder="01XXXXXXXXX"
           />
         </div>
-        {error && <p className="text-red-600 text-sm mt-3">{error}</p>}
+        {error && <p role="alert" className="mt-3 text-sm text-red-600">{error}</p>}
 
         {/* Next Button */}
         <button
           onClick={handleNext}
           disabled={isChecking}
-          className="w-full bg-[#38afe8] text-white text-base font-semibold py-4 rounded-2xl mt-14 hover:bg-[#2fa0d8] transition-colors shadow-sm disabled:opacity-70 flex items-center justify-center"
+          className="w-full bg-[#38afe8] text-white text-base font-semibold py-4 rounded-2xl mt-6 sm:mt-10 md:mt-14 hover:bg-[#2fa0d8] transition-colors shadow-sm disabled:opacity-70 flex items-center justify-center"
         >
           {isChecking ? (
             <>
@@ -117,14 +116,14 @@ export default function EnterPhonePage() {
         </button>
 
         {/* Numeric Keypad */}
-        <div className="mt-auto pt-8 mb-10">
-          <div className="grid grid-cols-3 gap-3">
+        <div className="mt-auto pt-4 mb-2 sm:pt-6 sm:mb-6 md:pt-8 md:mb-10">
+          <div className="grid grid-cols-3 gap-2 sm:gap-3">
             {keypadKeys.map((key) => (
               <button
                 key={key}
                 type="button"
                 onClick={() => handleKey(key)}
-                className="h-14 rounded-2xl text-[#141414] text-2xl font-normal active:bg-[#f4f4f6] transition-colors"
+                className="h-11 sm:h-14 rounded-2xl text-[#141414] text-xl sm:text-2xl font-normal active:bg-[#f4f4f6] transition-colors"
               >
                 {key}
               </button>
@@ -134,7 +133,7 @@ export default function EnterPhonePage() {
             <button
               type="button"
               onClick={() => handleKey("0")}
-              className="h-14 rounded-2xl text-[#141414] text-2xl font-semibold active:bg-[#f4f4f6] transition-colors"
+              className="h-11 sm:h-14 rounded-2xl text-[#141414] text-xl sm:text-2xl font-semibold active:bg-[#f4f4f6] transition-colors"
             >
               0
             </button>
@@ -142,7 +141,7 @@ export default function EnterPhonePage() {
               type="button"
               onClick={handleBackspace}
               aria-label="Backspace"
-              className="h-14 rounded-2xl text-[#141414] flex items-center justify-center active:bg-[#f4f4f6] transition-colors"
+              className="h-11 sm:h-14 rounded-2xl text-[#141414] flex items-center justify-center active:bg-[#f4f4f6] transition-colors"
             >
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z" />
