@@ -1,7 +1,5 @@
 /**
- * SMS Service for sending OTP via MyGP
- * 
- * আপনার MyGP message পাঠানোর method এখানে integrate করুন
+ * SMS delivery through the Automas JSON API.
  */
 
 interface SMSResult {
@@ -11,7 +9,8 @@ interface SMSResult {
   data?: unknown
 }
 
-const AUTOmAS_URL = "https://api.automas.com.bd/smsapiv3"
+const AUTOmAS_URL = "https://api.automas.com.bd/smsapiv4"
+const AUTOmAS_MASKING_NAME = "Sheba"
 
 function localPhone(phoneNumber: string) {
   const digits = phoneNumber.replace(/\D/g, "")
@@ -20,46 +19,52 @@ function localPhone(phoneNumber: string) {
   return digits
 }
 
-function internationalPhone(phoneNumber: string) {
-  const digits = phoneNumber.replace(/\D/g, "")
-  if (digits.startsWith("880")) return digits
-  if (digits.startsWith("0")) return `88${digits}`
-  return `880${digits}`
-}
-
 async function sendAutomasSMS(phoneNumber: string, message: string): Promise<SMSResult> {
-  const apiKey = process.env.AUTOMAS_API_KEY || process.env.api_key || process.env.API_KEY
-  const senderId = process.env.AUTOMAS_SENDER_ID || "8809617642467"
-  if (!apiKey || !senderId) return { success: false, message: "Automas SMS is not configured" }
+  const apiKey = process.env.AUTOMAS_API_KEY || process.env.Automas_API || process.env.api_key || process.env.API_KEY
+  const senderId = process.env.AUTOMAS_SENDER_ID || process.env.Automas_Sender_ID || AUTOmAS_MASKING_NAME
+  if (!apiKey) return { success: false, message: "Automas SMS is not configured" }
 
   const controller = new AbortController()
   const timeout = setTimeout(() => controller.abort(), 15_000)
   try {
-    const params = new URLSearchParams({
-      apikey: apiKey,
-      sender: senderId,
-      msisdn: localPhone(phoneNumber),
-      smstext: message,
-      type: "text",
-      smsformat: "0",
-    })
-    const response = await fetch(`${AUTOmAS_URL}?${params.toString()}`, {
-      method: "GET",
-      headers: { Accept: "application/json, text/plain, */*" },
+    const response = await fetch(AUTOmAS_URL, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        api_key: apiKey,
+        senderid: senderId,
+        Masking: AUTOmAS_MASKING_NAME,
+        type: "text",
+        scheduledDateTime: "",
+        msg: message,
+        contacts: localPhone(phoneNumber),
+      }),
       cache: "no-store",
       signal: controller.signal,
     })
     const raw = await response.text()
     let data: unknown = raw
-    try { data = JSON.parse(raw) } catch {}
-    const result = typeof data === "object" && data !== null ? data as { status?: unknown; error?: unknown; message?: unknown } : null
-    const providerText = raw.toLowerCase()
-    const status = String(result?.status ?? "").toLowerCase()
-    const failed = !response.ok || ["0", "false", "failed", "error"].includes(status) || /invalid|insufficient|error|fail/.test(providerText)
-    if (!failed) return { success: true, message: "SMS sent successfully", data }
+    try {
+      data = JSON.parse(raw)
+    } catch {}
 
-    const providerMessage = result?.error || result?.message || raw || `HTTP ${response.status}`
-    return { success: false, message: `Automas SMS failed: ${String(providerMessage)}`, data }
+    const result = typeof data === "object" && data !== null
+      ? data as { status?: unknown; Status?: unknown; code?: unknown; success?: unknown; error?: unknown; message?: unknown }
+      : null
+    const status = String(result?.status ?? result?.Status ?? result?.code ?? "").trim().toLowerCase()
+    const failedStatus = ["false", "failed", "error"].includes(status) || (/^-?\d+$/.test(status) && Number(status) !== 0)
+    const explicitSuccess = result?.success === true || ["0", "200", "success", "true"].includes(status)
+    const confirmedSuccess = explicitSuccess || (!result && /^(?:0|success|sent|queued|accepted)$/i.test(raw.trim()))
+
+    if (!response.ok || result?.success === false || failedStatus || !confirmedSuccess) {
+      const providerMessage = result?.error || result?.message || raw || `HTTP ${response.status}`
+      return { success: false, message: `Automas SMS failed: ${String(providerMessage)}`, data }
+    }
+
+    return { success: true, message: "SMS sent successfully", data }
   } catch (error: any) {
     return { success: false, message: error?.name === "AbortError" ? "Automas SMS timed out" : "Could not reach Automas SMS" }
   } finally {
@@ -68,19 +73,12 @@ async function sendAutomasSMS(phoneNumber: string, message: string): Promise<SMS
 }
 
 /**
- * Send OTP to phone number using MyGP
- * 
- * TODO: আপনার MyGP SMS পাঠানোর method এখানে add করুন
+ * Send an OTP to a phone number using Automas.
  */
 export async function sendOTP(phoneNumber: string, otp: string): Promise<SMSResult> {
   try {
     // Message content
     const message = `Sheba OTP: ${otp}. This code is valid for 5 minutes.`
-
-    console.log('[v0] Attempting to send SMS:', {
-      to: phoneNumber,
-      message: message,
-    })
 
     return await sendAutomasSMS(phoneNumber, message)
   } catch (error: any) {
