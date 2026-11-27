@@ -234,8 +234,8 @@ export default function PinPage() {
         <img src="/images/sheba-headline-logo.jpeg" alt="সেবা" className="h-14 w-auto object-contain sm:h-16" />
       </div>
 
-      <section className="flex flex-col items-center px-6">
-        <div className="mb-3">
+      <section className="flex flex-1 flex-col items-center justify-center px-6 py-6">
+        <div className="mb-6">
           <h1 className="mb-1 text-center text-3xl font-bold text-[#10141c]">পিন দিন</h1>
           <p className="text-center text-base text-[#6b7280]">অ্যাকাউন্টে প্রবেশ করতে পিন লিখুন</p>
           <div className="mt-5 flex justify-center gap-5">
