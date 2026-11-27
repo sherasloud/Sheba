@@ -1,15 +1,16 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { ArrowLeft, User, Phone, Lock, CheckCircle } from "lucide-react"
-import { setCurrentUser, isAdminPhone, getAccountByPhone } from "@/lib/account-manager"
+import { isAdminPhone, getAccountByPhone } from "@/lib/account-manager"
 
 export default function OnboardingPage() {
   const router = useRouter()
   const [step, setStep] = useState(1)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
+  const accountCreationInFlight = useRef(false)
   
   // Form data
   const [phoneNumber, setPhoneNumber] = useState("")
@@ -126,6 +127,8 @@ export default function OnboardingPage() {
       return
     }
 
+    if (accountCreationInFlight.current || isLoading) return
+    accountCreationInFlight.current = true
     setIsLoading(true)
     setError("")
 
@@ -152,15 +155,20 @@ export default function OnboardingPage() {
         
         // Save to localStorage as backup
         saveAccountData(phoneNumber, fullName)
-        setCurrentUser(phoneNumber)
         
-        // Show success and redirect
+        // Registration is complete; authenticate through the normal PIN flow.
         setStep(6)
         setTimeout(() => {
-          router.push("/")
+          router.push("/pin")
         }, 1500)
       } else {
         console.error("[v0] Account creation failed:", result.error)
+        if (typeof result.error === "string" && result.error.toLowerCase().includes("already exists")) {
+          sessionStorage.setItem("phoneNumber", phoneNumber)
+          localStorage.setItem("phoneNumber", phoneNumber)
+          router.push("/pin")
+          return
+        }
         setError(result.error || "অ্যাকাউন্ট তৈরিতে সমস্যা হয়েছে।")
       }
     } catch (err) {
@@ -176,6 +184,7 @@ export default function OnboardingPage() {
         setError("অ্যাকাউন্ট তৈরিতে সমস্যা হয়েছে। আবার চেষ্টা করুন।")
       }
     } finally {
+      accountCreationInFlight.current = false
       setIsLoading(false)
     }
   }
@@ -390,7 +399,9 @@ export default function OnboardingPage() {
             {error && <p className="text-red-500 text-sm mb-4 text-center">{error}</p>}
 
             <button
+              type="button"
               onClick={handleConfirmPinSubmit}
+              aria-busy={isLoading}
               disabled={isLoading || confirmPin.length !== 6}
               className="mt-auto w-full py-4 bg-[#1FBFFF] text-white rounded-full text-lg font-medium disabled:opacity-50"
             >

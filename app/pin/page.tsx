@@ -227,49 +227,47 @@ export default function PinPage() {
   }
 
   return (
-    <div className="fixed inset-0 h-[100dvh] w-full overflow-hidden bg-white text-[#10141c]">
-  {/* Header */}
-  <div className="h-16" />
+    <main className="flex min-h-screen min-h-[100dvh] w-full flex-col overflow-x-hidden overflow-y-auto overscroll-contain bg-white text-[#10141c]">
+      <div className="h-8 shrink-0" aria-hidden="true" />
 
-      {/* Sheba Logo at Top */}
-      <div className="flex flex-col items-center pt-20 pb-10">
-        <img src="/images/sheba-headline-logo.jpeg" alt="সেবা" className="h-20 w-auto object-contain" />
+      <div className="flex flex-col items-center pt-2 pb-3">
+        <img src="/images/sheba-headline-logo.jpeg" alt="সেবা" className="h-14 w-auto object-contain sm:h-16" />
       </div>
 
-      {/* PIN Input Section */}
-      <div className="flex flex-col items-center px-6">
-        <div className="mb-8">
-          <p className="mb-4 text-center text-4xl font-bold text-[#10141c]">পিন দিন</p>
-          <p className="text-center text-xl text-[#a1a1a1]">অ্যাকাউন্টে প্রবেশ করতে পিন লিখুন</p>
-          <div className="mt-8 flex justify-center gap-7">
+      <section className="flex flex-col items-center px-6">
+        <div className="mb-3">
+          <h1 className="mb-1 text-center text-3xl font-bold text-[#10141c]">পিন দিন</h1>
+          <p className="text-center text-base text-[#6b7280]">অ্যাকাউন্টে প্রবেশ করতে পিন লিখুন</p>
+          <div className="mt-5 flex justify-center gap-5">
             {[0, 1, 2, 3, 4, 5].map((index) => (
               <div
                 key={index}
-                className={`h-5 w-5 rounded-full transition-all duration-200 ${
+                className={`h-4 w-4 rounded-full transition-all duration-200 ${
                   index < pin.length ? "bg-[#10141c] scale-110" : "bg-[#e4e5e8]"
                 }`}
               />
             ))}
           </div>
-          {error && <p className="mt-5 text-center text-xl text-[#e05454]">{error}</p>}
+          {error && <p className="mt-3 text-center text-base text-[#e05454]">{error}</p>}
         </div>
 
         <button
+          type="button"
           onClick={() => router.push("/forgot-pin")}
-          className="mb-8 text-lg font-semibold text-[#38afe8] no-underline"
+          className="mb-2 mt-2 py-2 text-base font-semibold text-[#38afe8] no-underline"
         >
           পিন ভুলে গেছেন?
         </button>
-      </div>
+      </section>
 
-      {/* Number Pad */}
-      <div className="px-6 pb-8">
-        <div className="mx-auto grid w-full max-w-sm grid-cols-3 justify-items-center gap-y-6 px-8">
+      <div className="mt-auto px-4 pb-3 sm:px-6 sm:pb-6">
+        <div className="mx-auto grid w-full max-w-sm grid-cols-3 justify-items-center gap-y-1 px-3 sm:gap-y-4 sm:px-8">
           {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((number) => (
             <button
               key={number}
               onClick={() => handlePinInput(number.toString())}
-              className="flex h-16 w-16 items-center justify-center text-3xl font-medium text-[#10141c] transition-colors hover:text-[#38afe8] active:scale-95"
+              type="button"
+              className="flex h-14 w-14 touch-manipulation select-none items-center justify-center text-3xl font-semibold text-[#10141c] transition-colors hover:text-[#38afe8] active:scale-95 sm:h-16 sm:w-16"
               disabled={isLoading}
             >
               {number}
@@ -279,16 +277,20 @@ export default function PinPage() {
           <div></div>
 
           <button
+            type="button"
+            aria-label="0"
             onClick={() => handlePinInput("0")}
-            className="flex h-16 w-16 items-center justify-center text-3xl font-medium text-[#10141c] transition-colors hover:text-[#38afe8] active:scale-95"
+            className="flex h-14 w-14 touch-manipulation select-none items-center justify-center text-3xl font-semibold text-[#10141c] transition-colors hover:text-[#38afe8] active:scale-95 sm:h-16 sm:w-16"
             disabled={isLoading}
           >
             0
           </button>
 
           <button
+            type="button"
+            aria-label="Delete last PIN digit"
             onClick={handleDelete}
-            className="flex h-16 w-16 items-center justify-center text-[#cfd1d5] transition-colors hover:text-[#38afe8] active:scale-95"
+            className="flex h-14 w-14 touch-manipulation items-center justify-center text-[#9ca3af] transition-colors hover:text-[#38afe8] active:scale-95 sm:h-16 sm:w-16"
             disabled={isLoading}
           >
             <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -313,24 +315,6 @@ export default function PinPage() {
         </div>
       )}
 
-      <style jsx global>{`
-  html, body {
-  width: 100% !important;
-  height: 100% !important;
-  overflow: hidden !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  }
-        
-        body::-webkit-scrollbar {
-          display: none !important;
-        }
-        
-        html {
-          scrollbar-width: none !important;
-          -ms-overflow-style: none !important;
-        }
-      `}</style>
-    </div>
+    </main>
   )
 }
