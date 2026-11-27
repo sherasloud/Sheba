@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { ArrowLeft, User, Phone, Lock, CheckCircle } from "lucide-react"
-import { setCurrentUser, isAdminPhone, getAccountByPhone } from "@/lib/account-manager"
+import { isAdminPhone, getAccountByPhone } from "@/lib/account-manager"
 
 export default function OnboardingPage() {
   const router = useRouter()
@@ -155,15 +155,20 @@ export default function OnboardingPage() {
         
         // Save to localStorage as backup
         saveAccountData(phoneNumber, fullName)
-        setCurrentUser(phoneNumber)
         
-        // Show success and redirect
+        // Registration is complete; authenticate through the normal PIN flow.
         setStep(6)
         setTimeout(() => {
-          router.push("/")
+          router.push("/pin")
         }, 1500)
       } else {
         console.error("[v0] Account creation failed:", result.error)
+        if (typeof result.error === "string" && result.error.toLowerCase().includes("already exists")) {
+          sessionStorage.setItem("phoneNumber", phoneNumber)
+          localStorage.setItem("phoneNumber", phoneNumber)
+          router.push("/pin")
+          return
+        }
         setError(result.error || "অ্যাকাউন্ট তৈরিতে সমস্যা হয়েছে।")
       }
     } catch (err) {
