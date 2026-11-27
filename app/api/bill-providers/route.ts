@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server'
 const sohojXPayBillProviders = [
   { id: "sohoj-desco-postpaid", name: "DESCO POSTPAID", fullName: "Dhaka Electric Supply Company", category: "Electricity", number: "DESCO_POSTPAID", source: "", enabled: true, icon: "/images/desco-logo-updated.jpeg", isImage: true },
   { id: "sohoj-desco-prepaid", name: "DESCO PREPAID", fullName: "Dhaka Electric Supply Company", category: "Electricity", number: "DESCO_PREPAID", source: "", enabled: true, icon: "/images/desco-logo-updated.jpeg", isImage: true },
+  { id: "sohoj-dpdc-postpaid", name: "DPDC POSTPAID", fullName: "Dhaka Power Distribution Company Limited", category: "Electricity", number: "DPDC_POSTPAID", source: "", enabled: true, icon: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Image-roFUYYHKu1G5neunH9BvslGNz1Vflr.jpeg", isImage: true },
   { id: "sohoj-west-zone-postpaid", name: "WEST ZONE POSTPAID", fullName: "West Zone Power Distribution Company", category: "Electricity", number: "WZPDCL_POSTPAID", source: "", enabled: true, icon: "/images/wzpdcl-logo-updated.jpeg", isImage: true },
   { id: "sohoj-nesco-postpaid", name: "NESCO POSTPAID", fullName: "Northern Electricity Supply Company", category: "Electricity", number: "NESCO_POSTPAID", source: "", enabled: true, icon: "/images/nesco-logo.jpeg", isImage: true },
   { id: "sohoj-nesco-prepaid", name: "NESCO PREPAID", fullName: "Northern Electricity Supply Company", category: "Electricity", number: "NESCO_PREPAID", source: "", enabled: true, icon: "/images/nesco-logo.jpeg", isImage: true },
