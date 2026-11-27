@@ -230,15 +230,15 @@ export default function PinPage() {
     <main className="flex min-h-screen min-h-[100dvh] w-full flex-col overflow-x-hidden overflow-y-auto overscroll-contain bg-white text-[#10141c]">
       <div className="h-8 shrink-0" aria-hidden="true" />
 
-      <div className="flex flex-col items-center pt-2 pb-3">
+      <div className="flex flex-col items-center pt-4 pb-3">
         <img src="/images/sheba-headline-logo.jpeg" alt="সেবা" className="h-14 w-auto object-contain sm:h-16" />
       </div>
 
-      <section className="flex flex-1 flex-col items-center justify-center px-6 py-6">
-        <div className="mb-6">
+      <section className="flex flex-1 flex-col items-center justify-center px-6 py-8">
+        <div className="mb-8">
           <h1 className="mb-1 text-center text-3xl font-bold text-[#10141c]">পিন দিন</h1>
           <p className="text-center text-base text-[#6b7280]">অ্যাকাউন্টে প্রবেশ করতে পিন লিখুন</p>
-          <div className="mt-5 flex justify-center gap-5">
+          <div className="mt-7 flex justify-center gap-5">
             {[0, 1, 2, 3, 4, 5].map((index) => (
               <div
                 key={index}
@@ -261,7 +261,7 @@ export default function PinPage() {
       </section>
 
       <div className="mt-auto px-4 pb-3 sm:px-6 sm:pb-6">
-        <div className="mx-auto grid w-full max-w-sm grid-cols-3 justify-items-center gap-y-1 px-3 sm:gap-y-4 sm:px-8">
+        <div className="mx-auto grid w-full max-w-sm grid-cols-3 justify-items-center gap-y-3 px-3 sm:gap-y-4 sm:px-8">
           {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((number) => (
             <button
               key={number}
